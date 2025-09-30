@@ -5,6 +5,8 @@ const bgUrl = bg.src;
 import "../styles/global.css";   // <— this loads Tailwind globally
 import Header from "../components/Header.astro";
 const { title = "BluTattoo Studio" } = Astro.props;
+import '@fontsource/diplomata-sc';
+import '@fontsource/spectral';
 ---
 <!doctype html>
 <html lang="en">
@@ -14,9 +16,12 @@ const { title = "BluTattoo Studio" } = Astro.props;
     <title>{title}</title>
     <ClientRouter /> {/* enable SPA-style navigation */}
     <link rel="preload" as="image" href={bgUrl} />
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Diplomata+SC&display=swap" rel="stylesheet"> -->
   </head>
   <body
-  class="min-h-screen text-gray-900 text-orange-100 md:bg-fixed bg-center bg-cover"
+  class="min-h-screen text-gray-900 text-orange-100 md:bg-fixed bg-center bg-cover font-[Spectral]"
   style="background-image: url('/misc_images/background.jpg');"
   >
       <!-- fixed background image -->

@@ -1,23 +1,10 @@
----
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-// import Gallery from "../../components/Gallery.astro";
-
-export async function getStaticPaths() {
-  const artists = await getCollection("artists");
-  console.log("artists slugs:", artists.map(a => a.slug)); // <— watch your terminal
-  return artists.map((entry) => ({
-    params: { slug: entry.slug },
-    props: { entry }
-  }));
-}
-
-const { entry } = Astro.props;
----
-<BaseLayout title={`Studio Name — ${entry.data.title}`}>
-  <article class="max-w-3xl">
-    <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-    {entry.data.styles?.length && <p class="mt-2">{entry.data.styles.join(", ")}</p>}
-    <!-- {entry.data.images && <Gallery images={entry.data.images} />} -->
-  </article>
-</BaseLayout>
+<div class="hidden md:block bg-black/80">
+  <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
+    <div
+      class="mx-auto h-20 md:h-24 w-auto
+             [&_svg]:h-full [&_svg]:w-auto
+             [&_path]:fill-current [&_g]:fill-current"
+      set:html={logoSvg}
+    />
+  </a>
+</div>

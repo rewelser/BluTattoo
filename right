@@ -1,76 +1,12 @@
----
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-
-export async function getStaticPaths() {
-  const artists = await getCollection("artists");
-  return artists.map((entry) => ({
-    params: { slug: entry.slug },
-    props: { entry }
-  }));
-}
-
-const { entry } = Astro.props;
-
-// Render the Markdown *body* (the part after the frontmatter)
-const { Content } = await entry.render();
----
-<BaseLayout title={`Studio Name — ${entry.data.title}`}>
-  <article class="mx-auto max-w-3xl space-y-6">
-    <header class="space-y-2">
-      <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-
-      {entry.data.styles?.length && (
-        <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
-      )}
-
-      {entry.data.instagram && (
-        <p>
-          <a
-            href={entry.data.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
-          >
-            <!-- tiny IG glyph -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                 fill="currentColor" class="h-4 w-4" aria-hidden="true">
-              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-            </svg>
-            Instagram
-          </a>
-        </p>
-      )}
-    </header>
-
-    {entry.data.bio && (
-      <section>
-        <h2 class="sr-only">Bio</h2>
-        <p class="whitespace-pre-line">{entry.data.bio}</p>
-      </section>
-    )}
-
-    {entry.data.images?.length && (
-      <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {entry.data.images.map((img) => (
-          <figure class="overflow-hidden rounded">
-            <img
-              src={`${img.src}?w=800&auto=format`}
-              srcset={`${img.src}?w=400 400w, ${img.src}?w=800 800w, ${img.src}?w=1200 1200w`}
-              sizes="(max-width: 768px) 50vw, 33vw"
-              alt={img.alt ?? ""}
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
-          </figure>
-        ))}
-      </section>
-    )}
-
-    {/* Markdown body content (the part after the --- in the file) */}
-    <section class="prose max-w-none">
-      <Content />
-    </section>
-  </article>
-</BaseLayout>
+<div class="hidden md:block bg-black/80">
+  <div class="mx-auto max-w-6xl px-4">
+    <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
+      <div
+        class="w-fit mx-auto h-20 md:h-24
+               [&_svg]:block [&_svg]:h-full [&_svg]:w-auto
+               [&_path]:fill-current [&_g]:fill-current"
+        set:html={logoSvg}
+      />
+    </a>
+  </div>
+</div>

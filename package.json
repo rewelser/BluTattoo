@@ -9,6 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource/diplomata-sc": "^5.2.8",
+    "@fontsource/spectral": "^5.2.8",
     "@tailwindcss/vite": "^4.1.13",
     "astro": "^5.14.1",
     "tailwindcss": "^4.1.13"

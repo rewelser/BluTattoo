@@ -1,102 +1,183 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
+import logoSvg from "../assets/misc_images/blutattoo-trimmed.svg?raw"; // raw markup string
+const logoColor = "text-orange-100 md:hover:text-indigo-400";
 
-// Load artists at build time (requires src/content/config.ts)
-// const artists = await getCollection("artists");
+// Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 artists = artists.sort((a, b) =>
-  a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+  (a.data.order ?? 999) - (b.data.order ?? 999) || a.data.title.localeCompare(b.data.title)
 );
 
-// Current path for active-link styling
+// Active link helper
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
   currentPath === href || (href !== "/" && currentPath.startsWith(href));
 ---
-<!-- <header class="md:rounded-t-2xl sticky top-0 z-50 border-b bg-white/80 backdrop-blur"> -->
-<header class="md:rounded-t-2xl sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
-  <div class="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-    <a href="/" class="text-xl font-semibold tracking-tight focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded">
-      BluTattoo Studio
+
+<!-- Top LOGO (desktop only, not sticky) -->
+<div class="hidden md:block bg-black/80">
+  <div class="mx-auto max-w-6xl px-4">
+    <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
+      <div
+        class="w-fit mx-auto h-20 md:h-50
+               [&_svg]:block [&_svg]:h-full [&_svg]:w-auto
+               [&_path]:fill-current [&_g]:fill-current"
+        set:html={logoSvg}
+      />
     </a>
+  </div>
+</div>
 
-    <!-- Desktop nav -->
-    <nav class="hidden md:flex items-center gap-6">
-      <a href="/" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/") ? "font-semibold underline text-indigo-500" : ""}`}>Home</a>
-
-      <details class="relative group">
-        <summary
-          class={`list-none cursor-pointer hover:underline flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/artists") ? "font-semibold underline text-indigo-500" : ""}`}
-          aria-haspopup="menu"
-          aria-expanded="false"
+<!-- Sticky NAV (desktop) -->
+<div class="hidden md:block sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
+  <nav class="mx-auto max-w-6xl px-4">
+    <ul class="flex items-center justify-center gap-8 py-3">
+      <li>
+        <a
+          href="/"
+          data-astro-prefetch="hover"
+          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            isActive("/") ? "font-semibold underline text-indigo-400" : ""
+          }`}
         >
-          Artists
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 10l5 5 5-5H7z" />
-          </svg>
-        </summary>
-        <ul
-          role="menu"
-          class="absolute mt-2 w-56 border bg-black/95 backdrop-blur p-2 shadow-lg z-20"
-        >
-          {artists.map((entry) => (
-            <li role="none">
-              <a
-                role="menuitem"
-                class="block px-3 py-2 focus:outline-none hover:outline-1 hover:outline-orange-100"
-                href={`/artists/${entry.id}/`}
-              >
-                {entry.data.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </details>
+          HOME
+        </a>
+      </li>
 
-      <a href="/faq" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/faq") ? "font-semibold underline text-indigo-500" : ""}`}>FAQ</a>
-      <a href="/aftercare" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/aftercare") ? "font-semibold underline text-indigo-500" : ""}`}>Aftercare</a>
-    </nav>
-
-    <!-- Mobile menu -->
-    <details class="md:hidden">
-      <summary class="cursor-pointer rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        Menu
-      </summary>
-      <nav class="mt-2 flex flex-col gap-2">
-        <a href="/" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">Home</a>
-
-        <details>
-          <summary class="px-2 py-2 rounded hover:bg-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Artists
+      <li class="relative group">
+        <details class="relative">
+          <summary
+            class={`list-none cursor-pointer flex items-center gap-1 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              isActive("/artists") ? "font-semibold underline text-indigo-400" : ""
+            }`}
+          >
+            ARTISTS
+            <svg width="16" height="16" color="red" viewBox="0 0 24 24" aria-hidden="true">  <style>
+              path { fill: oklch(95.4% 0.038 75.164); }
+            </style><path d="M7 10l5 5 5-5H7z" /></svg>
           </summary>
-          <ul class="ml-3 mt-1 flex flex-col">
+          <ul
+            role="menu"
+            class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20"
+          >
             {artists.map((entry) => (
-              <li>
-                <a class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100" href={`/artists/${entry.id}/`}>
+              <li role="none">
+                <a
+                  role="menuitem"
+                  href={`/artists/${entry.id}/`}
+                  class="block px-3 py-2 hover:outline-1 hover:outline-orange-100"
+                  data-astro-prefetch="hover"
+                >
                   {entry.data.title}
                 </a>
               </li>
             ))}
           </ul>
         </details>
+      </li>
 
-        <a href="/faq" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">FAQ</a>
-        <a href="/aftercare" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">Aftercare</a>
+      <li>
+        <a
+          href="/faq"
+          data-astro-prefetch="hover"
+          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            isActive("/faq") ? "font-semibold underline text-indigo-400" : ""
+          }`}
+        >
+          FAQ
+        </a>
+      </li>
+
+      <li>
+        <a
+          href="/aftercare"
+          data-astro-prefetch="hover"
+          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            isActive("/aftercare") ? "font-semibold underline text-indigo-400" : ""
+          }`}
+        >
+          AFTERCARE
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- Mobile: single sticky bar (logo + menu button) -->
+<header class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+    <a href="/" class={`flex items-center gap-2 ${logoColor}`} aria-label="BluTattoo Studio">
+      <div
+        class="h-15 w-auto
+               [&_svg]:h-full [&_svg]:w-auto
+               [&_path]:fill-current [&_g]:fill-current"
+        set:html={logoSvg}
+      />
+      <span class="sr-only">BluTattoo Studio</span>
+    </a>
+
+    <details>
+      <summary class="cursor-pointer border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Menu
+      </summary>
+      <nav class="mt-2 flex flex-col gap-2 bg-black/80 p-2">
+        <a href="/" class="px-2 py-2 hover:bg-white/10">Home</a>
+
+        <!-- <details>
+          <summary class="px-2 py-2 rounded hover:bg-white/10 cursor-pointer focus:outline-none">
+            Artists
+          </summary>
+          <ul class="ml-3 mt-1 flex flex-col">
+            {artists.map((entry) => (
+              <li>
+                <a class="px-2 py-2 rounded hover:bg-white/10" href={`/artists/${entry.id}/`}>
+                  {entry.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details> -->
+
+        <details>
+          <summary class="px-2 py-2 hover:bg-white/10 cursor-pointer focus:outline-none">
+            Artists
+          </summary>
+        
+          <ul
+            class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1
+                   divide-y divide-white/10"
+          >
+            {artists.map((entry) => (
+              <li>
+                <a
+                  href={`/artists/${entry.id}/`}
+                  class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                  data-astro-prefetch="hover"
+                >
+                  {entry.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+        
+
+        <a href="/faq" class="px-2 py-2 hover:bg-white/10">FAQ</a>
+        <a href="/aftercare" class="px-2 py-2 hover:bg-white/10">Aftercare</a>
       </nav>
     </details>
   </div>
 </header>
 
 <style>
-  /* Remove default triangle marker on <summary> in some browsers */
   summary { list-style: none; }
   summary::-webkit-details-marker { display: none; }
 
-  /* Desktop dropdown behavior: only show menu when open/hovered/focused */
   @media (min-width: 768px) {
+    /* open-on-hover convenience for desktop dropdown */
     details > ul { display: none; }
     details[open] > ul { display: block; }
-    /* Also open on hover for convenience */
     details.group:hover > ul { display: block; }
   }
 </style>
