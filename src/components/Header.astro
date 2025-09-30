@@ -1,0 +1,102 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+
+// Load artists at build time (requires src/content/config.ts)
+// const artists = await getCollection("artists");
+let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
+artists = artists.sort((a, b) =>
+  a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+);
+
+// Current path for active-link styling
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  currentPath === href || (href !== "/" && currentPath.startsWith(href));
+---
+<!-- <header class="md:rounded-t-2xl sticky top-0 z-50 border-b bg-white/80 backdrop-blur"> -->
+<header class="md:rounded-t-2xl sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+    <a href="/" class="text-xl font-semibold tracking-tight focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded">
+      BluTattoo Studio
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-6">
+      <a href="/" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/") ? "font-semibold underline text-indigo-500" : ""}`}>Home</a>
+
+      <details class="relative group">
+        <summary
+          class={`list-none cursor-pointer hover:underline flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/artists") ? "font-semibold underline text-indigo-500" : ""}`}
+          aria-haspopup="menu"
+          aria-expanded="false"
+        >
+          Artists
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 10l5 5 5-5H7z" />
+          </svg>
+        </summary>
+        <ul
+          role="menu"
+          class="absolute mt-2 w-56 border bg-black/95 backdrop-blur p-2 shadow-lg z-20"
+        >
+          {artists.map((entry) => (
+            <li role="none">
+              <a
+                role="menuitem"
+                class="block px-3 py-2 focus:outline-none hover:outline-1 hover:outline-orange-100"
+                href={`/artists/${entry.id}/`}
+              >
+                {entry.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      <a href="/faq" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/faq") ? "font-semibold underline text-indigo-500" : ""}`}>FAQ</a>
+      <a href="/aftercare" class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded ${isActive("/aftercare") ? "font-semibold underline text-indigo-500" : ""}`}>Aftercare</a>
+    </nav>
+
+    <!-- Mobile menu -->
+    <details class="md:hidden">
+      <summary class="cursor-pointer rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Menu
+      </summary>
+      <nav class="mt-2 flex flex-col gap-2">
+        <a href="/" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">Home</a>
+
+        <details>
+          <summary class="px-2 py-2 rounded hover:bg-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Artists
+          </summary>
+          <ul class="ml-3 mt-1 flex flex-col">
+            {artists.map((entry) => (
+              <li>
+                <a class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100" href={`/artists/${entry.id}/`}>
+                  {entry.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+
+        <a href="/faq" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">FAQ</a>
+        <a href="/aftercare" class="px-2 py-2 rounded hover:bg-gray-100 focus:bg-gray-100">Aftercare</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  /* Remove default triangle marker on <summary> in some browsers */
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+
+  /* Desktop dropdown behavior: only show menu when open/hovered/focused */
+  @media (min-width: 768px) {
+    details > ul { display: none; }
+    details[open] > ul { display: block; }
+    /* Also open on hover for convenience */
+    details.group:hover > ul { display: block; }
+  }
+</style>

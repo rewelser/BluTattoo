@@ -1,0 +1,50 @@
+---
+import { ClientRouter } from "astro:transitions";
+import bg from "../assets/misc_images/background.jpg";
+const bgUrl = bg.src;
+import "../styles/global.css";   // <— this loads Tailwind globally
+import Header from "../components/Header.astro";
+const { title = "BluTattoo Studio" } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <ClientRouter /> {/* enable SPA-style navigation */}
+    <link rel="preload" as="image" href={bgUrl} />
+  </head>
+  <body
+  class="min-h-screen text-gray-900 text-orange-100 md:bg-fixed bg-center bg-cover"
+  style="background-image: url('/misc_images/background.jpg');"
+  >
+      <!-- fixed background image -->
+      <img
+        src={bgUrl}
+        alt=""
+        aria-hidden="true"
+        fetchpriority="high"
+        loading="eager"
+        decoding="async"
+        transition:persist
+        class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
+      />
+    <!-- <Header /> -->
+    <!-- <main class="mx-auto max-w-6xl px-4 py-8">
+      <slot />
+    </main> -->
+    <main class="mx-auto md:max-w-6xl md:p-8">
+      <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
+      <div class="border-3 border-orange-100 bg-black/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm">
+        <div>
+          <Header />
+          <div class="p-6">
+            <slot />  {/* page content goes here */}
+          </div>
+        </div>
+      </div>
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

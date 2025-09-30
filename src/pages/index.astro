@@ -1,16 +1,10 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="BluTattoo Studio — Home">
+  <h1 class="text-3xl font-bold">Welcome to BluTattoo Studio</h1>
+  <p class="mt-2">Uptown Martinsville's Premier Location for Professional Custom Tattoo Art</p>
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0&appId=APP_ID"></script>
+  <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100072946814920" data-tabs="timeline" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/profile.php?id=100072946814920" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/profile.php?id=100072946814920">BluTattoo Studio</a></blockquote></div>
+</BaseLayout>
