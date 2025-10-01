@@ -1,7 +1,118 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Reusable list of Q&A (edit freely)
+const faqs = [
+  {
+    q: "How do I book an appointment?",
+    a: "Use the booking form on our Artists page to request a date/time with your preferred artist. We’ll review your idea, confirm availability, and send deposit instructions to secure the spot."
+  },
+  {
+    q: "Do you require a deposit?",
+    a: "Yes. Deposits are required to hold your appointment and are applied to the final cost. Deposits are non-refundable but transferable once with 48 hours’ notice."
+  },
+  {
+    q: "What forms of payment do you accept?",
+    a: "We accept cash and major cards. Tips are appreciated and can be given in cash or card at your discretion."
+  },
+  {
+    q: "How is pricing determined?",
+    a: "Pricing depends on size, placement, complexity, and the artist’s rate. Small, simple pieces may have a shop minimum. Large or multi-session work is typically billed hourly."
+  },
+  {
+    q: "What is your cancellation / reschedule policy?",
+    a: "Please give at least 48 hours’ notice to reschedule once without losing your deposit. No-shows or late cancellations forfeit the deposit."
+  },
+  {
+    q: "Can I bring reference images?",
+    a: "Absolutely—references help us understand your vision. Your artist will design a custom piece that fits your anatomy and style while keeping the concept intact."
+  },
+  {
+    q: "Will you tattoo hands, necks, or faces?",
+    a: "These areas are considered advanced placements. Approval is at the artist’s discretion and may require an in-person consultation."
+  },
+  {
+    q: "Does it hurt? Can I use numbing cream?",
+    a: "Discomfort varies by person and placement. Over-the-counter numbing creams can affect skin texture and healing; if you plan to use one, discuss it with your artist first."
+  },
+  {
+    q: "How should I prepare for my appointment?",
+    a: "Hydrate, get good sleep, and eat a full meal. Avoid alcohol or blood thinners for 24 hours. Wear clean, comfortable clothing that exposes the area being tattooed."
+  },
+  {
+    q: "How long does a tattoo take to heal?",
+    a: "Initial surface healing is ~1–2 weeks, with deeper healing up to 4–6 weeks. Follow our aftercare to keep your tattoo clean, moisturized, and out of direct sun while healing."
+  },
+  {
+    q: "What aftercare do you recommend?",
+    a: "We’ll provide written aftercare at your appointment. Generally: keep the bandage on as directed, wash gently with fragrance-free soap, pat dry, and apply a thin layer of unscented moisturizer."
+  },
+  {
+    q: "Can I swim or tan after getting tattooed?",
+    a: "Avoid pools, hot tubs, oceans, and baths until fully healed. Keep your tattoo out of direct sun and skip tanning; UV breaks down pigment and can cause fading."
+  },
+  {
+    q: "Do you do touch-ups?",
+    a: "Yes. If you follow aftercare and need a small touch-up within a set time window, many artists include one; policies vary by artist, so please ask at your appointment."
+  },
+  {
+    q: "What if I have allergies or sensitive skin?",
+    a: "Tell your artist about any skin sensitivities, allergies (latex, nickel, adhesives), or medical conditions. We use professional inks and single-use sterilized needles."
+  },
+  {
+    q: "Do you tattoo minors?",
+    a: "Policies vary by jurisdiction and artist. A government-issued ID is always required; additional documents may be needed. Call ahead to confirm current requirements."
+  }
+];
+
+// Build JSON-LD for SEO
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    "name": q,
+    "acceptedAnswer": { "@type": "Answer", "text": a }
+  }))
+};
 ---
+
 <BaseLayout title="BluTattoo Studio — FAQ">
-  <h1 class="text-2xl font-bold">FAQ</h1>
-  <!-- your <details><summary> items here -->
+  <h1 class="mb-6 text-3xl font-bold tracking-tight">FAQ</h1>
+
+  <div class="divide-y divide-white/10 border border-white/10 bg-black/40">
+    {faqs.map(({ q, a }) => (
+      <details class="group open:bg-white/5">
+        <summary
+          class="flex cursor-pointer select-none items-center justify-between gap-4 p-4 text-base
+                 font-medium outline-none transition-colors hover:bg-white/5 focus-visible:ring-2
+                 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+        >
+          <span>{q}</span>
+          <svg
+            viewBox="0 0 24 24"
+            class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
+            aria-hidden="true"
+          >
+            <path d="M7 10l5 5 5-5H7z" />
+          </svg>
+        </summary>
+
+        <div class="px-4 pb-4 text-orange-100/90">
+          <p class="leading-relaxed">{a}</p>
+        </div>
+      </details>
+    ))}
+  </div>
+
+  {/* SEO: FAQPage structured data */}
+  <script type="application/ld+json">
+    {JSON.stringify(faqJsonLd)}
+  </script>
+
+  {/* Optional helper text / links */}
+  <p class="mt-6 text-sm text-orange-100/70">
+    Still have questions? <a href="/contact" class="underline hover:no-underline">Contact us</a> or see
+    our <a href="/aftercare" class="underline hover:no-underline">Aftercare</a> guide.
+  </p>
 </BaseLayout>

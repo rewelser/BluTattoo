@@ -79,6 +79,18 @@ const isActive = (href: string) =>
 
       <li>
         <a
+          href="/aftercare"
+          data-astro-prefetch="hover"
+          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            isActive("/aftercare") ? "font-semibold underline text-indigo-400" : ""
+          }`}
+        >
+          AFTERCARE
+        </a>
+      </li>
+
+      <li>
+        <a
           href="/faq"
           data-astro-prefetch="hover"
           class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
@@ -91,13 +103,13 @@ const isActive = (href: string) =>
 
       <li>
         <a
-          href="/aftercare"
+          href="/contact"
           data-astro-prefetch="hover"
           class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-            isActive("/aftercare") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/contact") ? "font-semibold underline text-indigo-400" : ""
           }`}
         >
-          AFTERCARE
+          CONTACT US
         </a>
       </li>
     </ul>
@@ -105,7 +117,8 @@ const isActive = (href: string) =>
 </div>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
+<header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative">
+  <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <a href="/" class={`flex items-center gap-2 ${logoColor}`} aria-label="BluTattoo Studio">
       <div
@@ -117,36 +130,48 @@ const isActive = (href: string) =>
       <span class="sr-only">BluTattoo Studio</span>
     </a>
 
-    <details>
-      <summary class="cursor-pointer border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        Menu
-      </summary>
-      <nav class="mt-2 flex flex-col gap-2 bg-black/80 p-2">
-        <a href="/" class="px-2 py-2 hover:bg-white/10">Home</a>
+    <button
+      id="mobileMenuBtn"
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded="false"
+      aria-controls="mobileMenuPanel"
+      class="inline-flex items-center gap-2 border px-3 py-2
+             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    >
+      Menu
+      <svg viewBox="0 0 24 24" class="h-4 w-4 transition-transform" aria-hidden="true">
+        <path d="M7 10l5 5 5-5H7z" />
+      </svg>
+    </button>
+  </div>
 
-        <!-- <details>
-          <summary class="px-2 py-2 rounded hover:bg-white/10 cursor-pointer focus:outline-none">
-            Artists
-          </summary>
-          <ul class="ml-3 mt-1 flex flex-col">
-            {artists.map((entry) => (
-              <li>
-                <a class="px-2 py-2 rounded hover:bg-white/10" href={`/artists/${entry.id}/`}>
-                  {entry.data.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </details> -->
+  <!-- panel sits below the top row -->
+  <div id="mobileMenuPanel" class="inset-x-0 top-full mt-2 px-4 text-center">
+    <!-- The element we animate is this wrapper -->
+    <div id="mobileMenuAnim"
+         class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]">
+      <nav class="p-2 shadow-xl" role="menu">
+        <a href="/" class="block px-2 py-3 hover:bg-white/10">Home</a>
 
-        <details>
-          <summary class="px-2 py-2 hover:bg-white/10 cursor-pointer focus:outline-none">
-            Artists
-          </summary>
-        
+        <!-- Artists submenu -->
+        <button
+          id="artistsToggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="artistsAnim"
+          class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10 focus:outline-none"
+        >
+          <span>Artists</span>
+          <svg viewBox="0 0 24 24" class="h-4 w-4 transition-transform" aria-hidden="true">
+            <path d="M7 10l5 5 5-5H7z" />
+          </svg>
+        </button>
+
+        <div id="artistsAnim"
+            class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]">
           <ul
-            class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1
-                   divide-y divide-white/10"
+            class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10"
           >
             {artists.map((entry) => (
               <li>
@@ -160,15 +185,16 @@ const isActive = (href: string) =>
               </li>
             ))}
           </ul>
-        </details>
-        
+        </div>
 
-        <a href="/faq" class="px-2 py-2 hover:bg-white/10">FAQ</a>
-        <a href="/aftercare" class="px-2 py-2 hover:bg-white/10">Aftercare</a>
+        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10">Aftercare</a>
+        <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
+        <a href="/contact" class="block px-2 py-3 hover:bg-white/10">CONTACT US</a>
       </nav>
-    </details>
+    </div>
   </div>
 </header>
+
 
 <style>
   summary { list-style: none; }
