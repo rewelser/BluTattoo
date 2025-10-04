@@ -13,6 +13,10 @@
     "@fontsource/spectral": "^5.2.8",
     "@tailwindcss/vite": "^4.1.13",
     "astro": "^5.14.1",
+    "decap-cms-app": "^3.8.4",
     "tailwindcss": "^4.1.13"
+  },
+  "overrides": {
+    "trim": "0.0.3"
   }
 }
