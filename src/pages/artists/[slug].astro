@@ -23,21 +23,10 @@ const { Content } = await render(entry);
 <BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="mx-auto max-w-3xl space-y-6">
     <header class="space-y-2 flex items-center gap-4">
-      
-      <!-- {entry.data.photo && (
-        <img
-          src={`${entry.data.photo}?w=200&auto=format`}
-          alt={`Portrait of ${entry.data.title}`}
-          class="h-24 w-24 rounded-full object-cover border"
-          loading="lazy"
-          decoding="async"
-        />
-      )} -->
 
       {entry.data.photo && (
         <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
       )}
-      
 
       <div>
         <h1 class="text-3xl font-bold">{entry.data.title}</h1>

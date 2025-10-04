@@ -1,178 +1,52 @@
-// mobile-menu.js
-(function () {
-  function setupMobileMenu() {
-    const mobileBtn   = document.getElementById("mobileMenuBtn");
-    const mobileAnim  = document.getElementById("mobileMenuAnim");
-    const artistsBtn  = document.getElementById("artistsToggle");
-    const artistsAnim = document.getElementById("artistsAnim");
+import { defineCollection, z } from "astro:content";
+import { glob } from 'astro/loaders';
 
-    if (!mobileBtn || !mobileAnim || !artistsBtn || !artistsAnim) return;
-    if (mobileBtn.dataset.mmBound === "1") return;
-    mobileBtn.dataset.mmBound = "1";
-    artistsBtn.dataset.mmBound = "1";
+const artists = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
+  schema:  ({ image }) => z.object({
+    title: z.string(),
+    order: z.number().default(999),    // ← add this
+    photo: image().optional(),
+    styles: z.array(z.string()).optional(),
+    instagram: z.string().url().optional(),
+    images: z
+      .array(
+        z.object({
+          src: z.string(),
+          alt: z.string().optional()
+        })
+      )
+      .optional(),
+    bio: z.string().optional(),
+    booking_link: z.string().url().optional()
+  })
+});
 
-    const mobileIcon = mobileBtn.querySelector("svg");
-    const artistIcon = artistsBtn.querySelector("svg");
+// Data collection for 1-file-per-FAQ item
+const faqs = defineCollection({
+  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/faqs" }),
+  schema: z.object({
+    q: z.string(),
+    a: z.string(),
+    sort: z.number().optional(),
+  }),
+});
 
-    const isExpanded = (btn) => btn.getAttribute("aria-expanded") === "true";
+// Site-wide editable info (address, hours, promo banner)
+const siteInfo = defineCollection({
+  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
+  schema: z.object({
+    address: z.string(),
+    phone: z.string().optional(),
+    hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+    promoBanner: z
+      .object({
+        enabled: z.boolean(),
+        text: z.string(),
+        url: z.string().optional(),
+      })
+      .optional(),
+  }),
+});
 
-    // --- helpers -------------------------------------------------------------
-
-    // Parse total transition time (ms) as a fallback if transitionend doesn’t fire.
-    const getTransitionMs = (el) => {
-      const cs = getComputedStyle(el);
-      // transitionDuration / transitionDelay can be comma-separated; take the longest.
-      const toMs = (s) =>
-        s
-          .split(",")
-          .map((x) => x.trim())
-          .map((x) => (x.endsWith("ms") ? parseFloat(x) : parseFloat(x) * 1000))
-          .filter((n) => !Number.isNaN(n));
-      const durs = toMs(cs.transitionDuration);
-      const dels = toMs(cs.transitionDelay);
-      const maxDur = durs.length ? Math.max(...durs) : 0;
-      const maxDel = dels.length ? Math.max(...dels) : 0;
-      // Add a small buffer to be safe
-      return Math.max(0, maxDur + maxDel) + 50;
-    };
-
-    const lock = (btn, panel) => {
-      btn.disabled = true;
-      btn.style.pointerEvents = "none";
-      panel.style.pointerEvents = "none";
-      panel.dataset.animating = "1";
-    };
-
-    const unlock = (btn, panel) => {
-      delete panel.dataset.animating;
-      btn.disabled = false;
-      btn.style.pointerEvents = "";
-      panel.style.pointerEvents = "";
-    };
-
-    const expand = (panel) => {
-      // Start from explicit px height (0 or current) -> target scrollHeight
-      // If currently 'auto', set to numeric first.
-      const cs = getComputedStyle(panel);
-      if (cs.height === "auto" || panel.style.height === "auto") {
-        panel.style.height = panel.scrollHeight + "px";
-        void panel.offsetHeight;
-      }
-      panel.style.height = panel.scrollHeight + "px";
-
-      // After transition, set to 'auto' so later content changes won’t clip.
-      const onEnd = (e) => {
-        if (e.propertyName !== "height") return;
-        panel.style.height = "auto";
-        panel.removeEventListener("transitionend", onEnd);
-      };
-      panel.addEventListener("transitionend", onEnd, { once: true });
-    };
-
-    const collapse = (panel) => {
-      // If currently 'auto', fix height to a number first so we can animate down
-      const cs = getComputedStyle(panel);
-      if (cs.height === "auto" || panel.style.height === "auto") {
-        panel.style.height = panel.scrollHeight + "px";
-        void panel.offsetHeight; // reflow
-      }
-      panel.style.height = "0px";
-    };
-
-    // Instantly force a panel to closed state (no transition)
-    const snapClosed = (panel) => {
-      const prev = panel.style.transition;
-      panel.style.transition = "none";
-      // If 'auto', set numeric first
-      if (getComputedStyle(panel).height === "auto" || panel.style.height === "auto") {
-        panel.style.height = panel.scrollHeight + "px";
-        void panel.offsetHeight;
-      }
-      panel.style.height = "0px";
-      void panel.offsetHeight;
-      panel.style.transition = prev; // restore
-    };
-
-    const setExpanded = (btn, panel, expanded, icon) => {
-      // If already animating, ignore clicks.
-      if (panel.dataset.animating === "1") return;
-
-      btn.setAttribute("aria-expanded", expanded ? "true" : "false");
-      if (icon) icon.classList.toggle("rotate-180", expanded);
-
-      lock(btn, panel);
-      const totalMs = getTransitionMs(panel);
-      let ended = false;
-      const finish = () => {
-        if (ended) return;
-        ended = true;
-        unlock(btn, panel);
-      };
-
-      const onEnd = (e) => {
-        if (e.propertyName !== "height") return;
-        panel.removeEventListener("transitionend", onEnd);
-        // If expanding, we already set height to 'auto' in expand(); collapsing keeps 0px
-        finish();
-      };
-      panel.addEventListener("transitionend", onEnd);
-
-      // Fallback in case transitionend doesn’t fire (e.g., display:none changes, etc.)
-      const fallback = setTimeout(() => {
-        panel.removeEventListener("transitionend", onEnd);
-        finish();
-      }, totalMs);
-
-      const clearFallback = () => {
-        clearTimeout(fallback);
-        panel.removeEventListener("transitionend", clearFallback);
-      };
-      panel.addEventListener("transitionend", clearFallback);
-
-      expanded ? expand(panel) : collapse(panel);
-    };
-
-    // Ensure consistent initial state on load
-    setExpanded(mobileBtn, mobileAnim, false, mobileIcon);
-    setExpanded(artistsBtn, artistsAnim, false, artistIcon);
-
-    // --- interactions --------------------------------------------------------
-    mobileBtn.addEventListener("click", () => {
-      const open = !isExpanded(mobileBtn);
-
-      if (!open) {
-        // We are closing the outer; snap-close Artists FIRST to avoid nested-height races.
-        artistsBtn.setAttribute("aria-expanded", "false");
-        if (artistIcon) artistIcon.classList.toggle("rotate-180", false);
-        snapClosed(artistsAnim);
-      }
-
-      setExpanded(mobileBtn, mobileAnim, open, mobileIcon);
-    });
-
-    artistsBtn.addEventListener("click", () => {
-      // Ignore if outer menu itself is animating (prevents race)
-      if (mobileAnim.dataset.animating === "1") return;
-
-      const open = !isExpanded(artistsBtn);
-      setExpanded(artistsBtn, artistsAnim, open, artistIcon);
-      // No changes to outer menu state here
-    });
-  }
-
-  // First load
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupMobileMenu, { once: true });
-  } else {
-    setupMobileMenu();
-  }
-
-  // Astro client-side navigations
-  document.addEventListener("astro:page-load", setupMobileMenu);
-  document.addEventListener("astro:after-swap", setupMobileMenu);
-
-  // bfcache restores
-  window.addEventListener("pageshow", (e) => {
-    if (e.persisted) setupMobileMenu();
-  });
-})();
+export const collections = { artists, faqs, siteInfo };
