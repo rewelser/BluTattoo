@@ -1,3 +1,4 @@
+# Uncomment for local editing without GitHub:
 # local_backend: true
 
 backend:
@@ -28,6 +29,8 @@ collections:
     folder: "src/content/artists"
     create: true
     slug: "{{slug}}"
+    media_folder: "public/uploads/artists"
+    public_folder: "/uploads/artists"
     fields:
       - { name: title, label: Name, widget: string }
       - { name: order, label: Order, widget: number, default: 999 }
@@ -51,6 +54,9 @@ collections:
       - name: "main"
         label: "Main"
         file: "src/content/siteInfo/main.json"
+        # If you ever add hero images/logos for site info, you can uncomment below:
+        # media_folder: "public/uploads/site"
+        # public_folder: "/uploads/site"
         fields:
           - { name: address, label: Address, widget: text }
           - { name: phone, label: Phone, widget: string, required: false }

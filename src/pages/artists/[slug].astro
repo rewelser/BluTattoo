@@ -4,6 +4,8 @@ import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 
+const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
+
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
   let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -25,8 +27,14 @@ const { Content } = await render(entry);
   <article class="mx-auto max-w-3xl space-y-6">
     <header class="space-y-2 flex items-center gap-4">
 
-      {entry.data.photo && (
+      <!-- {entry.data.photo && (
         <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
+      )} -->
+
+      {entry.data.photo && (
+        isAsset(entry.data.photo)
+          ? <Image src={entry.data.photo as any} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
+          : <img src={entry.data.photo as string} alt={`Portrait of ${entry.data.title}`} width="200" height="200" class="rounded-full" loading="lazy" decoding="async" />
       )}
 
       <div>
@@ -62,7 +70,7 @@ const { Content } = await render(entry);
       </div>
     </header>
 
-    {entry.data.images?.length && (
+    <!-- {entry.data.images?.length && (
       <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {entry.data.images.map((img) => (
           <figure class="overflow-hidden rounded">
@@ -78,7 +86,20 @@ const { Content } = await render(entry);
           </figure>
         ))}
       </section>
-    )}
+    )} -->
+
+    {entry.data.images?.length && (
+      <section class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {entry.data.images.map((img) => (
+          <figure class="overflow-hidden rounded">
+            {isAsset(img.src)
+              ? <Image src={img.src as any} alt={img.alt ?? ""} width={800} height={600} class="h-full w-full object-cover" />
+              : <img src={img.src as string} alt={img.alt ?? ""} loading="lazy" decoding="async" class="h-full w-full object-cover" />
+            }
+          </figure>
+        ))}
+      </section>
+    )}    
 
     {/* Preferred: Square embed if present */}
     {entry.data.square && (

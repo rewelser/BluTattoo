@@ -1,96 +1,86 @@
----
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { Image } from "astro:assets";
-import { render, getCollection, type CollectionEntry } from "astro:content";
-import SquareAppointments from "../../components/SquareAppointments.astro";
+# Uncomment for local editing without GitHub:
+# local_backend: true
 
-export async function getStaticPaths() {
-  let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
-  artists = artists.sort((a, b) =>
-    (a.data.order ?? 999) - (b.data.order ?? 999) || a.data.title.localeCompare(b.data.title)
-  );
-  return artists.map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry }
-  }));
-}
+backend:
+  name: github
+  repo: rewelser/BluTattoo
+  branch: main
+  site_domain: blu-tattoo.vercel.app
+  base_url: https://blu-tattoo.vercel.app
+  auth_endpoint: oauth
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
----
+# Global media settings (Decap writes files here and stores URLs from public_folder)
+media_folder: "public/uploads"
+public_folder: "/uploads"
 
-<BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
-  <article class="mx-auto max-w-3xl space-y-6">
-    <header class="space-y-2 flex items-center gap-4">
-      {entry.data.photo && (
-        <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
-      )}
-      <div>
-        <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-        {entry.data.styles?.length && (
-          <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
-        )}
-        {entry.data.instagram && (
-          <p>
-            <a href={entry.data.instagram} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-indigo-600 hover:underline">
-              <!-- IG glyph -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                   fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-              </svg>
-              Instagram
-            </a>
-          </p>
-        )}
-        {entry.data.bio && (
-          <section>
-            <h2 class="sr-only">Bio</h2>
-            <p class="whitespace-pre-line">{entry.data.bio}</p>
-          </section>
-        )}
-      </div>
-    </header>
+# Optional: use PR-based edits instead of direct-to-main
+# publish_mode: editorial_workflow
 
-    {entry.data.images?.length && (
-      <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {entry.data.images.map((img) => (
-          <figure class="overflow-hidden rounded">
-            <img
-              src={`${img.src}?w=800&auto=format`}
-              srcset={`${img.src}?w=400 400w, ${img.src}?w=800 800w, ${img.src}?w=1200 1200w`}
-              sizes="(max-width: 768px) 50vw, 33vw"
-              alt={img.alt ?? ""}
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
-          </figure>
-        ))}
-      </section>
-    )}
+collections:
+  - name: "faqs"
+    label: "FAQs"
+    folder: "src/content/faqs"
+    format: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: q, label: Question, widget: string }
+      - { name: a, label: Answer, widget: text }
+      - { name: sort, label: Sort, widget: number, required: false }
 
-    {/* Preferred: Square embed if present */}
-    {entry.data.square && (
-      <SquareAppointments
-        merchantSlug={entry.data.square.merchantSlug}
-        locationSlug={entry.data.square.locationSlug}
-        label={entry.data.square.label}
-        className="mt-2"
-      />
-    )}
+  - name: "artists"
+    label: "Artists"
+    folder: "src/content/artists"
+    create: true
+    slug: "{{slug}}"
 
-    {/* Fallback: a plain external booking link */}
-    {!entry.data.square && entry.data.booking_link && (
-      <p>
-        <a href={entry.data.booking_link} target="_blank" rel="noopener noreferrer"
-          class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-          Book with {entry.data.title}
-        </a>
-      </p>
-    )}
+    # Store artist images under /uploads/artists (nice organization)
+    media_folder: "public/uploads/artists"
+    public_folder: "/uploads/artists"
 
-    <section class="prose max-w-none">
-      <Content />
-    </section>
-  </article>
-</BaseLayout>
+    fields:
+      - { name: title, label: Name, widget: string }
+      - { name: order, label: Order, widget: number, default: 999 }
+      - { name: photo, label: Photo, widget: image, required: false }
+      - { name: styles, label: Styles, widget: list, required: false }
+      - { name: instagram, label: Instagram URL, widget: string, required: false }
+
+      - label: Portfolio Images
+        name: images
+        widget: list
+        required: false
+        fields:
+          - { name: src, label: Image, widget: image }
+          - { name: alt, label: Alt text, widget: string, required: false }
+
+      - { name: bio, label: Short Bio, widget: text, required: false }
+      - { name: booking_link, label: Booking URL, widget: string, required: false }
+      - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
+
+  - name: "siteInfo"
+    label: "Site Info"
+    files:
+      - name: "main"
+        label: "Main"
+        file: "src/content/siteInfo/main.json"
+        # If you ever add hero images/logos for site info, you can uncomment below:
+        # media_folder: "public/uploads/site"
+        # public_folder: "/uploads/site"
+        fields:
+          - { name: address, label: Address, widget: text }
+          - { name: phone, label: Phone, widget: string, required: false }
+          - label: Hours
+            name: hours
+            widget: list
+            required: false
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: value, label: Value, widget: string }
+          - label: Promo Banner
+            name: promoBanner
+            widget: object
+            required: false
+            fields:
+              - { name: enabled, label: Enabled, widget: boolean, default: false }
+              - { name: text, label: Text, widget: string }
+              - { name: url, label: Link URL, widget: string, required: false }

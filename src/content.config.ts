@@ -1,18 +1,20 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
 
+const imageOrString = (image: any) => z.union([image(), z.string()]);
+
 const artists = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
   schema:  ({ image }) => z.object({
     title: z.string(),
     order: z.number().default(999),    // ← add this
-    photo: image().optional(),
+    photo: imageOrString(image).optional(),
     styles: z.array(z.string()).optional(),
     instagram: z.string().url().optional(),
     images: z
       .array(
         z.object({
-          src: z.string(),
+          src: imageOrString(image),
           alt: z.string().optional()
         })
       )
