@@ -1,14 +1,16 @@
 ---
-title: "Sierra"
-order: 2
+title: Sierra
+order: 3
 photo: ../artist_portraits/sierra_headshot.jpg
-styles: ["flowers", "guts"]
-instagram: "https://www.instagram.com/ztheghost.ink/"
+styles:
+  - flowers
+  - guts
+instagram: https://www.instagram.com/ztheghost.ink/
 images:
-  - src: "https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg"
-    alt: "giant flower"
-  - src: "https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg"
-    alt: "intestine"
+  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
+    alt: giant flower
+  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg
+    alt: intestine
 bio: |
   Sierra makes blood, guts, and flowers.
 ---
