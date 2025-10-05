@@ -1,6 +1,6 @@
 ---
 title: Zoe
-order: 3
+order: 4
 photo: /uploads/artists/zirk1.jpeg
 styles:
   - stinktoos
