@@ -2,7 +2,7 @@
 
 backend:
   name: github
-  repo: your-github-user/your-repo         # ← change me
+  repo: rewelser/BluTattoo         # ← change me
   branch: main                             # ← change if not main
   site_domain: yourdomain.com              # ← your production domain (no protocol)
   base_url: https://yourdomain.com         # ← your production URL (with protocol)

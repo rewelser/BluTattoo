@@ -14,7 +14,7 @@ images:
   - src: "https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg"
     alt: "Fine line floral"
 bio: |
-  Zoe focuses on bold shartwork and delicate florals. 8+ years experience.
+  Zoe focuses on bold shartwork and delicate florals. 8+ years experience. vercel-github connection test
 
   # New: Square Appointments
 square:
