@@ -15,6 +15,12 @@ images:
     alt: "Fine line floral"
 bio: |
   Zoe focuses on bold shartwork and delicate florals. 8+ years experience.
+
+  # New: Square Appointments
+square:
+  merchantSlug: "jhvsos6zvct0ls"
+  locationSlug: "L6GQX5D0KDS8B"
+  label: "Book an appointment"
 ---
 
 You can put optional longer bio content here if you want to render it on the artist page later.

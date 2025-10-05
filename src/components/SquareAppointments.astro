@@ -1,0 +1,31 @@
+---
+// src/components/SquareAppointments.astro
+export interface Props {
+  merchantSlug: string;
+  locationSlug: string;
+  label?: string;
+  className?: string;
+}
+
+const { merchantSlug, locationSlug, label = "Book an appointment", className = "" } = Astro.props;
+const base = `https://app.squareup.com/appointments/buyer/widget/${merchantSlug}/${locationSlug}`;
+const scriptId = `square-widget-${merchantSlug}-${locationSlug}`;
+---
+
+<div class="my-4">
+  <a
+    href={base}
+    target="_blank"
+    rel="noopener noreferrer"
+    class={`inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 ${className}`}
+  >
+    {label}
+  </a>
+
+  <!-- Load the widget script once; harmless if user just clicks through -->
+  <script
+    id={scriptId}
+    src={`${base}.js`}
+    defer
+  ></script>
+</div>

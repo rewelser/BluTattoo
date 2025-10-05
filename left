@@ -1,52 +1,96 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from 'astro/loaders';
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import { render, getCollection, type CollectionEntry } from "astro:content";
 
-const artists = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
-  schema:  ({ image }) => z.object({
-    title: z.string(),
-    order: z.number().default(999),    // ← add this
-    photo: image().optional(),
-    styles: z.array(z.string()).optional(),
-    instagram: z.string().url().optional(),
-    images: z
-      .array(
-        z.object({
-          src: z.string(),
-          alt: z.string().optional()
-        })
-      )
-      .optional(),
-    bio: z.string().optional(),
-    booking_link: z.string().url().optional()
-  })
-});
+export async function getStaticPaths() {
+  // const artists = await getCollection("artists");
+  let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
+  artists = artists.sort((a, b) =>
+    a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+  );
+  return artists.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry }
+  }));
+}
 
-// Data collection for 1-file-per-FAQ item
-const faqs = defineCollection({
-  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/faqs" }),
-  schema: z.object({
-    q: z.string(),
-    a: z.string(),
-    sort: z.number().optional(),
-  }),
-});
+const { entry } = Astro.props;
 
-// Site-wide editable info (address, hours, promo banner)
-const siteInfo = defineCollection({
-  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
-  schema: z.object({
-    address: z.string(),
-    phone: z.string().optional(),
-    hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-    promoBanner: z
-      .object({
-        enabled: z.boolean(),
-        text: z.string(),
-        url: z.string().optional(),
-      })
-      .optional(),
-  }),
-});
+// Render the Markdown *body* (the part after the frontmatter)
+const { Content } = await render(entry);
+---
+<BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
+  <article class="mx-auto max-w-3xl space-y-6">
+    <header class="space-y-2 flex items-center gap-4">
 
-export const collections = { artists, faqs, siteInfo };
+      {entry.data.photo && (
+        <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
+      )}
+
+      <div>
+        <h1 class="text-3xl font-bold">{entry.data.title}</h1>
+        {entry.data.styles?.length && (
+          <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
+        )}
+  
+        {entry.data.instagram && (
+          <p>
+            <a
+              href={entry.data.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
+            >
+              <!-- tiny IG glyph -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+              </svg>
+              Instagram
+            </a>
+          </p>
+        )}
+    
+        {entry.data.bio && (
+          <section>
+            <h2 class="sr-only">Bio</h2>
+            <p class="whitespace-pre-line">{entry.data.bio}</p>
+          </section>
+        )}
+      </div>
+    </header>
+
+    {entry.data.images?.length && (
+      <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {entry.data.images.map((img) => (
+          <figure class="overflow-hidden rounded">
+            <img
+              src={`${img.src}?w=800&auto=format`}
+              srcset={`${img.src}?w=400 400w, ${img.src}?w=800 800w, ${img.src}?w=1200 1200w`}
+              sizes="(max-width: 768px) 50vw, 33vw"
+              alt={img.alt ?? ""}
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+        ))}
+      </section>
+    )}
+
+    {entry.data.booking_link && (
+      <p>
+        <a href={entry.data.booking_link} target="_blank" rel="noopener noreferrer"
+          class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+          Book with {entry.data.title}
+        </a>
+      </p>
+    )}
+
+    {/* Markdown body content (the part after the --- in the file) */}
+    <section class="prose max-w-none">
+      <Content />
+    </section>
+  </article>
+</BaseLayout>

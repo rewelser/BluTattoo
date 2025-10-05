@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
+import SquareAppointments from "../../components/SquareAppointments.astro";
 
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
@@ -79,7 +80,18 @@ const { Content } = await render(entry);
       </section>
     )}
 
-    {entry.data.booking_link && (
+    {/* Preferred: Square embed if present */}
+    {entry.data.square && (
+      <SquareAppointments
+        merchantSlug={entry.data.square.merchantSlug}
+        locationSlug={entry.data.square.locationSlug}
+        label={entry.data.square.label}
+        className="mt-2"
+      />
+    )}
+
+    {/* Fallback: a plain external booking link */}
+    {!entry.data.square && entry.data.booking_link && (
       <p>
         <a href={entry.data.booking_link} target="_blank" rel="noopener noreferrer"
           class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
