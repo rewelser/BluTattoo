@@ -1,7 +1,7 @@
 ---
 title: Zoe
 order: 4
-photo: /uploads/artists/zirk1.jpeg
+photo: ""
 styles:
   - stinktoos
   - swine line
