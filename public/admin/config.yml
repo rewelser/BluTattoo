@@ -4,8 +4,8 @@ backend:
   name: github
   repo: rewelser/BluTattoo         # ← change me
   branch: main                             # ← change if not main
-  site_domain: yourdomain.com              # ← your production domain (no protocol)
-  base_url: https://yourdomain.com         # ← your production URL (with protocol)
+  site_domain: blu-tattoo.vercel.app              # ← your production domain (no protocol)
+  base_url: https://blu-tattoo.vercel.app         # ← your production URL (with protocol)
   auth_endpoint: oauth                     # ← provided by the integration
 
 media_folder: "public/uploads"

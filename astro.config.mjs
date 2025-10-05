@@ -5,11 +5,15 @@ import tailwindcss from '@tailwindcss/vite';
 
 import vercel from '@astrojs/vercel';
 
+import decapCmsOauth from "astro-decap-cms-oauth";
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
+
+  integrations: [decapCmsOauth()],
 
   adapter: vercel(),
 });
