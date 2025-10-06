@@ -1,7 +1,7 @@
 ---
 title: Sierra
 order: 3
-photo: ../artist_portraits/sierra_headshot.jpg
+photo: /uploads/artists/sierra_headshot.jpg
 styles:
   - flowers
   - guts

@@ -1,7 +1,8 @@
 ---
 title: Zoe
 order: 4
-photo: ""
+photo: "/uploads/artists/zirk1.jpeg"
+# photo: "../artist_portraits/zoe_headshot.png"
 styles:
   - stinktoos
   - swine line

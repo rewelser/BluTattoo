@@ -31,10 +31,14 @@ const { Content } = await render(entry);
         <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
       )} -->
 
-      {entry.data.photo && (
+      <!-- {entry.data.photo && (
         isAsset(entry.data.photo)
           ? <Image src={entry.data.photo as any} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
           : <img src={entry.data.photo as string} alt={`Portrait of ${entry.data.title}`} width="200" height="200" class="rounded-full" loading="lazy" decoding="async" />
+      )} -->
+
+      {entry.data.photo && (
+        <img src={entry.data.photo as string} alt={`Portrait of ${entry.data.title}`} width="200" height="200" class="rounded-full" loading="lazy" decoding="async" />
       )}
 
       <div>

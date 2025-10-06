@@ -1,7 +1,14 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import logoSvg from "../assets/misc_images/blutattoo-trimmed.svg?raw"; // raw markup string
+// import logoSvg from "../assets/misc_images/blutattoo-trimmed.svg?raw"; // raw markup string--use if svg stored in relative path
 const logoColor = "text-orange-100 md:hover:text-indigo-400";
+import fs from "node:fs";
+// Read the SVG from /public so Decap can also use the same asset path
+const logoSvg = fs.readFileSync(
+  // new URL is reliable regardless of this file’s folder depth
+  new URL("../../public/uploads/misc_images/blutattoo-trimmed.svg", import.meta.url),
+  "utf8"
+);
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];

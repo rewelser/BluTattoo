@@ -1,7 +1,7 @@
 ---
 title: "Lara"
 order: 1
-photo: ../artist_portraits/lara_headshot.jpg
+photo: /uploads/artists/lara_headshot.jpg
 styles: ["blackwork", "fine line"]
 instagram: "https://instagram.com/laraink"
 images:

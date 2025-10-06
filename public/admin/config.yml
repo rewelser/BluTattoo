@@ -29,7 +29,7 @@ collections:
     folder: "src/content/artists"
     create: true
     slug: "{{slug}}"
-    media_folder: "public/uploads/artists"
+    media_folder: "/public/uploads/artists"
     public_folder: "/uploads/artists"
     fields:
       - { name: title, label: Name, widget: string }
@@ -48,6 +48,35 @@ collections:
       - { name: booking_link, label: Booking URL, widget: string, required: false }
       - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
 
+  - name: "sitewidePics"
+    label: "Sitewide Pics"
+    files:
+      - name: "header"
+        label: "Header"
+        file: "src/components/Header.astro"
+
+      - name: "baseLayout"
+        label: "Base Layout"
+        file: "src/layouts/BaseLayout.astro"
+
+        media_folder: "/public/uploads/misc_images"
+        public_folder: "/uploads/misc_images"
+
+        # NEW: Background image (JPG/PNG/etc)
+      - name: backgroundImage
+        label: Background Image
+        widget: image
+        required: false
+        hint: "Large background image used sitewide."
+
+      # NEW: Site logo (SVG recommended; image widget generally accepts SVGs.
+      # If host blocks SVG uploads, switch widget to 'file'.)
+      - name: siteLogo
+        label: Site Logo (SVG)
+        widget: image
+        required: false
+        hint: "Upload your SVG logo (or PNG)."
+
   - name: "siteInfo"
     label: "Site Info"
     files:
@@ -55,8 +84,8 @@ collections:
         label: "Main"
         file: "src/content/siteInfo/main.json"
         # If you ever add hero images/logos for site info, you can uncomment below:
-        # media_folder: "public/uploads/site"
-        # public_folder: "/uploads/site"
+        media_folder: "/public/uploads/misc_images"
+        public_folder: "/uploads/misc_images"
         fields:
           - { name: address, label: Address, widget: text }
           - { name: phone, label: Phone, widget: string, required: false }
