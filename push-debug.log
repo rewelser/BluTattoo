@@ -1,0 +1,228 @@
+01:12:27.403946 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/bin/git
+01:12:27.404322 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/bin
+01:12:27.405675 git.c:460               trace: built-in: git push
+01:12:27.406019 run-command.c:655       trace: run_command: GIT_DIR=.git git remote-https origin https://github.com/rewelser/BluTattoo.git
+01:12:27.409459 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git
+01:12:27.409805 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:27.410304 git.c:750               trace: exec: git-remote-https origin https://github.com/rewelser/BluTattoo.git
+01:12:27.410312 run-command.c:655       trace: run_command: git-remote-https origin https://github.com/rewelser/BluTattoo.git
+01:12:27.413515 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git-remote-https
+01:12:27.413856 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:27.419737 http.c:699              == Info: Couldn't find host github.com in the .netrc file; using defaults
+01:12:27.421596 http.c:699              == Info:   Trying 140.82.112.3:443...
+01:12:27.421936 http.c:699              == Info: Connected to github.com (127.0.0.1) port 443
+01:12:27.421979 http.c:699              == Info: ALPN: curl offers h2,http/1.1
+01:12:27.422126 http.c:699              == Info: (304) (OUT), TLS handshake, Client hello (1):
+01:12:27.427225 http.c:699              == Info:  CAfile: /etc/ssl/cert.pem
+01:12:27.427237 http.c:699              == Info:  CApath: none
+01:12:29.205821 http.c:699              == Info: (304) (IN), TLS handshake, Server hello (2):
+01:12:29.206141 http.c:699              == Info: (304) (IN), TLS handshake, Unknown (8):
+01:12:29.207202 http.c:699              == Info: (304) (IN), TLS handshake, Certificate (11):
+01:12:29.209891 http.c:699              == Info: (304) (IN), TLS handshake, CERT verify (15):
+01:12:29.210173 http.c:699              == Info: (304) (IN), TLS handshake, Finished (20):
+01:12:29.210252 http.c:699              == Info: (304) (OUT), TLS handshake, Finished (20):
+01:12:29.210268 http.c:699              == Info: SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256
+01:12:29.210273 http.c:699              == Info: ALPN: server accepted h2
+01:12:29.210279 http.c:699              == Info: Server certificate:
+01:12:29.210288 http.c:699              == Info:  subject: CN=github.com
+01:12:29.210294 http.c:699              == Info:  start date: Feb  5 00:00:00 2025 GMT
+01:12:29.210297 http.c:699              == Info:  expire date: Feb  5 23:59:59 2026 GMT
+01:12:29.210307 http.c:699              == Info:  subjectAltName: host "github.com" matched cert's "github.com"
+01:12:29.210321 http.c:699              == Info:  issuer: C=GB; ST=Greater Manchester; L=Salford; O=Sectigo Limited; CN=Sectigo ECC Domain Validation Secure Server CA
+01:12:29.210324 http.c:699              == Info:  SSL certificate verify ok.
+01:12:29.210387 http.c:699              == Info: using HTTP/2
+01:12:29.210476 http.c:699              == Info: [HTTP/2] [1] OPENED stream for https://github.com/rewelser/BluTattoo.git/info/refs?service=git-receive-pack
+01:12:29.210485 http.c:699              == Info: [HTTP/2] [1] [:method: GET]
+01:12:29.210503 http.c:699              == Info: [HTTP/2] [1] [:scheme: https]
+01:12:29.210508 http.c:699              == Info: [HTTP/2] [1] [:authority: github.com]
+01:12:29.210512 http.c:699              == Info: [HTTP/2] [1] [:path: /rewelser/BluTattoo.git/info/refs?service=git-receive-pack]
+01:12:29.210536 http.c:699              == Info: [HTTP/2] [1] [user-agent: git/2.39.3 (Apple Git-146)]
+01:12:29.210540 http.c:699              == Info: [HTTP/2] [1] [accept: */*]
+01:12:29.210542 http.c:699              == Info: [HTTP/2] [1] [accept-encoding: deflate, gzip]
+01:12:29.210545 http.c:699              == Info: [HTTP/2] [1] [pragma: no-cache]
+01:12:29.210580 http.c:646              => Send header, 0000000194 bytes (0x000000c2)
+01:12:29.210586 http.c:658              => Send header: GET /rewelser/BluTattoo.git/info/refs?service=git-receive-pack HTTP/2
+01:12:29.210589 http.c:658              => Send header: Host: github.com
+01:12:29.210591 http.c:658              => Send header: User-Agent: git/2.39.3 (Apple Git-146)
+01:12:29.210593 http.c:658              => Send header: Accept: */*
+01:12:29.210595 http.c:658              => Send header: Accept-Encoding: deflate, gzip
+01:12:29.210599 http.c:658              => Send header: Pragma: no-cache
+01:12:29.210601 http.c:658              => Send header:
+01:12:29.997897 http.c:646              <= Recv header, 0000000013 bytes (0x0000000d)
+01:12:29.997947 http.c:658              <= Recv header: HTTP/2 401
+01:12:29.997955 http.c:646              <= Recv header, 0000000026 bytes (0x0000001a)
+01:12:29.997958 http.c:658              <= Recv header: server: GitHub-Babel/3.0
+01:12:29.997962 http.c:646              <= Recv header, 0000000054 bytes (0x00000036)
+01:12:29.997965 http.c:658              <= Recv header: content-security-policy: default-src 'none'; sandbox
+01:12:29.997970 http.c:646              <= Recv header, 0000000041 bytes (0x00000029)
+01:12:29.997973 http.c:658              <= Recv header: content-type: text/plain; charset=UTF-8
+01:12:29.997980 http.c:646              <= Recv header, 0000000040 bytes (0x00000028)
+01:12:29.997982 http.c:658              <= Recv header: www-authenticate: Basic realm="GitHub"
+01:12:29.997988 http.c:646              <= Recv header, 0000000020 bytes (0x00000014)
+01:12:29.997991 http.c:658              <= Recv header: content-length: 26
+01:12:29.997994 http.c:646              <= Recv header, 0000000037 bytes (0x00000025)
+01:12:29.997997 http.c:658              <= Recv header: date: Mon, 06 Oct 2025 05:12:29 GMT
+01:12:29.998162 http.c:646              <= Recv header, 0000000059 bytes (0x0000003b)
+01:12:29.998168 http.c:658              <= Recv header: x-github-request-id: FB3B:3E4FA4:1034F0E:14A0FC3:68E34FBC
+01:12:29.998172 http.c:646              <= Recv header, 0000000023 bytes (0x00000017)
+01:12:29.998175 http.c:658              <= Recv header: x-frame-options: DENY
+01:12:29.998179 http.c:646              <= Recv header, 0000000073 bytes (0x00000049)
+01:12:29.998182 http.c:658              <= Recv header: strict-transport-security: max-age=31536000; includeSubDomains; preload
+01:12:29.998188 http.c:646              <= Recv header, 0000000002 bytes (0x00000002)
+01:12:29.998214 http.c:658              <= Recv header:
+01:12:29.998244 http.c:699              == Info: Connection #0 to host github.com left intact
+01:12:29.998437 run-command.c:655       trace: run_command: 'git credential-osxkeychain get'
+01:12:30.014216 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git
+01:12:30.015203 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:30.016097 git.c:750               trace: exec: git-credential-osxkeychain get
+01:12:30.016120 run-command.c:655       trace: run_command: git-credential-osxkeychain get
+01:12:30.046135 http.c:699              == Info: Found bundle for host: 0x119f04840 [can multiplex]
+01:12:30.046157 http.c:699              == Info: Re-using existing connection with host github.com
+01:12:30.046177 http.c:699              == Info: Server auth using Basic with user '11875878'
+01:12:30.046194 http.c:699              == Info: [HTTP/2] [3] OPENED stream for https://github.com/rewelser/BluTattoo.git/info/refs?service=git-receive-pack
+01:12:30.046197 http.c:699              == Info: [HTTP/2] [3] [:method: GET]
+01:12:30.046198 http.c:699              == Info: [HTTP/2] [3] [:scheme: https]
+01:12:30.046200 http.c:699              == Info: [HTTP/2] [3] [:authority: github.com]
+01:12:30.046202 http.c:699              == Info: [HTTP/2] [3] [:path: /rewelser/BluTattoo.git/info/refs?service=git-receive-pack]
+01:12:30.046204 http.c:699              == Info: [HTTP/2] [3] [authorization: Basic MTE4NzU4Nzg6Z2hvX296d29HQll6eXJ3czF3blFIcUpZaVNKV1NUUDJYQTAwa01Ebw==]
+01:12:30.046206 http.c:699              == Info: [HTTP/2] [3] [user-agent: git/2.39.3 (Apple Git-146)]
+01:12:30.046209 http.c:699              == Info: [HTTP/2] [3] [accept: */*]
+01:12:30.046210 http.c:699              == Info: [HTTP/2] [3] [accept-encoding: deflate, gzip]
+01:12:30.046212 http.c:699              == Info: [HTTP/2] [3] [pragma: no-cache]
+01:12:30.046277 http.c:646              => Send header, 0000000285 bytes (0x0000011d)
+01:12:30.046281 http.c:658              => Send header: GET /rewelser/BluTattoo.git/info/refs?service=git-receive-pack HTTP/2
+01:12:30.046283 http.c:658              => Send header: Host: github.com
+01:12:30.046284 http.c:658              => Send header: Authorization: Basic <redacted>
+01:12:30.046286 http.c:658              => Send header: User-Agent: git/2.39.3 (Apple Git-146)
+01:12:30.046287 http.c:658              => Send header: Accept: */*
+01:12:30.046289 http.c:658              => Send header: Accept-Encoding: deflate, gzip
+01:12:30.046290 http.c:658              => Send header: Pragma: no-cache
+01:12:30.046292 http.c:658              => Send header:
+01:12:30.329359 http.c:646              <= Recv header, 0000000013 bytes (0x0000000d)
+01:12:30.329388 http.c:658              <= Recv header: HTTP/2 200
+01:12:30.329395 http.c:646              <= Recv header, 0000000026 bytes (0x0000001a)
+01:12:30.329398 http.c:658              <= Recv header: server: GitHub-Babel/3.0
+01:12:30.329403 http.c:646              <= Recv header, 0000000060 bytes (0x0000003c)
+01:12:30.329407 http.c:658              <= Recv header: content-type: application/x-git-receive-pack-advertisement
+01:12:30.329412 http.c:646              <= Recv header, 0000000054 bytes (0x00000036)
+01:12:30.329415 http.c:658              <= Recv header: content-security-policy: default-src 'none'; sandbox
+01:12:30.329419 http.c:646              <= Recv header, 0000000040 bytes (0x00000028)
+01:12:30.329422 http.c:658              <= Recv header: expires: Fri, 01 Jan 1980 00:00:00 GMT
+01:12:30.329426 http.c:646              <= Recv header, 0000000018 bytes (0x00000012)
+01:12:30.329429 http.c:658              <= Recv header: pragma: no-cache
+01:12:30.329433 http.c:646              <= Recv header, 0000000053 bytes (0x00000035)
+01:12:30.329436 http.c:658              <= Recv header: cache-control: no-cache, max-age=0, must-revalidate
+01:12:30.329440 http.c:646              <= Recv header, 0000000023 bytes (0x00000017)
+01:12:30.329444 http.c:658              <= Recv header: vary: Accept-Encoding
+01:12:30.329447 http.c:646              <= Recv header, 0000000037 bytes (0x00000025)
+01:12:30.329450 http.c:658              <= Recv header: date: Mon, 06 Oct 2025 05:12:30 GMT
+01:12:30.329454 http.c:646              <= Recv header, 0000000059 bytes (0x0000003b)
+01:12:30.329457 http.c:658              <= Recv header: x-github-request-id: FB3B:3E4FA4:103513C:14A129E:68E34FBD
+01:12:30.329461 http.c:646              <= Recv header, 0000000023 bytes (0x00000017)
+01:12:30.329464 http.c:658              <= Recv header: x-frame-options: DENY
+01:12:30.329468 http.c:646              <= Recv header, 0000000073 bytes (0x00000049)
+01:12:30.329471 http.c:658              <= Recv header: strict-transport-security: max-age=31536000; includeSubDomains; preload
+01:12:30.329477 http.c:646              <= Recv header, 0000000002 bytes (0x00000002)
+01:12:30.329480 http.c:658              <= Recv header:
+01:12:30.331580 http.c:699              == Info: Connection #0 to host github.com left intact
+01:12:30.331627 run-command.c:655       trace: run_command: 'git credential-osxkeychain store'
+01:12:30.346049 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git
+01:12:30.346946 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:30.347722 git.c:750               trace: exec: git-credential-osxkeychain store
+01:12:30.347739 run-command.c:655       trace: run_command: git-credential-osxkeychain store
+01:12:30.380550 pkt-line.c:80           packet:          git< # service=git-receive-pack
+01:12:30.380568 pkt-line.c:80           packet:          git< 0000
+01:12:30.380571 pkt-line.c:80           packet:          git< 47091bab737b03071988edc3a69a24bc910fc4c4 refs/heads/main\0report-status report-status-v2 delete-refs side-band-64k ofs-delta atomic object-format=sha1 quiet agent=github/spokes-receive-pack-acac8763c60f636c44baaf5c3887895cf5f55c30 push-options
+01:12:30.380578 pkt-line.c:80           packet:          git< 0000
+01:12:30.381107 pkt-line.c:80           packet:          git> refs/heads/main:refs/heads/main
+01:12:30.381109 pkt-line.c:80           packet:          git> 0000
+01:12:30.381119 run-command.c:655       trace: run_command: git send-pack --stateless-rpc --helper-status --thin --no-progress https://github.com/rewelser/BluTattoo.git/ --stdin
+01:12:30.384665 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git
+01:12:30.385005 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:30.385448 git.c:460               trace: built-in: git send-pack --stateless-rpc --helper-status --thin --no-progress https://github.com/rewelser/BluTattoo.git/ --stdin
+01:12:30.385553 pkt-line.c:80           packet:          git< refs/heads/main:refs/heads/main
+01:12:30.385557 pkt-line.c:80           packet:          git< 0000
+01:12:30.385561 pkt-line.c:80           packet:          git< 47091bab737b03071988edc3a69a24bc910fc4c4 refs/heads/main\0report-status report-status-v2 delete-refs side-band-64k ofs-delta atomic object-format=sha1 quiet agent=github/spokes-receive-pack-acac8763c60f636c44baaf5c3887895cf5f55c30 push-options
+01:12:30.385566 pkt-line.c:80           packet:          git< 0000
+01:12:30.386823 pkt-line.c:80           packet:          git> 47091bab737b03071988edc3a69a24bc910fc4c4 97a44b570e36d438f60f0554c98521d5552ce6de refs/heads/main\0 report-status-v2 side-band-64k quiet object-format=sha1 agent=git/2.39.3.(Apple.Git-146)
+01:12:30.386831 pkt-line.c:80           packet:          git> 0000
+01:12:30.386873 run-command.c:655       trace: run_command: git pack-objects --all-progress-implied --revs --stdout --thin --delta-base-offset -q
+01:12:30.386875 pkt-line.c:80           packet:          git< 00bf47091bab737b03071988edc3a69a24bc910fc4c4 97a44b570e36d438f60f0554c98521d5552ce6de refs/heads/main\0 report-status-v2 side-band-64k quiet object-format=sha1 agent=git/2.39.3.(Apple.Git-146)0000
+01:12:30.390210 exec-cmd.c:139          trace: resolved executable path from Darwin stack: /Library/Developer/CommandLineTools/usr/libexec/git-core/git
+01:12:30.390591 exec-cmd.c:238          trace: resolved executable dir: /Library/Developer/CommandLineTools/usr/libexec/git-core
+01:12:30.391066 git.c:460               trace: built-in: git pack-objects --all-progress-implied --revs --stdout --thin --delta-base-offset -q
+01:12:30.409774 pkt-line.c:80           packet:          git< PACK ...
+01:12:30.413171 http.c:699              == Info: Found bundle for host: 0x119f04840 [can multiplex]
+01:12:30.413182 http.c:699              == Info: Re-using existing connection with host github.com
+01:12:30.413189 http.c:699              == Info: Server auth using Basic with user '11875878'
+01:12:30.413202 http.c:699              == Info: [HTTP/2] [5] OPENED stream for https://github.com/rewelser/BluTattoo.git/git-receive-pack
+01:12:30.413205 http.c:699              == Info: [HTTP/2] [5] [:method: POST]
+01:12:30.413206 http.c:699              == Info: [HTTP/2] [5] [:scheme: https]
+01:12:30.413207 http.c:699              == Info: [HTTP/2] [5] [:authority: github.com]
+01:12:30.413209 http.c:699              == Info: [HTTP/2] [5] [:path: /rewelser/BluTattoo.git/git-receive-pack]
+01:12:30.413210 http.c:699              == Info: [HTTP/2] [5] [authorization: Basic MTE4NzU4Nzg6Z2hvX296d29HQll6eXJ3czF3blFIcUpZaVNKV1NUUDJYQTAwa01Ebw==]
+01:12:30.413212 http.c:699              == Info: [HTTP/2] [5] [user-agent: git/2.39.3 (Apple Git-146)]
+01:12:30.413213 http.c:699              == Info: [HTTP/2] [5] [content-type: application/x-git-receive-pack-request]
+01:12:30.413214 http.c:699              == Info: [HTTP/2] [5] [accept: application/x-git-receive-pack-result]
+01:12:30.413216 http.c:699              == Info: [HTTP/2] [5] [content-length: 4]
+01:12:30.413280 http.c:646              => Send header, 0000000325 bytes (0x00000145)
+01:12:30.413287 http.c:658              => Send header: POST /rewelser/BluTattoo.git/git-receive-pack HTTP/2
+01:12:30.413288 http.c:658              => Send header: Host: github.com
+01:12:30.413289 http.c:658              => Send header: Authorization: Basic <redacted>
+01:12:30.413290 http.c:658              => Send header: User-Agent: git/2.39.3 (Apple Git-146)
+01:12:30.413291 http.c:658              => Send header: Content-Type: application/x-git-receive-pack-request
+01:12:30.413292 http.c:658              => Send header: Accept: application/x-git-receive-pack-result
+01:12:30.413293 http.c:658              => Send header: Content-Length: 4
+01:12:30.413294 http.c:658              => Send header:
+01:12:30.523911 http.c:646              <= Recv header, 0000000013 bytes (0x0000000d)
+01:12:30.523931 http.c:658              <= Recv header: HTTP/2 200
+01:12:30.523935 http.c:646              <= Recv header, 0000000026 bytes (0x0000001a)
+01:12:30.523937 http.c:658              <= Recv header: server: GitHub-Babel/3.0
+01:12:30.523940 http.c:646              <= Recv header, 0000000053 bytes (0x00000035)
+01:12:30.523943 http.c:658              <= Recv header: content-type: application/x-git-receive-pack-result
+01:12:30.523946 http.c:646              <= Recv header, 0000000054 bytes (0x00000036)
+01:12:30.523948 http.c:658              <= Recv header: content-security-policy: default-src 'none'; sandbox
+01:12:30.523950 http.c:646              <= Recv header, 0000000040 bytes (0x00000028)
+01:12:30.523952 http.c:658              <= Recv header: expires: Fri, 01 Jan 1980 00:00:00 GMT
+01:12:30.523955 http.c:646              <= Recv header, 0000000018 bytes (0x00000012)
+01:12:30.523957 http.c:658              <= Recv header: pragma: no-cache
+01:12:30.523960 http.c:646              <= Recv header, 0000000053 bytes (0x00000035)
+01:12:30.523962 http.c:658              <= Recv header: cache-control: no-cache, max-age=0, must-revalidate
+01:12:30.523966 http.c:646              <= Recv header, 0000000023 bytes (0x00000017)
+01:12:30.523968 http.c:658              <= Recv header: vary: Accept-Encoding
+01:12:30.523971 http.c:646              <= Recv header, 0000000019 bytes (0x00000013)
+01:12:30.523973 http.c:658              <= Recv header: content-length: 0
+01:12:30.523976 http.c:646              <= Recv header, 0000000037 bytes (0x00000025)
+01:12:30.523978 http.c:658              <= Recv header: date: Mon, 06 Oct 2025 05:12:30 GMT
+01:12:30.523980 http.c:646              <= Recv header, 0000000059 bytes (0x0000003b)
+01:12:30.523982 http.c:658              <= Recv header: x-github-request-id: FB3B:3E4FA4:1035248:14A13EF:68E34FBE
+01:12:30.524001 http.c:646              <= Recv header, 0000000023 bytes (0x00000017)
+01:12:30.524003 http.c:658              <= Recv header: x-frame-options: DENY
+01:12:30.524005 http.c:646              <= Recv header, 0000000073 bytes (0x00000049)
+01:12:30.524007 http.c:658              <= Recv header: strict-transport-security: max-age=31536000; includeSubDomains; preload
+01:12:30.524011 http.c:646              <= Recv header, 0000000002 bytes (0x00000002)
+01:12:30.524012 http.c:658              <= Recv header:
+01:12:30.524025 http.c:699              == Info: Connection #0 to host github.com left intact
+01:12:30.524075 http.c:699              == Info: Found bundle for host: 0x119f04840 [can multiplex]
+01:12:30.524087 http.c:699              == Info: Re-using existing connection with host github.com
+01:12:30.524096 http.c:699              == Info: Server auth using Basic with user '11875878'
+01:12:30.524116 http.c:699              == Info: [HTTP/2] [7] OPENED stream for https://github.com/rewelser/BluTattoo.git/git-receive-pack
+01:12:30.524121 http.c:699              == Info: [HTTP/2] [7] [:method: POST]
+01:12:30.524123 http.c:699              == Info: [HTTP/2] [7] [:scheme: https]
+01:12:30.524126 http.c:699              == Info: [HTTP/2] [7] [:authority: github.com]
+01:12:30.524128 http.c:699              == Info: [HTTP/2] [7] [:path: /rewelser/BluTattoo.git/git-receive-pack]
+01:12:30.524131 http.c:699              == Info: [HTTP/2] [7] [authorization: Basic MTE4NzU4Nzg6Z2hvX296d29HQll6eXJ3czF3blFIcUpZaVNKV1NUUDJYQTAwa01Ebw==]
+01:12:30.524133 http.c:699              == Info: [HTTP/2] [7] [user-agent: git/2.39.3 (Apple Git-146)]
+01:12:30.524135 http.c:699              == Info: [HTTP/2] [7] [accept-encoding: deflate, gzip]
+01:12:30.524138 http.c:699              == Info: [HTTP/2] [7] [content-type: application/x-git-receive-pack-request]
+01:12:30.524140 http.c:699              == Info: [HTTP/2] [7] [accept: application/x-git-receive-pack-result]
+01:12:30.524185 http.c:646              => Send header, 0000000338 bytes (0x00000152)
+01:12:30.524190 http.c:658              => Send header: POST /rewelser/BluTattoo.git/git-receive-pack HTTP/2
+01:12:30.524192 http.c:658              => Send header: Host: github.com
+01:12:30.524194 http.c:658              => Send header: Authorization: Basic <redacted>
+01:12:30.524196 http.c:658              => Send header: User-Agent: git/2.39.3 (Apple Git-146)
+01:12:30.524200 http.c:658              => Send header: Accept-Encoding: deflate, gzip
+01:12:30.524201 http.c:658              => Send header: Content-Type: application/x-git-receive-pack-request
+01:12:30.524203 http.c:658              => Send header: Accept: application/x-git-receive-pack-result
+01:12:30.524205 http.c:658              => Send header:
+01:12:30.590701 pkt-line.c:80           packet:          git> 0000
