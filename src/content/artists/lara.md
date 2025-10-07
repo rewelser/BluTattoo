@@ -13,6 +13,9 @@ images:
     alt: Fine line floral
 bio: |
   Lara focuses on bold blackwork and delicate florals. 8+ years experience.
+square:
+  merchantSlug: qwertyu
+  locationSlug: QWERTYU
 ---
 
 You can put optional longer bio content here if you want to render it on the artist page later.
