@@ -46,22 +46,27 @@ collections:
           - { name: alt, label: Alt text, widget: string, required: false }
       - { name: bio, label: Short Bio, widget: text, required: false }
 
-      # NEW: Square Appointments embed settings
       - label: "Square Appointments"
         name: square
         widget: object
         required: false
         collapsed: true
-        hint: "If set, the artist page will render a Square Appointments embed."
+        hint: "Toggle on to show the Square Appointments embed on this artist's page."
         fields:
+          - name: enabled
+            label: Enabled
+            widget: boolean
+            default: false
           - name: merchantSlug
             label: Merchant Slug
             widget: string
+            required: false
             hint: 'From your Square embed snippet (e.g., "jhvsos6zvct0ls").'
             pattern: ['^[a-z0-9-]+$', "Use lowercase letters, numbers, and dashes."]
           - name: locationSlug
             label: Location Slug
             widget: string
+            required: false
             hint: 'From your Square embed snippet (e.g., "L6GQX5D0KDS8B").'
             pattern: ['^[A-Z0-9-]+$', "Use UPPERCASE letters, numbers, and dashes."]
           - name: label
