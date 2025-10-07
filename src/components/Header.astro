@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry, getEntry } from "astro:content";
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -11,6 +11,12 @@ artists = artists.sort((a, b) =>
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
   currentPath === href || (href !== "/" && currentPath.startsWith(href));
+
+// Load site branding (logo)
+const site = await getEntry('siteInfo', 'main');
+const logo =
+  site?.data.branding?.logo ??
+  "/uploads/misc_images/blutattoo-trimmed-light(orange100-fdecd8).svg";
 ---
 
 <!-- Top LOGO (desktop only, not sticky) -->
@@ -18,7 +24,7 @@ const isActive = (href: string) =>
   <div class="mx-auto max-w-6xl px-4">
     <a href="/" class="block py-6 md:py-8" aria-label="BluTattoo Studio">
       <img
-        src="/uploads/misc_images/blutattoo-trimmed-light(orange100-fdecd8).svg"
+        src={logo}
         alt="BluTattoo Studio"
         class="w-fit mx-auto h-20 md:h-50"
       />
@@ -119,7 +125,7 @@ const isActive = (href: string) =>
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2" aria-label="BluTattoo Studio">
       <img
-        src="/uploads/misc_images/blutattoo-trimmed-light(orange100-fdecd8).svg"
+        src={logo}
         alt=""
         class="h-15 w-auto"
       />

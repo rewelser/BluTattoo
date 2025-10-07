@@ -105,3 +105,24 @@ collections:
               - { name: enabled, label: Enabled, widget: boolean, default: false }
               - { name: text, label: Text, widget: string }
               - { name: url, label: Link URL, widget: string, required: false }
+          - label: Branding
+            name: branding
+            widget: object
+            collapsed: true
+            fields:
+              - label: Background Image
+                name: background
+                widget: image
+                required: false
+                hint: "Large photo used behind the content (jpg/png)."
+                media_folder: "public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
+
+              - label: Logo (SVG or PNG)
+                name: logo
+                widget: image
+                required: false
+                hint: "Main site logo used in the header."
+                media_folder: "public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
+

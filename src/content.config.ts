@@ -59,6 +59,11 @@ const siteInfo = defineCollection({
         url: z.string().optional(),
       })
       .optional(),
+
+    branding: z.object({
+      background: z.string().optional(), // e.g. "/uploads/misc_images/background.jpg"
+      logo: z.string().optional(),       // e.g. "/uploads/misc_images/blutattoo.svg"
+    }).optional(),
   }),
 });
 
