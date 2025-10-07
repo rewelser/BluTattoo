@@ -106,7 +106,9 @@ const { Content } = await render(entry);
     )}    
 
     {/* Preferred: Square embed if present */}
-    {entry.data.square && (
+    {entry.data.square?.enabled &&
+    entry.data.square?.merchantSlug &&
+    entry.data.square?.locationSlug && (
       <SquareAppointments
         merchantSlug={entry.data.square.merchantSlug}
         locationSlug={entry.data.square.locationSlug}

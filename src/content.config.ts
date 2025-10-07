@@ -26,8 +26,9 @@ const artists = defineCollection({
     bio: z.string().optional(),
     // NEW: Square Appointments embed
     square: z.object({
-      merchantSlug: z.string(),   // e.g. "jhvsos6zvct0ls"
-      locationSlug: z.string(),   // e.g. "L6GQX5D0KDS8B"
+      enabled: z.boolean().optional(),
+      merchantSlug: z.string().optional(),
+      locationSlug: z.string().optional(),
       label: z.string().optional()
     }).optional(),
     booking_link: z.string().url().optional()

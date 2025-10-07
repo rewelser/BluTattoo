@@ -1,49 +1,10 @@
-  - name: "artists"
-    label: "Artists"
-    folder: "src/content/artists"
-    create: true
-    slug: "{{slug}}"
-    media_folder: "/public/uploads/artists"
-    public_folder: "/uploads/artists"
-    fields:
-      - { name: title, label: Name, widget: string }
-      - { name: order, label: Order, widget: number, default: 999 }
-      - { name: photo, label: Photo, widget: image, required: false }
-      - { name: styles, label: Styles, widget: list, required: false }
-      - { name: instagram, label: Instagram URL, widget: string, required: false }
-
-      - label: Portfolio Images
-        name: images
-        widget: list
-        required: false
-        fields:
-          - { name: src, label: Image, widget: image }
-          - { name: alt, label: Alt text, widget: string, required: false }
-
-      - { name: bio, label: Short Bio, widget: text, required: false }
-
-      # NEW: Square Appointments embed settings
-      - label: "Square Appointments"
-        name: square
-        widget: object
-        required: false
-        collapsed: true
-        hint: "If set, the artist page will render a Square Appointments embed instead of using a plain link."
-        fields:
-          - name: merchantSlug
-            label: Merchant Slug
-            widget: string
-            hint: 'From your Square embed snippet (e.g., "jhvsos6zvct0ls").'
-            pattern: ['^[a-z0-9-]+$', "Use lowercase letters, numbers, and dashes."]
-          - name: locationSlug
-            label: Location Slug
-            widget: string
-            hint: 'From your Square embed snippet (e.g., "L6GQX5D0KDS8B").'
-            pattern: ['^[A-Z0-9-]+$', "Use UPPERCASE letters, numbers, and dashes."]
-          - name: label
-            label: Button Label
-            widget: string
-            required: false
-            default: "Book an appointment"
-
-      - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
+    {entry.data.square?.enabled &&
+      entry.data.square?.merchantSlug &&
+      entry.data.square?.locationSlug && (
+      <SquareAppointments
+        merchantSlug={entry.data.square.merchantSlug}
+        locationSlug={entry.data.square.locationSlug}
+        label={entry.data.square.label}
+        className="mt-2"
+      />
+    )}
