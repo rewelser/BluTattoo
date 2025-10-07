@@ -1,71 +1,13 @@
-# local_backend: true
-
-backend:
-  name: github
-  repo: rewelser/BluTattoo         # ← change me
-  branch: main                             # ← change if not main
-  site_domain: blu-tattoo.vercel.app              # ← your production domain (no protocol)
-  base_url: https://blu-tattoo.vercel.app         # ← your production URL (with protocol)
-  auth_endpoint: oauth                     # ← provided by the integration
-
-media_folder: "public/uploads"
-public_folder: "/uploads"
-
-collections:
-  - name: "faqs"
-    label: "FAQs"
-    folder: "src/content/faqs"
-    format: "json"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { name: q, label: Question, widget: string }
-      - { name: a, label: Answer, widget: text }
-      - { name: sort, label: Sort, widget: number, required: false }
-
-  - name: "artists"
-    label: "Artists"
-    folder: "src/content/artists"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { name: title, label: Name, widget: string }
-      - { name: order, label: Order, widget: number, default: 999 }
-      - { name: photo, label: Photo, widget: image, required: false }
-      - { name: styles, label: Styles, widget: list, required: false }
-      - { name: instagram, label: Instagram URL, widget: string, required: false }
-      - label: Portfolio Images
-        name: images
-        widget: list
-        required: false
-        fields:
-          - { name: src, label: Image, widget: image }
-          - { name: alt, label: Alt text, widget: string, required: false }
-      - { name: bio, label: Short Bio, widget: text, required: false }
-      - { name: booking_link, label: Booking URL, widget: string, required: false }
-      - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
-
-  - name: "siteInfo"
-    label: "Site Info"
-    files:
-      - name: "main"
-        label: "Main"
-        file: "src/content/siteInfo/main.json"
-        fields:
-          - { name: address, label: Address, widget: text }
-          - { name: phone, label: Phone, widget: string, required: false }
-          - label: Hours
-            name: hours
-            widget: list
-            required: false
-            fields:
-              - { name: label, label: Label, widget: string }
-              - { name: value, label: Value, widget: string }
-          - label: Promo Banner
-            name: promoBanner
-            widget: object
-            required: false
-            fields:
-              - { name: enabled, label: Enabled, widget: boolean, default: false }
-              - { name: text, label: Text, widget: string }
-              - { name: url, label: Link URL, widget: string, required: false }
+<!-- Top LOGO (desktop only, not sticky) -->
+<div class="hidden md:block bg-black/80">
+  <div class="mx-auto max-w-6xl px-4">
+    <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
+      <div
+        class="w-fit mx-auto h-20 md:h-50
+               [&_svg]:block [&_svg]:h-full [&_svg]:w-auto
+               [&_path]:fill-current [&_g]:fill-current"
+        set:html={logoSvg}
+      />
+    </a>
+  </div>
+</div>

@@ -1,14 +1,5 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-// import logoSvg from "../assets/misc_images/blutattoo-trimmed.svg?raw"; // raw markup string--use if svg stored in relative path
-const logoColor = "text-orange-100 md:hover:text-indigo-400";
-import fs from "node:fs";
-// Read the SVG from /public so Decap can also use the same asset path
-const logoSvg = fs.readFileSync(
-  // new URL is reliable regardless of this file’s folder depth
-  new URL("../../public/uploads/misc_images/blutattoo-trimmed.svg", import.meta.url),
-  "utf8"
-);
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -25,12 +16,11 @@ const isActive = (href: string) =>
 <!-- Top LOGO (desktop only, not sticky) -->
 <div class="hidden md:block bg-black/80">
   <div class="mx-auto max-w-6xl px-4">
-    <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
-      <div
-        class="w-fit mx-auto h-20 md:h-50
-               [&_svg]:block [&_svg]:h-full [&_svg]:w-auto
-               [&_path]:fill-current [&_g]:fill-current"
-        set:html={logoSvg}
+    <a href="/" class="block py-6 md:py-8" aria-label="BluTattoo Studio">
+      <img
+        src="/uploads/misc_images/blutattoo-trimmed-light(orange100-fdecd8).svg"
+        alt="BluTattoo Studio"
+        class="w-fit mx-auto h-20 md:h-50"
       />
     </a>
   </div>
@@ -127,12 +117,11 @@ const isActive = (href: string) =>
 <header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative">
   <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-    <a href="/" class={`flex items-center gap-2 ${logoColor}`} aria-label="BluTattoo Studio">
-      <div
-        class="h-15 w-auto
-               [&_svg]:h-full [&_svg]:w-auto
-               [&_path]:fill-current [&_g]:fill-current"
-        set:html={logoSvg}
+    <a href="/" class="flex items-center gap-2" aria-label="BluTattoo Studio">
+      <img
+        src="/uploads/misc_images/blutattoo-trimmed-light(orange100-fdecd8).svg"
+        alt=""
+        class="h-15 w-auto"
       />
       <span class="sr-only">BluTattoo Studio</span>
     </a>
