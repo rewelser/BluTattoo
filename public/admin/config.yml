@@ -29,7 +29,7 @@ collections:
     folder: "src/content/artists"
     create: true
     slug: "{{slug}}"
-    media_folder: "public/uploads/artists"
+    media_folder: "/public/uploads/artists"
     public_folder: "/uploads/artists"
     fields:
       - { name: title, label: Name, widget: string }
