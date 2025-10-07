@@ -45,8 +45,33 @@ collections:
           - { name: src, label: Image, widget: image }
           - { name: alt, label: Alt text, widget: string, required: false }
       - { name: bio, label: Short Bio, widget: text, required: false }
-      - { name: booking_link, label: Booking URL, widget: string, required: false }
+
+      # NEW: Square Appointments embed settings
+      - label: "Square Appointments"
+        name: square
+        widget: object
+        required: false
+        collapsed: true
+        hint: "If set, the artist page will render a Square Appointments embed."
+        fields:
+          - name: merchantSlug
+            label: Merchant Slug
+            widget: string
+            hint: 'From your Square embed snippet (e.g., "jhvsos6zvct0ls").'
+            pattern: ['^[a-z0-9-]+$', "Use lowercase letters, numbers, and dashes."]
+          - name: locationSlug
+            label: Location Slug
+            widget: string
+            hint: 'From your Square embed snippet (e.g., "L6GQX5D0KDS8B").'
+            pattern: ['^[A-Z0-9-]+$', "Use UPPERCASE letters, numbers, and dashes."]
+          - name: label
+            label: Button Label
+            widget: string
+            required: false
+            default: "Book an appointment"
+
       - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
+      - { name: booking_link, label: Backup Booking URL, widget: string, required: false }
 
   - name: "siteInfo"
     label: "Site Info"

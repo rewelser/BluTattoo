@@ -1,13 +1,23 @@
-<!-- Top LOGO (desktop only, not sticky) -->
-<div class="hidden md:block bg-black/80">
-  <div class="mx-auto max-w-6xl px-4">
-    <a href="/" class={`block py-6 md:py-8 ${logoColor}`} aria-label="BluTattoo Studio">
-      <div
-        class="w-fit mx-auto h-20 md:h-50
-               [&_svg]:block [&_svg]:h-full [&_svg]:w-auto
-               [&_path]:fill-current [&_g]:fill-current"
-        set:html={logoSvg}
-      />
-    </a>
-  </div>
-</div>
+  - name: "artists"
+    label: "Artists"
+    folder: "src/content/artists"
+    create: true
+    slug: "{{slug}}"
+    media_folder: "/public/uploads/artists"
+    public_folder: "/uploads/artists"
+    fields:
+      - { name: title, label: Name, widget: string }
+      - { name: order, label: Order, widget: number, default: 999 }
+      - { name: photo, label: Photo, widget: image, required: false }
+      - { name: styles, label: Styles, widget: list, required: false }
+      - { name: instagram, label: Instagram URL, widget: string, required: false }
+      - label: Portfolio Images
+        name: images
+        widget: list
+        required: false
+        fields:
+          - { name: src, label: Image, widget: image }
+          - { name: alt, label: Alt text, widget: string, required: false }
+      - { name: bio, label: Short Bio, widget: text, required: false }
+      - { name: booking_link, label: Booking URL, widget: string, required: false }
+      - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
