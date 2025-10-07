@@ -84,12 +84,11 @@ collections:
       - name: "main"
         label: "Main"
         file: "src/content/siteInfo/main.json"
-        # If you ever add hero images/logos for site info, you can uncomment below:
-        # media_folder: "public/uploads/site"
-        # public_folder: "/uploads/site"
+        format: "json"           # ← add this
         fields:
           - { name: address, label: Address, widget: text }
           - { name: phone, label: Phone, widget: string, required: false }
+
           - label: Hours
             name: hours
             widget: list
@@ -97,6 +96,7 @@ collections:
             fields:
               - { name: label, label: Label, widget: string }
               - { name: value, label: Value, widget: string }
+
           - label: Promo Banner
             name: promoBanner
             widget: object
@@ -105,10 +105,13 @@ collections:
               - { name: enabled, label: Enabled, widget: boolean, default: false }
               - { name: text, label: Text, widget: string }
               - { name: url, label: Link URL, widget: string, required: false }
+
+          # NEW: Branding section (background + logo)
           - label: Branding
             name: branding
             widget: object
-            collapsed: true
+            required: false
+            # collapsed: true     # ← comment out while testing
             fields:
               - label: Background Image
                 name: background
@@ -125,4 +128,5 @@ collections:
                 hint: "Main site logo used in the header."
                 media_folder: "public/uploads/misc_images"
                 public_folder: "/uploads/misc_images"
+
 

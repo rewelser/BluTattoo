@@ -1,15 +1,47 @@
-// Site-wide editable info (address, hours, promo banner)
-const siteInfo = defineCollection({
-  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
-  schema: z.object({
-    address: z.string(),
-    phone: z.string().optional(),
-    hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-    promoBanner: z.object({
-        enabled: z.boolean(),
-        text: z.string(),
-        url: z.string().optional(),
-      })
-      .optional(),
-  }),
-});
+  - name: "siteInfo"
+    label: "Site Info"
+    files:
+      - name: "main"
+        label: "Main"
+        file: "src/content/siteInfo/main.json"
+        # If you ever add hero images/logos for site info, you can uncomment below:
+        # media_folder: "public/uploads/site"
+        # public_folder: "/uploads/site"
+        fields:
+          - { name: address, label: Address, widget: text }
+          - { name: phone, label: Phone, widget: string, required: false }
+          - label: Hours
+            name: hours
+            widget: list
+            required: false
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: value, label: Value, widget: string }
+          - label: Promo Banner
+            name: promoBanner
+            widget: object
+            required: false
+            fields:
+              - { name: enabled, label: Enabled, widget: boolean, default: false }
+              - { name: text, label: Text, widget: string }
+              - { name: url, label: Link URL, widget: string, required: false }
+          - label: Branding
+            name: branding
+            widget: object
+            collapsed: true
+            fields:
+              - label: Background Image
+                name: background
+                widget: image
+                required: false
+                hint: "Large photo used behind the content (jpg/png)."
+                media_folder: "public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
+
+              - label: Logo (SVG or PNG)
+                name: logo
+                widget: image
+                required: false
+                hint: "Main site logo used in the header."
+                media_folder: "public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
