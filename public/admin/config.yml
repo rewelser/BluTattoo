@@ -86,7 +86,7 @@ collections:
         file: "src/content/siteInfo/main.json"
         format: "json"           # ← add this
         fields:
-          - { name: address, label: Address, widget: text }
+          - { name: address, label: Address, widget: text, required: false }
           - { name: phone, label: Phone, widget: string, required: false }
 
           - label: Hours
@@ -102,8 +102,8 @@ collections:
             widget: object
             required: false
             fields:
-              - { name: enabled, label: Enabled, widget: boolean, default: false }
-              - { name: text, label: Text, widget: string }
+              - { name: enabled, label: Enabled, widget: boolean, default: false, required: false }
+              - { name: text, label: Text, widget: string, required: false }
               - { name: url, label: Link URL, widget: string, required: false }
 
           # NEW: Branding section (background + logo)
