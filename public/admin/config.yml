@@ -118,7 +118,7 @@ collections:
                 widget: image
                 required: false
                 hint: "Large photo used behind the content (jpg/png)."
-                media_folder: "public/uploads/misc_images"
+                media_folder: "/public/uploads/misc_images"
                 public_folder: "/uploads/misc_images"
 
               - label: Logo (SVG or PNG)
@@ -126,7 +126,7 @@ collections:
                 widget: image
                 required: false
                 hint: "Main site logo used in the header."
-                media_folder: "public/uploads/misc_images"
+                media_folder: "/public/uploads/misc_images"
                 public_folder: "/uploads/misc_images"
 
 
