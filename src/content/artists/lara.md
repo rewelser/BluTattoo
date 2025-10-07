@@ -1,7 +1,7 @@
 ---
 title: Lara
 order: 1
-photo: /uploads/artists/zoe_headshot.png
+photo: /uploads/artists/lara_headshot.jpg
 styles:
   - blackwork
   - fine line
