@@ -16,7 +16,7 @@ bio: |
 square:
   merchantSlug: ""
   locationSlug: ""
-  enabled: false
+  enabled: true
 ---
 
 You can put optional longer bio content here if you want to render it on the artist page later.
