@@ -1,14 +1,16 @@
 ---
-title: "Lara"
+title: Lara
 order: 1
-photo: /uploads/artists/lara_headshot.jpg
-styles: ["blackwork", "fine line"]
-instagram: "https://instagram.com/laraink"
+photo: /uploads/artists/zoe_headshot.png
+styles:
+  - blackwork
+  - fine line
+instagram: https://instagram.com/laraink
 images:
-  - src: "https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg"
-    alt: "Blackwork snake on forearm"
-  - src: "https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg"
-    alt: "Fine line floral"
+  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
+    alt: Blackwork snake on forearm
+  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg
+    alt: Fine line floral
 bio: |
   Lara focuses on bold blackwork and delicate florals. 8+ years experience.
 ---
