@@ -14,7 +14,7 @@ images:
     alt: Fine line floral
 bio: >
   Zoe focuses on bold shartwork and delicate florals. 8+ years experience.
-  vercel-github connection test || Decap github oath test
+  vercel-github connection test || Decap github oath test || test 10/6 9:04pm
 
 
   # New: Square Appointments
