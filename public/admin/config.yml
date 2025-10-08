@@ -58,13 +58,13 @@ collections:
             widget: boolean
             default: false
           - name: merchantSlug
-            label: Merchant Slug
+            label: Merchant ID
             widget: string
             required: false
             hint: 'From your Square embed snippet (e.g., "jhvsos6zvct0ls").'
             pattern: ['^[a-z0-9-]+$', "Use lowercase letters, numbers, and dashes."]
           - name: locationSlug
-            label: Location Slug
+            label: Location ID
             widget: string
             required: false
             hint: 'From your Square embed snippet (e.g., "L6GQX5D0KDS8B").'
