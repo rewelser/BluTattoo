@@ -106,29 +106,6 @@ collections:
               - { name: text, label: Text, widget: string, required: false }
               - { name: url, label: Link URL, widget: string, required: false }
 
-          # NEW: Branding section (background + logo)
-          - label: Branding
-            name: branding
-            widget: object
-            required: false
-            # collapsed: true     # ← comment out while testing
-            fields:
-              - label: Background Image
-                name: background
-                widget: image
-                required: false
-                hint: "Large photo used behind the content (jpg/png)."
-                media_folder: "/public/uploads/misc_images/backgrounds"
-                public_folder: "/uploads/misc_images/backgrounds"
-
-              - label: Logo (SVG or PNG)
-                name: logo
-                widget: image
-                required: false
-                hint: "Main site logo used in the header."
-                media_folder: "/public/uploads/misc_images/logos"
-                public_folder: "/uploads/misc_images/logos"
-
   - name: "branding"
     label: "Branding"
     files:

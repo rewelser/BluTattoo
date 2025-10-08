@@ -60,10 +60,10 @@ const siteInfo = defineCollection({
       })
       .optional(),
 
-    branding: z.object({
-      background: z.string().optional(), // e.g. "/uploads/misc_images/backgrounds/background.jpg"
-      logo: z.string().optional(),       // e.g. "/uploads/misc_images/logos/blutattoo.svg"
-    }).optional(),
+    // branding: z.object({
+    //   background: z.string().optional(), // e.g. "/uploads/misc_images/backgrounds/background.jpg"
+    //   logo: z.string().optional(),       // e.g. "/uploads/misc_images/logos/blutattoo.svg"
+    // }).optional(),
   }),
 });
 
