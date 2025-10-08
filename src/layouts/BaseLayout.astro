@@ -6,11 +6,12 @@ import Header from "../components/Header.astro";
 const { title = "BluTattoo Studio" } = Astro.props;
 import '@fontsource/diplomata-sc';
 import '@fontsource/spectral';
+import branding from "../content/branding.json";
 
 // Load site info for branding
 const site = await getEntry('siteInfo', 'main');
 const bg =
-  site?.data.branding?.background ??
+  branding?.background ??
   "/uploads/misc_images/backgrounds/background.jpg";
 ---
 <!doctype html>

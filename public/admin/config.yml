@@ -129,4 +129,29 @@ collections:
                 media_folder: "/public/uploads/misc_images/logos"
                 public_folder: "/uploads/misc_images/logos"
 
+  - name: "branding"
+    label: "Branding"
+    files:
+      - name: "branding"
+        label: "Logo & Background"
+        file: "src/content/branding.json"
+        format: "json"
+        fields:
+          - label: Background Image
+            name: background
+            widget: image
+            required: true
+            hint: "Large background image (jpg/png)."
+            media_folder: "/public/uploads/misc_images/backgrounds"
+            public_folder: "/uploads/misc_images/backgrounds"
+
+          - label: Logo (SVG or PNG)
+            name: logo
+            widget: image
+            required: true
+            hint: "Header logo."
+            media_folder: "/public/uploads/misc_images/logos"
+            public_folder: "/uploads/misc_images/logos"
+
+
 

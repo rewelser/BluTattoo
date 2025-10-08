@@ -1,5 +1,6 @@
 ---
 import { getCollection, type CollectionEntry, getEntry } from "astro:content";
+import branding from "../content/branding.json";
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -15,7 +16,7 @@ const isActive = (href: string) =>
 // Load site branding (logo)
 const site = await getEntry('siteInfo', 'main');
 const logo =
-  site?.data.branding?.logo ??
+  branding?.logo ??
   "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg";
 ---
 
