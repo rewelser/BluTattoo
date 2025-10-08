@@ -45,26 +45,43 @@ const faqs = defineCollection({
   }),
 });
 
-// Site-wide editable info (address, hours, promo banner)
+// // Site-wide editable info (address, hours, promo banner)
+// const siteInfo = defineCollection({
+//   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
+//   schema: z.object({
+//     address: z.string(),
+//     phone: z.string().optional(),
+//     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+//     promoBanner: z
+//       .object({
+//         enabled: z.boolean(),
+//         text: z.string(),
+//         url: z.string().optional(),
+//       })
+//       .optional(),
+
+//     // branding: z.object({
+//     //   background: z.string().optional(), // e.g. "/uploads/misc_images/backgrounds/background.jpg"
+//     //   logo: z.string().optional(),       // e.g. "/uploads/misc_images/logos/blutattoo.svg"
+//     // }).optional(),
+//   }),
+// });
+
+// src/content.config.ts
 const siteInfo = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
   schema: z.object({
     address: z.string(),
     phone: z.string().optional(),
+    email: z.string().optional(),
     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-    promoBanner: z
-      .object({
-        enabled: z.boolean(),
-        text: z.string(),
-        url: z.string().optional(),
-      })
-      .optional(),
-
-    // branding: z.object({
-    //   background: z.string().optional(), // e.g. "/uploads/misc_images/backgrounds/background.jpg"
-    //   logo: z.string().optional(),       // e.g. "/uploads/misc_images/logos/blutattoo.svg"
-    // }).optional(),
+    promoBanner: z.object({
+      enabled: z.boolean(),
+      text: z.string(),
+      url: z.string().optional(),
+    }).optional(),
   }),
 });
+
 
 export const collections = { artists, faqs, siteInfo };

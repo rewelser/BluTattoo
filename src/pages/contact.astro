@@ -1,56 +1,46 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
 
+const site = await getEntry("siteInfo", "main");
+
+// Fallbacks if content isn’t filled yet
 const shopName = "BluTattoo Studio";
-const streetAddress = "50 Church St E #4";
-const city = "Martinsville";
-const state = "VA";
-const postalCode = "24112";
+const address = site?.data.address ?? "50 Church St E #4, Martinsville, VA 24112";
+const phone = site?.data.phone ?? "(276) 403-5055";
+const email = site?.data.email ?? "BluTattooStudioLLC@gmail.com";
+const hours = site?.data.hours ?? [];
 
-const addressFull = `${streetAddress}, ${city}, ${state} ${postalCode}`;
-const phone = "(276) 403-5055";
-const phoneHref = "tel:+12764035055";
-const email = "BluTattooStudioLLC@gmail.com";
+const mapQuery = encodeURIComponent(address);
+const phoneDigits = phone.replace(/[^\d+]/g, ""); // keep + and digits
+const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
 
-// Simple embed that doesn’t require an API key
-const mapQuery = encodeURIComponent(`${addressFull}`);
+// If you prefer the old embed with place_id, keep yours;
+// otherwise a simple query-based embed (no key) works too:
 // const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
-const mapSrc = `https://www.google.com/maps/embed/v1/place?q=place_id:Ei41MCBDaHVyY2ggU3QgRSAjNCwgTWFydGluc3ZpbGxlLCBWQSAyNDExMiwgVVNBIh0aGwoWChQKEglBPafigJBSiBHQAR7t-ijrthIBNA&key=AIzaSyCEbVwY2G8s2ZonMW0PTBsaJTbWXc_IiFg`;
-// 
 
+const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 
-// LocalBusiness / Organization JSON-LD for SEO
+// JSON-LD: keep simple; if you later want fully structured PostalAddress,
+// we can split address into components in content.
 const contactJsonLd = {
   "@context": "https://schema.org",
-  "@type": "TattooParlor", // falls back to LocalBusiness if not recognized
+  "@type": "TattooParlor",
   "name": shopName,
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": streetAddress,
-    "addressLocality": city,
-    "addressRegion": state,
-    "postalCode": postalCode,
-    "addressCountry": "US"
-  },
+  "address": address,
   "telephone": phone,
   "email": email,
-  "url": "https://your-domain-here.com/contact", // ← update if you have a prod URL
-  "image": "https://your-domain-here.com/og-image.jpg" // ← optional/replace
+  "url": "https://your-domain-here.com/contact"
 };
 ---
 
 <BaseLayout title="BluTattoo Studio — Contact">
   <h1 class="mb-6 text-3xl font-bold tracking-tight">Contact Us</h1>
 
-  <div
-    class="grid gap-6 md:grid-cols-2"
-  >
-    {/* Left: Contact card */}
-    <section
-      class="border border-white/10 bg-black/40 p-5 md:p-6"
-      aria-labelledby="contact-info-heading"
-    >
+  <div class="grid gap-6 md:grid-cols-2">
+    {/* Left: Contact + Hours */}
+    <section class="border border-white/10 bg-black/40 p-5 md:p-6" aria-labelledby="contact-info-heading">
       <h2 id="contact-info-heading" class="mb-4 text-xl font-semibold">
         Visit or reach out
       </h2>
@@ -68,7 +58,7 @@ const contactJsonLd = {
               target="_blank"
               rel="noopener"
             >
-              {addressFull}
+              {address}
             </a>
           </div>
         </li>
@@ -91,6 +81,20 @@ const contactJsonLd = {
           </a>
         </li>
       </ul>
+
+      {hours.length > 0 && (
+        <div class="mt-6">
+          <h3 class="mb-2 text-lg font-semibold">Hours</h3>
+          <dl class="divide-y divide-white/10 border border-white/10">
+            {hours.map(({ label, value }) => (
+              <div class="grid grid-cols-2 gap-2 p-2">
+                <dt class="text-orange-100/80">{label}</dt>
+                <dd class="text-right">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
 
       <p class="mt-5 text-sm text-orange-100/70">
         Prefer forms? You can also reach us via{" "}
