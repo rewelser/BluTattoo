@@ -78,33 +78,17 @@ collections:
       - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
       - { name: booking_link, label: Backup Booking URL, widget: string, required: false }
 
-  # - name: "siteInfo"
-  #   label: "Site Info"
-  #   files:
-  #     - name: "main"
-  #       label: "Main"
-  #       file: "src/content/siteInfo/main.json"
-  #       format: "json"           # ← add this
-  #       fields:
-  #         - { name: address, label: Address, widget: text, required: false }
-  #         - { name: phone, label: Phone, widget: string, required: false }
+  - name: "aftercare"
+    label: "Aftercare"
+    files:
+      - name: "main"
+        label: "Aftercare Content"
+        file: "src/content/aftercare/main.md"
+        format: "frontmatter"
+        fields:
+          - { name: title, label: Title, widget: string, default: "Aftercare" }
+          - { name: body, label: Body, widget: markdown }
 
-  #         - label: Hours
-  #           name: hours
-  #           widget: list
-  #           required: false
-  #           fields:
-  #             - { name: label, label: Label, widget: string }
-  #             - { name: value, label: Value, widget: string }
-
-  #         - label: Promo Banner
-  #           name: promoBanner
-  #           widget: object
-  #           required: false
-  #           fields:
-  #             - { name: enabled, label: Enabled, widget: boolean, default: false, required: false }
-  #             - { name: text, label: Text, widget: string, required: false }
-  #             - { name: url, label: Link URL, widget: string, required: false }
 
   - name: "siteInfo"
     label: "Site Info"

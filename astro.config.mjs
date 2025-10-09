@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
+// import tailwind from "@tailwindcss/vite"; // should have this instead? with `tailwind()`?
 
 import vercel from '@astrojs/vercel';
 

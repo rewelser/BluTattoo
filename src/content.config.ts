@@ -35,6 +35,14 @@ const artists = defineCollection({
   })
 });
 
+const aftercare = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/aftercare" }),
+  schema: z.object({
+    title: z.string().default("Aftercare")
+    // Body is the markdown content; no schema needed for it.
+  }),
+});
+
 // Data collection for 1-file-per-FAQ item
 const faqs = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/faqs" }),
@@ -44,28 +52,6 @@ const faqs = defineCollection({
     sort: z.number().optional(),
   }),
 });
-
-// // Site-wide editable info (address, hours, promo banner)
-// const siteInfo = defineCollection({
-//   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
-//   schema: z.object({
-//     address: z.string(),
-//     phone: z.string().optional(),
-//     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-//     promoBanner: z
-//       .object({
-//         enabled: z.boolean(),
-//         text: z.string(),
-//         url: z.string().optional(),
-//       })
-//       .optional(),
-
-//     // branding: z.object({
-//     //   background: z.string().optional(), // e.g. "/uploads/misc_images/backgrounds/background.jpg"
-//     //   logo: z.string().optional(),       // e.g. "/uploads/misc_images/logos/blutattoo.svg"
-//     // }).optional(),
-//   }),
-// });
 
 // src/content.config.ts
 const siteInfo = defineCollection({
@@ -84,4 +70,4 @@ const siteInfo = defineCollection({
 });
 
 
-export const collections = { artists, faqs, siteInfo };
+export const collections = { artists, faqs, siteInfo, aftercare };

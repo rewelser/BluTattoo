@@ -3,13 +3,12 @@
     "phone": "(276) 403-5055",
     "email": "BluTattooStudioLLC@gmail.com",
     "hours": [
-      { "label": "Mon", "value": "Closed" },
-      { "label": "Tue", "value": "12:00–7:00" },
-      { "label": "Wed", "value": "12:00–7:00" },
-      { "label": "Thu", "value": "12:00–7:00" },
-      { "label": "Fri", "value": "12:00–8:00" },
-      { "label": "Sat", "value": "12:00–8:00" },
-      { "label": "Sun", "value": "Closed" }
+        { "label": "Mon", "value": "Closed" },
+        { "label": "Tue", "value": "12:00–7:00" },
+        { "label": "Wed", "value": "12:00–7:00" },
+        { "label": "Thu", "value": "12:00–7:00" },
+        { "label": "Fri", "value": "12:00–8:00" },
+        { "label": "Sat", "value": "12:00–8:00" },
+        { "label": "Sun", "value": "Closed" }
     ]
-  }
-  
+}
