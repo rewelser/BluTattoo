@@ -22,6 +22,7 @@
     "path-to-regexp": "^6.3.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "astro-decap-cms-oauth": "^0.5.1"
   }
 }
