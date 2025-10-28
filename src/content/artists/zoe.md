@@ -2,26 +2,18 @@
 title: Zoe
 order: 5
 photo: /uploads/artists/zoe_headshot.png
-styles:
-  - stinktoos
-  - swine line
-instagram: https://www.instagram.com/ztheghost.ink/
+styles: []
+instagram: ""
+instagramUser: ztheghost.ink
 images:
   - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
     alt: big snake of poop on forearm
   - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg
     alt: Fine line floral
-bio: >
-  Zoe focuses on bold shartwork and delicate florals. 8+ years experience.
-  vercel-github connection test || Decap github oath test || test 10/6 9:04pm
-
-
-  # New: Square Appointments
+bio: "Zoe is the shop apprentice. Check out her work and book below:"
 square:
   merchantSlug: jhvsos6zvct0ls
   locationSlug: L6GQX5D0KDS8B
   label: Book an appointment
   enabled: true
 ---
-
-You can put optional longer bio content here if you want to render it on the artist page later.
