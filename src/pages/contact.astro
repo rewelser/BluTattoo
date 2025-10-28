@@ -84,7 +84,7 @@ const contactJsonLd = {
 
       {hours.length > 0 && (
         <div class="mt-6">
-          <h3 class="mb-2 text-lg font-semibold">Hours</h3>
+          <h3 class="mb-2 text-lg font-semibold">Hours | Drop-In*</h3>
           <dl class="divide-y divide-white/10 border border-white/10">
             {hours.map(({ label, value }) => (
               <div class="grid grid-cols-2 gap-2 p-2">
@@ -96,9 +96,13 @@ const contactJsonLd = {
         </div>
       )}
 
-      <p class="mt-5 text-sm text-orange-100/70">
+      <p class="mt-5 text-sm text-orange-100/70 hidden">
         Prefer forms? You can also reach us via{" "}
         <a href="#contact-form" class="underline hover:no-underline">the contact form below</a>.
+      </p>
+
+      <p class="mt-5 text-sm text-orange-100/70">
+        *Appointment hours can vary based upon artist availability, which can fall outside the posted hours.
       </p>
     </section>
 
@@ -136,7 +140,7 @@ const contactJsonLd = {
   </div>
 
   {/* Simple contact form (optional) */}
-  <section id="contact-form" class="mt-6 border border-white/10 bg-black/40 p-5 md:p-6">
+  <section id="contact-form" class="mt-6 border border-white/10 bg-black/40 p-5 md:p-6 hidden">
     <h2 class="mb-4 text-xl font-semibold">Send us a message</h2>
     <form
       class="grid gap-4 sm:grid-cols-2"
