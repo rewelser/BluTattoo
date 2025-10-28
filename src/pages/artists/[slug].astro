@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
+import InstagramProfile from "../../components/InstagramProfile.astro";
 
 const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
 
@@ -19,6 +20,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+const ig = entry.data.instagramUser;
 
 // Render the Markdown *body* (the part after the frontmatter)
 const { Content } = await render(entry);
@@ -74,6 +76,13 @@ const { Content } = await render(entry);
       </div>
     </header>
 
+    {ig && (
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2>
+        <InstagramProfile username={ig} className="rounded-lg overflow-hidden" />
+      </section>
+    )}
+
     <!-- {entry.data.images?.length && (
       <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {entry.data.images.map((img) => (
@@ -103,7 +112,7 @@ const { Content } = await render(entry);
           </figure>
         ))}
       </section>
-    )}    
+    )}
 
     {/* Preferred: Square embed if present */}
     {entry.data.square?.enabled &&

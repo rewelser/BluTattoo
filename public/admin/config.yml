@@ -37,6 +37,8 @@ collections:
       - { name: photo, label: Photo, widget: image, required: false }
       - { name: styles, label: Styles, widget: list, required: false }
       - { name: instagram, label: Instagram URL, widget: string, required: false }
+      - { label: "Instagram Username", name: "instagramUser", widget: "string", required: false }
+
       - label: Portfolio Images
         name: images
         widget: list

@@ -13,6 +13,7 @@ const artists = defineCollection({
     photo: z.string().optional(),
     styles: z.array(z.string()).optional(),
     instagram: z.string().url().optional(),
+    instagramUser: z.string().optional(),
     images: z
       .array(
         z.object({

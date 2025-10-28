@@ -23,3 +23,12 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vercel
+
+# Ignore real local envs
+.env.local
+.env.example
+
+# Ignore all contents of Scribe
+Scribe/*
+# …but keep the template
+!Scribe/.env.example

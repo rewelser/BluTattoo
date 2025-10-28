@@ -1,0 +1,32 @@
+---
+interface Props {
+  username: string;
+  maxWidth?: number;            // optional: max width in px (default 540 like IG)
+  minWidth?: number;            // optional: min width in px (default 326 like IG)
+  className?: string;           // optional wrapper classes
+}
+const { username, maxWidth = 540, minWidth = 326, className = "" } = Astro.props;
+const profileUrl = `https://www.instagram.com/${username}/?utm_source=ig_embed&utm_campaign=loading`;
+---
+
+{username && (
+  <div class={`ig-profile-embed ${className}`}>
+    <blockquote
+      class="instagram-media"
+      data-instgrm-permalink={profileUrl}
+      data-instgrm-version="14"
+      style={`background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:1px;max-width:${maxWidth}px;min-width:${minWidth}px;padding:0;width:99.375%;`}
+    >
+      <!-- IG will replace this with the profile preview tiles -->
+    </blockquote>
+
+    <!-- Load the Instagram embed runtime (once per page is fine) -->
+    <script
+      is:inline
+      src="https://www.instagram.com/embed.js"
+      async
+      defer
+      onload="window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process()"
+    ></script>
+  </div>
+)}
