@@ -21,7 +21,7 @@ square:
   merchantSlug: jhvsos6zvct0ls
   locationSlug: L6GQX5D0KDS8B
   label: Book an appointment
-  enabled: false
+  enabled: true
 ---
 
 You can put optional longer bio content here if you want to render it on the artist page later.
