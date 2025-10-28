@@ -17,4 +17,3 @@ square:
   label: Book an appointment
   enabled: true
 ---
-test test test
