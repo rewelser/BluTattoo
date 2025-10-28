@@ -6,9 +6,11 @@ import { glob } from 'astro/loaders';
 const home = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
   schema: z.object({
-    promoEnabled: z.boolean().default(true),
-    promoImage: z.string(),                 // path like "/uploads/promos/hero.jpg"
-    promoAlt: z.string().optional()
+    promoMain: z.object({
+      promoEnabled: z.boolean().default(true),
+      promoImage: z.string().optional(),
+      promoAlt: z.string().optional(),
+    }).optional(),
   }),
 });
 

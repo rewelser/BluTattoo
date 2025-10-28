@@ -4,18 +4,18 @@ import PromoHero from "../components/PromoHero.astro";
 import { getEntry } from "astro:content";
 
 const home = await getEntry("home", "main"); // reads src/content/home/main.json
-const h = home?.data;
+const h = home?.data?.promoMain;
 ---
 <BaseLayout title="BluTattoo Studio — Home">
   <div class="text-center">
     <h1 class="text-3xl font-bold font-[Diplomata_SC]">BLUTATTOO STUDIO</h1>
     <p class="mt-2">Uptown Martinsville's Premier Location for Professional Custom Tattoo Art</p>
-    {h?.promoEnabled && h?.promoImage && (
-      <PromoHero
-        image={h.promoImage}
-        alt={h.promoAlt}
-        className="mb-10"
-      />
-    )}
   </div>
+  {h?.promoEnabled && h?.promoImage && (
+    <PromoHero
+      image={h.promoImage}
+      alt={h.promoAlt}
+      className="mb-10 p-8"
+    />
+  )}
 </BaseLayout>
