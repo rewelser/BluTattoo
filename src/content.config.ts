@@ -2,16 +2,21 @@ import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
-const emptyToUndef = (v: unknown) =>
+
+
+const emptyStrToUndef = (v: unknown) =>
   typeof v === "string" && v.trim() === "" ? undefined : v;
+
+const emptyArrToUndef = (v: unknown) =>
+  Array.isArray(v) && v.length === 0 ? undefined : v;
 
 const home = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
   schema: z.object({
     promoMain: z.object({
       promoEnabled: z.boolean().default(true),
-      promoImage: z.string().optional(),
-      promoAlt: z.string().optional(),
+      promoImage: z.preprocess(emptyStrToUndef, z.string().optional()),
+      promoAlt: z.preprocess(emptyStrToUndef, z.string().optional()),
     }).optional(),
   }),
 });
@@ -23,11 +28,15 @@ const artists = defineCollection({
     order: z.number().default(999),    // ← add this
     // photo: imageOrString(image).optional(),
     // photo: image().optional(),
-    photo: z.string().optional(),
-    styles: z.array(z.string()).optional(),
+    photo: z.preprocess(emptyStrToUndef, z.string().optional()),
+    // styles: z.array(z.string()).optional(),
+    styles: z.preprocess(
+      (v) => emptyArrToUndef(v),
+      z.array(z.string()).optional()
+    ),
     // instagram: z.string().url().optional(),
-    instagram: z.preprocess(emptyToUndef, z.string().url().optional()),
-    instagramUser: z.string().optional(),
+    instagram: z.preprocess(emptyStrToUndef, z.string().url().optional()),
+    instagramUser: z.preprocess(emptyStrToUndef, z.string().optional()),
     images: z
       .array(
         z.object({
@@ -38,7 +47,7 @@ const artists = defineCollection({
         })
       )
       .optional(),
-    bio: z.string().optional(),
+    bio: z.preprocess(emptyStrToUndef, z.string().optional()),
     // NEW: Square Appointments embed
     square: z.object({
       enabled: z.boolean().optional(),
@@ -46,7 +55,7 @@ const artists = defineCollection({
       locationSlug: z.string().optional(),
       label: z.string().optional()
     }).optional(),
-    booking_link: z.string().url().optional()
+    booking_link: z.preprocess(emptyStrToUndef, z.string().url().optional())
   })
 });
 
@@ -73,13 +82,13 @@ const siteInfo = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
   schema: z.object({
     address: z.string(),
-    phone: z.string().optional(),
-    email: z.string().optional(),
+    phone: z.preprocess(emptyStrToUndef, z.string().optional()),
+    email: z.preprocess(emptyStrToUndef, z.string().optional()),
     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
     promoBanner: z.object({
       enabled: z.boolean(),
       text: z.string(),
-      url: z.string().optional(),
+      url: z.preprocess(emptyStrToUndef, z.string().optional()),
     }).optional(),
   }),
 });
