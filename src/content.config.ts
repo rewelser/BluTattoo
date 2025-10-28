@@ -2,6 +2,8 @@ import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
+const emptyToUndef = (v: unknown) =>
+  typeof v === "string" && v.trim() === "" ? undefined : v;
 
 const home = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
@@ -23,7 +25,8 @@ const artists = defineCollection({
     // photo: image().optional(),
     photo: z.string().optional(),
     styles: z.array(z.string()).optional(),
-    instagram: z.string().url().optional(),
+    // instagram: z.string().url().optional(),
+    instagram: z.preprocess(emptyToUndef, z.string().url().optional()),
     instagramUser: z.string().optional(),
     images: z
       .array(
