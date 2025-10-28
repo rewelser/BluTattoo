@@ -1,26 +1,24 @@
 ---
 interface Props {
   username: string;
-  maxWidth?: number;            // optional: max width in px (default 540 like IG)
-  minWidth?: number;            // optional: min width in px (default 326 like IG)
-  className?: string;           // optional wrapper classes
+  className?: string;
+  widthClass?: string; // optional Tailwind width control, e.g. "max-w-3xl w-full"
 }
-const { username, maxWidth = 540, minWidth = 326, className = "" } = Astro.props;
+
+const { username, className = "max-w-3xl", widthClass = "!max-w-3xl !w-full !min-w-auto" } = Astro.props;
 const profileUrl = `https://www.instagram.com/${username}/?utm_source=ig_embed&utm_campaign=loading`;
 ---
 
 {username && (
   <div class={`ig-profile-embed ${className}`}>
     <blockquote
-      class="instagram-media"
+      class={`instagram-media bg-white rounded-lg shadow-md mx-auto ${widthClass}`}
       data-instgrm-permalink={profileUrl}
       data-instgrm-version="14"
-      style={`background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:1px;max-width:${maxWidth}px;min-width:${minWidth}px;padding:0;width:99.375%;`}
     >
-      <!-- IG will replace this with the profile preview tiles -->
+      <!-- Instagram replaces this content -->
     </blockquote>
 
-    <!-- Load the Instagram embed runtime (once per page is fine) -->
     <script
       is:inline
       src="https://www.instagram.com/embed.js"

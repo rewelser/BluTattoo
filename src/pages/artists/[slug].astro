@@ -77,9 +77,9 @@ const { Content } = await render(entry);
     </header>
 
     {ig && (
-      <section class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2>
-        <InstagramProfile username={ig} className="rounded-lg overflow-hidden" />
+      <section class="mt-8 flex justify-center">
+        {/* <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2> */}
+        <InstagramProfile username={ig} className="overflow-hidden" />
       </section>
     )}
 
