@@ -136,3 +136,30 @@ collections:
             hint: "Header logo."
             media_folder: "/public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
+
+  - name: "home"
+    label: "Homepage"
+    files:
+      - name: "main"
+        label: "Homepage Content"
+        file: "src/content/home/main.json"
+        format: "json"
+        fields:
+          - label: "Promo (main)"
+            name: promoMain
+            widget: object
+            required: false
+            collapsed: true
+            hint: "Toggle on to put a promo image on the home page."
+            fields:
+              - { name: promoEnabled, label: "Enable Promo", widget: boolean, default: true, required: false }
+
+              - label: "Promo Image"
+                name: promoImage
+                widget: image
+                required: false
+                media_folder: "/public/uploads/promos"
+                public_folder: "/uploads/promos"
+                hint: "Recommended: wide image (e.g. 1600×900+)"
+
+              - { name: promoAlt, label: "Image Alt Text", widget: string, required: false }

@@ -3,6 +3,15 @@ import { glob } from 'astro/loaders';
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
+const home = defineCollection({
+  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
+  schema: z.object({
+    promoEnabled: z.boolean().default(true),
+    promoImage: z.string(),                 // path like "/uploads/promos/hero.jpg"
+    promoAlt: z.string().optional()
+  }),
+});
+
 const artists = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
   schema:  ({ image }) => z.object({
@@ -71,4 +80,4 @@ const siteInfo = defineCollection({
 });
 
 
-export const collections = { artists, faqs, siteInfo, aftercare };
+export const collections = { artists, faqs, siteInfo, aftercare, home };

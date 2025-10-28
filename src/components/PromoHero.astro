@@ -1,0 +1,27 @@
+---
+interface Props {
+  image: string;
+  alt?: string;
+  className?: string;
+}
+
+const {
+  image,
+  alt = "",
+  className = ""
+} = Astro.props;
+---
+
+<section class={`relative overflow-hidden rounded-2xl shadow-lg ${className}`}>
+  <!-- Image -->
+  <img
+    src={image}
+    alt={alt}
+    loading="eager"
+    decoding="async"
+    class="h-[40vh] w-full object-cover md:h-[55vh]"
+  />
+
+  <!-- gradient overlay -->
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+</section>
