@@ -1,5 +1,5 @@
 ---
-title: Greg Clark
+title: Greg
 order: 4
 square:
   enabled: false
