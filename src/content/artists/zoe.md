@@ -1,9 +1,9 @@
 ---
 title: Zoe
 order: 5
-photo: ""
+photo: /uploads/artists/zoe_headshot.png
 styles: []
-instagram: https://www.instagram.com/ztheghost.ink/
+instagram: ""
 instagramUser: ztheghost.ink
 images:
   - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
