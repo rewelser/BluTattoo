@@ -5,7 +5,7 @@ interface Props {
   widthClass?: string; // optional Tailwind width control, e.g. "max-w-3xl w-full"
 }
 
-const { username, className = "max-w-3xl", widthClass = "!max-w-3xl !w-full !min-w-auto" } = Astro.props;
+const { username, className = "", widthClass = "max-w-3xl w-full min-w-auto" } = Astro.props;
 const profileUrl = `https://www.instagram.com/${username}/?utm_source=ig_embed&utm_campaign=loading`;
 ---
 
