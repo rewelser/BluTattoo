@@ -6,6 +6,13 @@ import Header from "../components/Header.astro";
 const { title = "BluTattoo Studio" } = Astro.props;
 import '@fontsource/diplomata-sc';
 import '@fontsource/spectral';
+
+import spectral400Url from '@fontsource/spectral/files/spectral-latin-400-normal.woff2?url';
+import diplomataUrl  from '@fontsource/diplomata-sc/files/diplomata-sc-latin-400-normal.woff2?url';
+
+import '@fontsource/spectral/400.css';
+// import '@fontsource/spectral/700.css';
+import '@fontsource/diplomata-sc/400.css';
 import branding from "../content/branding.json";
 
 // Load site info for branding
@@ -17,20 +24,62 @@ const bg =
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- <style>
+      /* Paint black immediately to avoid white flash between navigations */
+      html, body { background:#000; }
+    </style> -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
-    <ClientRouter /> {/* enable SPA-style navigation */}
-    <!-- <link rel="preload" as="image" href=/uploads/misc_images/background.jpg /> -->
+    <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
     <link rel="preload" as="image" href={bg} />
+    <link rel="preload" href={spectral400Url} as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href={diplomataUrl}  as="font" type="font/woff2" crossorigin>
     <script is:inline src="/scripts/mobile-menu.js"></script>
+
+    <!-- Instagram embed runtime (load once) -->
+    <!-- <link rel="preconnect" href="https://www.instagram.com">
+    <link rel="preconnect" href="https://static.cdninstagram.com">
+    <script
+      src="https://www.instagram.com/embed.js"
+      async
+      defer
+      onload="window.__igLoaded = true; window.instgrm?.Embeds?.process();"
+    ></script>
+
+    <script is:inline>
+      // Reprocess IG embeds whenever new .instagram-media nodes appear
+      (function igAutoProcess(){
+        const process = () => window.instgrm?.Embeds?.process();
+        // Run on DOM ready / navigation caching events
+        document.addEventListener('DOMContentLoaded', process, { once: true });
+        window.addEventListener('pageshow', process);
+
+        // MutationObserver to catch Astro/Vite updates or client inserts
+        const obs = new MutationObserver((muts) => {
+          for (const m of muts) {
+            for (const n of m.addedNodes || []) {
+              if (n.nodeType === 1 && (n.matches?.('.instagram-media') || n.querySelector?.('.instagram-media'))) {
+                process();
+                return;
+              }
+            }
+          }
+        });
+        obs.observe(document.documentElement, { childList: true, subtree: true });
+      })();
+    </script> -->
+    <!-- ^ End Instagram embed code -->
+
+
+
   </head>
   <body
   class="min-h-screen text-gray-900 text-orange-100 md:bg-fixed bg-center bg-cover font-[Spectral]"
-  style={`background-image: url('${bg}');`}
+  style={`background-color:#000; background-image: url('${bg}');`}
   >
       <!-- fixed background image -->
-      <img
+      <!-- <img
         src={bg}
         alt=""
         aria-hidden="true"
@@ -39,7 +88,7 @@ const bg =
         decoding="async"
         transition:persist
         class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
-      />
+      /> -->
     <!-- <Header /> -->
     <!-- <main class="mx-auto max-w-6xl px-4 py-8">
       <slot />
