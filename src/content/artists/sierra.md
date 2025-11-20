@@ -7,10 +7,14 @@ styles:
   - guts
 instagram: https://www.instagram.com/ztheghost.ink/
 images:
-  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
-    alt: giant flower
-  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg
-    alt: intestine
+  - src: /uploads/artists/sierra_headshot.jpg
+    alt: sierra_headshot
+  - src: /uploads/artists/lara_headshot.jpg
+    alt: sierra_headshot
+  - src: /uploads/artists/zirk1.jpeg
+    alt: zirk1
+  - src: /uploads/artists/zoe_headshot.png
+    alt: zoe_headshot
 bio: |
   Sierra makes blood, guts, and flowers.
 ---

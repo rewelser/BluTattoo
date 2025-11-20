@@ -6,9 +6,13 @@ styles: []
 instagram: ""
 instagramUser: ztheghost.ink
 images:
-  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
+  - src: /uploads/artists/zoe_headshot.png
     alt: big snake of poop on forearm
-  - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara2.jpg
+  - src: /uploads/artists/sierra_headshot.png
+    alt: Fine line floral
+  - src: /uploads/artists/zirk1.png
+    alt: Fine line floral
+  - src: /uploads/artists/zoe_headshot.png
     alt: Fine line floral
 bio: "Zoe is the shop apprentice. Check out her work and book below:"
 square:

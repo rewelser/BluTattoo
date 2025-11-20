@@ -4,6 +4,8 @@ import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 import InstagramProfile from "../../components/InstagramProfile.astro";
+import { ArtistGallery } from "../../components/ArtistGallery.tsx"; // adjust path
+
 
 const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
 
@@ -101,7 +103,7 @@ const { Content } = await render(entry);
       </section>
     )} -->
 
-    {entry.data.images?.length && (
+    <!-- {entry.data.images?.length && (
       <section class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {entry.data.images.map((img) => (
           <figure class="overflow-hidden rounded">
@@ -112,7 +114,24 @@ const { Content } = await render(entry);
           </figure>
         ))}
       </section>
+    )} -->
+
+    {entry.data.images?.length && (
+      <div class="mt-10">
+        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
+        <ArtistGallery
+          client:load
+          images={entry.data.images}
+        />
+      </div>
     )}
+
+    <!-- {entry.data.images && (
+      <div class="mt-10">
+        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
+        <ArtistGallery images={entry.data.images} />
+      </div>
+    )} -->
 
     {/* Preferred: Square embed if present */}
     {entry.data.square?.enabled &&

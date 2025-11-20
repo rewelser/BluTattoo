@@ -8,13 +8,15 @@ import vercel from '@astrojs/vercel';
 
 import decapCmsOauth from "astro-decap-cms-oauth";
 
+import react from '@astrojs/react';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
 
-  integrations: [decapCmsOauth()],
+  integrations: [decapCmsOauth(), react()],
 
   adapter: vercel(),
 });

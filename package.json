@@ -9,12 +9,17 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^4.4.2",
     "@astrojs/vercel": "^8.2.8",
     "@fontsource/diplomata-sc": "^5.2.8",
     "@fontsource/spectral": "^5.2.8",
     "@tailwindcss/vite": "^4.1.13",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
     "astro": "^5.14.1",
     "decap-cms-app": "^3.8.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "tailwindcss": "^4.1.13"
   },
   "overrides": {

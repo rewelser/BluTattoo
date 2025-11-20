@@ -26,22 +26,16 @@ const artists = defineCollection({
   schema:  ({ image }) => z.object({
     title: z.string(),
     order: z.number().default(999),    // ← add this
-    // photo: imageOrString(image).optional(),
-    // photo: image().optional(),
     photo: z.preprocess(emptyStrToUndef, z.string().optional()),
-    // styles: z.array(z.string()).optional(),
     styles: z.preprocess(
       (v) => emptyArrToUndef(v),
       z.array(z.string()).optional()
     ),
-    // instagram: z.string().url().optional(),
     instagram: z.preprocess(emptyStrToUndef, z.string().url().optional()),
     instagramUser: z.preprocess(emptyStrToUndef, z.string().optional()),
     images: z
       .array(
         z.object({
-          // src: imageOrString(image),
-          // src: image(),
           src: z.string(),
           alt: z.string().optional()
         })
