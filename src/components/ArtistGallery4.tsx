@@ -55,18 +55,29 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
   const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     typeof document === "undefined" ? null : ReactDOM.createPortal(children, document.body);
 
-  // keyboard navigation (unchanged)
-  useEffect(() => {
-    if (!isOpen) return;
-    const handle = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") showPrev();
-      if (e.key === "ArrowRight") showNext();
-    };
-    window.addEventListener("keydown", handle);
-    return () => window.removeEventListener("keydown", handle);
-  }, [isOpen, currentIndex]);
+    // keyboard navigation (unchanged)
+    useEffect(() => {
+        if (!isOpen) return;
+        const handle = (e: KeyboardEvent) => {
+            if (e.key === "Escape") close();
+            if (e.key === "ArrowLeft") showPrev();
+            if (e.key === "ArrowRight") showNext();
+        };
+        window.addEventListener("keydown", handle);
+        return () => window.removeEventListener("keydown", handle);
+    }, [isOpen, currentIndex]);
+  
+    useEffect(() => {
+        if (!isOpen) return;
 
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, [isOpen]);
+    
   return (
     <>
       {/* Thumbnail grid */}
