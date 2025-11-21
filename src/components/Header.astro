@@ -63,7 +63,7 @@ const logo =
           </summary>
           <ul
             role="menu"
-            class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 p-2 shadow-lg z-20"
+            class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20"
           >
             {artists.map((entry) => (
               <li role="none">
@@ -121,7 +121,7 @@ const logo =
 </div>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header id="mobileHeader" class="md:hidden top-0 z-50 border-b bg-black/80 text-orange-100 relative">
+<header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative">
   <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2" aria-label="BluTattoo Studio">
