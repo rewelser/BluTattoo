@@ -171,6 +171,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 type="button"
                                 onClick={close}
                                 className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm uppercase tracking-wide"
+                                style={{
+                                    opacity: imageOpacity,
+                                    transition: draggingRef.current
+                                        ? "none"
+                                        : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                }}
                             >
                                 Close ✕
                             </button>
@@ -182,8 +188,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     alt={currentImage.alt ?? ""}
                                     className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                     style={{
-                                        transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                        transform: `translateY(${translateY}px)`,
                                         opacity: imageOpacity,
+                                        scale: exitScale,
                                         transition: draggingRef.current
                                             ? "none"
                                             : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
@@ -196,7 +203,15 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             </div>
 
                             {/* Caption + index */}
-                            <div className="mt-3 flex items-center justify-between text-xs text-white/70">
+                            <div
+                                className="mt-3 flex items-center justify-between text-xs text-white/70"
+                                style={{
+                                    opacity: imageOpacity,
+                                    transition: draggingRef.current
+                                        ? "none"
+                                        : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                }}
+                            >
                                 <div className="truncate pr-4">
                                     {currentImage.alt ?? "\u00A0"}
                                 </div>
@@ -215,6 +230,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             showPrev();
                                         }}
                                         className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
+                                        style={{
+                                            opacity: imageOpacity,
+                                            transition: draggingRef.current
+                                                ? "none"
+                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                        }}
                                         aria-label="Previous image"
                                     >
                                         ←
@@ -226,6 +247,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             showNext();
                                         }}
                                         className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
+                                        style={{
+                                            opacity: imageOpacity,
+                                            transition: draggingRef.current
+                                                ? "none"
+                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                        }}
                                         aria-label="Next image"
                                     >
                                         →
