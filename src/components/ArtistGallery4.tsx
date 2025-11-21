@@ -26,43 +26,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // IntersectionObserver (unchanged)
-  useEffect(() => {
-    if (!isOpen || !scrollRef.current) return;
-
-    const root = scrollRef.current;
-    const visibility: Record<string, number> = {};
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const role = (entry.target as HTMLElement).dataset.role;
-          if (!role) return;
-          visibility[role] = entry.intersectionRatio;
-        });
-
-        let bestRole: string | null = null;
-        let bestRatio = 0;
-        ["prev", "current", "next"].forEach((role) => {
-          const r = visibility[role] ?? 0;
-          if (r > bestRatio) {
-            bestRatio = r;
-            bestRole = role;
-          }
-        });
-
-        if (bestRole === "next" && bestRatio > 0.7) {
-          console.log("next fully visible");
-        }
-      },
-      { root, threshold: [0.25, 0.5, 0.7, 0.9] }
-    );
-
-    const targets = root.querySelectorAll<HTMLElement>("[data-role]");
-    targets.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [isOpen]);
+  const hasSeenFirstBatch = useRef(false);
+  const testCurrentIndex = useRef<Number>(1);
 
   if (!images || images.length === 0) return null;
 
@@ -74,6 +39,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
   const close = () => {
     setIsOpen(false);
     setCurrentIndex(null);
+    hasSeenFirstBatch.current = false;
   };
 
   const showPrev = () => {
@@ -145,45 +111,18 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 ref={scrollRef}
                 className="flex w-screen overflow-x-auto snap-x snap-mandatory scroll-smooth space-x-4 px-4 scrollbar-color: auto;"
               >
-                {prevImage && (
-                  <div
-                    data-role="prev"
-                    // ★ apply id to enable anchor scrolling
-                    id={`image-${prevIndex}`}
+                {images.map((img, idx) => (
+                    <div
+                    key={img.src + idx}
+                    id={`image-${idx}`}
                     className="shrink-0 snap-center w-screen flex justify-center"
-                  >
-                    <img
-                      src={prevImage.src}
-                      className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-lg"
-                    />
-                  </div>
-                )}
-
-                <div
-                  data-role="current"
-                  // ★ apply id
-                  id={`image-${currentIndex}`}
-                  className="shrink-0 snap-center w-screen flex justify-center"
-                >
-                  <img
-                    src={currentImage.src}
-                    className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-lg"
-                  />
-                </div>
-
-                {nextImage && (
-                  <div
-                    data-role="next"
-                    // ★ apply id
-                    id={`image-${nextIndex}`}
-                    className="shrink-0 snap-center w-screen flex justify-center"
-                  >
-                    <img
-                      src={nextImage.src}
-                      className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-lg"
-                    />
-                  </div>
-                )}
+                    >
+                        <img
+                            src={img.src}
+                            className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-lg"
+                        />
+                    </div>
+                ))}
               </div>
             </div>
 
@@ -195,18 +134,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             {/* Prev / Next arrows */}
             {images.length > 1 && (
               <>
-                {/* <button
-                  onClick={(e) => { e.stopPropagation(); showPrev(); }}
-                  className="absolute left-6 top-1/2 -translate-y-1/2 hidden sm:flex text-white bg-black/40 px-2 py-2"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); showNext(); }}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 hidden sm:flex text-white bg-black/40 px-2 py-2"
-                >
-                  →
-                </button> */}
                 <a
                     href={`#image-${prevIndex}`}
                 //   onClick={(e) => { e.stopPropagation(); showPrev(); }}

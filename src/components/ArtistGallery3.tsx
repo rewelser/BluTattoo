@@ -26,33 +26,58 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  const hasSeenFirstBatch = useRef(false);
+  const testCurrentIndex = useRef<Number>(1);
+
   // IntersectionObserver (unchanged)
   useEffect(() => {
     if (!isOpen || !scrollRef.current) return;
 
     const root = scrollRef.current;
     const visibility: Record<string, number> = {};
+    const elementIds: Record<string, number> = {};
 
     const observer = new IntersectionObserver(
       (entries) => {
+        console.log("observer 1 ran");
         entries.forEach((entry) => {
           const role = (entry.target as HTMLElement).dataset.role;
-          if (!role) return;
+          const idxStr = (entry.target as HTMLElement).dataset.index ?? "";
+          if (idxStr == null) return;
+          const idx = Number(idxStr);
+          if (Number.isNaN(idx) || !role) return;
           visibility[role] = entry.intersectionRatio;
+          elementIds[role] = idx;
         });
 
         let bestRole: string | null = null;
         let bestRatio = 0;
+        let bestIndex = 0;
         ["prev", "current", "next"].forEach((role) => {
           const r = visibility[role] ?? 0;
+          const i = elementIds[role] ?? 0;
           if (r > bestRatio) {
             bestRatio = r;
             bestRole = role;
+            bestIndex = i;
           }
         });
 
-        if (bestRole === "next" && bestRatio > 0.7) {
-          console.log("next fully visible");
+        // Skip the first batch of intersections (initial layout)
+        console.log("hasSeenFirstBatch: ", hasSeenFirstBatch);
+        if (!hasSeenFirstBatch.current) {
+            hasSeenFirstBatch.current = true;
+            return;
+        }
+
+        // console.log(entry.target);
+        if (bestRatio > 0.7) {
+          console.log(bestRole + " fully visible");
+          console.log("best's index: " + bestIndex);
+          setCurrentIndex((prev) => {
+            if (prev === bestIndex) return prev; // already current, do nothing
+            return bestIndex;
+          });
         }
       },
       { root, threshold: [0.25, 0.5, 0.7, 0.9] }
@@ -74,6 +99,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
   const close = () => {
     setIsOpen(false);
     setCurrentIndex(null);
+    hasSeenFirstBatch.current = false;
   };
 
   const showPrev = () => {
@@ -148,7 +174,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 {prevImage && (
                   <div
                     data-role="prev"
-                    // ★ apply id to enable anchor scrolling
+                    data-index={prevIndex ?? undefined}
                     id={`image-${prevIndex}`}
                     className="shrink-0 snap-center w-screen flex justify-center"
                   >
@@ -161,7 +187,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                 <div
                   data-role="current"
-                  // ★ apply id
+                  data-index={currentIndex ?? undefined}
                   id={`image-${currentIndex}`}
                   className="shrink-0 snap-center w-screen flex justify-center"
                 >
@@ -174,7 +200,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 {nextImage && (
                   <div
                     data-role="next"
-                    // ★ apply id
+                    data-index={nextIndex ?? undefined}
                     id={`image-${nextIndex}`}
                     className="shrink-0 snap-center w-screen flex justify-center"
                   >
