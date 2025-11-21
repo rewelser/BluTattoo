@@ -107,7 +107,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
       {isOpen && currentImage && (
         <LightboxPortal>
           <div
-            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur flex flex-col h-screen"
+            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur flex flex-col"
             onClick={(e) => e.target === e.currentTarget && close()}
           >
 
