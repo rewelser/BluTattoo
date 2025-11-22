@@ -10,8 +10,11 @@ interface ArtistGalleryProps {
     images?: ArtistImage[];
 }
 
-const DRAG_CLOSE_THRESHOLD = 120; // px distance to trigger close
+const DRAG_CLOSE_THRESHOLD = 120;
+const DRAG_LOCK_THRESHOLD = 10;
 const BACKDROP_FADE_DURATION = 180;
+const SWIPE_IMAGE_CHANGE_THRESHOLD = 80;
+const SWIPE_IMAGE_RENDER_THRESHOLD = 40;
 
 const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (typeof document === "undefined") return null; // SSR guard
@@ -30,6 +33,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const draggingRef = useRef(false);
     const draggingXRef = useRef(false);
     const draggingYRef = useRef(false);
+    const prevRenderRef = useRef(false);
+    const nextRenderRef = useRef(false);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
 
@@ -41,6 +46,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const handlePointerDown = (e: React.PointerEvent) => {
         e.preventDefault();
         draggingRef.current = true;
+        draggingXRef.current = false;
+        draggingYRef.current = false;
         startXRef.current = e.clientX;
         startYRef.current = e.clientY;
 
@@ -54,57 +61,78 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         const deltaX = e.clientX - startXRef.current;
         const deltaY = e.clientY - startYRef.current;
 
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+
         if (!draggingXRef.current && !draggingYRef.current) {
-            if (deltaX > deltaY) {
+            const maxDelta = Math.max(absX, absY);
+
+            if (maxDelta < DRAG_LOCK_THRESHOLD) {
+                return;
+            }
+
+            if (absX > absY) {
                 draggingXRef.current = true;
-            } else if (deltaX < deltaY) {
+            } else {
                 draggingYRef.current = true;
             }
         }
 
         if (draggingXRef.current) {
-            console.log("translating x");
             setTranslateX(deltaX);
+            setTranslateY(0);
         } else if (draggingYRef.current) {
-            console.log("translating y");
             setTranslateY(deltaY);
+            setTranslateX(0);
         }
 
-
-        // setTranslateX(deltaX);
-        // Only care about vertical drag; you can add direction locking if you want
-        // setTranslateY(deltaY);
+        // dragging X prev/next render logic
+        if (draggingXRef.current) {
+            // draggi
+            if (deltaX < -SWIPE_IMAGE_RENDER_THRESHOLD) {
+                // render prev
+                prevRenderRef.current = true;
+            } else if (deltaX > SWIPE_IMAGE_RENDER_THRESHOLD) {
+                // render next
+                nextRenderRef.current = true;
+            }
+        }
 
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
         e.preventDefault();
 
+        if (!draggingRef.current) return;
+
         const deltaX = draggingYRef.current ? 0 : e.clientX - startXRef.current;
         const deltaY = draggingXRef.current ? 0 : e.clientY - startYRef.current;
 
-        console.log("draggingXRef.current: ", draggingXRef.current);
-        console.log("draggingYRef.current: ", draggingYRef.current);
-        console.log("deltaX: " + deltaX);
-        console.log("deltaY: " + deltaY);
-        setTranslateX(0);
-        setTranslateY(0);
+        if (Math.abs(deltaY) > DRAG_CLOSE_THRESHOLD) {
+            console.log("should be closing???");
+            close();
+        }
+        // else if (draggingXRef.current && Math.abs(deltaX) > SWIPE_IMAGE_CHANGE_THRESHOLD) {
+        //     if (deltaX > 0) {
+        //         // Swiped right → show previous
+        //         showPrev();
+        //     } else {
+        //         // Swiped left → show next
+        //         showNext();
+        //     }
+        //     setTranslateX(0);
+        // } 
+        else {
+            // Snap back
+            setTranslateX(0);
+            setTranslateY(0);
+            setBackdropOpacity(1);
+            setImageOpacity(1);
+        }
 
-        if (!draggingRef || !draggingXRef || !draggingYRef) return;
         draggingRef.current = false;
         draggingXRef.current = false;
         draggingYRef.current = false;
-
-        // if (Math.abs(deltaY) > DRAG_CLOSE_THRESHOLD) {
-        //     console.log("should be closing???");
-        //     close();
-        // } else {
-        //     // Snap back
-        //     setTranslateX(0);
-        //     setTranslateY(0);
-        //     setBackdropOpacity(1);
-        //     setImageOpacity(1);
-        // }
     };
 
     const openAt = (index: number) => {
@@ -134,6 +162,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             setIsClosing(false);
             setBackdropOpacity(1);
             setImageOpacity(1);
+            setTranslateX(0);
             setTranslateY(0);
             setExitScale(1);
             document.body.style.overflow = ""; // restore scroll
@@ -192,7 +221,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             {isOpen && currentImage && (
                 <LightboxPortal>
                     <div
-                        className="fixed inset-0 z-[999] flex items-center justify-center px-4"
+                        className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between px-4"
                         onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 close();
@@ -203,12 +232,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
                         }}
                     >
-                        <div className="relative max-w-5xl w-full">
-                            {/* Close */}
+                        {/* Close */}
+                        <div className="flex justify-end">
                             <button
                                 type="button"
                                 onClick={close}
-                                className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm uppercase tracking-wide"
+                                className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
                                 style={{
                                     opacity: imageOpacity,
                                     transition: draggingRef.current
@@ -218,9 +247,72 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             >
                                 Close ✕
                             </button>
+                        </div>
 
-                            {/* Image */}
-                            <div className="flex items-center justify-center">
+                        {/* Arrows */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        showPrev();
+                                    }}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
+                                    style={{
+                                        opacity: imageOpacity,
+                                        transition: draggingRef.current
+                                            ? "none"
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                    }}
+                                    aria-label="Previous image"
+                                >
+                                    ←
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        showNext();
+                                    }}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
+                                    style={{
+                                        opacity: imageOpacity,
+                                        transition: draggingRef.current
+                                            ? "none"
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                    }}
+                                    aria-label="Next image"
+                                >
+                                    →
+                                </button>
+                            </>
+                        )}
+
+                        {/* Image */}
+                        <div className="relative max-w-5xl w-full">
+                            {prevRenderRef.current && (
+                                <div className="flex items-center justify-center">
+                                    <img
+                                        src={currentImage.src}
+                                        alt={currentImage.alt ?? ""}
+                                        className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
+                                        style={{
+                                            transform: `translate(${translateX}px, ${translateY}px)`,
+                                            opacity: imageOpacity,
+                                            scale: exitScale,
+                                            transition: draggingRef.current
+                                                ? "none"
+                                                : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                        }}
+                                        onPointerDown={handlePointerDown}
+                                        onPointerMove={handlePointerMove}
+                                        onPointerUp={handlePointerUp}
+                                        onPointerCancel={handlePointerUp}
+                                    />
+                                </div>
+                            )}
+                            <div id="img container" className="flex items-center justify-center">
                                 <img
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
@@ -239,64 +331,45 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     onPointerCancel={handlePointerUp}
                                 />
                             </div>
-
-                            {/* Caption + index */}
-                            <div
-                                className="mt-3 flex items-center justify-between text-xs text-white/70"
-                                style={{
-                                    opacity: imageOpacity,
-                                    transition: draggingRef.current
-                                        ? "none"
-                                        : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                }}
-                            >
-                                <div className="truncate pr-4">
-                                    {currentImage.alt ?? "\u00A0"}
-                                </div>
-                                <div>
-                                    {(currentIndex ?? 0) + 1} / {images.length}
-                                </div>
-                            </div>
-
-                            {/* Arrows */}
-                            {images.length > 1 && (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            showPrev();
-                                        }}
-                                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
+                            {nextRenderRef.current && (
+                                <div className="flex items-center justify-center">
+                                    <img
+                                        src={currentImage.src}
+                                        alt={currentImage.alt ?? ""}
+                                        className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
+                                            transform: `translate(${translateX}px, ${translateY}px)`,
                                             opacity: imageOpacity,
+                                            scale: exitScale,
                                             transition: draggingRef.current
                                                 ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                                : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
-                                        aria-label="Previous image"
-                                    >
-                                        ←
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            showNext();
-                                        }}
-                                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60"
-                                        style={{
-                                            opacity: imageOpacity,
-                                            transition: draggingRef.current
-                                                ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                        aria-label="Next image"
-                                    >
-                                        →
-                                    </button>
-                                </>
+                                        onPointerDown={handlePointerDown}
+                                        onPointerMove={handlePointerMove}
+                                        onPointerUp={handlePointerUp}
+                                        onPointerCancel={handlePointerUp}
+                                    />
+                                </div>
                             )}
+                        </div>
+
+                        {/* Caption + index */}
+                        <div
+                            className="mt-3 py-4 flex items-stretch justify-between text-xs text-white/70"
+                            style={{
+                                opacity: imageOpacity,
+                                transition: draggingRef.current
+                                    ? "none"
+                                    : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                            }}
+                        >
+                            <div className="truncate pr-4">
+                                {currentImage.alt ?? "\u00A0"}
+                            </div>
+                            <div>
+                                {(currentIndex ?? 0) + 1} / {images.length}
+                            </div>
                         </div>
                     </div>
                 </LightboxPortal>
