@@ -25,6 +25,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [isOpen, setIsOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+    const prevIndex =
+        currentIndex !== null ? (currentIndex - 1 + images.length) % images.length : null;
+    const nextIndex =
+        currentIndex !== null ? (currentIndex + 1) % images.length : null;
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
     const [exitScale, setExitScale] = useState(1);
@@ -290,9 +294,11 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         )}
 
                         {/* Image */}
-                        <div className="relative">
+                        <div className="relative flex flex-row">
+
+                            {/* <div className="flex items-center justify-center w-screen"> */}
                             {prevRenderRef.current && (
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center w-screen">
                                     <img
                                         src={currentImage.src}
                                         alt={currentImage.alt ?? ""}
@@ -312,7 +318,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     />
                                 </div>
                             )}
-                            <div id="img container" className="flex items-center justify-center">
+                            <div className="flex items-center justify-center w-screen">
                                 <img
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
@@ -332,7 +338,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 />
                             </div>
                             {nextRenderRef.current && (
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center w-screen">
+
                                     <img
                                         src={currentImage.src}
                                         alt={currentImage.alt ?? ""}
@@ -352,6 +359,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     />
                                 </div>
                             )}
+                            {/* </div> */}
                         </div>
 
                         {/* Caption + index */}

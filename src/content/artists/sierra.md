@@ -10,7 +10,7 @@ images:
   - src: /uploads/artists/sierra_headshot.jpg
     alt: sierra_headshot
   - src: /uploads/artists/lara_headshot.jpg
-    alt: sierra_headshot
+    alt: lara_headshot
   - src: /uploads/artists/zirk1.jpeg
     alt: zirk1
   - src: /uploads/artists/zoe_headshot.png

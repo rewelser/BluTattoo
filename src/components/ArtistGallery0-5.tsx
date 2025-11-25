@@ -13,7 +13,8 @@ interface ArtistGalleryProps {
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
 const BACKDROP_FADE_DURATION = 180;
-const SWIPE_IMAGE_CHANGE_THRESHOLD = 80;
+const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
+// ^ might need to make a mobile threshold as well ^
 const SWIPE_IMAGE_RENDER_THRESHOLD = 40;
 
 const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -25,6 +26,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [isOpen, setIsOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+    const prevIndex =
+        currentIndex !== null ? (currentIndex - 1 + images.length) % images.length : null;
+    const nextIndex =
+        currentIndex !== null ? (currentIndex + 1) % images.length : null;
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
     const [exitScale, setExitScale] = useState(1);
@@ -35,13 +40,13 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const draggingYRef = useRef(false);
     const prevRenderRef = useRef(false);
     const nextRenderRef = useRef(false);
+    const prevShowRef = useRef(false);
+    const nextShowRef = useRef(false);
+    const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
 
     if (!images || images.length === 0) return null;
-
-
-
 
     const handlePointerDown = (e: React.PointerEvent) => {
         e.preventDefault();
@@ -86,18 +91,13 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             setTranslateX(0);
         }
 
-        // dragging X prev/next render logic
         if (draggingXRef.current) {
-            // draggi
             if (deltaX < -SWIPE_IMAGE_RENDER_THRESHOLD) {
-                // render prev
                 prevRenderRef.current = true;
             } else if (deltaX > SWIPE_IMAGE_RENDER_THRESHOLD) {
-                // render next
                 nextRenderRef.current = true;
             }
         }
-
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
@@ -108,30 +108,44 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         const deltaX = draggingYRef.current ? 0 : e.clientX - startXRef.current;
         const deltaY = draggingXRef.current ? 0 : e.clientY - startYRef.current;
 
-        if (Math.abs(deltaY) > DRAG_CLOSE_THRESHOLD) {
-            console.log("should be closing???");
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+
+        draggingRef.current = false;
+
+        if (draggingYRef.current && absY > DRAG_CLOSE_THRESHOLD) {
             close();
         }
-        // else if (draggingXRef.current && Math.abs(deltaX) > SWIPE_IMAGE_CHANGE_THRESHOLD) {
-        //     if (deltaX > 0) {
-        //         // Swiped right → show previous
-        //         showPrev();
-        //     } else {
-        //         // Swiped left → show next
-        //         showNext();
-        //     }
-        //     setTranslateX(0);
-        // } 
+        else if (draggingXRef.current && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
+            console.log("currentImage: ", currentImage);
+            console.log("currentIndex: ", currentIndex);
+            draggingXRef.current = false;
+            if (deltaX > 0) {
+                // showPrev();
+                // console.log("prevShowRef");
+                // prevShowRef.current = true;
+                // nextShowRef.current = false;
+                setSwipeDirection("prev");
+            } else {
+                // showNext();
+                // console.log("nextShowRef");
+                // prevShowRef.current = false;
+                // nextShowRef.current = true;
+                setSwipeDirection("next");
+            }
+            // setTranslateX(0);
+            // setTranslateY(0);
+        }
         else {
             // Snap back
+            setSwipeDirection(null);
             setTranslateX(0);
             setTranslateY(0);
             setBackdropOpacity(1);
             setImageOpacity(1);
         }
 
-        draggingRef.current = false;
-        draggingXRef.current = false;
+        // draggingXRef.current = false;
         draggingYRef.current = false;
     };
 
@@ -165,6 +179,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             setTranslateX(0);
             setTranslateY(0);
             setExitScale(1);
+            console.log("currentImage: ", currentImage);
+            console.log("currentIndex: ", currentIndex);
             document.body.style.overflow = ""; // restore scroll
         }, BACKDROP_FADE_DURATION);
     };
@@ -289,18 +305,52 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             </>
                         )}
 
-                        {/* Image */}
-                        <div className="relative">
-                            {prevRenderRef.current && (
-                                <div className="flex items-center justify-center">
+                        {/* Image track: prev | current | next */}
+                        <div className="relative flex overflow-hidden w-screen">
+                            <div
+                                id="img container"
+                                className="flex border-5 border-indigo-500 border-dotted"
+                                style={{
+                                    transform: draggingXRef.current
+                                        ? `translateX(calc(-100vw + ${translateX}px))`
+                                        : swipeDirection === "prev"
+                                            ? "translateX(0vw)"
+                                            : swipeDirection === "next"
+                                                ? "translateX(-200vw)"
+                                                : "translateX(-100vw)",
+                                    transition: draggingRef.current
+                                        ? "none"
+                                        : `transform ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                }}
+                            >
+                                {/* Prev slide (off to the left) */}
+                                {prevIndex !== null && (
+                                    <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
+                                        <img
+                                            src={images[prevIndex].src}
+                                            alt={images[prevIndex].alt ?? ""}
+                                            className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
+                                            // no pointer handlers on neighbors
+                                            style={{
+                                                transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                                opacity: imageOpacity,
+                                                transition: draggingRef.current
+                                                    ? "none"
+                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Current slide (center) */}
+                                <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
                                     <img
                                         src={currentImage.src}
                                         alt={currentImage.alt ?? ""}
                                         className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
-                                            transform: `translate(${translateX}px, ${translateY}px)`,
+                                            transform: `translateY(${translateY}px) scale(${exitScale})`,
                                             opacity: imageOpacity,
-                                            scale: exitScale,
                                             transition: draggingRef.current
                                                 ? "none"
                                                 : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
@@ -311,47 +361,25 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         onPointerCancel={handlePointerUp}
                                     />
                                 </div>
-                            )}
-                            <div id="img container" className="flex items-center justify-center">
-                                <img
-                                    src={currentImage.src}
-                                    alt={currentImage.alt ?? ""}
-                                    className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
-                                    style={{
-                                        transform: `translate(${translateX}px, ${translateY}px)`,
-                                        opacity: imageOpacity,
-                                        scale: exitScale,
-                                        transition: draggingRef.current
-                                            ? "none"
-                                            : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                    }}
-                                    onPointerDown={handlePointerDown}
-                                    onPointerMove={handlePointerMove}
-                                    onPointerUp={handlePointerUp}
-                                    onPointerCancel={handlePointerUp}
-                                />
+
+                                {/* Next slide (off to the right) */}
+                                {nextIndex !== null && (
+                                    <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
+                                        <img
+                                            src={images[nextIndex].src}
+                                            alt={images[nextIndex].alt ?? ""}
+                                            className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
+                                            style={{
+                                                transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                                opacity: imageOpacity,
+                                                transition: draggingRef.current
+                                                    ? "none"
+                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
-                            {nextRenderRef.current && (
-                                <div className="flex items-center justify-center">
-                                    <img
-                                        src={currentImage.src}
-                                        alt={currentImage.alt ?? ""}
-                                        className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
-                                        style={{
-                                            transform: `translate(${translateX}px, ${translateY}px)`,
-                                            opacity: imageOpacity,
-                                            scale: exitScale,
-                                            transition: draggingRef.current
-                                                ? "none"
-                                                : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                        onPointerDown={handlePointerDown}
-                                        onPointerMove={handlePointerMove}
-                                        onPointerUp={handlePointerUp}
-                                        onPointerCancel={handlePointerUp}
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         {/* Caption + index */}
