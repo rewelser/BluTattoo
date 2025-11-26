@@ -192,15 +192,24 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
     const showPrev = () => {
         if (currentIndex === null) return;
-        setCurrentIndex((currentIndex - 1 + images.length) % images.length);
+        setCurrentIndex((prev) => {
+            if (prev === null) return prev;
+            return (prev - 1 + images.length) % images.length;
+        });
+        setSwipeDirection(null);
+        setTranslateX(0);
+
+
     };
 
     const showNext = () => {
-        console.log("shownext fired");
         if (currentIndex === null) return;
-        setCurrentIndex((currentIndex + 1) % images.length);
+        setCurrentIndex((prev) => {
+            if (prev === null) return prev;
+            return (prev + 1) % images.length;
+        });
         setSwipeDirection(null);
-        printStuff();
+        setTranslateX(0);
     };
 
     // useLayoutEffect(() => {
@@ -211,6 +220,59 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     //         (lightboxImageContainer as HTMLElement).style.transitionDuration = '0s';
     //     }
     // }, [swipeDirection])
+
+    // const handleTrackTransitionEnd = (
+    //     e: React.TransitionEvent<HTMLDivElement>
+    // ) => {
+    //     // Only care about transform finishing:
+    //     if (e.propertyName !== "transform") return;
+
+    //     // If we're not in a swipe animation, ignore.
+    //     if (!swipeDirection) return;
+
+    //     // Commit the index change
+    //     if (swipeDirection === "prev") {
+    //         showPrev();
+    //     } else if (swipeDirection === "next") {
+    //         showNext();
+    //     }
+    //     // setCurrentIndex((prev) => {
+    //     //     if (prev === null) return prev;
+    //     //     if (swipeDirection === "next") {
+    //     //         return (prev + 1) % images.length;
+    //     //     } else {
+    //     //         return (prev - 1 + images.length) % images.length;
+    //     //     }
+    //     // });
+
+    //     // // Reset everything for the next interaction
+    //     // setSwipeDirection(null);
+    //     // setTranslateX(0);
+    // };
+
+    const handleTrackTransitionEnd = (
+        e: React.TransitionEvent<HTMLDivElement>
+    ) => {
+        // Only care about transform finishing:
+        if (e.propertyName !== "transform") return;
+
+        // If we're not in a swipe animation, ignore.
+        if (!swipeDirection) return;
+
+        // Commit the index change
+        setCurrentIndex((prev) => {
+            if (prev === null) return prev;
+            if (swipeDirection === "next") {
+                return (prev + 1) % images.length;
+            } else {
+                return (prev - 1 + images.length) % images.length;
+            }
+        });
+
+        // Reset everything for the next interaction
+        setSwipeDirection(null);
+        setTranslateX(0);
+    };
 
     const printStuff = () => {
         console.log("currentImage: ", currentImage);
@@ -305,7 +367,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        showPrev();
+                                        // showPrev();
+                                        setSwipeDirection("prev");
                                     }}
                                     className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
@@ -322,7 +385,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        showNext();
+                                        // showNext();
+                                        setSwipeDirection("next");
                                     }}
                                     className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
@@ -343,6 +407,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             <div
                                 id="lightbox-image-container"
                                 className="flex border-5 border-indigo-500 border-dotted"
+                                onTransitionEnd={handleTrackTransitionEnd}
                                 style={{
                                     transform: draggingXRef.current
                                         ? `translateX(calc(-100vw + ${translateX}px))`
@@ -351,8 +416,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             : swipeDirection === "next"
                                                 ? "translateX(-200vw)"
                                                 : "translateX(-100vw)",
-                                    // transition: swipeDirection === null
-                                    transition: draggingRef.current
+                                    // transition: draggingRef.current
+                                    transition: draggingRef.current || swipeDirection === null
                                         ? "none"
                                         : `transform ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
