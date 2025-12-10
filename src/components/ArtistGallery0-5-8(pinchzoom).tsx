@@ -16,6 +16,10 @@ const BACKDROP_FADE_DURATION = 180;
 const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
 // ^ might need to make a mobile threshold as well ^
 const SWIPE_IMAGE_RENDER_THRESHOLD = 40;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+const clamp = (value: number, min: number, max: number) =>
+    Math.min(max, Math.max(min, value));
 
 const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (typeof document === "undefined") return null; // SSR guard
@@ -35,6 +39,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [exitScale, setExitScale] = useState(1);
     const [backdropOpacity, setBackdropOpacity] = useState(1);
     const [imageOpacity, setImageOpacity] = useState(1);
+    // const [pinchZoomScale, setPinchZoomScale] = useState(1);
+    const [zoom, setZoom] = useState(1);
+    const zoomRef = useRef(1)
+    const pinchStartDistanceRef = useRef<number | null>(null);
     const draggingRef = useRef(false);
     const draggingXRef = useRef(false);
     const draggingYRef = useRef(false);
@@ -45,11 +53,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
-    //pinchzoom globals
+    //pinchzoom
     const evCacheRef = useRef<React.PointerEvent[]>([]);
     const prevDiffRef = useRef<number | null>(null);
-    // const evCache: any[] = [];
-    // let prevDiff = -1;
 
     if (!images || images.length === 0) return null;
 
@@ -63,7 +69,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         startYRef.current = e.clientY;
 
         // printStuff("handlePointerDown");
-        // evCache.push(e);
         const evCache = evCacheRef.current;
         evCache.push(e);
         // console.log("evCache.length (pointerDown): " + evCache.length);
@@ -85,9 +90,13 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         } else {
             evCache[index] = e;
         }
-        // console.log("evCache.length (pointerMove): " + evCache.length);
 
-        if (evCache.length !== 2) {
+        const isPinchGesture =
+            evCache.length === 2 &&
+            evCache.every((ev) => ev.pointerType === "touch");
+        // console.log("evCache.length (pointerMove): " + evCache.length);
+        // evCache[0].
+        if (!isPinchGesture) {
             console.log("dragging");
             if (!draggingRef.current) return;
 
@@ -130,9 +139,21 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         }
         ////// pinchzoom stuff
         // If two pointers are down, check for pinch gestures
-        else if (evCache.length === 2) {
+        else if (isPinchGesture) {
             console.log("pinching");
             const [ev1, ev2] = evCache;
+
+            const t1 = ev1.target as HTMLElement;
+            const t2 = ev2.target as HTMLElement;
+
+            const bothOnZoomable =
+                t1.closest("[data-zoomable='true']") &&
+                t2.closest("[data-zoomable='true']");
+
+            if (!bothOnZoomable) {
+                // Fingers aren’t both on the image — ignore pinch, maybe treat as drag or do nothing
+                return;
+            }
 
             // Calculate the distance between the two pointers
             const curDiff = Math.hypot(
@@ -143,15 +164,22 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
             const prevDiff = prevDiffRef.current;
             if (prevDiff !== null) {
+                let zoomScale = Math.ceil(Math.abs(curDiff) / 20);
+
                 if (curDiff > prevDiff) {
                     // The distance between the two pointers has increased
                     console.log("Pinch moving OUT -> Zoom in", e);
                     (e.target as HTMLElement).style.background = "pink";
+                    console.log("curdif: ", curDiff);
+                    console.log("zoomScale: ", zoomScale);
+                    console.log("zoomScale > 0 ?: ", zoomScale > 0);
                 } else if (curDiff < prevDiff) {
                     // The distance between the two pointers has decreased
                     console.log("Pinch moving IN -> Zoom out", e);
                     (e.target as HTMLElement).style.background = "lightblue";
                 }
+                // setPinchZoomScale(zoomScale);
+
             }
 
             // Cache the distance for the next move event
@@ -226,25 +254,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         // draggingXRef.current = false;
         draggingYRef.current = false;
 
-        // removeEvent(e);
         // console.log("evCache.length (pointerUp (premod)): " + evCache.length);
-        // if (evCache.length < 2) {
-        //     prevDiff = -1;
-        // }
-        // evCache.length = 0;
-        // console.log("evCache.length (pointerUp (postmod)): " + evCache.length);
     };
-
-    // const removeEvent = (e: React.PointerEvent) => {
-    //     console.log("evCache.length (pointerUp (post_removeEvent)): " + evCache.length);
-    //     // Remove this event from the target's cache
-    //     const index = evCache.findIndex(
-    //         (cachedEv) => cachedEv.pointerId === e.pointerId,
-    //     );
-    //     evCache.splice(index, 1);
-
-    //     console.log("evCache.length (pointerUp (pre_removeEvent)): " + evCache.length);
-    // };
 
     const openAt = (index: number) => {
         setCurrentIndex(index);
@@ -451,7 +462,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         <div className="grow-2 relative flex overflow-hidden w-screen">
                             <div
                                 id="lightbox-image-container"
-                                className="flex border-5 border-indigo-500 border-dotted touch-none"
+                                className="flex border-5 border-indigo-500 border-dotted touch-none" // touch-none
                                 onPointerDown={handlePointerDown}
                                 onPointerMove={handlePointerMove}
                                 onPointerUp={handlePointerUp}
@@ -495,10 +506,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     <img
                                         src={currentImage.src}
                                         alt={currentImage.alt ?? ""}
+                                        data-zoomable="true"
                                         className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
                                             transform: `translateY(${translateY}px) scale(${exitScale})`,
                                             opacity: imageOpacity,
+                                            // scale: 1 * pinchZoomScale,
                                             transition: draggingRef.current
                                                 ? "none"
                                                 : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,

@@ -12,10 +12,15 @@ interface ArtistGalleryProps {
 
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
-const BACKDROP_FADE_DURATION = 180;
+const BACKDROP_FADE_DURATION = 200;
+// const BACKDROP_FADE_DURATION = 2000;
 const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
 // ^ might need to make a mobile threshold as well ^
 const SWIPE_IMAGE_RENDER_THRESHOLD = 40;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+const clamp = (value: number, min: number, max: number) =>
+    Math.min(max, Math.max(min, value));
 
 const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (typeof document === "undefined") return null; // SSR guard
@@ -31,49 +36,60 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const nextIndex =
         currentIndex !== null ? (currentIndex + 1) % images.length : null;
     const [translateX, setTranslateX] = useState(0);
-    const [translateY, setTranslateY] = useState(0);
+    const [translateY, setTranslateY] = useState(0); // was zero; might should still be zero--see note about "0 * i = 0"
+    const [panX, setPanX] = useState(0);
+    const [panY, setPanY] = useState(0);
+    const panXRef = useRef(0);
+    const panYRef = useRef(0);
+    const panXStartRef = useRef(0);
+    const panYStartRef = useRef(0);
+    const containerRef = useRef<HTMLDivElement | null>(null); // should get viewport values a different way
+    const imageRef = useRef<HTMLImageElement | null>(null);
+    const maxPanXRef = useRef(0);
+    const maxPanYRef = useRef(0);
     const [exitScale, setExitScale] = useState(1);
     const [backdropOpacity, setBackdropOpacity] = useState(1);
     const [imageOpacity, setImageOpacity] = useState(1);
+    const [zoom, setZoom] = useState(1);
+    const zoomRef = useRef(1);
+    const pinchStartDistanceRef = useRef<number | null>(null);
+    const pinchStartZoomRef = useRef(1);
     const draggingRef = useRef(false);
     const draggingXRef = useRef(false);
     const draggingYRef = useRef(false);
     const prevRenderRef = useRef(false);
     const nextRenderRef = useRef(false);
-    const prevShowRef = useRef(false);
-    const nextShowRef = useRef(false);
     const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
-    //pinchzoom globals
+    //pinchzoom
     const evCacheRef = useRef<React.PointerEvent[]>([]);
-    const prevDiffRef = useRef<number | null>(null);
-    // const evCache: any[] = [];
-    // let prevDiff = -1;
 
     if (!images || images.length === 0) return null;
 
     const handlePointerDown = (e: React.PointerEvent) => {
-        console.log("pointerDown");
+        if (isClosing) return;
         e.preventDefault();
+
+        const evCache = evCacheRef.current;
+        evCache.push(e);
+        // capture pointer so moves outside the image still report to this element
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
         draggingRef.current = true;
         draggingXRef.current = false;
         draggingYRef.current = false;
         startXRef.current = e.clientX;
         startYRef.current = e.clientY;
 
-        // printStuff("handlePointerDown");
-        // evCache.push(e);
-        const evCache = evCacheRef.current;
-        evCache.push(e);
-        // console.log("evCache.length (pointerDown): " + evCache.length);
-
-        // capture pointer so moves outside the image still report to this element
-        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        if (zoomRef.current > 1) {
+            panXStartRef.current = panXRef.current;
+            panYStartRef.current = panYRef.current;
+        }
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        console.log("pointerMove");
+        if (isClosing) return;
+        // console.log("pointerMove");
         const evCache = evCacheRef.current;
 
         // Find this event in the cache and update its record with this event
@@ -85,54 +101,89 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         } else {
             evCache[index] = e;
         }
-        // console.log("evCache.length (pointerMove): " + evCache.length);
 
-        if (evCache.length !== 2) {
-            console.log("dragging");
-            if (!draggingRef.current) return;
+        const isPinchGesture =
+            evCache.length === 2 &&
+            evCache.every((ev) => ev.pointerType === "touch");
 
-            const deltaX = e.clientX - startXRef.current;
-            const deltaY = e.clientY - startYRef.current;
+        if (!isPinchGesture) {
+            // panning a zoomed image
+            if (zoomRef.current > 1) {
+                if (!draggingRef.current) return;
+                console.log("is panning");
 
-            const absX = Math.abs(deltaX);
-            const absY = Math.abs(deltaY);
+                const deltaX = e.clientX - startXRef.current;
+                const deltaY = e.clientY - startYRef.current;
+                const rawPanX = panXStartRef.current + deltaX;
+                const rawPanY = panYStartRef.current + deltaY;
+                const maxX = maxPanXRef.current;
+                const maxY = maxPanYRef.current;
+                const clampedX = clamp(rawPanX, -maxX, maxX);
+                const clampedY = clamp(rawPanY, -maxY, maxY);
+                panXRef.current = clampedX;
+                panYRef.current = clampedY;
+                setPanX(clampedX);
+                setPanY(clampedY);
+            } else {
+                // else, dragging (x to swipe next/prev, or y to close)
+                if (!draggingRef.current) return;
+                console.log("is dragging");
 
-            if (!draggingXRef.current && !draggingYRef.current) {
-                const maxDelta = Math.max(absX, absY);
+                const deltaX = e.clientX - startXRef.current;
+                const deltaY = e.clientY - startYRef.current;
 
-                if (maxDelta < DRAG_LOCK_THRESHOLD) {
-                    console.log("returning too early");
-                    return;
+                const absX = Math.abs(deltaX);
+                const absY = Math.abs(deltaY);
+
+                if (!draggingXRef.current && !draggingYRef.current) {
+                    const maxDelta = Math.max(absX, absY);
+
+                    if (maxDelta < DRAG_LOCK_THRESHOLD) {
+                        console.log("returning too early");
+                        return;
+                    }
+
+                    if (absX > absY) {
+                        draggingXRef.current = true;
+                    } else {
+                        draggingYRef.current = true;
+                    }
                 }
 
-                if (absX > absY) {
-                    draggingXRef.current = true;
-                } else {
-                    draggingYRef.current = true;
+                if (draggingXRef.current) {
+                    setTranslateX(deltaX);
+                    setTranslateY(0);
+                } else if (draggingYRef.current) {
+                    setTranslateY(deltaY);
+                    setTranslateX(0);
                 }
-            }
 
-            if (draggingXRef.current) {
-                setTranslateX(deltaX);
-                setTranslateY(0);
-            } else if (draggingYRef.current) {
-                setTranslateY(deltaY);
-                setTranslateX(0);
-            }
-
-            if (draggingXRef.current) {
-                if (deltaX < -SWIPE_IMAGE_RENDER_THRESHOLD) {
-                    prevRenderRef.current = true;
-                } else if (deltaX > SWIPE_IMAGE_RENDER_THRESHOLD) {
-                    nextRenderRef.current = true;
+                if (draggingXRef.current) {
+                    if (deltaX < -SWIPE_IMAGE_RENDER_THRESHOLD) {
+                        prevRenderRef.current = true;
+                    } else if (deltaX > SWIPE_IMAGE_RENDER_THRESHOLD) {
+                        nextRenderRef.current = true;
+                    }
                 }
             }
         }
         ////// pinchzoom stuff
         // If two pointers are down, check for pinch gestures
-        else if (evCache.length === 2) {
+        else if (isPinchGesture) {
             console.log("pinching");
             const [ev1, ev2] = evCache;
+
+            const t1 = ev1.target as HTMLElement;
+            const t2 = ev2.target as HTMLElement;
+
+            const bothOnZoomable =
+                t1.closest("[data-zoomable='true']") &&
+                t2.closest("[data-zoomable='true']");
+
+            if (!bothOnZoomable) {
+                // Fingers aren’t both on the image — ignore pinch, maybe treat as drag or do nothing
+                return;
+            }
 
             // Calculate the distance between the two pointers
             const curDiff = Math.hypot(
@@ -140,30 +191,38 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 ev1.clientY - ev2.clientY
             )
 
-
-            const prevDiff = prevDiffRef.current;
-            if (prevDiff !== null) {
-                if (curDiff > prevDiff) {
-                    // The distance between the two pointers has increased
-                    console.log("Pinch moving OUT -> Zoom in", e);
-                    (e.target as HTMLElement).style.background = "pink";
-                } else if (curDiff < prevDiff) {
-                    // The distance between the two pointers has decreased
-                    console.log("Pinch moving IN -> Zoom out", e);
-                    (e.target as HTMLElement).style.background = "lightblue";
-                }
+            // First pinch frame – initialize baseline
+            if (pinchStartDistanceRef.current === null) {
+                pinchStartDistanceRef.current = curDiff;
+                pinchStartZoomRef.current = zoomRef.current;
+                return;
             }
 
-            // Cache the distance for the next move event
-            prevDiffRef.current = curDiff;
+            const startDist = pinchStartDistanceRef.current;
+            const baseZoom = pinchStartZoomRef.current;
+
+            if (!startDist) return;
+
+            const rawFactor = curDiff / startDist;
+            const nextZoomRaw = baseZoom * rawFactor;
+
+            // Optional debug:
+            // console.log({ curDiff, startDist, baseZoom, rawFactor, nextZoom });
+
+            setZoom(nextZoomRaw);
+            zoomRef.current = nextZoomRaw;
         }
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
+        if (isClosing) return;
         console.log("pointerUp");
         e.preventDefault();
 
         const evCache = evCacheRef.current;
+        const isPinchGesture =
+            evCache.length === 2 &&
+            evCache.every((ev) => ev.pointerType === "touch");
 
         // Remove this event from the cache
         const index = evCache.findIndex(
@@ -173,8 +232,31 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             evCache.splice(index, 1);
         }
 
-        if (evCache.length < 2) {
-            prevDiffRef.current = null;
+        if (isPinchGesture) {
+            const nextZoom = clamp(zoomRef.current, MIN_ZOOM, MAX_ZOOM);
+            setZoom(nextZoom);
+            zoomRef.current = nextZoom;
+
+            // If we zoomed back to 1, recentre / reset pan
+            if (zoomRef.current <= 1) {
+                maxPanXRef.current = 0;
+                maxPanYRef.current = 0;
+                panXRef.current = 0;
+                panYRef.current = 0;
+                setPanX(0);
+                setPanY(0);
+            }
+        } else if (!isPinchGesture) {
+            pinchStartDistanceRef.current = null;
+            pinchStartZoomRef.current = zoomRef.current;
+        }
+
+        if (zoomRef.current > 1) {
+            // When zoomed in, don't close or swipe images on release.
+            draggingRef.current = false;
+            draggingXRef.current = false;
+            draggingYRef.current = false;
+            return;
         }
 
         if (!draggingRef.current) return;
@@ -215,6 +297,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             }, BACKDROP_FADE_DURATION);
         }
         else {
+
+            console.log("snap back");
             // Snap back
             setSwipeDirection(null);
             setTranslateX(0);
@@ -226,25 +310,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         // draggingXRef.current = false;
         draggingYRef.current = false;
 
-        // removeEvent(e);
         // console.log("evCache.length (pointerUp (premod)): " + evCache.length);
-        // if (evCache.length < 2) {
-        //     prevDiff = -1;
-        // }
-        // evCache.length = 0;
-        // console.log("evCache.length (pointerUp (postmod)): " + evCache.length);
     };
-
-    // const removeEvent = (e: React.PointerEvent) => {
-    //     console.log("evCache.length (pointerUp (post_removeEvent)): " + evCache.length);
-    //     // Remove this event from the target's cache
-    //     const index = evCache.findIndex(
-    //         (cachedEv) => cachedEv.pointerId === e.pointerId,
-    //     );
-    //     evCache.splice(index, 1);
-
-    //     console.log("evCache.length (pointerUp (pre_removeEvent)): " + evCache.length);
-    // };
 
     const openAt = (index: number) => {
         setCurrentIndex(index);
@@ -255,6 +322,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         setBackdropOpacity(1);
         setImageOpacity(1);
         setExitScale(1);
+        setZoom(1);
+        zoomRef.current = 1;
         document.body.style.overflow = "hidden"; // lock scroll when open
     };
 
@@ -262,7 +331,21 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         if (!isOpen || isClosing) return;
 
         setIsClosing(true);
-        // setTranslateY(0);
+        const vh =
+            typeof window !== "undefined"
+                ? window.innerHeight || document.documentElement.clientHeight || 0
+                : 0;
+
+        setTranslateY((prevY) => {
+            console.log("prevY: ", prevY);
+            if (prevY === 0) {
+                // If there was no vertical drag (e.g. close button / Esc)
+                return 0;
+            }
+            return prevY < 0 ? -vh : vh;
+        });
+
+        console.log("setIsClosing");
         setBackdropOpacity(0);
         setImageOpacity(0);
         setExitScale(2);
@@ -289,8 +372,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         });
         setSwipeDirection(null);
         setTranslateX(0);
-
-
     };
 
     const showNext = () => {
@@ -303,14 +384,59 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         setTranslateX(0);
     };
 
+    // useLayoutEffect(() => {
+    //     if (!isOpen) return;
+    //     if (swipeDirection === null) {
+    //         const lightboxImageContainer = document.querySelector('#lightbox-image-container');
+    //         if (lightboxImageContainer === null) return;
+    //         console.log("lightboxImageContainer: ", lightboxImageContainer);
+    //         (lightboxImageContainer as HTMLElement).style.transitionDuration = '0s';
+    //     }
+    // }, [swipeDirection]);
+
     useLayoutEffect(() => {
-        if (swipeDirection === null) {
-            const lightboxImageContainer = document.querySelector('#lightbox-image-container');
-            if (lightboxImageContainer === null) return;
-            console.log("lightboxImageContainer: ", lightboxImageContainer);
-            (lightboxImageContainer as HTMLElement).style.transitionDuration = '0s';
-        }
-    }, [swipeDirection])
+        if (!isOpen) return;
+
+        const container = containerRef.current;
+        const img = imageRef.current;
+
+        if (!container || !img) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const imgRect = img.getBoundingClientRect();
+
+        // At current zoom, these rects already reflect scaled sizes.
+        const imgW = imgRect.width;
+        const imgH = imgRect.height;
+        const viewportW = containerRect.width;
+        const viewportH = containerRect.height;
+
+        const extraW = Math.max(0, imgW - viewportW);
+        const extraH = Math.max(0, imgH - viewportH);
+
+        maxPanXRef.current = (extraW / 2) + 30;
+        maxPanYRef.current = (extraH / 2) + 30;
+
+        console.log("///////////////////");
+        console.log("imgW: ", imgRect.width);
+        console.log("imgH: ", imgRect.height);
+        console.log("viewportW: ", containerRect.width);
+        console.log("viewportH: ", containerRect.height);
+        console.log("extraW: ", extraW);
+        console.log("extraH: ", extraH);
+        console.log("maxPanXRef.current: ", maxPanXRef.current);
+        console.log("maxPanYRef.current: ", maxPanYRef.current);
+
+        // If we zoomed back to 1, recentre / reset pan
+        // if (zoomRef.current <= 1) {
+        //     maxPanXRef.current = 0;
+        //     maxPanYRef.current = 0;
+        //     panXRef.current = 0;
+        //     panYRef.current = 0;
+        //     setPanX(0);
+        //     setPanY(0);
+        // }
+    }, [zoom, isOpen]);
 
     const handleTrackTransitionEnd = (
         e: React.TransitionEvent<HTMLDivElement>
@@ -338,7 +464,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     }
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen || isClosing) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") close();
@@ -349,7 +475,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, currentIndex, images.length]);
+    }, [isOpen, isClosing, currentIndex, images.length]);
 
     const currentImage = currentIndex !== null ? images[currentIndex] : null;
 
@@ -359,6 +485,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {images.map((img, idx) => (
                     <button
+                        disabled={isClosing}
                         key={img.src + idx}
                         type="button"
                         className="group relative overflow-hidden rounded-xl border border-black/5 bg-black/5 hover:bg-black/10 transition"
@@ -386,6 +513,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             }
                         }}
                         style={{
+                            pointerEvents: isClosing ? "none" : "auto",
                             backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
                             transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
                         }}
@@ -393,6 +521,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         {/* Close */}
                         <div className="px-4 flex justify-end">
                             <button
+                                disabled={isClosing}
                                 type="button"
                                 onClick={close}
                                 className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
@@ -411,6 +540,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         {images.length > 1 && (
                             <>
                                 <button
+                                    disabled={isClosing}
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -428,6 +558,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     ←
                                 </button>
                                 <button
+                                    disabled={isClosing}
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -448,10 +579,15 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         )}
 
                         {/* Image track: prev | current | next */}
-                        <div className="grow-2 relative flex overflow-hidden w-screen">
+                        <div
+                            ref={containerRef}
+                            id="carousel-container"
+                            className="grow-2 relative flex overflow-x-visible w-screen"
+                            style={{ scrollbarColor: "red", scrollbarGutter: "stable" }}
+                        >
                             <div
-                                id="lightbox-image-container"
-                                className="flex border-5 border-indigo-500 border-dotted touch-none"
+                                id="image-carousel"
+                                className="flex touch-none"
                                 onPointerDown={handlePointerDown}
                                 onPointerMove={handlePointerMove}
                                 onPointerUp={handlePointerUp}
@@ -473,52 +609,56 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             >
                                 {/* Prev slide (off to the left) */}
                                 {prevIndex !== null && (
-                                    <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
+                                    <div className="flex items-center justify-center w-screen">
                                         <img
                                             src={images[prevIndex].src}
                                             alt={images[prevIndex].alt ?? ""}
                                             className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                             // no pointer handlers on neighbors
                                             style={{
-                                                transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                                transform: `translateY(${translateY}px)`,
                                                 opacity: imageOpacity,
                                                 transition: draggingRef.current
                                                     ? "none"
-                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
                                         />
                                     </div>
                                 )}
 
                                 {/* Current slide (center) */}
-                                <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
+                                <div className="flex items-center justify-center w-screen">
                                     <img
+                                        id="current-image"
+                                        ref={imageRef}
                                         src={currentImage.src}
                                         alt={currentImage.alt ?? ""}
+                                        data-zoomable="true"
                                         className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
-                                            transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                            transform: `translate(${panX}px, ${panY + translateY}px) scale(${exitScale * zoom})`,
                                             opacity: imageOpacity,
                                             transition: draggingRef.current
                                                 ? "none"
                                                 : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
                                     />
+
                                 </div>
 
                                 {/* Next slide (off to the right) */}
                                 {nextIndex !== null && (
-                                    <div className="flex items-center justify-center w-screen border-5 border-teal-500 border-dotted">
+                                    <div className="flex items-center justify-center w-screen">
                                         <img
                                             src={images[nextIndex].src}
                                             alt={images[nextIndex].alt ?? ""}
                                             className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                             style={{
-                                                transform: `translateY(${translateY}px) scale(${exitScale})`,
+                                                transform: `translateY(${translateY}px)`,
                                                 opacity: imageOpacity,
                                                 transition: draggingRef.current
                                                     ? "none"
-                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out, scale ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                                    : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
                                         />
                                     </div>
