@@ -390,6 +390,16 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         }, BACKDROP_FADE_DURATION);
     };
 
+    const zoomBtn = () => {
+        if (zoomRef.current > 1) {
+            setZoom(MIN_ZOOM);
+            zoomRef.current = MIN_ZOOM;
+        } else {
+            setZoom(MAX_ZOOM);
+            zoomRef.current = MAX_ZOOM;
+        }
+    }
+
     const showPrev = () => {
         if (currentIndex === null) return;
         setCurrentIndex((prev) => {
@@ -551,6 +561,25 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
                         }}
                     >
+
+                        {/* Zoom */}
+                        <div className="px-4 flex justify-end">
+                            <button
+                                disabled={isClosing}
+                                type="button"
+                                onClick={zoomBtn}
+                                className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
+                                style={{
+                                    opacity: imageOpacity,
+                                    transition: draggingRef.current
+                                        ? "none"
+                                        : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                }}
+                            >
+                                Zoom
+                            </button>
+                        </div>
+
                         {/* Close */}
                         <div className="px-4 flex justify-end">
                             <button
