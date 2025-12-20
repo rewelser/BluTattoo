@@ -4,16 +4,19 @@ import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 import InstagramProfile from "../../components/InstagramProfile.astro";
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-2(pinchzoom).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-6(pinchzoom) (5 but with renames).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-4(pinchzoom) (transform origin 5050 - roundabout).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-7(pinchzoom).tsx"; // adjust path
-import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom) copy.tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-9(pinchzoom) (trying gutting pinch zoom).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-10(pinchzoom).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-9(pinchzoom).tsx"; // adjust path
-// import { ArtistGallery } from "../../components/ArtistGallery0-5-6.tsx"; // adjust path
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-2(pinchzoom).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-6(pinchzoom) (5 but with renames).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-4(pinchzoom) (transform origin 5050 - roundabout).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-7(pinchzoom).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom - deltas from a baseline).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom - incremental deltas).tsx";
+import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom - incremental deltas - using pendingRef in place of old refs).tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom) copy.tsx"; // using incremental deltas straight from 9 (also has baseline logic commented)
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-8(pinchzoom) copy 2.tsx"; // using incremental deltas (refactored -- more broken than 9???)
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-11-9(pinchzoom) (trying gutting pinch zoom).tsx"; // using incremental deltas
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-10(pinchzoom).tsx"; // old trash
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-9(pinchzoom).tsx"; // old trash
+// import { ArtistGallery } from "../../components/ArtistGallery0-5-6.tsx"; // old trash
 
 const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
 

@@ -72,10 +72,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const imageRef = useRef<HTMLImageElement | null>(null);
     const baseImgWRef = useRef<number | null>(null);
     const baseImgHRef = useRef<number | null>(null);
-    const maxPanXRef = useRef(0);
-    const maxPanYRef = useRef(0);
-    const minPanXRef = useRef(0);
-    const minPanYRef = useRef(0);
     const [exitScale, setExitScale] = useState(1);
     const [backdropOpacity, setBackdropOpacity] = useState(1);
     const [imageOpacity, setImageOpacity] = useState(1);
@@ -88,6 +84,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const pinchStartPanRef = useRef<{ x: number; y: number } | null>(null);
     const pinchAnchorRef = useRef<{ x: number; y: number } | null>(null);
     const pinchOriginRef = useRef<{ x: number; y: number } | null>(null);
+    const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number }>(null);
     const pointerDownRef = useRef(false);
     const swipingXRef = useRef(false);
     const swipingYRef = useRef(false);
@@ -96,7 +93,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const startYRef = useRef(0);
     const evCacheRef = useRef<CachedPointer[]>([]);
     const rafIdRef = useRef<number | null>(null);
-    const pinchPrevDistanceRef = useRef<number | null>(null);
 
     // what we want React to render next frame
     const pendingRef = useRef({
@@ -113,14 +109,18 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     if (!images || images.length === 0) return null;
 
     const scheduleFlush = () => {
+        console.log("pointerDownRef.current: ", pointerDownRef.current);
         if (rafIdRef.current != null) return;
         rafIdRef.current = requestAnimationFrame(() => {
+
             rafIdRef.current = null;
 
             const p = pendingRef.current;
 
             setPanX(p.panX);
             setPanY(p.panY);
+            panXRef.current = p.panX;
+            panYRef.current = p.panY;
             setSwipeX(p.swipeX);
             setSwipeY(p.swipeY);
             setExitScale(p.exitScale);
@@ -132,53 +132,68 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     };
 
     const regulatePanAndZoom = () => {
-        console.log("regulatePanAndZoom");
-        // Clamp zoom in any case
-        const nextZoomClamped = clamp(zoomScaleRef.current, MIN_ZOOM, MAX_ZOOM);
-        zoomScaleRef.current = nextZoomClamped;
+        const nextZoomUnclamped = zoomScaleRef.current;
+        const nextZoomClamped = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
+        const zoomWasClamped = nextZoomClamped !== nextZoomUnclamped;
+
+        // 1) Commit zoom first (always)
         pendingRef.current.zoomScale = nextZoomClamped;
 
-        if (zoomScaleRef.current > 1) {
-            // Zoomed in - clamp pan
-            const minPanX = minPanXRef.current;
-            const maxPanX = maxPanXRef.current;
-            const minPanY = minPanYRef.current;
-            const maxPanY = maxPanYRef.current;
-            const nextPanXClamped = clamp(panXRef.current, minPanX, maxPanX);
-            const nextPanYClamped = clamp(panYRef.current, minPanY, maxPanY);
-            console.log("regulatePanAndZoom - zoomScaleRef.current > 1");
-            console.log("panXRef.current: ", panXRef.current);
-            console.log("panYRef.current: ", panXRef.current);
-            console.log("minPanX: ", minPanX);
-            console.log("minPanY: ", minPanY);
-            console.log("maxPanX: ", maxPanX);
-            console.log("maxPanY: ", maxPanY);
+        // 2) Compute bounds for *nextZoom* (don’t depend on useLayoutEffect timing)
+        const container = containerRef.current;
+        const baseW = baseImgWRef.current;
+        const baseH = baseImgHRef.current;
 
-            panXRef.current = nextPanXClamped;
-            panYRef.current = nextPanYClamped;
-            pendingRef.current.panX = nextPanXClamped;
-            pendingRef.current.panY = nextPanYClamped;
-        } else {
-            console.log("regulatePanAndZoom - zoomScaleRef.current <= 1");
-            // Zoomed all the way out or more – recenter/reset pan
-            maxPanXRef.current = 0;
-            maxPanYRef.current = 0;
-            minPanXRef.current = 0;
-            minPanYRef.current = 0;
-            panXRef.current = 0;
-            panYRef.current = 0;
-            pendingRef.current.panX = 0;
-            pendingRef.current.panY = 0;
+        let minPanX = 0, maxPanX = 0, minPanY = 0, maxPanY = 0;
 
+        if (container && baseW && baseH && nextZoomClamped > 1) {
+            const { width: viewportW, height: viewportH } = container.getBoundingClientRect();
+            const scaledW = baseW * nextZoomClamped;
+            const scaledH = baseH * nextZoomClamped;
+
+            const extraW = Math.max(0, scaledW - viewportW);
+            const extraH = Math.max(0, scaledH - viewportH);
+
+            maxPanX = extraW / 2;
+            minPanX = -maxPanX;
+            maxPanY = extraH / 2;
+            minPanY = -maxPanY;
         }
+
+        // 3) Choose pan source
+        let desiredPanX: number;
+        let desiredPanY: number;
+
+        if (nextZoomClamped <= 1) {
+            // zoomed all the way out => reset
+            desiredPanX = 0;
+            desiredPanY = 0;
+
+            // also clear any pending snapback target
+            nextPanUnclampedForClampedZoom.current = null;
+        } else if (zoomWasClamped && nextPanUnclampedForClampedZoom.current) {
+            // snapback case (your special stored pan for clamped zoom)
+            desiredPanX = nextPanUnclampedForClampedZoom.current.x;
+            desiredPanY = nextPanUnclampedForClampedZoom.current.y;
+            nextPanUnclampedForClampedZoom.current = null;
+        } else {
+            // normal case
+            desiredPanX = panXRef.current;
+            desiredPanY = panYRef.current;
+        }
+
+        // 4) Clamp pan to bounds for nextZoom
+        pendingRef.current.panX = clamp(desiredPanX, minPanX, maxPanX);
+        pendingRef.current.panY = clamp(desiredPanY, minPanY, maxPanY);
+
         scheduleFlush();
-    }
+    };
+
 
     const openAt = (index: number) => {
         setCurrentIndex(index);
         setIsOpen(true);
         setIsClosing(false);
-        zoomScaleRef.current = 1;
         pendingRef.current.swipeX = 0;
         pendingRef.current.swipeY = 0;
         pendingRef.current.exitScale = 1;
@@ -227,11 +242,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         if (zoomScaleRef.current > 1) {
             console.log("zoom - zoomScaleRef.current > 1");
             pendingRef.current.zoomScale = MIN_ZOOM;
-            zoomScaleRef.current = MIN_ZOOM;
         } else {
             console.log("zoom - zoomScaleRef.current <= 1");
             pendingRef.current.zoomScale = MAX_ZOOM;
-            zoomScaleRef.current = MAX_ZOOM;
         }
         scheduleFlush();
     };
@@ -391,9 +404,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             const deltaY = e.clientY - startYRef.current;
             const nextPanXUnclamped = panXStartRef.current + deltaX;
             const nextPanYUnclamped = panYStartRef.current + deltaY;
-            panXRef.current = nextPanXUnclamped;
-            panYRef.current = nextPanYUnclamped;
-
             pendingRef.current.panX = nextPanXUnclamped;
             pendingRef.current.panY = nextPanYUnclamped;
 
@@ -432,150 +442,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             scheduleFlush();
 
         }
-        // else if (isPinching) {
-        //     // If two pointers are down, check for pinch gestures
-        //     const [p1, p2] = evCache;
-        //     if (!p1 || !p2) return;
 
-        //     const t1 = p1.targetEl;
-        //     const t2 = p2.targetEl;
-        //     const bothOnZoomable =
-        //         !!t1?.closest("[data-zoomable='true']") &&
-        //         !!t2?.closest("[data-zoomable='true']");
-
-        //     if (!bothOnZoomable) {
-        //         // Fingers aren’t both on the image — ignore pinch, maybe treat as drag or do nothing
-        //         return;
-        //     }
-
-        //     const img = imageRef.current;
-        //     if (!img) return;
-        //     const imgRect = img.getBoundingClientRect();
-
-        //     // X & Y midpoints between pinching fingers (screen space)
-        //     const pinchCenterX = (p1.clientX + p2.clientX) / 2;
-        //     const pinchCenterY = (p1.clientY + p2.clientY) / 2;
-
-        //     // Distance between the two pointers
-        //     const curPinchDist = Math.hypot(
-        //         p1.clientX - p2.clientX,
-        //         p1.clientY - p2.clientY
-        //     );
-
-        //     // First pinch frame – initialize baseline
-        //     if (pinchStartDistanceRef.current === null) {
-        //         pinchStartDistanceRef.current = curPinchDist;
-        //         pinchStartZoomRef.current = zoomScaleRef.current;
-
-        //         const pinchStartBaseZoom = pinchStartZoomRef.current || 1;
-
-        //         // Current translation before pinch (same logic as render)
-        //         const pinchStartPanX = isZoomedIn ? panXRef.current : 0;
-        //         const pinchStartPanY = isZoomedIn ? panYRef.current : swipeY;
-
-        //         // --- Center-based model ---------------------------------------
-        //         // We treat the image center on screen as our primary "position".
-        //         // With transform-origin: 50% 50%, scaling happens around the center.
-        //         //
-        //         // Let:
-        //         //   Or0 = (originStartX, originStartY)  = image origin on screen at pinch start
-        //         //   z0 = pinchStartBaseZoom            = zoom at pinch start
-        //         //   P0 = (pinchCenterX, pinchCenterY)  = pinch center on screen at pinch start
-        //         //
-        //         // In the "image-centered" local coords p (origin at image center):
-        //         //   screenPoint = Or + z * p
-        //         //
-        //         // For the anchor point under the fingers at pinch start:
-        //         //   P0 = Or0 + z0 * p_anchor
-        //         //   => p_anchor = (P0 - Or0) / z0
-        //         //
-        //         // Later, for new zoom z1, to keep that same p_anchor under the
-        //         // (updated) pinch center P:
-        //         //   P = Or1 + z1 * p_anchor
-        //         //   => Or1 = P - z1 * p_anchor
-        //         //
-        //         // We don't store Or1 directly as state; we still store panX/panY.
-        //         // At pinch start, the relationship is:
-        //         //   Or0 = L0 + pinchStartPan
-        //         // where L0 is some fixed "layout center" we don't need explicitly.
-        //         // Rearranging:
-        //         //   L0 = Or0 - pinchStartPan
-        //         //
-        //         // For the new origin Or1:
-        //         //   panNext = Or1 - L0 = pinchStartPan + (Or1 - Or0)
-        //         //
-        //         // So we store:
-        //         //   - Or0 in pinchOriginRef
-        //         //   - pinchStartPan in pinchStartPanRef
-        //         //   - p_anchor in pinchAnchorRef (anchor in image-centered coords)
-        //         //-----------------------------------------------------------------
-
-        //         // Image origin (center when transform-origin: 50% 50%) on screen at pinch start
-        //         const originStartX = imgRect.left + imgRect.width / 2;
-        //         const originStartY = imgRect.top + imgRect.height / 2;
-
-        //         // Store origin-at-start (Or0)
-        //         pinchOriginRef.current = { x: originStartX, y: originStartY };
-
-        //         // Store pan-at-start (pinchStartPan)
-        //         pinchStartPanRef.current = { x: pinchStartPanX, y: pinchStartPanY };
-
-        //         // Anchor in image-centered local coords:
-        //         // p_anchor = (P0 - Or0) / z0
-        //         const anchorX = (pinchCenterX - originStartX) / pinchStartBaseZoom;
-        //         const anchorY = (pinchCenterY - originStartY) / pinchStartBaseZoom;
-        //         pinchAnchorRef.current = { x: anchorX, y: anchorY };
-
-        //         // Initialize pinch translation to whatever we had
-        //         panXRef.current = pinchStartPanX;
-        //         panYRef.current = pinchStartPanY;
-        //         pendingRef.current.panX = pinchStartPanX;
-        //         pendingRef.current.panY = pinchStartPanY;
-        //         scheduleFlush();
-        //     } else {
-        //         const pinchStartDist = pinchStartDistanceRef.current;
-        //         const baseZoom = pinchStartZoomRef.current;
-        //         const anchor = pinchAnchorRef.current;
-        //         const originStart = pinchOriginRef.current;      // Or0
-        //         const pinchStartPan = pinchStartPanRef.current;    // pinchStartPan
-
-        //         if (
-        //             !pinchStartDist ||
-        //             !baseZoom ||
-        //             !anchor ||
-        //             !originStart ||
-        //             !pinchStartPan
-        //         ) {
-        //             return;
-        //         }
-
-        //         // New zoom from pinch
-        //         const scaleFactor = curPinchDist / pinchStartDist;
-        //         const nextZoomUnclamped = baseZoom * scaleFactor;
-
-        //         // Center-based update:
-        //         //   Or1 = P - z1 * p_anchor
-        //         const originNextX = pinchCenterX - nextZoomUnclamped * anchor.x;
-        //         const originNextY = pinchCenterY - nextZoomUnclamped * anchor.y;
-
-        //         // panNext = pinchStartPan + (Or1 - Or0)
-        //         const originDeltaX = originNextX - originStart.x;
-        //         const originDeltaY = originNextY - originStart.y;
-
-        //         const nextPanXUnclamped = pinchStartPan.x + originDeltaX;
-        //         const nextPanYUnclamped = pinchStartPan.y + originDeltaY;
-
-        //         pendingRef.current.panX = nextPanXUnclamped;
-        //         pendingRef.current.panY = nextPanYUnclamped;
-        //         panXRef.current = nextPanXUnclamped;
-        //         panYRef.current = nextPanYUnclamped;
-        //         pendingRef.current.zoomScale = nextZoomUnclamped;
-        //         zoomScaleRef.current = nextZoomUnclamped;
-        //         scheduleFlush();
-        //     }
-        // }
-
+        // old isPinching block (solves from baseline)
         else if (isPinching) {
+            // If two pointers are down, check for pinch gestures
             const [p1, p2] = evCache;
             if (!p1 || !p2) return;
 
@@ -584,71 +454,150 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             const bothOnZoomable =
                 !!t1?.closest("[data-zoomable='true']") &&
                 !!t2?.closest("[data-zoomable='true']");
-            if (!bothOnZoomable) return;
+
+            if (!bothOnZoomable) {
+                // Fingers aren’t both on the image — ignore pinch, maybe treat as drag or do nothing
+                return;
+            }
 
             const img = imageRef.current;
             if (!img) return;
-
             const imgRect = img.getBoundingClientRect();
 
-            // Midpoint between fingers (screen space)
-            const centerX = (p1.clientX + p2.clientX) / 2;
-            const centerY = (p1.clientY + p2.clientY) / 2;
+            // X & Y midpoints between pinching fingers (screen space)
+            const pinchCenterX = (p1.clientX + p2.clientX) / 2;
+            const pinchCenterY = (p1.clientY + p2.clientY) / 2;
 
-            // Distance between pointers (screen space)
-            const curDist = Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+            // Distance between the two pointers
+            const curPinchDist = Math.hypot(
+                p1.clientX - p2.clientX,
+                p1.clientY - p2.clientY
+            );
 
-            // Seed the incremental integrator (NOT a "solve from baseline")
-            if (pinchPrevDistanceRef.current == null) {
-                pinchPrevDistanceRef.current = curDist;
-                return; // wait for next move to have a delta
+            // First pinch frame – initialize baseline
+            if (pinchStartDistanceRef.current === null) {
+                pinchStartDistanceRef.current = curPinchDist;
+                pinchStartZoomRef.current = zoomScaleRef.current;
+
+                const pinchStartBaseZoom = pinchStartZoomRef.current || 1;
+
+                // Current translation before pinch (same logic as render)
+                const pinchStartPanX = isZoomedIn ? panXRef.current : 0;
+                const pinchStartPanY = isZoomedIn ? panYRef.current : swipeY;
+
+                // --- Center-based model ---------------------------------------
+                // We treat the image center on screen as our primary "position".
+                // With transform-origin: 50% 50%, scaling happens around the center.
+                //
+                // Let:
+                //   Or0 = (originStartX, originStartY)  = image origin on screen at pinch start
+                //   z0 = pinchStartBaseZoom            = zoom at pinch start
+                //   P0 = (pinchCenterX, pinchCenterY)  = pinch center on screen at pinch start
+                //
+                // In the "image-centered" local coords p (origin at image center):
+                //   screenPoint = Or + z * p
+                //
+                // For the anchor point under the fingers at pinch start:
+                //   P0 = Or0 + z0 * p_anchor
+                //   => p_anchor = (P0 - Or0) / z0
+                //
+                // Later, for new zoom z1, to keep that same p_anchor under the
+                // (updated) pinch center P:
+                //   P = Or1 + z1 * p_anchor
+                //   => Or1 = P - z1 * p_anchor
+                //
+                // We don't store Or1 directly as state; we still store panX/panY.
+                // At pinch start, the relationship is:
+                //   Or0 = L0 + pinchStartPan
+                // where L0 is some fixed "layout center" we don't need explicitly.
+                // Rearranging:
+                //   L0 = Or0 - pinchStartPan
+                //
+                // For the new origin Or1:
+                //   panNext = Or1 - L0 = pinchStartPan + (Or1 - Or0)
+                //
+                // So we store:
+                //   - Or0 in pinchOriginRef
+                //   - pinchStartPan in pinchStartPanRef
+                //   - p_anchor in pinchAnchorRef (anchor in image-centered coords)
+                //-----------------------------------------------------------------
+
+                // Image origin (center when transform-origin: 50% 50%) on screen at pinch start
+                const originStartX = imgRect.left + imgRect.width / 2;
+                const originStartY = imgRect.top + imgRect.height / 2;
+
+                // Store origin-at-start (Or0)
+                pinchOriginRef.current = { x: originStartX, y: originStartY };
+
+                // Store pan-at-start (pinchStartPan)
+                pinchStartPanRef.current = { x: pinchStartPanX, y: pinchStartPanY };
+
+                // Anchor in image-centered local coords:
+                // p_anchor = (P0 - Or0) / z0
+                const anchorX = (pinchCenterX - originStartX) / pinchStartBaseZoom;
+                const anchorY = (pinchCenterY - originStartY) / pinchStartBaseZoom;
+                pinchAnchorRef.current = { x: anchorX, y: anchorY };
+
+                // Initialize pinch translation to whatever we had
+                pendingRef.current.panX = pinchStartPanX;
+                pendingRef.current.panY = pinchStartPanY;
+                scheduleFlush();
+            } else {
+                const pinchStartDist = pinchStartDistanceRef.current;
+                const baseZoom = pinchStartZoomRef.current;
+                const anchor = pinchAnchorRef.current;
+                const originStart = pinchOriginRef.current;      // Or0
+                const pinchStartPan = pinchStartPanRef.current;    // pinchStartPan
+
+                if (
+                    !pinchStartDist ||
+                    !baseZoom ||
+                    !anchor ||
+                    !originStart ||
+                    !pinchStartPan
+                ) {
+                    return;
+                }
+
+                // New zoom from pinch
+                const scaleFactor = curPinchDist / pinchStartDist;
+                const nextZoomUnclamped = baseZoom * scaleFactor;
+
+                if (nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM) {
+                    console.log("nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM");
+                    const nextZoomPreclamped = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
+
+                    const originNextXForClampedZoom = pinchCenterX - nextZoomPreclamped * anchor.x;
+                    const originNextYForClampedZoom = pinchCenterY - nextZoomPreclamped * anchor.y;
+
+                    const originDeltaXForClampedZoom = originNextXForClampedZoom - originStart.x;
+                    const originDeltaYForClampedZoom = originNextYForClampedZoom - originStart.y;
+
+                    nextPanUnclampedForClampedZoom.current = {
+                        x: pinchStartPan.x + originDeltaXForClampedZoom,
+                        y: pinchStartPan.y + originDeltaYForClampedZoom,
+                    };
+                    console.log("(where it is supposed to be set) nextPanUnclampedForClampedZoom.current: ", nextPanUnclampedForClampedZoom.current);
+                }
+
+                // Center-based update:
+                //   Or1 = P - z1 * p_anchor
+                const originNextX = pinchCenterX - nextZoomUnclamped * anchor.x;
+                const originNextY = pinchCenterY - nextZoomUnclamped * anchor.y;
+
+                // panNext = pinchStartPan + (Or1 - Or0)
+                const originDeltaX = originNextX - originStart.x;
+                const originDeltaY = originNextY - originStart.y;
+
+                const nextPanXUnclamped = pinchStartPan.x + originDeltaX;
+                const nextPanYUnclamped = pinchStartPan.y + originDeltaY;
+
+                pendingRef.current.panX = nextPanXUnclamped;
+                pendingRef.current.panY = nextPanYUnclamped;
+                pendingRef.current.zoomScale = nextZoomUnclamped;
+                scheduleFlush();
             }
-
-            const prevDist = pinchPrevDistanceRef.current;
-            if (!prevDist) return;
-
-            // Incremental scale step for THIS frame
-            const stepFactor = curDist / prevDist;
-
-            const baseZoom = zoomScaleRef.current;
-            const nextZoomUnclamped = baseZoom * stepFactor;
-            const nextZoom = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
-
-            // "Origin" = image center on screen (because you're using a center-based model)
-            const originX = imgRect.left + imgRect.width / 2;
-            const originY = imgRect.top + imgRect.height / 2;
-
-            // Anchor in image-centered coords *at the current zoom*
-            // (same structure as wheel: anchor = (center - origin) / baseZoom)
-            const anchorX = (centerX - originX) / baseZoom;
-            const anchorY = (centerY - originY) / baseZoom;
-
-            // Where should origin move so the anchor stays under the fingers at next zoom?
-            const originNextX = centerX - nextZoomUnclamped * anchorX;
-            const originNextY = centerY - nextZoomUnclamped * anchorY;
-
-            const originDeltaX = originNextX - originX;
-            const originDeltaY = originNextY - originY;
-
-            // Incremental pan update: start from current pan (like wheel)
-            const nextPanX = panXRef.current + originDeltaX;
-            const nextPanY = panYRef.current + originDeltaY;
-
-            // Commit
-            zoomScaleRef.current = nextZoomUnclamped;
-            pendingRef.current.zoomScale = nextZoomUnclamped;
-
-            panXRef.current = nextPanX;
-            panYRef.current = nextPanY;
-            pendingRef.current.panX = nextPanX;
-            pendingRef.current.panY = nextPanY;
-
-            // Update integrator memory for next move
-            pinchPrevDistanceRef.current = curDist;
-
-            scheduleFlush();
         }
-
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
@@ -709,45 +658,21 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 }
             }
         }
-        // Reset pinch-specific stuff regardless
-        pinchAnchorRef.current = null;
-        pinchStartDistanceRef.current = null;
 
         // Reset other stuff only when no pointers are left (gesture is over)
         if (evCache.length === 0) {
             pointerDownRef.current = false;
-            regulatePanAndZoom(); // does setZoomScale + setPanX/Y
+            regulatePanAndZoom();
             swipingXRef.current = false;
             swipingYRef.current = false;
             pinchingRef.current = false;
             noLongerPinchingRef.current = false;
         }
+        // Reset pinch-specific stuff regardless
+        pinchAnchorRef.current = null;
+        pinchStartDistanceRef.current = null;
+        // pinchPrevDistanceRef.current = null;
     };
-
-    useLayoutEffect(() => {
-        if (!isOpen) return;
-
-        const container = containerRef.current;
-        const baseW = baseImgWRef.current;
-        const baseH = baseImgHRef.current;
-        if (!container || !baseW || !baseH) return;
-
-        const containerRect = container.getBoundingClientRect();
-        const viewportW = containerRect.width;
-        const viewportH = containerRect.height;
-
-        const scaledW = baseW * zoomScaleRef.current; // or zoomScale state
-        const scaledH = baseH * zoomScaleRef.current;
-
-        const extraW = Math.max(0, scaledW - viewportW);
-        const extraH = Math.max(0, scaledH - viewportH);
-
-        maxPanXRef.current = extraW / 2;
-        minPanXRef.current = -maxPanXRef.current;
-        maxPanYRef.current = extraH / 2;
-        minPanYRef.current = -maxPanYRef.current;
-    }, [isOpen, zoomScale, currentIndex]);
-
 
     const handleTrackTransitionEnd = (
         e: React.TransitionEvent<HTMLDivElement>
@@ -969,7 +894,16 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 )}
 
                                 {/* Current slide (center) */}
-                                <div className="flex items-center justify-center w-screen ">
+                                <div
+                                    id="current-image-container"
+                                    className="flex items-center justify-center w-screen"
+                                    style={{
+                                        transform: `translate(${imgTx}px, ${imgTy}px)`,
+                                        transition: pointerDownRef.current
+                                            ? "none"
+                                            : `transform 150ms ease-out`,
+                                    }}
+                                >
                                     <img
                                         id="current-image"
                                         ref={imageRef}
@@ -979,9 +913,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         className={`max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20  
                                             ${zoomScaleRef.current > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                         style={{
-                                            // transformOrigin: "0 0",
                                             transformOrigin: "50% 50%",
-                                            transform: `translate(${imgTx}px, ${imgTy}px) scale(${exitScale * zoomScale})`,
+                                            transform: `scale(${exitScale * zoomScale})`,
                                             opacity: imageOpacity,
                                             transition: pointerDownRef.current
                                                 ? "none"
