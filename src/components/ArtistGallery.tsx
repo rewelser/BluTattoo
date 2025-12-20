@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 
 interface ArtistImage {
@@ -75,13 +75,15 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [zoomScale, setZoomScale] = useState(1);
     const pinchingRef = useRef(false);
     const noLongerPinchingRef = useRef(false);
-    const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number }>(null);
-    const pointerDownRef = useRef(false);
-    const swipingXRef = useRef(false);
-    const swipingYRef = useRef(false);
+    const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number } | null>(null)
+    const swipeAxisRef = useRef<"x" | "y" | null>(null);
     const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
+    const wheelSwipeAccumXRef = useRef(0);
+    const wheelSwipeLockRef = useRef(false);
+    const wheelSwipeUnlockTimerRef = useRef<number | null>(null);
+    const wheelGestureActiveRef = useRef(false);
     const evCacheRef = useRef<CachedPointer[]>([]);
     const rafIdRef = useRef<number | null>(null);
     const pinchPrevDistanceRef = useRef<number | null>(null);
@@ -101,9 +103,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     if (!images || images.length === 0) return null;
 
     const scheduleFlush = () => {
-        console.log("pointerDownRef.current: ", pointerDownRef.current);
+        console.log("weee2");
         if (rafIdRef.current != null) return;
         rafIdRef.current = requestAnimationFrame(() => {
+            console.log("weee3");
             rafIdRef.current = null;
             const p = pendingRef.current;
             setPanX(p.panX);
@@ -122,10 +125,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         const nextZoomClamped = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
         const zoomWasClamped = nextZoomClamped !== nextZoomUnclamped;
 
-        // 1) Commit zoom first (always)
         pendingRef.current.zoomScale = nextZoomClamped;
 
-        // 2) Compute bounds for *nextZoom* (don’t depend on useLayoutEffect timing)
         const container = containerRef.current;
         const baseW = baseImgWRef.current;
         const baseH = baseImgHRef.current;
@@ -146,7 +147,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             minPanY = -maxPanY;
         }
 
-        // 3) Choose pan source
         let desiredPanX: number;
         let desiredPanY: number;
 
@@ -171,7 +171,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         // 4) Clamp pan to bounds for nextZoom
         pendingRef.current.panX = clamp(desiredPanX, minPanX, maxPanX);
         pendingRef.current.panY = clamp(desiredPanY, minPanY, maxPanY);
-
         scheduleFlush();
     };
 
@@ -186,6 +185,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         pendingRef.current.zoomScale = 1;
         pendingRef.current.backdropOpacity = 1;
         pendingRef.current.imageOpacity = 1;
+        scheduleFlush();
         document.body.style.overflow = "hidden"; // lock scroll when open
     };
 
@@ -197,13 +197,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             typeof window !== "undefined"
                 ? window.innerHeight || document.documentElement.clientHeight || 0
                 : 0;
-        setSwipeY((prevY) => {
-            if (prevY === 0) {
-                // If there was no vertical drag (e.g. close button / Esc)
-                return 0;
-            }
-            return prevY < 0 ? -vh : vh;
-        });
+
+        pendingRef.current.swipeY = pendingRef.current.swipeY < 0 ? -vh : vh;
         pendingRef.current.exitScale = 2;
         pendingRef.current.backdropOpacity = 0;
         pendingRef.current.imageOpacity = 0;
@@ -257,13 +252,18 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         scheduleFlush();
     };
 
-    const handleWheel = (e: React.WheelEvent) => {
-        if (!e.ctrlKey) {
-            console.log("handleWheel - no ctrl");
-        } else {
-            e.preventDefault();
-            console.log("handleWheel - ctrl");
-        }
+    // const handleWheel = (e: React.WheelEvent) => {
+    //     if (!e.ctrlKey) {
+    //         console.log("handleWheel - no ctrl");
+    //     } else {
+    //         e.preventDefault();
+    //         console.log("handleWheel - ctrl");
+    //     }
+    // };
+
+    const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+        console.log("scrolling");
+
     };
 
     // figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
@@ -274,61 +274,114 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         const el = containerRef.current;
         if (!el) return;
 
-        const onWheel = (e: WheelEvent) => {
-            // Trackpad pinch-to-zoom is usually wheel + ctrlKey on macOS browsers.
-            if (!e.ctrlKey) return;
+        const WHEEL_END_DELAY = 120;
+        const WHEEL_SWIPE_THRESHOLD = 160;
 
-            // Important: prevent page zoom / scroll
+        const onWheel = (e: WheelEvent) => {
+            /* ===============================
+               1) Trackpad pinch-to-zoom
+               =============================== */
+            if (e.ctrlKey) {
+                e.preventDefault();
+
+                const img = imageRef.current;
+                if (!img) return;
+
+                const centerX = e.clientX;
+                const centerY = e.clientY;
+
+                const imgRect = img.getBoundingClientRect();
+                const originX = imgRect.left + imgRect.width / 2;
+                const originY = imgRect.top + imgRect.height / 2;
+
+                const sensitivity = 0.015;
+                const factor = Math.exp(-e.deltaY * sensitivity);
+
+                const baseZoom = pendingRef.current.zoomScale;
+                const nextZoomUnclamped = baseZoom * factor;
+                const nextZoom = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
+
+                const anchorX = (centerX - originX) / baseZoom;
+                const anchorY = (centerY - originY) / baseZoom;
+
+                const originNextX = centerX - nextZoom * anchorX;
+                const originNextY = centerY - nextZoom * anchorY;
+
+                const originDeltaX = originNextX - originX;
+                const originDeltaY = originNextY - originY;
+
+                pendingRef.current.zoomScale = nextZoom;
+                pendingRef.current.panX += originDeltaX;
+                pendingRef.current.panY += originDeltaY;
+
+                scheduleFlush();
+                return;
+            }
+
+            /* ===============================
+               2) Horizontal wheel swipe
+               =============================== */
+
+            if (pendingRef.current.zoomScale > 1) return;
+
+            const ax = Math.abs(e.deltaX);
+            const ay = Math.abs(e.deltaY);
+            if (ax <= ay) return;
+
             e.preventDefault();
 
-            const img = imageRef.current;
-            if (!img) return;
+            // 🔑 If the gesture already ended, ignore late momentum
+            if (!wheelGestureActiveRef.current && wheelSwipeLockRef.current) {
+                return;
+            }
 
-            // Use cursor position as the "pinch center"
-            const centerX = e.clientX;
-            const centerY = e.clientY;
+            // Mark gesture as active
+            wheelGestureActiveRef.current = true;
 
-            const imgRect = img.getBoundingClientRect();
+            // Accumulate
+            wheelSwipeAccumXRef.current += e.deltaX;
 
-            // Your math expects an origin at the image center
-            const originX = imgRect.left + imgRect.width / 2;
-            const originY = imgRect.top + imgRect.height / 2;
-
-            // Convert wheel delta into a scale multiplier.
-            // (Sensitivity tweak: smaller = slower zoom)
-            const sensitivity = 0.015;
-            const factor = Math.exp(-e.deltaY * sensitivity);
-
-            const baseZoom = pendingRef.current.zoomScale;
-            const nextZoomUnclamped = baseZoom * factor;
-            const nextZoom = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
-
-            // Keep the point under the cursor stable (same idea as your pinch anchor)
-            const anchorX = (centerX - originX) / baseZoom;
-            const anchorY = (centerY - originY) / baseZoom;
-
-            const originNextX = centerX - nextZoom * anchorX;
-            const originNextY = centerY - nextZoom * anchorY;
-
-            const originDeltaX = originNextX - originX;
-            const originDeltaY = originNextY - originY;
-
-            // Start from current pan
-            const nextPanX = pendingRef.current.panX + originDeltaX;
-            const nextPanY = pendingRef.current.panY + originDeltaY;
-
-            // Commit to refs + pending (like you already do)
-            pendingRef.current.zoomScale = nextZoom;
-
-            pendingRef.current.panX = nextPanX;
-            pendingRef.current.panY = nextPanY;
-
+            swipeAxisRef.current = "x";
+            pendingRef.current.swipeX = wheelSwipeAccumXRef.current;
+            pendingRef.current.swipeY = 0;
             scheduleFlush();
+
+            // Threshold → commit navigation once
+            if (!wheelSwipeLockRef.current) {
+                if (wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD) {
+                    setSwipeDirection("prev");
+                    wheelSwipeLockRef.current = true;
+                } else if (wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD) {
+                    setSwipeDirection("next");
+                    wheelSwipeLockRef.current = true;
+                }
+            }
+
+            // 🔑 Reset timer — defines "gesture end"
+            if (wheelSwipeUnlockTimerRef.current != null) {
+                clearTimeout(wheelSwipeUnlockTimerRef.current);
+            }
+
+            wheelSwipeUnlockTimerRef.current = window.setTimeout(() => {
+                // Gesture is officially over
+                wheelGestureActiveRef.current = false;
+
+                wheelSwipeAccumXRef.current = 0;
+                wheelSwipeLockRef.current = false;
+                swipeAxisRef.current = null;
+
+                pendingRef.current.swipeX = 0;
+                pendingRef.current.swipeY = 0;
+                scheduleFlush();
+
+                wheelSwipeUnlockTimerRef.current = null;
+            }, WHEEL_END_DELAY);
         };
 
         el.addEventListener("wheel", onWheel, { passive: false });
         return () => el.removeEventListener("wheel", onWheel as any);
-    }, [isOpen, isClosing]);
+    }, [isOpen, isClosing, swipeDirection]);
+
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing) return;
@@ -343,18 +396,14 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         if (evCache.length > MAX_TOUCH_POINTS) {
             // Too many touch points: treat this as a cancelled gesture
             evCache.length = 0;
-            pointerDownRef.current = false;
             pinchingRef.current = false;
-            swipingXRef.current = false;
-            swipingYRef.current = false;
+            swipeAxisRef.current = null;
             noLongerPinchingRef.current = false;
         } else {
             // capture pointer so moves outside the image still report to this element
             (e.target as HTMLElement).setPointerCapture(e.pointerId);
-            pointerDownRef.current = true;
             noLongerPinchingRef.current = false;
-            swipingXRef.current = false;
-            swipingYRef.current = false;
+            swipeAxisRef.current = null;
             startXRef.current = e.clientX;
             startYRef.current = e.clientY;
 
@@ -370,8 +419,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        // maybe set draggingRef to false if isNoLongerPinching in handlePointerUp?
-        if (isClosing || !pointerDownRef.current) return;
+        if (isClosing || evCacheRef.current.length === 0) return;
         const evCache = evCacheRef.current;
         upsertCachedPointer(evCache, e);
 
@@ -400,29 +448,22 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             const absY = Math.abs(deltaY);
 
             // Determine if we are swiping horizontally or vertically
-            if (!swipingXRef.current && !swipingYRef.current) {
+            if (swipeAxisRef.current === null) {
                 const maxDelta = Math.max(absX, absY);
-
-                if (maxDelta < DRAG_LOCK_THRESHOLD) {
-                    return;
-                }
-
-                if (absX > absY) {
-                    swipingXRef.current = true;
-                } else {
-                    swipingYRef.current = true;
-                }
+                if (maxDelta < DRAG_LOCK_THRESHOLD) return;
+                swipeAxisRef.current = absX > absY ? "x" : "y";
             }
 
-            if (swipingXRef.current) {
+            if (swipeAxisRef.current === "x") {
                 pendingRef.current.swipeX = deltaX;
                 pendingRef.current.swipeY = 0;
-            } else if (swipingYRef.current) {
+            } else {
                 pendingRef.current.swipeY = deltaY;
                 pendingRef.current.swipeX = 0;
             }
 
             scheduleFlush();
+
 
         }
 
@@ -511,7 +552,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
-        if (isClosing || !pointerDownRef.current) return;
+        if (isClosing || evCacheRef.current.length === 0) return;
         e.preventDefault();
 
         const evCache = evCacheRef.current;
@@ -548,33 +589,31 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
             if (!isZoomedIn) {
                 // We did (1) single-finger drag-x or -y, so swipe or close on release
-                const deltaX = swipingYRef.current ? 0 : e.clientX - startXRef.current;
-                const deltaY = swipingXRef.current ? 0 : e.clientY - startYRef.current;
+                const axis = swipeAxisRef.current;
+                const deltaX = axis === "y" ? 0 : e.clientX - startXRef.current;
+                const deltaY = axis === "x" ? 0 : e.clientY - startYRef.current;
+
                 const absX = Math.abs(deltaX);
                 const absY = Math.abs(deltaY);
 
-                if (swipingYRef.current && absY > DRAG_CLOSE_THRESHOLD) {
-                    // Closing (drag-y)
+                if (axis === "y" && absY > DRAG_CLOSE_THRESHOLD) {
                     close();
-                } else if (swipingXRef.current && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
-                    // Swiping (drag-x)
+                } else if (axis === "x" && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
                     setSwipeDirection(deltaX > 0 ? "prev" : "next");
                 } else {
-                    // Snap back (either direction)
                     setSwipeDirection(null);
                     pendingRef.current.swipeX = 0;
                     pendingRef.current.swipeY = 0;
                     scheduleFlush();
                 }
+
             }
         }
 
         // Reset other stuff only when no pointers are left (gesture is over)
         if (evCache.length === 0) {
-            pointerDownRef.current = false;
             regulatePanAndZoom();
-            swipingXRef.current = false;
-            swipingYRef.current = false;
+            swipeAxisRef.current = null;
             pinchingRef.current = false;
             noLongerPinchingRef.current = false;
         }
@@ -619,6 +658,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const currentImage = currentIndex !== null ? images[currentIndex] : null;
     const isZoomedIn = pendingRef.current.zoomScale > 1;
     const isPinching = pinchingRef.current;
+    const isPointerDown = evCacheRef.current.length > 0
     let imgTx = 0;
     let imgTy = 0;
 
@@ -684,7 +724,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
                                     style={{
                                         opacity: imageOpacity,
-                                        transition: pointerDownRef.current
+                                        transition: isPointerDown
                                             ? "none"
                                             : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
@@ -702,7 +742,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
                                     style={{
                                         opacity: imageOpacity,
-                                        transition: pointerDownRef.current
+                                        transition: isPointerDown
                                             ? "none"
                                             : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
@@ -725,7 +765,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
                                         opacity: imageOpacity,
-                                        transition: pointerDownRef.current
+                                        transition: isPointerDown
                                             ? "none"
                                             : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
@@ -743,7 +783,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
                                         opacity: imageOpacity,
-                                        transition: pointerDownRef.current
+                                        transition: isPointerDown
                                             ? "none"
                                             : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
@@ -767,17 +807,18 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 onPointerMove={handlePointerMove}
                                 onPointerUp={handlePointerUp}
                                 onPointerCancel={handlePointerUp}
-                                onWheel={handleWheel}
+                                // onWheel={handleWheel}
+                                onScroll={handleScroll}
                                 onTransitionEnd={handleTrackTransitionEnd}
                                 style={{
-                                    transform: swipingXRef.current
+                                    transform: swipeAxisRef.current === "x"
                                         ? `translateX(calc(-100vw + ${swipeX}px))`
                                         : swipeDirection === "prev"
                                             ? "translateX(0vw)"
                                             : swipeDirection === "next"
                                                 ? "translateX(-200vw)"
                                                 : "translateX(-100vw)",
-                                    transition: pointerDownRef.current || swipeDirection === null
+                                    transition: isPointerDown || swipeDirection === null
                                         ? "none"
                                         : `transform ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
@@ -793,7 +834,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             style={{
                                                 transform: `translateY(${swipeY}px)`,
                                                 opacity: imageOpacity,
-                                                transition: pointerDownRef.current
+                                                transition: isPointerDown
                                                     ? "none"
                                                     : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
@@ -807,7 +848,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     className="flex items-center justify-center w-screen"
                                     style={{
                                         transform: `translate(${imgTx}px, ${imgTy}px)`,
-                                        transition: pointerDownRef.current
+                                        transition: isPointerDown
                                             ? "none"
                                             : `transform 150ms ease-out`,
                                     }}
@@ -824,7 +865,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             transformOrigin: "50% 50%",
                                             transform: `scale(${exitScale * zoomScale})`,
                                             opacity: imageOpacity,
-                                            transition: pointerDownRef.current
+                                            transition: isPointerDown
                                                 ? "none"
                                                 : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
@@ -850,7 +891,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             style={{
                                                 transform: `translateY(${swipeY}px)`,
                                                 opacity: imageOpacity,
-                                                transition: pointerDownRef.current
+                                                transition: isPointerDown
                                                     ? "none"
                                                     : `transform 150ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
@@ -865,7 +906,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs text-white/70"
                             style={{
                                 opacity: imageOpacity,
-                                transition: pointerDownRef.current
+                                transition: isPointerDown
                                     ? "none"
                                     : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                             }}
