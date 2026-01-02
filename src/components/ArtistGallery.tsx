@@ -88,6 +88,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const rafIdRef = useRef<number | null>(null);
     const pinchPrevDistanceRef = useRef<number | null>(null);
 
+            const wheelEndTimerRef = useRef<number | null>(null);
+        const ignoreWheelUntilRef = useRef(0);
+
     // what we want React to render next frame
     const pendingRef = useRef({
         panX: 0,
@@ -103,10 +106,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     if (!images || images.length === 0) return null;
 
     const scheduleFlush = () => {
-        console.log("weee2");
         if (rafIdRef.current != null) return;
         rafIdRef.current = requestAnimationFrame(() => {
-            console.log("weee3");
             rafIdRef.current = null;
             const p = pendingRef.current;
             setPanX(p.panX);
@@ -173,7 +174,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         pendingRef.current.panY = clamp(desiredPanY, minPanY, maxPanY);
         scheduleFlush();
     };
-
 
     const openAt = (index: number) => {
         setCurrentIndex(index);
@@ -252,20 +252,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         scheduleFlush();
     };
 
-    // const handleWheel = (e: React.WheelEvent) => {
-    //     if (!e.ctrlKey) {
-    //         console.log("handleWheel - no ctrl");
-    //     } else {
-    //         e.preventDefault();
-    //         console.log("handleWheel - ctrl");
-    //     }
-    // };
-
-    const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-        console.log("scrolling");
-
-    };
-
     // figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
     // also, figure out how cente(x,y) equals the midpoint between both fingers (maybe this is automatic?)
     useEffect(() => {
@@ -274,8 +260,31 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         const el = containerRef.current;
         if (!el) return;
 
-        const WHEEL_END_DELAY = 120;
+        // const WHEEL_END_DELAY = 120; 
         const WHEEL_SWIPE_THRESHOLD = 160;
+
+
+        ///////
+
+
+        const WHEEL_END_DELAY = 160;        // "quiet" time to consider gesture finished
+        const SWIPE_COMMIT_COOLDOWN = 200;  // optional extra guard during the animation
+
+
+
+        const armWheelEndTimer = () => {
+            if (wheelEndTimerRef.current != null) {
+                window.clearTimeout(wheelEndTimerRef.current);
+            }
+            wheelEndTimerRef.current = window.setTimeout(() => {
+                // wheel stream went quiet => consider gesture (and inertia) ended
+                wheelGestureActiveRef.current = false;
+                wheelSwipeAccumXRef.current = 0;
+                wheelSwipeLockRef.current = false;
+                swipeAxisRef.current = null;
+                wheelEndTimerRef.current = null;
+            }, WHEEL_END_DELAY);
+        };
 
         const onWheel = (e: WheelEvent) => {
             /* ===============================
@@ -322,6 +331,167 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                2) Horizontal wheel swipe
                =============================== */
 
+            //     if (pendingRef.current.zoomScale > 1) return;
+
+            //     const ax = Math.abs(e.deltaX);
+            //     const ay = Math.abs(e.deltaY);
+            //     if (ax <= ay) return;
+
+            //     e.preventDefault();
+
+            //     // If the gesture already ended, ignore late momentum
+            //     if (!wheelGestureActiveRef.current && wheelSwipeLockRef.current) {
+            //         console.log("gesture already ended");
+
+            //         return;
+            //     }
+
+            //     // Mark gesture as active
+            //     wheelGestureActiveRef.current = true;
+
+            //     // Accumulate
+            //     wheelSwipeAccumXRef.current += e.deltaX;
+
+            //     swipeAxisRef.current = "x";
+            //     pendingRef.current.swipeX = wheelSwipeAccumXRef.current;
+            //     pendingRef.current.swipeY = 0;
+            //     scheduleFlush();
+
+            //     // Threshold → commit navigation once
+            //     if (!wheelSwipeLockRef.current) {
+            //         if (wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD) {
+            //             wheelGestureActiveRef.current = false;
+
+            //             wheelSwipeAccumXRef.current = 0;
+            //             wheelSwipeLockRef.current = false;
+            //             swipeAxisRef.current = null;
+
+            //             pendingRef.current.swipeX = 0;
+            //             pendingRef.current.swipeY = 0;
+            //             scheduleFlush();
+
+            //             // wheelSwipeUnlockTimerRef.current = null;
+            //             setSwipeDirection("prev");
+            //             wheelSwipeLockRef.current = true;
+            //         } else if (wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD) {
+            //             wheelGestureActiveRef.current = false;
+
+            //             wheelSwipeAccumXRef.current = 0;
+            //             wheelSwipeLockRef.current = false;
+            //             swipeAxisRef.current = null;
+
+            //             pendingRef.current.swipeX = 0;
+            //             pendingRef.current.swipeY = 0;
+            //             scheduleFlush();
+
+            //             // wheelSwipeUnlockTimerRef.current = null;
+            //             setSwipeDirection("next");
+            //             wheelSwipeLockRef.current = true;
+            //         }
+            //     }
+
+            //     // 🔑 Reset timer — defines "gesture end"
+            //     if (wheelSwipeUnlockTimerRef.current != null) {
+            //         clearTimeout(wheelSwipeUnlockTimerRef.current);
+            //     }
+
+            //     wheelSwipeUnlockTimerRef.current = window.setTimeout(() => {
+            //         // Gesture is officially over
+            //         wheelGestureActiveRef.current = false;
+
+            //         wheelSwipeAccumXRef.current = 0;
+            //         wheelSwipeLockRef.current = false;
+
+            //         wheelSwipeUnlockTimerRef.current = null;
+            //     }, BACKDROP_FADE_DURATION);
+            // };
+
+            //////////
+
+            // if (pendingRef.current.zoomScale > 1) return;
+
+            // const ax = Math.abs(e.deltaX);
+            // const ay = Math.abs(e.deltaY);
+            // if (ax <= ay) return;
+
+            // e.preventDefault();
+
+            // if (wheelSwipeLockRef.current) {
+            //     console.log("gesture already ended - new if");
+            //     return;
+            // }
+
+            // // If the gesture already ended, ignore late momentum
+            // if (!wheelGestureActiveRef.current && wheelSwipeLockRef.current) {
+            //     console.log("gesture already ended");
+
+            //     return;
+            // }
+            // console.log("gesture not over yet");
+
+            // // Mark gesture as active
+            // wheelGestureActiveRef.current = true;
+
+            // // Accumulate
+            // wheelSwipeAccumXRef.current += e.deltaX;
+
+            // swipeAxisRef.current = "x";
+            // pendingRef.current.swipeX = wheelSwipeAccumXRef.current;
+            // pendingRef.current.swipeY = 0;
+            // scheduleFlush();
+
+            // // Threshold → commit navigation once
+            // if (!wheelSwipeLockRef.current) {
+            //     if (wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD) {
+            //         // console.log("wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD");
+            //         wheelGestureActiveRef.current = false;
+            //         // wheelSwipeAccumXRef.current = 0;
+            //         wheelSwipeLockRef.current = true;
+            //         swipeAxisRef.current = null;
+            //         pendingRef.current.swipeX = 0;
+            //         pendingRef.current.swipeY = 0;
+            //         scheduleFlush();
+            //         // wheelSwipeUnlockTimerRef.current = null;
+            //         setSwipeDirection("prev");
+            //     } else if (wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD) {
+            //         // console.log("wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD");
+            //         wheelGestureActiveRef.current = false;
+            //         // wheelSwipeAccumXRef.current = 0;
+            //         wheelSwipeLockRef.current = true;
+            //         swipeAxisRef.current = null;
+            //         pendingRef.current.swipeX = 0;
+            //         pendingRef.current.swipeY = 0;
+            //         scheduleFlush();
+            //         // wheelSwipeUnlockTimerRef.current = null;
+            //         setSwipeDirection("next");
+            //     }
+            // }
+
+            // // 🔑 Reset timer — defines "gesture end"
+            // // if (wheelSwipeUnlockTimerRef.current != null) {
+            // //     clearTimeout(wheelSwipeUnlockTimerRef.current);
+            // // }
+            // if (wheelSwipeLockRef.current) {
+            //     window.setTimeout(() => {
+            //         console.log("swipe should be complete by now");
+
+            //     }, BACKDROP_FADE_DURATION);
+            // }
+
+            // // if (wheelSwipeLockRef.current) {
+            // //     wheelSwipeUnlockTimerRef.current = window.setTimeout(() => {
+            // //         // Gesture is officially over
+            // //         // wheelGestureActiveRef.current = false;
+            // //         // console.log("wheelSwipeUnlockTimerRef.current");
+            // //         wheelSwipeAccumXRef.current = 0;
+            // //         wheelSwipeLockRef.current = false;
+
+            // //         // wheelSwipeUnlockTimerRef.current = null;
+            // //     }, BACKDROP_FADE_DURATION);
+            // // }
+
+            ///////////
+
             if (pendingRef.current.zoomScale > 1) return;
 
             const ax = Math.abs(e.deltaX);
@@ -330,15 +500,23 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
             e.preventDefault();
 
-            // 🔑 If the gesture already ended, ignore late momentum
-            if (!wheelGestureActiveRef.current && wheelSwipeLockRef.current) {
+            const now = performance.now();
+
+            // 1) Hard ignore window (during swipe animation / after commit)
+            if (now < ignoreWheelUntilRef.current) {
+                armWheelEndTimer(); // still extend the quiet timer so we unlock correctly
                 return;
             }
 
-            // Mark gesture as active
-            wheelGestureActiveRef.current = true;
+            // 2) If we already committed a swipe, we are in "inertia swallow" mode:
+            //    keep swallowing until wheel goes quiet (armWheelEndTimer handles unlock).
+            if (wheelSwipeLockRef.current) {
+                armWheelEndTimer();
+                return;
+            }
 
-            // Accumulate
+            // 3) Normal accumulation
+            wheelGestureActiveRef.current = true;
             wheelSwipeAccumXRef.current += e.deltaX;
 
             swipeAxisRef.current = "x";
@@ -346,36 +524,34 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             pendingRef.current.swipeY = 0;
             scheduleFlush();
 
-            // Threshold → commit navigation once
-            if (!wheelSwipeLockRef.current) {
-                if (wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD) {
-                    setSwipeDirection("prev");
-                    wheelSwipeLockRef.current = true;
-                } else if (wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD) {
-                    setSwipeDirection("next");
-                    wheelSwipeLockRef.current = true;
-                }
-            }
+            // 4) Commit once when threshold reached
+            if (wheelSwipeAccumXRef.current > WHEEL_SWIPE_THRESHOLD) {
+                wheelSwipeLockRef.current = true;
 
-            // 🔑 Reset timer — defines "gesture end"
-            if (wheelSwipeUnlockTimerRef.current != null) {
-                clearTimeout(wheelSwipeUnlockTimerRef.current);
-            }
+                // reset visual swipe offset immediately
+                pendingRef.current.swipeX = 0;
+                pendingRef.current.swipeY = 0;
+                scheduleFlush();
 
-            wheelSwipeUnlockTimerRef.current = window.setTimeout(() => {
-                // Gesture is officially over
-                wheelGestureActiveRef.current = false;
+                setSwipeDirection("prev");
 
-                wheelSwipeAccumXRef.current = 0;
-                wheelSwipeLockRef.current = false;
-                swipeAxisRef.current = null;
+                // ignore everything for at least the animation duration
+                ignoreWheelUntilRef.current = now + SWIPE_COMMIT_COOLDOWN;
+            } else if (wheelSwipeAccumXRef.current < -WHEEL_SWIPE_THRESHOLD) {
+                wheelSwipeLockRef.current = true;
 
                 pendingRef.current.swipeX = 0;
                 pendingRef.current.swipeY = 0;
                 scheduleFlush();
 
-                wheelSwipeUnlockTimerRef.current = null;
-            }, WHEEL_END_DELAY);
+                setSwipeDirection("next");
+                ignoreWheelUntilRef.current = now + SWIPE_COMMIT_COOLDOWN;
+            }
+
+            // 5) Always re-arm "gesture end" on *every* wheel event
+            armWheelEndTimer();
+
+
         };
 
         el.addEventListener("wheel", onWheel, { passive: false });
@@ -798,7 +974,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                         <div
                             // ref={containerRef}
                             id="carousel-container"
-                            className="grow-2 relative flex overflow-x-visible w-screen"
+                            className="grow-2 relative flex overflow-x-visible w-screen" // overflow-x-visible : overflow-x-auto overflow-y-hidden
                         >
                             <div
                                 id="image-carousel"
@@ -807,8 +983,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 onPointerMove={handlePointerMove}
                                 onPointerUp={handlePointerUp}
                                 onPointerCancel={handlePointerUp}
-                                // onWheel={handleWheel}
-                                onScroll={handleScroll}
                                 onTransitionEnd={handleTrackTransitionEnd}
                                 style={{
                                     transform: swipeAxisRef.current === "x"
