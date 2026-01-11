@@ -77,6 +77,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const noLongerPinchingRef = useRef(false);
     const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number } | null>(null)
     const swipeAxisRef = useRef<"x" | "y" | null>(null);
+    const swipeSnapBackRef = useRef(false);
     const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
@@ -544,11 +545,15 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 } else if (axis === "x" && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
                     setSwipeDirection(deltaX > 0 ? "prev" : "next");
                 } else {
-                    // todo (01.10.26): re-introduce some kind of way (setTimeOut???) to keep track of when to keep a transition on the image-carousel div, so that when the threshold hasn't been met, it will slide back into place rather than jump. Keeping it on all the time is stupid because then you're applying a transition to something being dragged. Having it on only when `isPointerDown || swipeDirection === null` is less dumb, but also keeping this ^ from happening. Got to be some middle ground.
                     setSwipeDirection(null);
                     pendingRef.current.swipeX = 0;
                     pendingRef.current.swipeY = 0;
+                    swipeSnapBackRef.current = true;
                     scheduleFlush();
+                    window.setTimeout(() => {
+                        swipeSnapBackRef.current = false;
+                    }, BACKDROP_FADE_DURATION);
+
                 }
 
             }
@@ -760,7 +765,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             : swipeDirection === "next"
                                                 ? "translateX(-200vw)"
                                                 : "translateX(-100vw)",
-                                    transition: isPointerDown || swipeDirection === null
+                                    transition: (isPointerDown || swipeDirection === null) && !swipeSnapBackRef.current
                                         ? "none"
                                         : `transform ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
