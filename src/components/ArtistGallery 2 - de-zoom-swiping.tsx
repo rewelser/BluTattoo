@@ -14,7 +14,7 @@ const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
 const BACKDROP_FADE_DURATION = 200;
 // const BACKDROP_FADE_DURATION = 2000;
-const SWIPE_IMAGE_CHANGE_THRESHOLD = 200; // 80 too small for desktop, 200 too big for mobile
+const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
 // ^ might need to make a mobile threshold as well ^
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
@@ -83,6 +83,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const evCacheRef = useRef<CachedPointer[]>([]);
     const rafIdRef = useRef<number | null>(null);
     const pinchPrevDistanceRef = useRef<number | null>(null);
+    const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
+    const resetInFlightRef = useRef<Promise<void> | null>(null);
+
+
 
     // what we want React to render next frame
     const pendingRef = useRef({
@@ -237,7 +241,86 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         scheduleFlush();
     };
 
-    // todo (01.10.26): make this work. At somepoint this route (fleshed out in ArtistGallery 2 - de-zoom-swiping.tsx) is breaking swiping, along with who-knows-what-else.
+    const resetViewAnimated = () => {
+        // Coalesce calls if user spams next/prev
+        if (resetInFlightRef.current) return resetInFlightRef.current;
+
+        // If already reset, no need to wait
+        const alreadyReset =
+            pendingRef.current.zoomScale === 1 &&
+            pendingRef.current.panX === 0 &&
+            pendingRef.current.panY === 0 &&
+            pendingRef.current.swipeX === 0 &&
+            pendingRef.current.swipeY === 0;
+
+        if (alreadyReset) return Promise.resolve();
+
+        resetInFlightRef.current = new Promise<void>((resolve) => {
+            const imgContainer = currentImgContainerRef.current; // pan translate lives here
+            const img = imageRef.current;        // scale lives here
+
+            // If we can't listen for transitions, just do the state update and resolve quickly
+            if (!imgContainer || !img) {
+                resetViewImmediate();
+                scheduleFlush();
+                resetInFlightRef.current = null;
+                resolve();
+                return;
+            }
+
+            let doneCount = 0;
+            const done = () => {
+                doneCount++;
+                if (doneCount >= 2) {
+                    cleanup();
+                    resetInFlightRef.current = null;
+                    resolve();
+                }
+            };
+
+            const onImgContainerEnd = (e: TransitionEvent) => {
+                if (e.propertyName === "transform") done();
+            };
+            const onImgEnd = (e: TransitionEvent) => {
+                if (e.propertyName === "transform") done();
+            };
+
+            const cleanup = () => {
+                imgContainer.removeEventListener("transitionend", onImgContainerEnd);
+                img.removeEventListener("transitionend", onImgEnd);
+                // clearTimeout(timer);
+            };
+
+            // // Fallback in case transitionend doesn't fire (e.g. same value, interrupted, etc.)
+            // const timer = window.setTimeout(() => {
+            //     cleanup();
+            //     resetInFlightRef.current = null;
+            //     resolve();
+            // }, RESET_MS + 80);
+
+            // Listen BEFORE we trigger changes
+            imgContainer.addEventListener("transitionend", onImgContainerEnd);
+            img.addEventListener("transitionend", onImgEnd);
+
+            // Trigger reset
+            resetViewImmediate();
+            scheduleFlush();
+        });
+
+        return resetInFlightRef.current;
+    };
+
+    const requestSwipe = async (dir: "prev" | "next") => {
+        if (isClosing) return;
+
+        // Phase 1: reset pan/zoom
+        await resetViewAnimated();
+
+        // Phase 2: swipe track
+        setSwipeDirection(dir);
+    };
+
+
     const resetViewImmediate = () => {
         pendingRef.current.zoomScale = 1;
         pendingRef.current.panX = 0;
@@ -249,7 +332,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
     const showPrev = () => {
         if (currentIndex === null) return;
-        // resetViewImmediate();
+
         setCurrentIndex((prev) => {
             if (prev === null) return prev;
             return (prev - 1 + images.length) % images.length;
@@ -261,7 +344,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
     const showNext = () => {
         if (currentIndex === null) return;
-        // resetViewImmediate();
+
         setCurrentIndex((prev) => {
             if (prev === null) return prev;
             return (prev + 1) % images.length;
@@ -272,7 +355,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     };
 
     // figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
-    // also, figure out how cente(x,y) equals the midpoint between both fingers (maybe this is automatic?)
+    // also, figure out how center(x,y) equals the midpoint between both fingers (maybe this is automatic?)
     useEffect(() => {
         if (!isOpen || isClosing) return;
 
@@ -542,9 +625,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 if (axis === "y" && absY > DRAG_CLOSE_THRESHOLD) {
                     close();
                 } else if (axis === "x" && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
-                    setSwipeDirection(deltaX > 0 ? "prev" : "next");
+                    requestSwipe(deltaX > 0 ? "prev" : "next");
                 } else {
-                    // todo (01.10.26): re-introduce some kind of way (setTimeOut???) to keep track of when to keep a transition on the image-carousel div, so that when the threshold hasn't been met, it will slide back into place rather than jump. Keeping it on all the time is stupid because then you're applying a transition to something being dragged. Having it on only when `isPointerDown || swipeDirection === null` is less dumb, but also keeping this ^ from happening. Got to be some middle ground.
                     setSwipeDirection(null);
                     pendingRef.current.swipeX = 0;
                     pendingRef.current.swipeY = 0;
@@ -576,9 +658,11 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
         // Commit the index change
         if (swipeDirection === "prev") {
-            showPrev();
+            // showPrev();
+            requestSwipe("prev");
         } else if (swipeDirection === "next") {
-            showNext();
+            // showNext();
+            requestSwipe("next");
         }
     };
 
@@ -587,8 +671,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") close();
-            if (e.key === "ArrowLeft") showPrev();
-            if (e.key === "ArrowRight") showNext();
+            if (e.key === "ArrowLeft") requestSwipe("prev");
+            if (e.key === "ArrowRight") requestSwipe("next");
         };
 
         window.addEventListener("keydown", handleKeyDown);
@@ -704,7 +788,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setSwipeDirection("prev");
+                                        requestSwipe("prev");
                                     }}
                                     className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
@@ -722,7 +806,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setSwipeDirection("next");
+                                        requestSwipe("next");
                                     }}
                                     className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-1"
                                     style={{
@@ -786,6 +870,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                                 {/* Current slide (center) */}
                                 <div
+                                    ref={currentImgContainerRef}
                                     id="current-image-container"
                                     className="flex items-center justify-center w-screen"
                                     style={{
