@@ -15,7 +15,7 @@ const DRAG_LOCK_THRESHOLD = 10;
 const RESET_DURATION = 150;
 const BACKDROP_FADE_DURATION = 200;
 // const BACKDROP_FADE_DURATION = 2000;
-const SWIPE_IMAGE_CHANGE_THRESHOLD = 200; // 80 too small for desktop, 200 too big for mobile
+const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
 // ^ might need to make a mobile threshold as well ^
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
@@ -712,7 +712,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 <LightboxPortal>
                     <div
                         ref={containerRef}
-                        className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between overflow-hidden select-none touch-none"
+                        className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between overflow-hidden select-none touch-none backdrop-blur-sm"
                         onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 close();
@@ -730,12 +730,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             className="flex flex-row z-10"
                         >
                             {/* Zoom */}
-                            <div className="px-4 flex justify-end">
+                            <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
                                 <button
                                     disabled={isClosing}
                                     type="button"
                                     onClick={zoom}
-                                    className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
+                                    className="p-1text-sm uppercase tracking-wide cursor-pointer mix-blend-difference"
                                     style={{
                                         opacity: imageOpacity,
                                         transition: isPointerDown
@@ -748,12 +748,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             </div>
 
                             {/* Close */}
-                            <div className="px-4 flex justify-end">
+                            <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
                                 <button
                                     disabled={isClosing}
                                     type="button"
                                     onClick={close}
-                                    className="py-4 text-white/70 hover:text-white text-sm uppercase tracking-wide cursor-pointer"
+                                    className="p-1 text-sm uppercase tracking-wide cursor-pointer mix-blend-difference "
                                     style={{
                                         opacity: imageOpacity,
                                         transition: isPointerDown
@@ -777,7 +777,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         // setSwipeDirection("prev");
                                         requestSwipe("prev");
                                     }}
-                                    className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10"
+                                    className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
                                     style={{
                                         opacity: imageOpacity,
                                         transition: isPointerDown
@@ -796,7 +796,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         // setSwipeDirection("next");
                                         requestSwipe("next");
                                     }}
-                                    className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-white/40 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10"
+                                    className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
                                     style={{
                                         opacity: imageOpacity,
                                         transition: isPointerDown
@@ -921,7 +921,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                         {/* Caption + index */}
                         <div
-                            className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs text-white/70 z-10"
+                            className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10"
                             style={{
                                 opacity: imageOpacity,
                                 transition: isPointerDown
