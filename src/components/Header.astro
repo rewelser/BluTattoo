@@ -4,8 +4,10 @@ import branding from "../content/branding.json";
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
-artists = artists.sort((a, b) =>
-  (a.data.order ?? 999) - (b.data.order ?? 999) || a.data.title.localeCompare(b.data.title)
+artists = artists.sort(
+  (a, b) =>
+    (a.data.order ?? 999) - (b.data.order ?? 999) ||
+    a.data.title.localeCompare(b.data.title),
 );
 
 // Active link helper
@@ -14,7 +16,7 @@ const isActive = (href: string) =>
   currentPath === href || (href !== "/" && currentPath.startsWith(href));
 
 // Load site branding (logo)
-const site = await getEntry('siteInfo', 'main');
+const site = await getEntry("siteInfo", "main");
 const logo =
   branding?.logo ??
   "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg";
@@ -34,7 +36,9 @@ const logo =
 </div>
 
 <!-- Sticky NAV (desktop) -->
-<div class="hidden md:block sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur">
+<div
+  class="hidden md:block sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur"
+>
   <nav class="mx-auto max-w-6xl px-4">
     <ul class="flex items-center justify-center gap-8 py-3">
       <li>
@@ -53,30 +57,40 @@ const logo =
         <details class="relative">
           <summary
             class={`list-none cursor-pointer flex items-center gap-1 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-              isActive("/artists") ? "font-semibold underline text-indigo-400" : ""
+              isActive("/artists")
+                ? "font-semibold underline text-indigo-400"
+                : ""
             }`}
           >
             ARTISTS
-            <svg width="16" height="16" color="red" viewBox="0 0 24 24" aria-hidden="true">  <style>
-              path { fill: oklch(95.4% 0.038 75.164); }
-            </style><path d="M7 10l5 5 5-5H7z" /></svg>
+            <svg
+              class="fill-orange-100"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M7 10l5 5 5-5H7z"></path>
+            </svg>
           </summary>
           <ul
             role="menu"
             class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20"
           >
-            {artists.map((entry) => (
-              <li role="none">
-                <a
-                  role="menuitem"
-                  href={`/artists/${entry.id}/`}
-                  class="block px-3 py-2 hover:outline-1 hover:outline-orange-100"
-                  data-astro-prefetch="hover"
-                >
-                  {entry.data.title}
-                </a>
-              </li>
-            ))}
+            {
+              artists.map((entry) => (
+                <li role="none">
+                  <a
+                    role="menuitem"
+                    href={`/artists/${entry.id}/`}
+                    class="block px-3 py-2 hover:outline-1 hover:outline-orange-100"
+                    data-astro-prefetch="hover"
+                  >
+                    {entry.data.title}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </details>
       </li>
@@ -86,7 +100,9 @@ const logo =
           href="/aftercare"
           data-astro-prefetch="hover"
           class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-            isActive("/aftercare") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/aftercare")
+              ? "font-semibold underline text-indigo-400"
+              : ""
           }`}
         >
           AFTERCARE
@@ -110,7 +126,9 @@ const logo =
           href="/contact"
           data-astro-prefetch="hover"
           class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-            isActive("/contact") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/contact")
+              ? "font-semibold underline text-indigo-400"
+              : ""
           }`}
         >
           CONTACT US
@@ -121,15 +139,14 @@ const logo =
 </div>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative">
+<header
+  id="mobileHeader"
+  class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative"
+>
   <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2" aria-label="BluTattoo Studio">
-      <img
-        src={logo}
-        alt=""
-        class="h-15 w-auto"
-      />
+      <img src={logo} alt="" class="h-15 w-auto" />
       <span class="sr-only">BluTattoo Studio</span>
     </a>
 
@@ -143,8 +160,12 @@ const logo =
              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
     >
       Menu
-      <svg viewBox="0 0 24 24" class="h-4 w-4 transition-transform" aria-hidden="true">
-        <path d="M7 10l5 5 5-5H7z" />
+      <svg
+        viewBox="0 0 24 24"
+        class="h-4 w-4 transition-transform fill-orange-100"
+        aria-hidden="true"
+      >
+        <path d="M7 10l5 5 5-5H7z"></path>
       </svg>
     </button>
   </div>
@@ -152,8 +173,10 @@ const logo =
   <!-- panel sits below the top row -->
   <div id="mobileMenuPanel" class="inset-x-0 top-full mt-2 px-4 text-center">
     <!-- The element we animate is this wrapper -->
-    <div id="mobileMenuAnim"
-         class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]">
+    <div
+      id="mobileMenuAnim"
+      class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
+    >
       <nav class="p-2 shadow-xl" role="menu">
         <a href="/" class="block px-2 py-3 hover:bg-white/10">Home</a>
 
@@ -166,47 +189,68 @@ const logo =
           class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10 focus:outline-none"
         >
           <span>Artists</span>
-          <svg viewBox="0 0 24 24" class="h-4 w-4 transition-transform" aria-hidden="true">
-            <path d="M7 10l5 5 5-5H7z" />
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4 transition-transform fill-orange-100"
+            aria-hidden="true"
+          >
+            <path d="M7 10l5 5 5-5H7z"></path>
           </svg>
         </button>
 
-        <div id="artistsAnim"
-            class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]">
+        <div
+          id="artistsAnim"
+          class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]"
+        >
           <ul
             class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10"
           >
-            {artists.map((entry) => (
-              <li>
-                <a
-                  href={`/artists/${entry.id}/`}
-                  class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
-                  data-astro-prefetch="hover"
-                >
-                  {entry.data.title}
-                </a>
-              </li>
-            ))}
+            {
+              artists.map((entry) => (
+                <li>
+                  <a
+                    href={`/artists/${entry.id}/`}
+                    class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                    data-astro-prefetch="hover"
+                  >
+                    {entry.data.title}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </div>
 
-        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10">Aftercare</a>
+        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10"
+          >Aftercare</a
+        >
         <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
-        <a href="/contact" class="block px-2 py-3 hover:bg-white/10">Contact Us</a>
+        <a href="/contact" class="block px-2 py-3 hover:bg-white/10"
+          >Contact Us</a
+        >
       </nav>
     </div>
   </div>
 </header>
 
-
 <style>
-  summary { list-style: none; }
-  summary::-webkit-details-marker { display: none; }
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
 
   @media (min-width: 768px) {
     /* open-on-hover convenience for desktop dropdown */
-    details > ul { display: none; }
-    details[open] > ul { display: block; }
-    details.group:hover > ul { display: block; }
+    details > ul {
+      display: none;
+    }
+    details[open] > ul {
+      display: block;
+    }
+    details.group:hover > ul {
+      display: block;
+    }
   }
 </style>

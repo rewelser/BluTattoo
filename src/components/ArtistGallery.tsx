@@ -80,6 +80,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const swipeAxisRef = useRef<"x" | "y" | null>(null);
     const swipeSnapBackRef = useRef(false);
     const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null);
+    const swipeCommitGuardRef = useRef(false);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
     const evCacheRef = useRef<CachedPointer[]>([]);
@@ -88,6 +89,27 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
     const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
     const resetInFlightRef = useRef<Promise<void> | null>(null);
+
+    const ZoomInIcon = () => (
+        <svg
+            // viewBox="0 0 24 24"
+            viewBox="0 -960 960 960"
+            className="h-6 w-6 fill-current"
+            aria-hidden="true"
+        >
+            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Zm-40-60v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+        </svg>
+    );
+
+    const ZoomOutIcon = () => (
+        <svg
+            viewBox="0 -960 960 960"
+            className="h-6 w-6 fill-current"
+            aria-hidden="true"
+        >
+            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z" />
+        </svg>
+    );
 
     // what we want React to render next frame
     const pendingRef = useRef({
@@ -273,7 +295,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             const cleanup = () => {
                 imgContainer.removeEventListener("transitionend", onImgContainerEnd);
                 img.removeEventListener("transitionend", onImgEnd);
-                // clearTimeout(timer);
+                clearTimeout(timer);
             };
 
             // Fallback in case transitionend doesn't fire (e.g. same value, interrupted, etc.)
@@ -298,11 +320,17 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const requestSwipe = async (dir: "prev" | "next") => {
         if (isClosing) return;
 
+        // redundant protections to cancel any drag-driven transform path
+        pendingRef.current.swipeX = 0;
+        pendingRef.current.swipeY = 0;
+        scheduleFlush();
+
         // Phase 1: reset pan/zoom
         await resetViewAnimated();
 
         // Phase 2: swipe track
         setSwipeDirection(dir);
+
     };
 
     const resetViewImmediate = () => {
@@ -690,14 +718,27 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         pinchPrevCenterRef.current = null;
     };
 
-    const handleTrackTransitionEnd = (
+    const handleTrackTransitionEndOrCancel = (
         e: React.TransitionEvent<HTMLDivElement>
     ) => {
-        // Only care about transform finishing:
-        if (e.propertyName !== "transform") return;
+        // Ignore bubbled transitionend events from children
+        if (e.target !== e.currentTarget) return;
 
         // If we're not in a swipe animation, ignore.
         if (!swipeDirection) return;
+
+        // "transitionend" | "transitioncancel"
+        const nativeType = (e.nativeEvent as TransitionEvent).type;
+        const prop = (e as any).propertyName as string | undefined;
+
+        if (nativeType === "transitionend") {
+            // if transitionend, only care about transform finishing:
+            if (prop !== "transform") return;
+        }
+
+        // Ensure we only commit once per swipe
+        if (swipeCommitGuardRef.current) return;
+        swipeCommitGuardRef.current = true;
 
         // Commit the index change
         if (swipeDirection === "prev") {
@@ -706,6 +747,11 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             showNext();
         }
     };
+
+    useEffect(() => {
+        // whenever a new swipe is initiated, allow exactly one commit
+        if (swipeDirection) swipeCommitGuardRef.current = false;
+    }, [swipeDirection]);
 
     useEffect(() => {
         if (!isOpen || isClosing) return;
@@ -786,12 +832,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 className="flex flex-row z-10"
                             >
                                 {/* Zoom */}
-                                <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
+                                <div className="p-2 m-1 flex justify-end bg-black/40 backdrop-blur-sm">
                                     <button
                                         disabled={isClosing}
                                         type="button"
                                         onClick={zoom}
-                                        className="p-1text-sm uppercase tracking-wide cursor-pointer mix-blend-difference"
+                                        className="p-1 text-sm uppercase tracking-wide cursor-pointer"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -799,17 +845,17 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                                 : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
                                     >
-                                        Zoom
+                                        {isZoomedIn ? <ZoomOutIcon /> : <ZoomInIcon />}
                                     </button>
                                 </div>
 
                                 {/* Close */}
-                                <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
+                                <div className="p-2 m-1 flex justify-end bg-black/40 backdrop-blur-sm">
                                     <button
                                         disabled={isClosing}
                                         type="button"
                                         onClick={close}
-                                        className="p-1 text-sm uppercase tracking-wide cursor-pointer mix-blend-difference "
+                                        className="p-1 text-sm uppercase tracking-wide cursor-pointer"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -817,7 +863,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                                 : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
                                     >
-                                        Close ✕
+                                        <svg
+                                            viewBox="0 -960 960 960"
+                                            className="h-6 w-6 fill-current"
+                                        >
+                                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -830,10 +881,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            // setSwipeDirection("prev");
                                             requestSwipe("prev");
                                         }}
-                                        className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
+                                        className="absolute left-3 top-1/2 px-2 py-2 hidden sm:flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -842,7 +892,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         }}
                                         aria-label="Previous image"
                                     >
-                                        ←
+                                        <svg
+                                            viewBox="0 -960 960 960"
+                                            className="h-6 w-6 fill-current"
+                                        >
+                                            <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+                                        </svg>
                                     </button>
                                     <button
                                         disabled={isClosing}
@@ -852,7 +907,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             // setSwipeDirection("next");
                                             requestSwipe("next");
                                         }}
-                                        className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
+                                        className="absolute right-3 top-1/2 px-2 py-2 hidden sm:flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -861,16 +916,20 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         }}
                                         aria-label="Next image"
                                     >
-                                        →
+                                        <svg
+                                            viewBox="0 -960 960 960"
+                                            className="h-6 w-6 fill-current"
+                                        >
+                                            <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                                        </svg>
                                     </button>
                                 </>
                             )}
 
                             {/* Image track: prev | current | next */}
                             <div
-                                // ref={containerRef}
                                 id="carousel-container"
-                                className="grow-2 relative flex overflow-x-visible w-screen" // overflow-x-visible : overflow-x-auto overflow-y-hidden
+                                className="grow-2 relative flex overflow-x-visible w-screen"
                             >
                                 <div
                                     id="image-carousel"
@@ -879,7 +938,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                     onPointerMove={handlePointerMove}
                                     onPointerUp={handlePointerUp}
                                     onPointerCancel={handlePointerUp}
-                                    onTransitionEnd={handleTrackTransitionEnd}
+                                    onTransitionEnd={handleTrackTransitionEndOrCancel}
+                                    onTransitionCancel={handleTrackTransitionEndOrCancel}
                                     style={{
                                         transform: swipeAxisRef.current === "x"
                                             ? `translateX(calc(-100vw + ${swipeX}px))`
@@ -977,7 +1037,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                             {/* Caption + index */}
                             <div
-                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10"
+                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10 "
                                 style={{
                                     opacity: imageOpacity,
                                     transition: isPointerDown
@@ -985,10 +1045,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
                             >
-                                <div className="truncate pr-4">
+                                <div className="truncate p-4 bg-black/40 backdrop-blur-sm">
                                     {currentImage.alt ?? "\u00A0"}
                                 </div>
-                                <div>
+                                <div className="p-4 bg-black/40 backdrop-blur-sm">
                                     {(currentIndex ?? 0) + 1} / {images.length}
                                 </div>
                             </div>
