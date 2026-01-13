@@ -490,9 +490,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 !!t2?.closest("[data-zoomable='true']");
             if (!bothOnZoomable) return;
 
-            const img = imageRef.current;
             const container = containerRef.current;
-            if (!img) return;
             if (!container) return;
 
             // X & Y midpoints between pinching fingers (screen space)
@@ -512,12 +510,16 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             are not applied to the same element (pan on container, zoom on image), so we need a 
             stable reference point. Because the image scales around its center, the image center 
             (in screen space) is:
-                                            imageCenterScreen = viewportCenter + pan
+
+                                    imageCenterScreen = viewportCenter + pan
+
             Now take any point on the unscaled image in image-local space i (a vector from the image center).
             Scaling by z makes that vector become z * i in screen pixels. So the full mapping is:
-                                            pointScreen_i = imageCenterScreen + z * i 
+
+                                    pointScreen_i = imageCenterScreen + z * i 
+
             Generally:
-                                            S = C + P + z⋅i 
+                                    S = C + P + z⋅i 
             where:
                 screen == S (a screen-space point)
                 viewportCenter == C
@@ -548,46 +550,52 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             /* 
             During the pinch, we know prevCenter (screen point between fingers) and we want to 
             find which image-local point was under that screen point. Starting from the mapping:
-                                            S = C + P + z⋅i
+                                    S = C + P + z⋅i
             Solve for i:
-                                            i = (S - C - P) / z
+                                    i = (S - C - P) / z
             plug in prev values:
                 S = prevCenter
                 C = viewportCenter
                 P = prevPan
                 z = prevZoom
-                                            i = (prevCenter - viewportCenter - prevPan) / prevZoom
-            Why does q get multiplied by nextZoom?
-            - Because scaling multiplies image-local offsets from the center. If q = (10, 0) means 
-            “10px right of the image center in image-local space”, then at zoom 1 it shows up 10 
-            screen pixels right. At zoom 2, it shows up 20 screen pixels right. So on the next frame, 
-            when zoom is nextZoom, the screen-space offset of that same point becomes:
-                                            screenOffset = nextZoom * i
+                                    i = (prevCenter - viewportCenter - prevPan) / prevZoom
+
+            i gets multiplied by nextZoom because scaling multiplies image-local 
+            offsets from the center. If i = (10, 0) means “10px right of the image center 
+            in image-local space”, then at zoom 1 it shows up 10 screen pixels right. 
+            At zoom 2, it shows up 20 screen pixels right. So on the next frame, when zoom 
+            is nextZoom, the screen-space offset of that same point becomes:
+
+                                    screenOffset = nextZoom * i
+
             And therefore the screen position of that point is:
-                                            S_next = C + P_next + nextZoom * i
+
+                                    S_next = C + P_next + nextZoom * i
+
             We want that to equal curCenter, because the fingers moved and you want the image point to 
             stay under them:
-                                            curCenter = viewportCenter + nextPan + nextZoom * i
+                                    curCenter = viewportCenter + nextPan + nextZoom * i
             Solve for the new pan:
-                                            nextPan = curCenter - viewportCenter - nextZoom * i
+                                    nextPan = curCenter - viewportCenter - nextZoom * i
             */
-            const prevCenter_i = (prevCenter.x - viewportCenter.x - prevPan.x) / prevZoom;
+            const prevCenterX_i = (prevCenter.x - viewportCenter.x - prevPan.x) / prevZoom;
+            const prevCenterY_i = (prevCenter.y - viewportCenter.y - prevPan.y) / prevZoom;
 
             // Incremental pan update
             const nextPanXUnclamped =
                 curCenter.x -
                 viewportCenter.x -
-                nextZoomUnclamped * prevCenter_i;
+                nextZoomUnclamped * prevCenterX_i;
 
             const nextPanYUnclamped =
                 curCenter.y -
                 viewportCenter.y -
-                nextZoomUnclamped * prevCenter_i;
+                nextZoomUnclamped * prevCenterY_i;
 
             if (nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM) {
 
-                const nextPanXForClampedZoom = curCenter.x - viewportCenter.x - MAX_ZOOM * prevCenter_i;
-                const nextPanYForClampedZoom = curCenter.y - viewportCenter.y - MAX_ZOOM * prevCenter_i;
+                const nextPanXForClampedZoom = curCenter.x - viewportCenter.x - MAX_ZOOM * prevCenterX_i;
+                const nextPanYForClampedZoom = curCenter.y - viewportCenter.y - MAX_ZOOM * prevCenterY_i;
 
                 nextPanUnclampedForClampedZoom.current = {
                     x: nextPanXForClampedZoom,
