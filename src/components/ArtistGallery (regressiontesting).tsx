@@ -86,6 +86,8 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const rafIdRef = useRef<number | null>(null);
     const pinchPrevDistanceRef = useRef<number | null>(null);
     const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
+    const pinchPrevPanRef = useRef<{ x: number; y: number } | null>(null);
+    const pinchPrevZoomRef = useRef<number | null>(null);
     const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
     const resetInFlightRef = useRef<Promise<void> | null>(null);
 
@@ -490,9 +492,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                 !!t2?.closest("[data-zoomable='true']");
             if (!bothOnZoomable) return;
 
-            const img = imageRef.current;
             const container = containerRef.current;
-            if (!img) return;
             if (!container) return;
 
             // X & Y midpoints between pinching fingers (screen space)
@@ -504,103 +504,71 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             // Distance between the two pointers
             const curDist = Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
 
+            // viewport center in screen space (stable; container isn't transformed)
+            const cr = container.getBoundingClientRect();
+            const viewCenter = { x: cr.left + cr.width / 2, y: cr.top + cr.height / 2 };
 
-            //// Explanation of viewport center usage:
-            /* 
-            At pan = 0, zoom = 1, image is centered in viewport, so viewport center = image center.
-            Viewport center makes sense as a reference point because of the above, and because pan and zoom
-            are not applied to the same element (pan on container, zoom on image), so we need a 
-            stable reference point. Because the image scales around its center, the image center 
-            (in screen space) is:
-                                            imageCenterScreen = viewportCenter + pan
-            Now take any point on the unscaled image in image-local space i (a vector from the image center).
-            Scaling by z makes that vector become z * i in screen pixels. So the full mapping is:
-                                            pointScreen_i = imageCenterScreen + z * i 
-            Generally:
-                                            S = C + P + z⋅i 
-            where:
-                screen == S (a screen-space point)
-                viewportCenter == C
-                pan == P
-                imageCoord == i (image-local coordinate)
-                zoom == z
-            */
-            const containerRect = container.getBoundingClientRect();
-            const viewportCenter = { x: containerRect.left + containerRect.width / 2, y: containerRect.top + containerRect.height / 2 };
-
-            // Seed the incremental integrator - wait for next move to have a delta
-            if (pinchPrevDistanceRef.current == null || pinchPrevCenterRef.current == null) {
+            // seed on first pinch frame
+            if (
+                pinchPrevDistanceRef.current == null ||
+                pinchPrevCenterRef.current == null ||
+                pinchPrevPanRef.current == null ||
+                pinchPrevZoomRef.current == null
+            ) {
                 pinchPrevDistanceRef.current = curDist;
                 pinchPrevCenterRef.current = curCenter;
+                pinchPrevPanRef.current = { x: pendingRef.current.panX, y: pendingRef.current.panY };
+                pinchPrevZoomRef.current = pendingRef.current.zoomScale;
                 return;
             }
 
             const prevDist = pinchPrevDistanceRef.current;
             const prevCenter = pinchPrevCenterRef.current;
-            const prevPan = { x: pendingRef.current.panX, y: pendingRef.current.panY };
-            const prevZoom = pendingRef.current.zoomScale;
-            if (!prevDist || !prevCenter) return;
+            const prevPan = pinchPrevPanRef.current;
+            const prevZoom = pinchPrevZoomRef.current;
 
             // Incremental scale step for this frame
             const zoomStepFactor = curDist / prevDist;
             const nextZoomUnclamped = prevZoom * zoomStepFactor;
 
-            /* 
-            During the pinch, we know prevCenter (screen point between fingers) and we want to 
-            find which image-local point was under that screen point. Starting from the mapping:
-                                            S = C + P + z⋅i
-            Solve for i:
-                                            i = (S - C - P) / z
-            plug in prev values:
-                S = prevCenter
-                C = viewportCenter
-                P = prevPan
-                z = prevZoom
-                                            i = (prevCenter - viewportCenter - prevPan) / prevZoom
-            Why does q get multiplied by nextZoom?
-            - Because scaling multiplies image-local offsets from the center. If q = (10, 0) means 
-            “10px right of the image center in image-local space”, then at zoom 1 it shows up 10 
-            screen pixels right. At zoom 2, it shows up 20 screen pixels right. So on the next frame, 
-            when zoom is nextZoom, the screen-space offset of that same point becomes:
-                                            screenOffset = nextZoom * i
-            And therefore the screen position of that point is:
-                                            S_next = C + P_next + nextZoom * i
-            We want that to equal curCenter, because the fingers moved and you want the image point to 
-            stay under them:
-                                            curCenter = viewportCenter + nextPan + nextZoom * i
-            Solve for the new pan:
-                                            nextPan = curCenter - viewportCenter - nextZoom * i
-            */
-            const prevCenter_i = (prevCenter.x - viewportCenter.x - prevPan.x) / prevZoom;
-
-            // Incremental pan update
+            // ✅ the key: solve nextPan so the SAME image point stays under the fingers
             const nextPanXUnclamped =
                 curCenter.x -
-                viewportCenter.x -
-                nextZoomUnclamped * prevCenter_i;
+                viewCenter.x -
+                (nextZoomUnclamped / prevZoom) * (prevCenter.x - viewCenter.x - prevPan.x);
 
             const nextPanYUnclamped =
                 curCenter.y -
-                viewportCenter.y -
-                nextZoomUnclamped * prevCenter_i;
+                viewCenter.y -
+                (nextZoomUnclamped / prevZoom) * (prevCenter.y - viewCenter.y - prevPan.y);
 
+            // store snapback target if clamping zoom
             if (nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM) {
+                const nextZoomClamped = MAX_ZOOM;
 
-                const nextPanXForClampedZoom = curCenter.x - viewportCenter.x - MAX_ZOOM * prevCenter_i;
-                const nextPanYForClampedZoom = curCenter.y - viewportCenter.y - MAX_ZOOM * prevCenter_i;
+                const nextPanXForClamped =
+                    curCenter.x -
+                    viewCenter.x -
+                    (nextZoomClamped / prevZoom) * (prevCenter.x - viewCenter.x - prevPan.x);
 
-                nextPanUnclampedForClampedZoom.current = {
-                    x: nextPanXForClampedZoom,
-                    y: nextPanYForClampedZoom
-                };
+                const nextPanYForClamped =
+                    curCenter.y -
+                    viewCenter.y -
+                    (nextZoomClamped / prevZoom) * (prevCenter.y - viewCenter.y - prevPan.y);
+
+                nextPanUnclampedForClampedZoom.current = { x: nextPanXForClamped, y: nextPanYForClamped };
             }
 
-            // Commit
+            // commit
             pendingRef.current.zoomScale = nextZoomUnclamped;
             pendingRef.current.panX = nextPanXUnclamped;
             pendingRef.current.panY = nextPanYUnclamped;
+
+            // advance "prev" snapshot to match the just-committed state
             pinchPrevDistanceRef.current = curDist;
-            pinchPrevCenterRef.current = { x: curCenter.x, y: curCenter.y };
+            pinchPrevCenterRef.current = curCenter;
+            pinchPrevPanRef.current = { x: nextPanXUnclamped, y: nextPanYUnclamped };
+            pinchPrevZoomRef.current = nextZoomUnclamped;
 
             scheduleFlush();
         }
@@ -680,6 +648,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         // Reset pinch-specific stuff regardless
         pinchPrevDistanceRef.current = null;
         pinchPrevCenterRef.current = null;
+        pinchPrevPanRef.current = null;
+        pinchPrevZoomRef.current = null;
+
     };
 
     const handleTrackTransitionEnd = (
@@ -755,239 +726,237 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
             </div>
 
             {/* Lightbox overlay goes into <body> via portal */}
-            {
-                isOpen && currentImage && (
-                    <LightboxPortal>
+            {isOpen && currentImage && (
+                <LightboxPortal>
+                    <div
+                        ref={containerRef}
+                        className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between overflow-hidden select-none touch-none backdrop-blur-sm"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                close();
+                            }
+                        }}
+                        style={{
+                            pointerEvents: isClosing ? "none" : "auto",
+                            backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
+                            transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
+                        }}
+                    >
+
+                        {/* Zoom & Close buttons container */}
                         <div
-                            ref={containerRef}
-                            className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between overflow-hidden select-none touch-none backdrop-blur-sm"
-                            onClick={(e) => {
-                                if (e.target === e.currentTarget) {
-                                    close();
-                                }
-                            }}
-                            style={{
-                                pointerEvents: isClosing ? "none" : "auto",
-                                backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
-                                transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
-                            }}
+                            className="flex flex-row z-10"
                         >
-
-                            {/* Zoom & Close buttons container */}
-                            <div
-                                className="flex flex-row z-10"
-                            >
-                                {/* Zoom */}
-                                <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
-                                    <button
-                                        disabled={isClosing}
-                                        type="button"
-                                        onClick={zoom}
-                                        className="p-1text-sm uppercase tracking-wide cursor-pointer mix-blend-difference"
-                                        style={{
-                                            opacity: imageOpacity,
-                                            transition: isPointerDown
-                                                ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                    >
-                                        Zoom
-                                    </button>
-                                </div>
-
-                                {/* Close */}
-                                <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
-                                    <button
-                                        disabled={isClosing}
-                                        type="button"
-                                        onClick={close}
-                                        className="p-1 text-sm uppercase tracking-wide cursor-pointer mix-blend-difference "
-                                        style={{
-                                            opacity: imageOpacity,
-                                            transition: isPointerDown
-                                                ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                    >
-                                        Close ✕
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Arrows */}
-                            {images.length > 1 && (
-                                <>
-                                    <button
-                                        disabled={isClosing}
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            // setSwipeDirection("prev");
-                                            requestSwipe("prev");
-                                        }}
-                                        className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
-                                        style={{
-                                            opacity: imageOpacity,
-                                            transition: isPointerDown
-                                                ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                        aria-label="Previous image"
-                                    >
-                                        ←
-                                    </button>
-                                    <button
-                                        disabled={isClosing}
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            // setSwipeDirection("next");
-                                            requestSwipe("next");
-                                        }}
-                                        className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
-                                        style={{
-                                            opacity: imageOpacity,
-                                            transition: isPointerDown
-                                                ? "none"
-                                                : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                        }}
-                                        aria-label="Next image"
-                                    >
-                                        →
-                                    </button>
-                                </>
-                            )}
-
-                            {/* Image track: prev | current | next */}
-                            <div
-                                // ref={containerRef}
-                                id="carousel-container"
-                                className="grow-2 relative flex overflow-x-visible w-screen" // overflow-x-visible : overflow-x-auto overflow-y-hidden
-                            >
-                                <div
-                                    id="image-carousel"
-                                    className="flex"
-                                    onPointerDown={handlePointerDown}
-                                    onPointerMove={handlePointerMove}
-                                    onPointerUp={handlePointerUp}
-                                    onPointerCancel={handlePointerUp}
-                                    onTransitionEnd={handleTrackTransitionEnd}
+                            {/* Zoom */}
+                            <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
+                                <button
+                                    disabled={isClosing}
+                                    type="button"
+                                    onClick={zoom}
+                                    className="p-1text-sm uppercase tracking-wide cursor-pointer mix-blend-difference"
                                     style={{
-                                        transform: swipeAxisRef.current === "x"
-                                            ? `translateX(calc(-100vw + ${swipeX}px))`
-                                            : swipeDirection === "prev"
-                                                ? "translateX(0vw)"
-                                                : swipeDirection === "next"
-                                                    ? "translateX(-200vw)"
-                                                    : "translateX(-100vw)",
-                                        transition: (isPointerDown || swipeDirection === null) && !swipeSnapBackRef.current
+                                        opacity: imageOpacity,
+                                        transition: isPointerDown
                                             ? "none"
-                                            : `transform ${RESET_DURATION}ms ease-out`,
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
                                 >
-                                    {/* Prev slide (off to the left) */}
-                                    {prevIndex !== null && (
-                                        <div className="flex items-center justify-center w-screen ">
-                                            <img
-                                                src={images[prevIndex].src}
-                                                alt={images[prevIndex].alt ?? ""}
-                                                className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
-                                                // no pointer handlers on neighbors
-                                                style={{
-                                                    transform: `translateY(${swipeY}px)`,
-                                                    opacity: imageOpacity,
-                                                    transition: isPointerDown
-                                                        ? "none"
-                                                        : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                                }}
-                                            />
-                                        </div>
-                                    )}
+                                    Zoom
+                                </button>
+                            </div>
 
-                                    {/* Current slide (center) */}
-                                    <div
-                                        ref={currentImgContainerRef}
-                                        id="current-image-container"
-                                        className="flex items-center justify-center w-screen"
-                                        style={{
-                                            transform: `translate(${imgTx}px, ${imgTy}px)`,
-                                            transition: isPointerDown
-                                                ? "none"
-                                                : `transform ${RESET_DURATION}ms ease-out`,
-                                        }}
-                                    >
+                            {/* Close */}
+                            <div className="p-2 m-1 flex justify-end border border-orange-100 bg-black/40">
+                                <button
+                                    disabled={isClosing}
+                                    type="button"
+                                    onClick={close}
+                                    className="p-1 text-sm uppercase tracking-wide cursor-pointer mix-blend-difference "
+                                    style={{
+                                        opacity: imageOpacity,
+                                        transition: isPointerDown
+                                            ? "none"
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                    }}
+                                >
+                                    Close ✕
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Arrows */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    disabled={isClosing}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // setSwipeDirection("prev");
+                                        requestSwipe("prev");
+                                    }}
+                                    className="absolute left-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
+                                    style={{
+                                        opacity: imageOpacity,
+                                        transition: isPointerDown
+                                            ? "none"
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                    }}
+                                    aria-label="Previous image"
+                                >
+                                    ←
+                                </button>
+                                <button
+                                    disabled={isClosing}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // setSwipeDirection("next");
+                                        requestSwipe("next");
+                                    }}
+                                    className="absolute right-3 top-1/2 hidden sm:flex items-center justify-center rounded-full border border-orange-100 bg-black/40 px-2 py-2 text-white hover:bg-black/60 cursor-pointer z-10 mix-blend-difference"
+                                    style={{
+                                        opacity: imageOpacity,
+                                        transition: isPointerDown
+                                            ? "none"
+                                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                    }}
+                                    aria-label="Next image"
+                                >
+                                    →
+                                </button>
+                            </>
+                        )}
+
+                        {/* Image track: prev | current | next */}
+                        <div
+                            // ref={containerRef}
+                            id="carousel-container"
+                            className="grow-2 relative flex overflow-x-visible w-screen" // overflow-x-visible : overflow-x-auto overflow-y-hidden
+                        >
+                            <div
+                                id="image-carousel"
+                                className="flex"
+                                onPointerDown={handlePointerDown}
+                                onPointerMove={handlePointerMove}
+                                onPointerUp={handlePointerUp}
+                                onPointerCancel={handlePointerUp}
+                                onTransitionEnd={handleTrackTransitionEnd}
+                                style={{
+                                    transform: swipeAxisRef.current === "x"
+                                        ? `translateX(calc(-100vw + ${swipeX}px))`
+                                        : swipeDirection === "prev"
+                                            ? "translateX(0vw)"
+                                            : swipeDirection === "next"
+                                                ? "translateX(-200vw)"
+                                                : "translateX(-100vw)",
+                                    transition: (isPointerDown || swipeDirection === null) && !swipeSnapBackRef.current
+                                        ? "none"
+                                        : `transform ${RESET_DURATION}ms ease-out`,
+                                }}
+                            >
+                                {/* Prev slide (off to the left) */}
+                                {prevIndex !== null && (
+                                    <div className="flex items-center justify-center w-screen ">
                                         <img
-                                            id="current-image"
-                                            ref={imageRef}
-                                            src={currentImage.src}
-                                            alt={currentImage.alt ?? ""}
-                                            data-zoomable="true"
-                                            className={`max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20  
-                                            ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
+                                            src={images[prevIndex].src}
+                                            alt={images[prevIndex].alt ?? ""}
+                                            className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
+                                            // no pointer handlers on neighbors
                                             style={{
-                                                transformOrigin: "50% 50%",
-                                                transform: `scale(${exitScale * zoomScale})`,
+                                                transform: `translateY(${swipeY}px)`,
                                                 opacity: imageOpacity,
                                                 transition: isPointerDown
                                                     ? "none"
                                                     : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
-                                            onLoad={() => {
-                                                const img = imageRef.current;
-                                                if (!img) return;
+                                        />
+                                    </div>
+                                )}
 
-                                                const r = img.getBoundingClientRect();
+                                {/* Current slide (center) */}
+                                <div
+                                    ref={currentImgContainerRef}
+                                    id="current-image-container"
+                                    className="flex items-center justify-center w-screen"
+                                    style={{
+                                        transform: `translate(${imgTx}px, ${imgTy}px)`,
+                                        transition: isPointerDown
+                                            ? "none"
+                                            : `transform ${RESET_DURATION}ms ease-out`,
+                                    }}
+                                >
+                                    <img
+                                        id="current-image"
+                                        ref={imageRef}
+                                        src={currentImage.src}
+                                        alt={currentImage.alt ?? ""}
+                                        data-zoomable="true"
+                                        className={`max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20  
+                                            ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
+                                        style={{
+                                            transformOrigin: "50% 50%",
+                                            transform: `scale(${exitScale * zoomScale})`,
+                                            opacity: imageOpacity,
+                                            transition: isPointerDown
+                                                ? "none"
+                                                : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                        }}
+                                        onLoad={() => {
+                                            const img = imageRef.current;
+                                            if (!img) return;
 
-                                                // effective scale currently applied to the element
-                                                const effectiveScale = (exitScale * zoomScale) || 1;
+                                            const r = img.getBoundingClientRect();
 
-                                                baseImgWRef.current = r.width / effectiveScale;
-                                                baseImgHRef.current = r.height / effectiveScale;
+                                            // effective scale currently applied to the element
+                                            const effectiveScale = (exitScale * zoomScale) || 1;
+
+                                            baseImgWRef.current = r.width / effectiveScale;
+                                            baseImgHRef.current = r.height / effectiveScale;
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Next slide (off to the right) */}
+                                {nextIndex !== null && (
+                                    <div className="flex items-center justify-center w-screen">
+                                        <img
+                                            src={images[nextIndex].src}
+                                            alt={images[nextIndex].alt ?? ""}
+                                            className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
+                                            style={{
+                                                transform: `translateY(${swipeY}px)`,
+                                                opacity: imageOpacity,
+                                                transition: isPointerDown
+                                                    ? "none"
+                                                    : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
                                         />
                                     </div>
-
-                                    {/* Next slide (off to the right) */}
-                                    {nextIndex !== null && (
-                                        <div className="flex items-center justify-center w-screen">
-                                            <img
-                                                src={images[nextIndex].src}
-                                                alt={images[nextIndex].alt ?? ""}
-                                                className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
-                                                style={{
-                                                    transform: `translateY(${swipeY}px)`,
-                                                    opacity: imageOpacity,
-                                                    transition: isPointerDown
-                                                        ? "none"
-                                                        : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                                }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Caption + index */}
-                            <div
-                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10"
-                                style={{
-                                    opacity: imageOpacity,
-                                    transition: isPointerDown
-                                        ? "none"
-                                        : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                                }}
-                            >
-                                <div className="truncate pr-4">
-                                    {currentImage.alt ?? "\u00A0"}
-                                </div>
-                                <div>
-                                    {(currentIndex ?? 0) + 1} / {images.length}
-                                </div>
+                                )}
                             </div>
                         </div>
-                    </LightboxPortal>
-                )
-            }
+
+                        {/* Caption + index */}
+                        <div
+                            className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10"
+                            style={{
+                                opacity: imageOpacity,
+                                transition: isPointerDown
+                                    ? "none"
+                                    : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                            }}
+                        >
+                            <div className="truncate pr-4">
+                                {currentImage.alt ?? "\u00A0"}
+                            </div>
+                            <div>
+                                {(currentIndex ?? 0) + 1} / {images.length}
+                            </div>
+                        </div>
+                    </div>
+                </LightboxPortal>
+            )}
         </>
     );
 };
