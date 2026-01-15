@@ -53,17 +53,16 @@ export function ArtistGallery({ images }: ArtistGalleryProps) {
     return () => ro.disconnect();
   }, []);
 
-  // When opening, put us on the first REAL slide (which is offset by CLONES).
   useLayoutEffect(() => {
     if (!isOpen) return;
     const el = containerRef.current;
     if (!el) return;
+
     const w = slideWidthRef.current;
     if (!w) return;
 
-    // Jump instantly into the "real" region
-    el.scrollTo({ left: CLONES * w, behavior: "auto" });
-  }, [isOpen, CLONES]);
+    el.scrollTo({ left: (CLONES + openIndex) * w, behavior: "auto" });
+  }, [isOpen, openIndex, CLONES]);
 
   // IntersectionObserver: observe virtual slides, but record REAL index
   useEffect(() => {
@@ -98,6 +97,68 @@ export function ArtistGallery({ images }: ArtistGalleryProps) {
 
     return () => observer.disconnect();
   }, [N, virtualImages]);
+
+  const handleScroll = () => {
+    const el = containerRef.current;
+    if (!el || N === 0) return;
+
+    const w = slideWidthRef.current;
+    if (!w) return;
+
+    // Midpoint of the viewport in scroll-content coordinates
+    const viewportMid = el.scrollLeft + el.clientWidth / 2;
+
+    // Which virtual slide midpoint is closest to viewport midpoint?
+    // slide center positions are: (i * w + w/2)
+    const virtualIndex = Math.round((viewportMid - w / 2) / w);
+
+    // Now check the distance to be sure we're actually centered (tolerance)
+    const slideMid = virtualIndex * w + w / 2;
+    const dist = Math.abs(viewportMid - slideMid);
+    // console.log(viewportMid, slideMid);
+
+    // Tolerance: how close counts as "midpoint reached midpoint"?
+    // 1-2px is strict; 8-12px is more forgiving (esp. fractional scrolling).
+    const EPS = 20;
+
+    const firstReal = CLONES;              // virtual index of real slide 0
+    const lastReal = CLONES + (N - 1);     // virtual index of real slide N-1
+    const isCentered = dist <= EPS && lastLoggedVirtual.current !== virtualIndex;
+    const isCenteredOrBeyondInRightCloneRegion = viewportMid >= slideMid - EPS && virtualIndex > lastReal;
+    const isCenteredOrBeyondInLeftCloneRegion = viewportMid <= slideMid + EPS && virtualIndex < firstReal;
+
+    lastLoggedVirtual.current = isCentered ? virtualIndex : lastLoggedVirtual.current;
+
+    // In left clone region
+    if (virtualIndex < firstReal && isCenteredOrBeyondInLeftCloneRegion) {
+      console.log("In left clone region");
+      const realIndex = mod(virtualIndex - CLONES, N);
+      console.log("Centered!", { virtualIndex, realIndex });
+      normalizeIfNeeded();
+    }
+
+    // In right clone region
+    if (virtualIndex > lastReal && isCenteredOrBeyondInRightCloneRegion) {
+      console.log("In right clone region");
+      const realIndex = mod(virtualIndex - CLONES, N);
+      console.log("Centered!", { virtualIndex, realIndex });
+      normalizeIfNeeded();
+
+    }
+
+    // if (dist <= EPS && lastLoggedVirtual.current !== virtualIndex) {
+    //   lastLoggedVirtual.current = virtualIndex;
+
+    //   const realIndex = mod(virtualIndex - CLONES, N);
+    //   console.log("Centered!", { virtualIndex, realIndex });
+    //   normalizeIfNeeded();
+    // }
+
+    // Optional: reset when we're no longer centered, so it can log again
+    if (dist > EPS && lastLoggedVirtual.current === virtualIndex) {
+      lastLoggedVirtual.current = null;
+    }
+  };
 
   // The core: if we end up in clone zones, silently jump to the matching real slide.
   const normalizeIfNeeded = () => {
@@ -160,41 +221,7 @@ export function ArtistGallery({ images }: ArtistGalleryProps) {
 
   const lastLoggedVirtual = useRef<number | null>(null);
 
-  const handleScroll = () => {
-    const el = containerRef.current;
-    if (!el || N === 0) return;
 
-    const w = slideWidthRef.current;
-    if (!w) return;
-
-    // Midpoint of the viewport in scroll-content coordinates
-    const viewportMid = el.scrollLeft + el.clientWidth / 2;
-
-    // Which virtual slide midpoint is closest to viewport midpoint?
-    // slide center positions are: (i * w + w/2)
-    const virtualIndex = Math.round((viewportMid - w / 2) / w);
-
-    // Now check the distance to be sure we're actually centered (tolerance)
-    const slideMid = virtualIndex * w + w / 2;
-    const dist = Math.abs(viewportMid - slideMid);
-
-    // Tolerance: how close counts as "midpoint reached midpoint"?
-    // 1-2px is strict; 8-12px is more forgiving (esp. fractional scrolling).
-    const EPS = 8;
-
-    if (dist <= EPS && lastLoggedVirtual.current !== virtualIndex) {
-      lastLoggedVirtual.current = virtualIndex;
-
-      const realIndex = mod(virtualIndex - CLONES, N);
-      console.log("Centered!", { virtualIndex, realIndex });
-      normalizeIfNeeded();
-    }
-
-    // Optional: reset when we're no longer centered, so it can log again
-    if (dist > EPS && lastLoggedVirtual.current === virtualIndex) {
-      lastLoggedVirtual.current = null;
-    }
-  };
 
   const lastScrollLeftRef = useRef<number>(0);
   const lastDirRef = useRef<"left" | "right" | null>(null);
@@ -206,18 +233,6 @@ export function ArtistGallery({ images }: ArtistGalleryProps) {
   };
 
   if (N === 0) return null;
-
-  // useLayoutEffect(() => {
-  //   if (!isOpen) return;
-  //   const el = containerRef.current;
-  //   if (!el) return;
-
-  //   const w = slideWidthRef.current;
-  //   if (!w) return;
-
-  //   el.scrollTo({ left: (CLONES + openIndex) * w, behavior: "auto" });
-  // }, [isOpen, openIndex, CLONES]);
-
 
   return (
     <>
@@ -264,7 +279,7 @@ export function ArtistGallery({ images }: ArtistGalleryProps) {
 
         <div
           ref={containerRef}
-          className="flex overflow-x-auto overflow-y-hidden max-w-full max-h-full snap-x snap-mandatory"
+          className="flex overflow-x-auto overflow-y-hidden max-w-full max-h-full scroll-auto snap-x snap-mandatory"
           onScroll={handleScroll}
         // onScrollCapture={() => console.log("WOOOO")}
         // onScrollEnd={handleScrollEnd}
