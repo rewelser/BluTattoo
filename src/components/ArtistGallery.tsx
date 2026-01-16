@@ -10,9 +10,12 @@ interface ArtistGalleryProps {
     images?: ArtistImage[];
 }
 
+const DOUBLE_TAP_MS = 250;
+const ZOOM_TAP_DURATION = 200;
+const DOUBLE_TAP_SLOP_PX = 24;
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
-const RESET_DURATION = 150;
+const RESET_DURATION = 200;
 const BACKDROP_FADE_DURATION = 200;
 // const BACKDROP_FADE_DURATION = 2000;
 const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
@@ -74,6 +77,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [backdropOpacity, setBackdropOpacity] = useState(1);
     const [imageOpacity, setImageOpacity] = useState(1);
     const [zoomScale, setZoomScale] = useState(1);
+    const zoomTransitionMsRef = useRef<number | null>(null);
     const pinchingRef = useRef(false);
     const noLongerPinchingRef = useRef(false);
     const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number } | null>(null)
@@ -89,6 +93,13 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
     const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
     const resetInFlightRef = useRef<Promise<void> | null>(null);
+
+
+    const lastTapRef = useRef<{
+        time: number;
+        x: number;
+        y: number;
+    } | null>(null);
 
     const ZoomInIcon = () => (
         <svg
@@ -111,7 +122,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         </svg>
     );
 
-    // what we want React to render next frame
+    // what to render next frame
     const pendingRef = useRef({
         panX: 0,
         panY: 0,
@@ -240,12 +251,19 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     };
 
     const zoom = () => {
+        zoomTransitionMsRef.current = ZOOM_TAP_DURATION;
+
         if (pendingRef.current.zoomScale > 1) {
             pendingRef.current.zoomScale = MIN_ZOOM;
         } else {
             pendingRef.current.zoomScale = MAX_ZOOM;
         }
         scheduleFlush();
+
+        // Clear after the frame so future transforms use the normal duration
+        // requestAnimationFrame(() => {
+        //     zoomTransitionMsRef.current = null;
+        // });
     };
 
     const resetViewAnimated = () => {
@@ -366,8 +384,17 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         scheduleFlush();
     };
 
-    // figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
-    // also, figure out how center(x,y) equals the midpoint between both fingers (maybe this is automatic?)
+    const clearGestureState = () => { // todo 01.16.26: question this... we are doing similar things in onPointerUp
+        evCacheRef.current.length = 0;
+        swipeAxisRef.current = null;
+        pinchingRef.current = false;
+        noLongerPinchingRef.current = false;
+        pinchPrevDistanceRef.current = null;
+        pinchPrevCenterRef.current = null;
+    };
+
+    // todo: figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
+    // todo: also, figure out how center(x,y) equals the midpoint between both fingers (maybe this is automatic?)
     useEffect(() => {
         if (!isOpen || isClosing) return;
 
@@ -425,6 +452,38 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing) return;
         e.preventDefault();
+
+        // ---- double-tap to zoom (touch only, 1 finger only) ----
+        if (e.pointerType === "touch") {
+            const now = performance.now();
+            const last = lastTapRef.current;
+
+            if (last) {
+                const dt = now - last.time;
+                const dx = e.clientX - last.x;
+                const dy = e.clientY - last.y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dt <= DOUBLE_TAP_MS && dist <= DOUBLE_TAP_SLOP_PX) {
+                    // Treat as double tap => zoom, and cancel any swipe/pan gesture start
+                    lastTapRef.current = null;
+
+                    zoom();
+                    clearGestureState();
+
+                    // Also reset any active swipe offsets so we don't "jump"
+                    pendingRef.current.swipeX = 0;
+                    pendingRef.current.swipeY = 0;
+                    scheduleFlush();
+
+                    return;
+                }
+            }
+
+            // Not a double tap yet: record this tap as the "first"
+            lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+        }
+        // --------------------------------------------------------
 
         const evCache = evCacheRef.current;
         evCache.push(toCachedPointer(e));
@@ -998,7 +1057,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                                 opacity: imageOpacity,
                                                 transition: isPointerDown
                                                     ? "none"
-                                                    : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                                                    : `transform ${zoomTransitionMsRef.current ?? RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                             }}
                                             onLoad={() => {
                                                 const img = imageRef.current;
