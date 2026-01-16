@@ -883,7 +883,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             e.stopPropagation();
                                             requestSwipe("prev");
                                         }}
-                                        className="absolute left-3 top-1/2 px-2 py-2 hidden sm:flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+                                        className="absolute left-3 top-1/2 px-2 py-2 flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -907,7 +907,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             // setSwipeDirection("next");
                                             requestSwipe("next");
                                         }}
-                                        className="absolute right-3 top-1/2 px-2 py-2 hidden sm:flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+                                        className="absolute right-3 top-1/2 px-2 py-2 flex items-center justify-center bg-black/40 backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -1037,7 +1037,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                             {/* Caption + index */}
                             <div
-                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10 "
+                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10 bg-black/40 backdrop-blur-sm"
                                 style={{
                                     opacity: imageOpacity,
                                     transition: isPointerDown
@@ -1045,10 +1045,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
                             >
-                                <div className="truncate p-4 bg-black/40 backdrop-blur-sm">
+                                <div className="truncate pr-4">
                                     {currentImage.alt ?? "\u00A0"}
                                 </div>
-                                <div className="p-4 bg-black/40 backdrop-blur-sm">
+                                <div>
                                     {(currentIndex ?? 0) + 1} / {images.length}
                                 </div>
                             </div>
