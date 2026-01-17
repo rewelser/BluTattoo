@@ -250,13 +250,47 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         }, BACKDROP_FADE_DURATION);
     };
 
-    const zoom = () => {
-        if (pendingRef.current.zoomScale > 1) {
-            pendingRef.current.zoomScale = MIN_ZOOM;
+    const zoomAtClientPoint = (clientX: number, clientY: number) => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        // Toggle target zoom
+        const prevZoom = pendingRef.current.zoomScale;
+        const nextZoom = prevZoom > 1 ? MIN_ZOOM : MAX_ZOOM;
+
+        const rect = container.getBoundingClientRect();
+        const Cx = rect.left + rect.width / 2;
+        const Cy = rect.top + rect.height / 2;
+
+        const prevPanX = pendingRef.current.panX;
+        const prevPanY = pendingRef.current.panY;
+
+        // Same mapping used in pinch:
+        // i = (S - C - P) / z
+        const ix = (clientX - Cx - prevPanX) / prevZoom;
+        const iy = (clientY - Cy - prevPanY) / prevZoom;
+
+        // nextPan = S - C - nextZoom * i
+        pendingRef.current.zoomScale = nextZoom;
+        pendingRef.current.panX = clientX - Cx - nextZoom * ix;
+        pendingRef.current.panY = clientY - Cy - nextZoom * iy;
+
+        regulatePanAndZoom();
+    };
+
+    const zoom = (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        if (e.type === "dblclick") {
+            zoomAtClientPoint(e.clientX, e.clientY);
+
         } else {
-            pendingRef.current.zoomScale = MAX_ZOOM;
+            if (pendingRef.current.zoomScale > 1) {
+                pendingRef.current.zoomScale = MIN_ZOOM;
+            } else {
+                pendingRef.current.zoomScale = MAX_ZOOM;
+            }
+            scheduleFlush();
         }
-        scheduleFlush();
     };
 
     const resetViewAnimated = () => {
@@ -866,7 +900,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                     <LightboxPortal>
                         <div
                             ref={containerRef}
-                            className="fixed inset-0 z-[999] flex flex-col items-stretch justify-between overflow-hidden select-none touch-none backdrop-blur-sm"
+                            className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
                             onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     close();
@@ -881,10 +915,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
                             {/* Zoom & Close buttons container */}
                             <div
-                                className="flex flex-row z-10"
+                                className="absolute top-1 right-1 z-10 flex flex-row"
                             >
                                 {/* Zoom */}
-                                <div className="p-2 m-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+                                <div className="p-2 mr-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
                                     <button
                                         disabled={isClosing}
                                         type="button"
@@ -902,7 +936,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 </div>
 
                                 {/* Close */}
-                                <div className="p-2 m-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+                                <div className="p-2 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
                                     <button
                                         disabled={isClosing}
                                         type="button"
@@ -935,7 +969,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             e.stopPropagation();
                                             requestSwipe("prev");
                                         }}
-                                        className="absolute left-3 top-1/2 px-2 py-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+                                        className="absolute left-1 top-1/2 p-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -959,7 +993,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             // setSwipeDirection("next");
                                             requestSwipe("next");
                                         }}
-                                        className="absolute right-3 top-1/2 px-2 py-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+                                        className="absolute right-1 top-1/2 p-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
                                         style={{
                                             opacity: imageOpacity,
                                             transition: isPointerDown
@@ -981,7 +1015,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                             {/* Image track: prev | current | next */}
                             <div
                                 id="carousel-container"
-                                className="grow-2 relative flex overflow-x-visible w-screen"
+                                className="absolute inset-0 flex overflow-x-visible w-screen"
                             >
                                 <div
                                     id="image-carousel"
@@ -1012,7 +1046,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             <img
                                                 src={images[prevIndex].src}
                                                 alt={images[prevIndex].alt ?? ""}
-                                                className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
+                                                className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
                                                 // no pointer handlers on neighbors
                                                 style={{
                                                     transform: `translateY(${swipeY}px)`,
@@ -1044,7 +1078,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             src={currentImage.src}
                                             alt={currentImage.alt ?? ""}
                                             data-zoomable="true"
-                                            className={`max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20  
+                                            className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20  
                                             ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                             style={{
                                                 transformOrigin: "50% 50%",
@@ -1076,7 +1110,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                             <img
                                                 src={images[nextIndex].src}
                                                 alt={images[nextIndex].alt ?? ""}
-                                                className="max-h-[80vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
+                                                className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 "
                                                 style={{
                                                     transform: `translateY(${swipeY}px)`,
                                                     opacity: imageOpacity,
@@ -1090,9 +1124,9 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 </div>
                             </div>
 
-                            {/* Caption + index */}
+                            {/* Caption + index welsertest */}
                             <div
-                                className="mt-3 px-4 py-4 flex items-stretch justify-between text-xs z-10 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm"
+                                className="absolute left-1 right-1 bottom-1 z-10 flex items-stretch justify-between text-xs"
                                 style={{
                                     opacity: imageOpacity,
                                     transition: isPointerDown
@@ -1100,10 +1134,10 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                         : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
                             >
-                                <div className="truncate pr-4">
+                                <div className="truncate p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
                                     {currentImage.alt ?? "\u00A0"}
                                 </div>
-                                <div>
+                                <div className="p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
                                     {(currentIndex ?? 0) + 1} / {images.length}
                                 </div>
                             </div>
