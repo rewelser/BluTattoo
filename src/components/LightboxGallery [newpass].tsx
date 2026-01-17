@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import { ArtistGalleryThumbnailGrid } from "./ArtistGalleryThumbnailGrid [newpass]";
 
 interface ArtistImage {
     src: string;
@@ -58,7 +59,7 @@ const upsertCachedPointer = (cache: CachedPointer[], e: React.PointerEvent) => {
     else cache[idx] = next;
 };
 
-export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => {
+export const LightboxGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [currentIndex, setCurrentIndex] = useState<number | null>(null);
@@ -280,6 +281,12 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
     const zoom = (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
+
+        /*
+        Would have been good, but as-is can conflict with swipe-x if user holds down second click too long,
+        so we are using manual double-tap detection instead inside of handlePointerDown. Keeping this here 
+        for posterity, and in case we can fix the conflict later.
+        */
         if (e.type === "dblclick") {
             zoomAtClientPoint(e.clientX, e.clientY);
 
@@ -411,7 +418,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         scheduleFlush();
     };
 
-    // was used for manual double-tap detection, but I think we can use onDoubleClick instead
+    // Used for manual double-tap detection
     const clearGestureState = () => { // todo 01.16.26: question this... we are doing similar things in onPointerUp
         evCacheRef.current.length = 0;
         swipeAxisRef.current = null;
@@ -481,35 +488,36 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
         if (isClosing) return;
         e.preventDefault();
 
-        // All of this is made redundant, I believe, by onDoubleClick
+        // Would be made redundant by onDoubleClick, except for the hold-swipe bug (see zoom() for details)
         // ---- double-tap to zoom ----
-        // const now = performance.now();
-        // const last = lastTapRef.current;
+        const now = performance.now();
+        const last = lastTapRef.current;
 
-        // if (last) {
-        //     const dt = now - last.time;
-        //     const dx = e.clientX - last.x;
-        //     const dy = e.clientY - last.y;
-        //     const dist = Math.hypot(dx, dy);
+        if (last) {
+            const dt = now - last.time;
+            const dx = e.clientX - last.x;
+            const dy = e.clientY - last.y;
+            const dist = Math.hypot(dx, dy);
 
-        //     if (dt <= DOUBLE_TAP_MS && dist <= DOUBLE_TAP_SLOP_PX) {
-        //         // Treat as double tap => zoom, and cancel any swipe/pan gesture start
-        //         lastTapRef.current = null;
+            if (dt <= DOUBLE_TAP_MS && dist <= DOUBLE_TAP_SLOP_PX) {
+                // Treat as double tap => zoom, and cancel any swipe/pan gesture start
+                lastTapRef.current = null;
 
-        //         zoom();
-        //         clearGestureState();
+                // zoom();
+                zoomAtClientPoint(e.clientX, e.clientY);
+                clearGestureState();
 
-        //         // Also reset any active swipe offsets so we don't "jump"
-        //         pendingRef.current.swipeX = 0;
-        //         pendingRef.current.swipeY = 0;
-        //         scheduleFlush();
+                // Also reset any active swipe offsets so we don't "jump"
+                pendingRef.current.swipeX = 0;
+                pendingRef.current.swipeY = 0;
+                scheduleFlush();
 
-        //         return;
-        //     }
-        // }
+                return;
+            }
+        }
 
-        // // Not a double tap yet: record this tap as the "first"
-        // lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+        // Not a double tap yet: record this tap as the "first"
+        lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
         // --------------------------------------------------------
 
         const evCache = evCacheRef.current;
@@ -873,26 +881,11 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
 
     return (
         <>
-            {/* Thumbnail grid stays as-is, inside your layout card */}
-            <div id="thumbnail-grid" className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {images.map((img, idx) => (
-                    <button
-                        disabled={isClosing}
-                        key={img.src + idx}
-                        type="button"
-                        className="group relative overflow-hidden rounded-xl border border-black/5 bg-black/5 hover:bg-black/10 transition"
-                        onClick={() => openAt(idx)}
-                    >
-                        <img
-                            src={img.src}
-                            alt={img.alt ?? ""}
-                            className="aspect-square w-full object-cover group-hover:scale-105 transition-transform"
-                            loading="lazy"
-                        />
-                        <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity" />
-                    </button>
-                ))}
-            </div>
+            <ArtistGalleryThumbnailGrid
+                images={images as any}
+                isClosing={isClosing}
+                onOpenAt={openAt}
+            />
 
             {/* Lightbox overlay goes into <body> via portal */}
             {
@@ -1020,7 +1013,7 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
                                 <div
                                     id="image-carousel"
                                     className="flex"
-                                    onDoubleClick={zoom} // todo: what about this?
+                                    // onDoubleClick={zoom} // todo: this did not work as well as I had hoped (see zoom() for details)
                                     onPointerDown={handlePointerDown}
                                     onPointerMove={handlePointerMove}
                                     onPointerUp={handlePointerUp}
