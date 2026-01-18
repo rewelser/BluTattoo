@@ -541,6 +541,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                 const maxDelta = Math.max(absX, absY);
                 if (maxDelta < DRAG_LOCK_THRESHOLD) return;
                 swipeAxisRef.current = absX > absY ? "x" : "y";
+                // cancel double-tap sequence
+                lastTapRef.current = null;
             }
 
             if (swipeAxisRef.current === "x") {
