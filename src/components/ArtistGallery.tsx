@@ -100,8 +100,6 @@ export const ArtistGallery: React.FC<ArtistGalleryProps> = ({ images = [] }) => 
     const [startIndex, setStartIndex] = useState(0);
 
     const isLaptopOrDesktop = useMinWidth(1024);
-    // const isLaptopOrDesktop = usePointerInfo();
-    console.log("isLaptopOrDesktop:", isLaptopOrDesktop);
     const LightboxComponent = useMemo(
         () => (isLaptopOrDesktop ? GalleryLightboxNaturalScroll : GalleryLightbox),
         [isLaptopOrDesktop]

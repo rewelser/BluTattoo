@@ -189,6 +189,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         const container = containerRef.current;
         const baseW = baseImgWRef.current;
         const baseH = baseImgHRef.current;
+        console.log("from regulatePanAndZoom: ", baseImgWRef.current, baseImgHRef.current);
 
         let minPanX = 0, maxPanX = 0, minPanY = 0, maxPanY = 0;
 
@@ -1034,6 +1035,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     const effectiveScale = (exitScale * zoomScale) || 1;
                                     baseImgWRef.current = r.width / effectiveScale;
                                     baseImgHRef.current = r.height / effectiveScale;
+                                    console.log(baseImgWRef.current, baseImgHRef.current);
+                                    // console.log(baseSizeByIndexRef.current[index]);
                                 }}
                             />
                         </div>

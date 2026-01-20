@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 
 interface ArtistImage {
   src: string;
@@ -19,7 +20,8 @@ const DOUBLE_TAP_SLOP_PX = 24;
 
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
-const RESET_DURATION = 200; // todo 1.16.26: conflate with Backdrop fade duration?
+// const RESET_DURATION = 200; // todo 1.16.26: conflate with Backdrop fade duration?
+const RESET_DURATION = 500; // todo 1.16.26: conflate with Backdrop fade duration?
 const BACKDROP_FADE_DURATION = 200;
 const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
 
@@ -31,7 +33,10 @@ const clamp = (value: number, min: number, max: number) =>
 
 const MAX_TOUCH_POINTS = 2;
 
-
+const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  if (typeof document === "undefined") return null; // SSR guard
+  return ReactDOM.createPortal(children, document.body);
+};
 
 /**
  * Cache only the pointer fields we actually need (primitives + HTMLElement ref).
@@ -44,7 +49,20 @@ type CachedPointer = {
   targetEl: HTMLElement | null;
 };
 
+const toCachedPointer = (e: React.PointerEvent): CachedPointer => ({
+  pointerId: e.pointerId,
+  pointerType: e.pointerType,
+  clientX: e.clientX,
+  clientY: e.clientY,
+  targetEl: e.target instanceof HTMLElement ? e.target : null,
+});
 
+const upsertCachedPointer = (cache: CachedPointer[], e: React.PointerEvent) => {
+  const next = toCachedPointer(e);
+  const idx = cache.findIndex((p) => p.pointerId === next.pointerId);
+  if (idx === -1) cache.push(next);
+  else cache[idx] = next;
+};
 
 export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   images,
@@ -52,8 +70,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   startIndex,
   onClose,
 }) => {
-  // Lazy-load tracking (only render real <img> once a slide is near/inside viewport)
-  const [visibleSet, setVisibleSet] = useState<Set<number>>(() => new Set());
   const [isClosing, setIsClosing] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(startIndex);
 
@@ -67,8 +83,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const carouselContainerRef = useRef<HTMLDivElement | null>(null);
-  const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const imageContainerRef = useRef<HTMLImageElement | null>(null);
   const baseImgWRef = useRef<number | null>(null);
   const baseImgHRef = useRef<number | null>(null);
 
@@ -93,6 +109,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const pinchPrevDistanceRef = useRef<number | null>(null);
   const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
   const resetInFlightRef = useRef<Promise<void> | null>(null);
+  //for testing:
+  const [debugScrollLocked, setDebugScrollLocked] = useState(false);
+  const baseSizeByIndexRef = useRef<Record<number, { w: number; h: number }>>({});
+  const edgeWheelCooldownUntilRef = useRef(0);
+  const [isZoomTransitioning, setIsZoomTransitioning] = useState(false);
+
+
 
   const lastTapRef = useRef<{
     time: number;
@@ -119,138 +142,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   }, [startIndex, images.length]);
 
   // When opened (or startIndex changes), scroll to the requested slide
-  // useEffect(() => {
-  //   // if (!isOpen) return;
-  //   const container = carouselContainerRef.current;
-  //   if (!container) return;
-
-  //   // Ensure first paint happens before scroll
-  //   requestAnimationFrame(() => {
-  //     requestAnimationFrame(() => {
-  //       requestAnimationFrame(() => {
-  //           // do scrollTo here
-  //           const el = container.querySelector<HTMLElement>(`[data-index="${safeStartIndex}"]`);
-  //           console.log("Scrolling to index", safeStartIndex, el);
-  //           if (el) {
-  //             console.log("Scrolling to element", el);
-  //             el.scrollIntoView({ behavior: "auto" as ScrollBehavior, inline: "center", block: "nearest" });
-  //           } else {
-  //             console.log("Element not found for index", safeStartIndex);
-  //             // Fallback: approximate using container width
-  //             container.scrollLeft = container.clientWidth * safeStartIndex;
-  //           }
-  //       });
-
-  //     });
-
-  //   });
-  // }, [isOpen, safeStartIndex]);
-
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   const container = carouselContainerRef.current;
-  //   if (!container) return;
-
-  //   const scrollToIndex = () => {
-  //     const el = container.querySelector<HTMLElement>(`[data-index="${safeStartIndex}"]`);
-  //     if (!el) return;
-  //     const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
-  //     container.scrollTo({ left, behavior: "auto" });
-  //   };
-
-  //   // Try immediately (might work on subsequent opens)
-  //   scrollToIndex();
-
-  //   const ro = new ResizeObserver(() => {
-  //     // When geometry changes (first stable size), scroll
-  //     scrollToIndex();
-  //   });
-
-  //   ro.observe(container);
-
-  //   return () => ro.disconnect();
-  // }, [isOpen, safeStartIndex]);
-
-  ////////
-
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   const container = carouselContainerRef.current;
-  //   if (!container) return;
-
-  //   let raf = 0;
-  //   let tries = 0;
-
-  //   const tryScroll = () => {
-  //     tries += 1;
-
-  //     const el = container.querySelector<HTMLElement>(`[data-index="${safeStartIndex}"]`);
-
-  //     // “Ready” conditions — tweak if your logs show different failure mode
-  //     const ready =
-  //       !!el &&
-  //       container.clientWidth > 0 &&
-  //       container.scrollWidth > container.clientWidth &&
-  //       el.offsetLeft > 0; // offsetLeft is often 0 until layout settles
-
-  //     if (ready) {
-  //       // Prefer scrollTo with computed left; scrollIntoView can fight snap/ancestors.
-  //       const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
-  //       container.scrollTo({ left, behavior: "auto" });
-  //       return;
-  //     }
-
-  //     if (tries < 30) {
-  //       raf = requestAnimationFrame(tryScroll);
-  //     } else {
-  //       // last-ditch: do what you were doing
-  //       if (el) el.scrollIntoView({ behavior: "auto", inline: "center", block: "nearest" });
-  //     }
-  //   };
-
-  //   raf = requestAnimationFrame(tryScroll);
-  //   return () => cancelAnimationFrame(raf);
-  // }, [isOpen, safeStartIndex]);
-
-  /////// 
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   const container = carouselContainerRef.current;
-  //   if (!container) return;
-
-  //   let frame = 0;
-  //   let raf = 0;
-
-  //   const tick = () => {
-  //     frame += 1;
-  //     const el = container.querySelector<HTMLElement>(`[data-index="${safeStartIndex}"]`);
-
-  //     const cRect = container.getBoundingClientRect();
-  //     const eRect = el?.getBoundingClientRect();
-
-  //     console.log(`[frame ${frame}]`,
-  //       {
-  //         clientWidth: container.clientWidth,
-  //         scrollWidth: container.scrollWidth,
-  //         scrollLeft: container.scrollLeft,
-  //         containerRectW: cRect.width,
-  //         elOffsetLeft: el?.offsetLeft,
-  //         elRectLeft: eRect?.left,
-  //         elRectW: eRect?.width,
-  //       }
-  //     );
-
-  //     if (frame < 10) raf = requestAnimationFrame(tick);
-  //   };
-
-  //   raf = requestAnimationFrame(tick);
-  //   return () => cancelAnimationFrame(raf);
-  // }, [isOpen, safeStartIndex]);
-
-
-  /////////
-
-
   useEffect(() => {
     if (!isOpen) return;
     const container = carouselContainerRef.current;
@@ -260,25 +151,868 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       const el = container.querySelector<HTMLElement>(`[data-index="${safeStartIndex}"]`);
       if (!el) return false;
       if (container.clientWidth === 0) return false;
+      el.scrollIntoView({ behavior: "auto" as ScrollBehavior, inline: "center", block: "nearest" });
 
-      const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
-      container.scrollTo({ left, behavior: "auto" });
+      // If using scrollTo instead:
+      // const left = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2;
+      // container.scrollTo({ left, behavior: "auto" });
+
       return true;
     };
 
     // Try immediately (works on later opens)
     if (doScroll()) return;
 
+    // Scroll once when ready
     const ro = new ResizeObserver(() => {
-      if (doScroll()) ro.disconnect(); // scroll once when ready
+      if (doScroll()) ro.disconnect();
     });
 
     ro.observe(container);
     return () => ro.disconnect();
   }, [isOpen, safeStartIndex]);
 
+  // set current index (todo: figure out what this actually does)
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = carouselContainerRef.current;
+    if (!container) return;
+
+    let raf: number | null = null;
+
+    const computeIndexFromScroll = () => {
+      raf = null;
+
+      // If you want to avoid changing "current" while zoomed/panning vertically:
+      // (pick your rule; this is conservative)
+      if (pendingRef.current.zoomScale > 1) return;
+      if (swipeAxisRef.current === "y") return;
+
+      const containerRect = container.getBoundingClientRect();
+      const centerX = containerRect.left + containerRect.width / 2;
+
+      const slides = container.querySelectorAll<HTMLElement>("[data-index]");
+      if (!slides.length) return;
+
+      let bestIndex = 0;
+      let bestDist = Number.POSITIVE_INFINITY;
+
+      slides.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const elCenter = r.left + r.width / 2;
+        const d = Math.abs(elCenter - centerX);
+        if (d < bestDist) {
+          bestDist = d;
+          bestIndex = Number(el.dataset.index ?? 0);
+        }
+      });
+
+      setCurrentIndex((prev) => (prev === bestIndex ? prev : bestIndex));
+    };
+
+    const onScroll = () => {
+      if (raf != null) return;
+      raf = requestAnimationFrame(computeIndexFromScroll);
+    };
+
+    container.addEventListener("scroll", onScroll, { passive: true });
+
+    // compute once on mount/open (after your scrollIntoView runs)
+    onScroll();
+
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      if (raf != null) cancelAnimationFrame(raf);
+    };
+  }, [isOpen, images.length]);
+
+  if (!isOpen || !images.length) return null; // todo: move elsewhere?
+
+  // lock scroll when open
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // reset internal animation state when opening
+  useEffect(() => {
+    if (!isOpen) return;
+    setIsClosing(false);
+    pendingRef.current.swipeX = 0;
+    pendingRef.current.swipeY = 0;
+    pendingRef.current.exitScale = 1;
+    pendingRef.current.zoomScale = 1;
+    pendingRef.current.backdropOpacity = 1;
+    pendingRef.current.imageOpacity = 1;
+    pendingRef.current.panX = 0;
+    pendingRef.current.panY = 0;
+    scheduleFlush();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const scheduleFlush = () => {
+    if (rafIdRef.current != null) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      rafIdRef.current = null;
+      const p = pendingRef.current;
+      setPanX(p.panX);
+      setPanY(p.panY);
+      setSwipeX(p.swipeX);
+      setSwipeY(p.swipeY);
+      setExitScale(p.exitScale);
+      setZoomScale(p.zoomScale);
+      setBackdropOpacity(p.backdropOpacity);
+      setImageOpacity(p.imageOpacity);
+    });
+  };
+  // useEffect(() => { // for testing only
+  //   console.log("[scale change]", {
+  //     zoomScale,
+  //     exitScale,
+  //     time: performance.now(),
+  //   });
+  // }, [zoomScale, exitScale]);
+  // todo: make sure pan/swipes stop happening on mouse-up
+  // todo: make sure that scroll locking stays locked until zoomed all the way out, not just when "!isZoomedIn"
+  // todo: figure out when onLoad runs in the other GalleryLightbox code
+  // todo: make sure trackpad zoom out regulates pan
+
+  // useEffect(() => { // for testing only
+  //   if (!isOpen) return;
+
+  //   const el = carouselContainerRef.current;
+  //   if (!el) return;
+
+  //   const onWheel = (e: WheelEvent) => {
+  //     // If user is mostly vertical scrolling, ignore (tweak if you want)
+  //     const dx = e.deltaX;
+  //     const dy = e.deltaY;
+  //     const mostlyHorizontal = Math.abs(dx) > Math.abs(dy);
+
+  //     // Some trackpads report horizontal intent in deltaY with shiftKey, etc.
+  //     const intendedX = mostlyHorizontal ? dx : (e.shiftKey ? dy : 0);
+  //     if (intendedX === 0) return;
+
+  //     const left = el.scrollLeft;
+  //     const maxLeft = el.scrollWidth - el.clientWidth;
+
+  //     const atStart = left <= 0;
+  //     const atEnd = left >= maxLeft - 1; // small epsilon
+
+  //     const tryingPastStart = atStart && intendedX < 0;
+  //     const tryingPastEnd = atEnd && intendedX > 0;
+
+  //     if (tryingPastStart || tryingPastEnd) {
+  //       console.log("[overscroll attempt]", {
+  //         edge: tryingPastStart ? "start" : "end",
+  //         scrollLeft: left,
+  //         maxLeft,
+  //         deltaX: dx,
+  //         deltaY: dy,
+  //         shiftKey: e.shiftKey,
+  //         time: performance.now(),
+  //       });
+  //     }
+  //   };
+
+  //   el.addEventListener("wheel", onWheel, { passive: true });
+  //   return () => el.removeEventListener("wheel", onWheel);
+  // }, [isOpen]);
 
 
+
+  const regulatePanAndZoom = () => {
+    const nextZoomUnclamped = pendingRef.current.zoomScale;
+    const nextZoomClamped = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
+    const zoomWasClamped = nextZoomClamped !== nextZoomUnclamped;
+
+    pendingRef.current.zoomScale = nextZoomClamped;
+
+    const img = imageRef.current;
+    if (!img) return;
+
+    const r = img.getBoundingClientRect();
+    const effectiveScale = (exitScale * zoomScale) || 1;
+    const baseW = r.width / effectiveScale;
+    const baseH = r.height / effectiveScale;
+
+    const container = containerRef.current;
+    // const baseWorig = baseImgWRef.current;
+    // const baseHorig = baseImgHRef.current;
+
+    // const base = baseSizeByIndexRef.current[currentIndex];
+    // console.log("-- v regulatePanAndZoom v -- ");
+    // console.log("baseImg(W,H)Ref: ", baseImgWRef.current, baseImgHRef.current);
+    // console.log("(index): ", currentIndex);
+    // console.log("(baseSizeByIndexRef): ", base);
+    // console.log("-- ^ regulatePanAndZoom ^ -- ");
+
+    // const baseW = base?.w ?? null;
+    // const baseH = base?.h ?? null;
+
+
+    let minPanX = 0, maxPanX = 0, minPanY = 0, maxPanY = 0;
+
+    if (container && baseW && baseH && nextZoomClamped > 1) {
+      const { width: viewportW, height: viewportH } = container.getBoundingClientRect();
+      const scaledW = baseW * nextZoomClamped;
+      const scaledH = baseH * nextZoomClamped;
+
+      const extraW = Math.max(0, scaledW - viewportW);
+      const extraH = Math.max(0, scaledH - viewportH);
+
+      maxPanX = extraW / 2;
+      minPanX = -maxPanX;
+      maxPanY = extraH / 2;
+      minPanY = -maxPanY;
+    }
+
+    let desiredPanX: number;
+    let desiredPanY: number;
+
+    if (nextZoomClamped <= 1) {
+      // zoomed all the way out => reset
+      desiredPanX = 0;
+      desiredPanY = 0;
+
+      // also clear any pending snapback target
+      nextPanUnclampedForClampedZoom.current = null;
+    } else if (zoomWasClamped && nextPanUnclampedForClampedZoom.current) {
+      // snapback case (your special stored pan for clamped zoom)
+      desiredPanX = nextPanUnclampedForClampedZoom.current.x;
+      desiredPanY = nextPanUnclampedForClampedZoom.current.y;
+      nextPanUnclampedForClampedZoom.current = null;
+    } else {
+      // normal case
+      desiredPanX = pendingRef.current.panX;
+      desiredPanY = pendingRef.current.panY;
+    }
+
+    // 4) Clamp pan to bounds for nextZoom
+    pendingRef.current.panX = clamp(desiredPanX, minPanX, maxPanX);
+    pendingRef.current.panY = clamp(desiredPanY, minPanY, maxPanY);
+    scheduleFlush();
+  };
+
+  const close = () => {
+    if (!isOpen || isClosing) return;
+
+    setIsClosing(true);
+    const vh =
+      typeof window !== "undefined"
+        ? window.innerHeight || document.documentElement.clientHeight || 0
+        : 0;
+
+    pendingRef.current.swipeY = Math.sign(pendingRef.current.swipeY) * vh;
+    pendingRef.current.exitScale = 2;
+    pendingRef.current.backdropOpacity = 0;
+    pendingRef.current.imageOpacity = 0;
+    scheduleFlush();
+
+    window.setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, BACKDROP_FADE_DURATION);
+  };
+
+  const zoomAtClientPoint = (clientX: number, clientY: number) => {
+    const container = containerRef.current;
+    // const container = imageContainerRef.current;
+    if (!container) return;
+
+    setIsZoomTransitioning(true);
+
+    // Toggle target zoom
+    const prevZoom = pendingRef.current.zoomScale;
+    const nextZoom = prevZoom > 1 ? MIN_ZOOM : MAX_ZOOM;
+
+    const rect = container.getBoundingClientRect();
+    const Cx = rect.left + rect.width / 2;
+    const Cy = rect.top + rect.height / 2;
+
+    const prevPanX = pendingRef.current.panX;
+    const prevPanY = pendingRef.current.panY;
+
+    // Similar mapping used in pinch:
+    // i = (S - C - P) / z
+    const ix = (clientX - Cx - prevPanX) / prevZoom;
+    const iy = (clientY - Cy - prevPanY) / prevZoom;
+
+    // nextPan = S - C - nextZoom * i
+    pendingRef.current.zoomScale = nextZoom;
+    pendingRef.current.panX = clientX - Cx - nextZoom * ix;
+    pendingRef.current.panY = clientY - Cy - nextZoom * iy;
+
+    // regulatePanAndZoom();
+  };
+
+  const zoomAtClientPoint_new = (clientX: number, clientY: number) => {
+    const img = imageRef.current;
+    if (!img) return;
+
+    // setIsZoomTransitioning(true);
+
+    // Toggle target zoom
+    const prevZoom = pendingRef.current.zoomScale;
+    const nextZoom = prevZoom > 1 ? MIN_ZOOM : MAX_ZOOM;
+
+    // IMPORTANT: use the CURRENT IMAGE'S visual center, not the overlay container center
+    const imgRect = img.getBoundingClientRect();
+    const Cx = imgRect.left + imgRect.width / 2;
+    const Cy = imgRect.top + imgRect.height / 2;
+
+    const prevPanX = pendingRef.current.panX;
+    const prevPanY = pendingRef.current.panY;
+
+    // i = (S - C - P) / z
+    const ix = (clientX - Cx - prevPanX) / prevZoom;
+    const iy = (clientY - Cy - prevPanY) / prevZoom;
+
+    // P' = S - C - z' * i
+    pendingRef.current.zoomScale = nextZoom;
+    pendingRef.current.panX = clientX - Cx - nextZoom * ix;
+    pendingRef.current.panY = clientY - Cy - nextZoom * iy;
+
+    regulatePanAndZoom();
+  };
+
+
+  const zoom = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    setIsZoomTransitioning(true);
+
+    /**
+     * Would have been good, but as-is can conflict with swipe-x if user holds down second click too long,
+     * so we are using manual double-tap detection instead inside of handlePointerDown. Keeping this here
+     * for posterity, and in case we can fix the conflict later.
+     */
+    if (e.type === "dblclick") {
+      zoomAtClientPoint(e.clientX, e.clientY);
+
+    } else {
+      if (pendingRef.current.zoomScale > 1) {
+        pendingRef.current.zoomScale = MIN_ZOOM;
+      } else {
+        pendingRef.current.zoomScale = MAX_ZOOM;
+      }
+      scheduleFlush();
+      regulatePanAndZoom();
+    }
+  };
+
+  const zoomOutIfNeeded = (after?: () => void) => { // todo: consider instead using isZoomTransitioning/onTransitionEnd somehow
+    if (pendingRef.current.zoomScale <= 1) {
+      after?.();
+      return;
+    }
+
+    pendingRef.current.zoomScale = MIN_ZOOM;
+    pendingRef.current.panX = 0;
+    pendingRef.current.panY = 0;
+    swipeAxisRef.current = null;
+    scheduleFlush();
+    regulatePanAndZoom();
+
+    window.setTimeout(() => {
+      after?.();
+    }, RESET_DURATION);
+  };
+
+
+  const scrollToIndex = (index: number, behavior: ScrollBehavior = "smooth") => {
+    const container = carouselContainerRef.current;
+    if (!container) return;
+    const el = container.querySelector<HTMLElement>(`[data-index="${index}"]`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior, inline: "center", block: "nearest" });
+  };
+
+  const showPrev = () => {
+    zoomOutIfNeeded(() => {
+      const target = (currentIndex - 1 + images.length) % images.length;
+      setSwipeDirection(null);
+      pendingRef.current.swipeX = 0;
+      scheduleFlush();
+      scrollToIndex(target, "smooth");
+    });
+  };
+
+  const showNext = async () => {
+    zoomOutIfNeeded(() => {
+      const target = (currentIndex + 1) % images.length;
+      setSwipeDirection(null);
+      pendingRef.current.swipeX = 0;
+      scheduleFlush();
+      scrollToIndex(target, "smooth");
+    });
+  };
+
+
+  // const showPrev = () => {
+  //   const target = (currentIndex - 1 + images.length) % images.length;
+  //   setSwipeDirection(null);
+  //   pendingRef.current.swipeX = 0;
+  //   scheduleFlush();
+  //   scrollToIndex(target, "smooth");
+  // };
+
+  // const showNext = () => {
+  //   const target = (currentIndex + 1) % images.length;
+  //   setSwipeDirection(null);
+  //   pendingRef.current.swipeX = 0;
+  //   scheduleFlush();
+  //   scrollToIndex(target, "smooth");
+  // };
+
+
+  // Used for manual double-tap detection
+  // todo 01.16.26: question this... we are doing similar things in onPointerUp
+  const clearGestureState = () => {
+    evCacheRef.current.length = 0;
+    swipeAxisRef.current = null;
+    pinchingRef.current = false;
+    noLongerPinchingRef.current = false;
+    pinchPrevDistanceRef.current = null;
+    pinchPrevCenterRef.current = null;
+  };
+
+  // wheel/trackpad pinch-to-zoom
+  // todo: figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
+  // todo: also, figure out how center(x,y) equals the midpoint between both fingers (maybe this is automatic?)
+  useEffect(() => {
+    if (!isOpen || isClosing) return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      // 1) Trackpad pinch-zoom
+      if (e.ctrlKey) {
+        e.preventDefault();
+
+        const img = imageRef.current;
+        if (!img) return;
+
+        const centerX = e.clientX;
+        const centerY = e.clientY;
+
+        const imgRect = img.getBoundingClientRect();
+        const originX = imgRect.left + imgRect.width / 2;
+        const originY = imgRect.top + imgRect.height / 2;
+
+        const sensitivity = 0.015;
+        const factor = Math.exp(-e.deltaY * sensitivity);
+
+        const baseZoom = pendingRef.current.zoomScale;
+        const nextZoomUnclamped = baseZoom * factor;
+        const nextZoom = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
+
+        const anchorX = (centerX - originX) / baseZoom;
+        const anchorY = (centerY - originY) / baseZoom;
+
+        const originNextX = centerX - nextZoom * anchorX;
+        const originNextY = centerY - nextZoom * anchorY;
+
+        const originDeltaX = originNextX - originX;
+        const originDeltaY = originNextY - originY;
+
+        pendingRef.current.zoomScale = nextZoom;
+        pendingRef.current.panX += originDeltaX;
+        pendingRef.current.panY += originDeltaY;
+
+        scheduleFlush();
+        regulatePanAndZoom();
+        return;
+      }
+
+      // 2) Edge-trigger next/prev (trackpad "push past end")
+      // Only when not zoomed in (since you intentionally disable horizontal scrolling then)
+      if (pendingRef.current.zoomScale > 1) return;
+
+      const carousel = carouselContainerRef.current;
+      if (!carousel) return;
+
+      // Convert wheel deltas to "intended horizontal motion"
+      // On trackpads, horizontal swipe is usually deltaX.
+      // If user is holding shift, some browsers map horizontal into deltaY.
+      const dx = e.deltaX;
+      const dy = e.deltaY;
+
+      const intendedX =
+        Math.abs(dx) >= Math.abs(dy) ? dx : (e.shiftKey ? dy : 0);
+
+      // ignore tiny noise
+      if (Math.abs(intendedX) < 2) return;
+
+      const left = carousel.scrollLeft;
+      const maxLeft = carousel.scrollWidth - carousel.clientWidth;
+
+      const atStart = left <= 0;
+      const atEnd = left >= maxLeft - 1;
+
+      const tryingPastStart = atStart && intendedX < 0;
+      const tryingPastEnd = atEnd && intendedX > 0;
+
+      if (!tryingPastStart && !tryingPastEnd) return;
+
+      // Momentum guard: only allow one trigger per burst window
+      const now = performance.now();
+      if (now < edgeWheelCooldownUntilRef.current) return;
+
+      // You can tune this: 250–450ms usually feels right on trackpads
+      edgeWheelCooldownUntilRef.current = now + 450;
+
+      // Optional: prevent page/backdrop from doing anything weird
+      // (since your lightbox container is touch-none/overflow-hidden already,
+      // this is mostly just "belt and suspenders")
+      e.preventDefault();
+
+      if (tryingPastEnd) {
+        showNext();
+      } else if (tryingPastStart) {
+        showPrev();
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isClosing, currentIndex, images.length]);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isClosing) return;
+    e.preventDefault();
+
+    // Manual double-tap to zoom
+    // Would be made redundant by onDoubleClick, except for the hold-swipe bug (see zoom() for details)
+    const now = performance.now();
+    const last = lastTapRef.current;
+
+    if (last) {
+      const dt = now - last.time;
+      const dx = e.clientX - last.x;
+      const dy = e.clientY - last.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dt <= DOUBLE_TAP_MS && dist <= DOUBLE_TAP_SLOP_PX) {
+        lastTapRef.current = null;
+        zoomAtClientPoint(e.clientX, e.clientY);
+        clearGestureState();
+        pendingRef.current.swipeX = 0;
+        pendingRef.current.swipeY = 0;
+        scheduleFlush();
+        return;
+      }
+    }
+
+    // Not a double tap yet: record this tap as the "first"
+    lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+
+    const evCache = evCacheRef.current;
+    evCache.push(toCachedPointer(e));
+    const isPinching =
+      evCache.length === 2 &&
+      evCache.every((ev) => ev.pointerType === "touch");
+
+    if (evCache.length > MAX_TOUCH_POINTS) {
+      // Too many touch points: treat this as a cancelled gesture
+      evCache.length = 0;
+      pinchingRef.current = false;
+      swipeAxisRef.current = null;
+      noLongerPinchingRef.current = false;
+      return;
+    }
+
+    // capture pointer so moves outside the image still report to this element
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    noLongerPinchingRef.current = false;
+    swipeAxisRef.current = null;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
+
+    if (pendingRef.current.zoomScale > 1) {
+      panXStartRef.current = pendingRef.current.panX;
+      panYStartRef.current = pendingRef.current.panY;
+    }
+
+    if (isPinching) pinchingRef.current = true;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (isClosing || evCacheRef.current.length === 0) return;
+    const evCache = evCacheRef.current;
+    upsertCachedPointer(evCache, e);
+
+    const isPinching = pinchingRef.current;
+    const isZoomedIn = pendingRef.current.zoomScale > 1;
+
+    if (noLongerPinchingRef.current) return;
+
+    if (!isPinching && isZoomedIn) {
+      // Panning a zoomed image
+      const deltaX = e.clientX - startXRef.current;
+      const deltaY = e.clientY - startYRef.current;
+      pendingRef.current.panX = panXStartRef.current + deltaX;
+      pendingRef.current.panY = panYStartRef.current + deltaY;
+      scheduleFlush();
+      return;
+    }
+
+    if (!isPinching && !isZoomedIn) {
+      // Swiping (y to close)
+      const deltaX = e.clientX - startXRef.current;
+      const deltaY = e.clientY - startYRef.current;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+
+      // Determine if we are swiping horizontally or vertically
+      if (swipeAxisRef.current === null) {
+        const maxDelta = Math.max(absX, absY);
+        if (maxDelta < DRAG_LOCK_THRESHOLD) return;
+        swipeAxisRef.current = absX > absY ? "x" : "y";
+        // cancel double-tap sequence
+        lastTapRef.current = null;
+      }
+
+      if (swipeAxisRef.current === "y") {
+        pendingRef.current.swipeX = 0;
+        pendingRef.current.swipeY = deltaY;
+      }
+
+      scheduleFlush();
+      return;
+    }
+
+    // pinch-zoom (incremental deltas)
+    if (isPinching) {
+      const [p1, p2] = evCache;
+      if (!p1 || !p2) return;
+
+      const t1 = p1.targetEl;
+      const t2 = p2.targetEl;
+      const bothOnZoomable =
+        !!t1?.closest("[data-zoomable='true']") &&
+        !!t2?.closest("[data-zoomable='true']");
+      if (!bothOnZoomable) return;
+
+      const container = containerRef.current;
+      if (!container) return;
+
+      // X & Y midpoints between pinching fingers (screen space)
+      const curCenter = {
+        x: (p1.clientX + p2.clientX) / 2,
+        y: (p1.clientY + p2.clientY) / 2,
+      };
+
+      // Distance between the two pointers
+      const curDist = Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+
+      /**
+       * Explanation of viewport center usage:
+       * At pan = 0, zoom = 1, image is centered in viewport, so viewport center = image center.
+       * Viewport center makes sense as a reference point because of the above, and because pan and zoom
+       * are not applied to the same element (pan on container, zoom on image), so we need a
+       * stable reference point. Because the image scales around its center, the image center
+       * (in screen space) is:
+       *
+       *     imageCenterScreen = viewportCenter + pan
+       *
+       * Now take any point on the unscaled image in image-local space i (a vector from the image center).
+       * Scaling by z makes that vector become z * i in screen pixels. So the full mapping is:
+       *
+       *     pointScreen_i = imageCenterScreen + z * i
+       *
+       * Generally:
+       *
+       *     S = C + P + z⋅i
+       *
+       * where:
+       *     screen == S (a screen-space point)
+       *     viewportCenter == C
+       *     pan == P
+       *     imageCoord == i (image-local coordinate)
+       *     zoom == z
+       */
+      const containerRect = container.getBoundingClientRect();
+      const viewportCenter = {
+        x: containerRect.left + containerRect.width / 2,
+        y: containerRect.top + containerRect.height / 2,
+      };
+
+      // Seed the incremental integrator - wait for next move to have a delta
+      if (pinchPrevDistanceRef.current == null || pinchPrevCenterRef.current == null) {
+        pinchPrevDistanceRef.current = curDist;
+        pinchPrevCenterRef.current = curCenter;
+        return;
+      }
+
+      const prevDist = pinchPrevDistanceRef.current;
+      const prevCenter = pinchPrevCenterRef.current;
+      const prevPan = { x: pendingRef.current.panX, y: pendingRef.current.panY };
+      const prevZoom = pendingRef.current.zoomScale;
+
+      // Incremental scale step for this frame
+      const zoomStepFactor = curDist / prevDist;
+      const nextZoomUnclamped = prevZoom * zoomStepFactor;
+
+      /**
+       * During the pinch, we know prevCenter (screen point between fingers) and we want to
+       * find which image-local point was under that screen point. Starting from the mapping:
+       *
+       *     S = C + P + z⋅i
+       *
+       * Solve for i:
+       *
+       *     i = (S - C - P) / z
+       *
+       * plug in prev values:
+       *     S = prevCenter
+       *     C = viewportCenter
+       *     P = prevPan
+       *     z = prevZoom
+       *
+       *     i = (prevCenter - viewportCenter - prevPan) / prevZoom
+       *
+       * i gets multiplied by nextZoom because scaling multiplies image-local
+       * offsets from the center. If i = (10, 0) means “10px right of the image center
+       * in image-local space”, then at zoom 1 it shows up 10 screen pixels right.
+       * At zoom 2, it shows up 20 screen pixels right. So on the next frame, when zoom
+       * is nextZoom, the screen-space offset of that same point becomes:
+       *
+       *     screenOffset = nextZoom * i
+       *
+       * And therefore the screen position of that point is:
+       *
+       *     S_next = C + P_next + nextZoom * i
+       *
+       * We want that to equal curCenter, because the fingers moved and you want the image point to
+       * stay under them:
+       *
+       *     curCenter = viewportCenter + nextPan + nextZoom * i
+       *
+       * Solve for the new pan:
+       *
+       *     nextPan = curCenter - viewportCenter - nextZoom * i
+       */
+      const prevCenterX_i = (prevCenter.x - viewportCenter.x - prevPan.x) / prevZoom;
+      const prevCenterY_i = (prevCenter.y - viewportCenter.y - prevPan.y) / prevZoom;
+
+      // Incremental pan update
+      const nextPanXUnclamped =
+        curCenter.x -
+        viewportCenter.x -
+        nextZoomUnclamped * prevCenterX_i;
+
+      const nextPanYUnclamped =
+        curCenter.y -
+        viewportCenter.y -
+        nextZoomUnclamped * prevCenterY_i;
+
+      if (nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM) {
+        nextPanUnclampedForClampedZoom.current = {
+          x: curCenter.x - viewportCenter.x - MAX_ZOOM * prevCenterX_i,
+          y: curCenter.y - viewportCenter.y - MAX_ZOOM * prevCenterY_i,
+        };
+      }
+
+      // Commit incremental updates
+      pendingRef.current.zoomScale = nextZoomUnclamped;
+      pendingRef.current.panX = nextPanXUnclamped;
+      pendingRef.current.panY = nextPanYUnclamped;
+      pinchPrevDistanceRef.current = curDist;
+      pinchPrevCenterRef.current = { x: curCenter.x, y: curCenter.y };
+
+      scheduleFlush();
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isClosing || evCacheRef.current.length === 0) return;
+    e.preventDefault();
+
+    const evCache = evCacheRef.current;
+    const wasPinching =
+      evCache.length === 2 &&
+      evCache.every((ev) => ev.pointerType === "touch");
+
+    // Remove this event from the cache
+    const index = evCache.findIndex((p) => p.pointerId === e.pointerId);
+    if (index > -1) evCache.splice(index, 1);
+
+    const isPinching =
+      evCache.length === 2 &&
+      evCache.every((ev) => ev.pointerType === "touch");
+    const isNoLongerPinching = wasPinching && !isPinching;
+
+    const isZoomedIn = pendingRef.current.zoomScale > 1;
+
+    // take 1st finger off: isPinching || isNoLongerPinching: false, true
+    // take 2nd finger off: !isPinching && !wasPinching: true, true
+    if (isNoLongerPinching) {
+      noLongerPinchingRef.current = true;
+    } else if (isPinching) {
+      noLongerPinchingRef.current = false;
+    } else if (!isPinching && !wasPinching) {
+      noLongerPinchingRef.current = false;
+
+      // Then must be:
+      // - (1) single-pointer drag (drag-y to close on release)
+      // - (2) single-pointer pan on zoomed image
+
+      if (!isZoomedIn) {
+        // We did (1) single-finger drag-y, so close on release
+        const axis = swipeAxisRef.current;
+        const deltaY = axis === "x" ? 0 : e.clientY - startYRef.current;
+
+        const absY = Math.abs(deltaY);
+
+        if (axis === "y" && absY > DRAG_CLOSE_THRESHOLD) {
+          close();
+        } else {
+          setSwipeDirection(null);
+          pendingRef.current.swipeY = 0;
+          swipeSnapBackRef.current = true;
+          scheduleFlush();
+          window.setTimeout(() => {
+            swipeSnapBackRef.current = false;
+          }, BACKDROP_FADE_DURATION);
+        }
+      }
+    }
+
+    // Reset other stuff only when no pointers are left (gesture is over)
+    if (evCache.length === 0) {
+      regulatePanAndZoom();
+      swipeAxisRef.current = null;
+      pinchingRef.current = false;
+      noLongerPinchingRef.current = false;
+    }
+    // Reset pinch-specific stuff regardless
+    pinchPrevDistanceRef.current = null;
+    pinchPrevCenterRef.current = null;
+  };
+
+  useEffect(() => {
+    // whenever a new swipe is initiated, allow exactly one commit
+    if (swipeDirection) swipeCommitGuardRef.current = false;
+  }, [swipeDirection]);
+
+  useEffect(() => {
+    if (!isOpen || isClosing) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isClosing, currentIndex, images.length]);
 
   ////
   // Final derived offsets:
@@ -293,7 +1027,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   let imgTx = 0;
   let imgTy = 0;
 
-  if (isZoomedIn || isPinching) {
+  if (isZoomedIn || isZoomTransitioning || isPinching) {
     imgTx = panX;
     imgTy = panY;
   } else {
@@ -301,147 +1035,298 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     imgTy = swipeY;
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) close();
-      }}
-      style={{
-        pointerEvents: isClosing ? "none" : "auto",
-        backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
-        transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
-      }}
+  useEffect(() => {
+    console.log("isZoomTransitioning: ", isZoomTransitioning);
+  })
+
+  const ZoomInIcon = () => (
+    <svg
+      // viewBox="0 0 24 24"
+      viewBox="0 -960 960 960"
+      className="h-6 w-6 fill-current"
+      aria-hidden="true"
     >
-      {/* Zoom & Close buttons */}
+      <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Zm-40-60v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+    </svg>
+  );
 
+  const ZoomOutIcon = () => (
+    <svg
+      viewBox="0 -960 960 960"
+      className="h-6 w-6 fill-current"
+      aria-hidden="true"
+    >
+      <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z" />
+    </svg>
+  );
 
-      {/* Image Area (Natural scroll) */}
-      <div id="carousel-container" className="absolute inset-0 flex">
-        <div
-          ref={carouselContainerRef}
-          id="image-carousel"
-          // className="flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
-          className="flex overflow-x-auto overflow-y-hidden max-w-full max-h-full snap-x snap-mandatory"
-        // onDoubleClick={zoom} // todo: this did not work as well as I had hoped (see zoom() for details)
-
-        // onTransitionEnd={handleTrackTransitionEndOrCancel}
-        // onTransitionCancel={handleTrackTransitionEndOrCancel}
-        // Helpful on trackpads/mice (prevents vertical wheel from feeling “stuck”)
-        // onWheel={(e) => {
-        //   // If the user is primarily scrolling vertically, translate some of it to horizontal.
-        //   if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        //     const el = containerRef.current;
-        //     if (!el) return;
-        //     el.scrollLeft += e.deltaY;
-        //     e.preventDefault();
-        //   }
-        // }}
-        >
-
-          {/* Current slide (center) */}
-          {images.map((img, index) => (
-            <div
-              key={(img.src ?? "") + index}
-              data-welsertest={(img.src ?? "") + index}
-              data-index={index}
-              ref={currentImgContainerRef}
-              // className="flex items-center justify-center w-screen snap-center snap-always"
-              className="min-w-full flex-[0_0_100%] flex items-center justify-center snap-center snap-always"
-              style={{
-                transition: isPointerDown
-                  ? "none"
-                  : `transform ${RESET_DURATION}ms ease-out`,
-              }}
-            >
-              <img
-                ref={imageRef}
-                src={img.src}
-                alt={img.alt ?? ""}
-                data-zoomable="true"
-                className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
-                style={{
-                  transformOrigin: "50% 50%",
-                  transform: `scale(${exitScale * zoomScale})`,
-                  opacity: imageOpacity,
-                  transition: isPointerDown
-                    ? "none"
-                    : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-                }}
-                onLoad={() => {
-                  const img = imageRef.current;
-                  if (!img) return;
-
-                  const r = img.getBoundingClientRect();
-                  const effectiveScale = (exitScale * zoomScale) || 1;
-                  baseImgWRef.current = r.width / effectiveScale;
-                  baseImgHRef.current = r.height / effectiveScale;
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* <div
-          ref={containerRef}
-          className={
-            containerClassName ??
-            "flex overflow-x-auto overflow-y-hidden max-w-full max-h-full snap-x snap-mandatory"
-          }
-          // Helpful on trackpads/mice (prevents vertical wheel from feeling “stuck”)
-          onWheel={(e) => {
-            // If the user is primarily scrolling vertically, translate some of it to horizontal.
-            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-              const el = containerRef.current;
-              if (!el) return;
-              el.scrollLeft += e.deltaY;
-              e.preventDefault();
-            }
-          }}
-        >
-          {images.map((img, index) => (
-            <figure
-              key={(img.src ?? "") + index}
-              data-slide
-              data-index={index}
-              className={
-                figureClassName ??
-                "min-w-full flex-[0_0_100%] flex items-center justify-center snap-center snap-always"
-              }
-            >
-              {visibleSet.has(index) ? (
-                <img
-                  src={img.src}
-                  alt={img.alt ?? ""}
-                  className="max-w-full max-h-full object-contain"
-                  draggable={false}
-                />
-              ) : (
-                <div className="w-full h-full bg-[#222] opacity-40" />
-              )}
-            </figure>
-          ))}
-        </div> */}
-
-      {/* Caption + index */}
+  return (
+    <LightboxPortal>
       <div
-        className="absolute left-1 right-1 bottom-1 z-10 flex items-stretch justify-between text-xs"
+        ref={containerRef}
+        className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) close();
+        }}
         style={{
-          opacity: imageOpacity,
-          transition: isPointerDown
-            ? "none"
-            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+          pointerEvents: isClosing ? "none" : "auto",
+          backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
+          transition: `background-color ${BACKDROP_FADE_DURATION}ms ease-out`,
         }}
       >
-        <div className="truncate p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
-          {currentImage.alt ?? "\u00A0"}
+        {/* Zoom & Close buttons */}
+        <div className="absolute top-1 right-1 z-10 flex flex-row">
+          {/* Zoom */}
+          <div className="p-2 mr-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+            <button
+              disabled={isClosing}
+              type="button"
+              onClick={zoom}
+              className="p-1 text-sm uppercase tracking-wide cursor-pointer"
+              style={{
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+            >
+              {isZoomedIn ? <ZoomOutIcon /> : <ZoomInIcon />}
+            </button>
+          </div>
+
+          {/* Debug: Scroll lock */}
+          <div className="p-2 mr-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+            <button
+              disabled={isClosing}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDebugScrollLocked((v) => !v);
+              }}
+              className="p-1 text-sm uppercase tracking-wide cursor-pointer"
+              style={{
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+              aria-pressed={debugScrollLocked}
+              aria-label={debugScrollLocked ? "Enable carousel scroll" : "Disable carousel scroll"}
+              title={debugScrollLocked ? "Scroll locked" : "Scroll unlocked"}
+            >
+              {/* super simple icon: locked/unlocked circle */}
+              <svg viewBox="0 -960 960 960" className="h-6 w-6 fill-current" aria-hidden="true">
+                {debugScrollLocked ? (
+                  // "lock" shape
+                  <path d="M240-200v-360h80v-80q0-83 58.5-141.5T520-840q83 0 141.5 58.5T720-640v80h80v360H240Zm280-80q33 0 56.5-23.5T600-360q0-33-23.5-56.5T520-440q-33 0-56.5 23.5T440-360q0 33 23.5 56.5T520-280ZM400-560h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z" />
+                ) : (
+                  // "unlock" shape
+                  <path d="M240-200v-360h320v-80q0-50-35-85t-85-35q-43 0-75.5 26T328-672l-78-32q24-62 78-99t122-37q83 0 141.5 58.5T650-640v80h150v360H240Zm200-80q33 0 56.5-23.5T520-360q0-33-23.5-56.5T440-440q-33 0-56.5 23.5T360-360q0 33 23.5 56.5T440-280Z" />
+                )}
+              </svg>
+            </button>
+          </div>
+
+
+          {/* Close */}
+          <div className="p-2 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+            <button
+              disabled={isClosing}
+              type="button"
+              onClick={close}
+              className="p-1 text-sm uppercase tracking-wide cursor-pointer"
+              style={{
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+            >
+              <svg
+                viewBox="0 -960 960 960"
+                className="h-6 w-6 fill-current"
+              >
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div className="p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
-          {currentIndex + 1} / {images.length}
+
+        {/* Arrows */}
+        {images.length > 1 && (
+          <>
+            {/* Previous arrow */}
+            <button
+              disabled={isClosing}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                showPrev();
+              }}
+              className="absolute left-1 top-1/2 p-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+              style={{
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+              aria-label="Previous image"
+            >
+              <svg
+                viewBox="0 -960 960 960"
+                className="h-6 w-6 fill-current"
+              >
+                <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+              </svg>
+            </button>
+
+            {/* Next arrow */}
+            <button
+              disabled={isClosing}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                showNext();
+              }}
+              className="absolute right-1 top-1/2 p-2 flex items-center justify-center bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm hover:bg-black/60 cursor-pointer z-10"
+              style={{
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+              aria-label="Next image"
+            >
+              <svg
+                viewBox="0 -960 960 960"
+                className="h-6 w-6 fill-current"
+              >
+                <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+              </svg>
+            </button>
+          </>
+        )}
+
+        {/* Image Area (Natural scroll) */}
+<div id="carousel-container" className="absolute inset-0">
+  <div
+    ref={carouselContainerRef}
+    id="image-carousel"
+    className={`
+      ${(isZoomedIn || isZoomTransitioning || debugScrollLocked)
+        ? "overflow-x-hidden"
+        : "overflow-x-auto snap-x snap-mandatory"}
+      overflow-y-hidden
+      max-w-full
+      max-h-full
+      whitespace-nowrap
+    `}
+    style={{
+      touchAction: "pan-y",
+      overscrollBehavior: "contain",
+    }}
+    onPointerDown={handlePointerDown}
+    onPointerMove={handlePointerMove}
+    onPointerUp={handlePointerUp}
+    onPointerCancel={handlePointerUp}
+  >
+
+    {images.map((img, index) => {
+      const isActive = index === currentIndex;
+
+      return (
+        <div
+          ref={isActive ? imageContainerRef : null}
+          key={(img.src ?? "") + index}
+          data-index={index}
+          className={`
+            inline-block
+            w-full
+            h-full
+            align-top
+            ${(isZoomedIn || isZoomTransitioning || debugScrollLocked)
+              ? ""
+              : "snap-center snap-always"}
+          `}
+          style={{
+            transform:
+              isActive &&
+              (isZoomedIn ||
+                isZoomTransitioning ||
+                swipeAxisRef.current === "y" ||
+                isClosing)
+                ? `translate(${imgTx}px, ${imgTy}px)`
+                : "none",
+            transition: isPointerDown
+              ? "none"
+              : `transform ${RESET_DURATION}ms ease-out`,
+          }}
+        >
+          {/* Inner centering wrapper */}
+          <div className="w-full h-full grid place-items-center">
+            <img
+              ref={isActive ? imageRef : null}
+              src={img.src}
+              alt={img.alt ?? ""}
+              data-zoomable="true"
+              className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${
+                isActive && pendingRef.current.zoomScale > 1
+                  ? "cursor-move"
+                  : "cursor-grab active:cursor-grabbing"
+              }`}
+              style={{
+                transformOrigin: "50% 50%",
+                transform: isActive
+                  ? `scale(${exitScale * zoomScale})`
+                  : `scale(1)`,
+                opacity: imageOpacity,
+                transition: isPointerDown
+                  ? "none"
+                  : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+              }}
+              onTransitionStart={(e) => {
+                if (!isActive) return;
+                if (e.propertyName !== "transform") return;
+                setIsZoomTransitioning(true);
+              }}
+              onTransitionEnd={(e) => {
+                if (!isActive) return;
+                if (e.propertyName !== "transform") return;
+                setIsZoomTransitioning(isZoomedIn || false);
+              }}
+              onTransitionCancel={(e) => {
+                if (!isActive) return;
+                if (e.propertyName !== "transform") return;
+                setIsZoomTransitioning(isZoomedIn || false);
+              }}
+            />
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+
+
+        {/* Caption + index */}
+        <div
+          className="absolute left-1 right-1 bottom-1 z-10 flex items-stretch justify-between text-xs"
+          style={{
+            opacity: imageOpacity,
+            transition: isPointerDown
+              ? "none"
+              : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+          }}
+        >
+          <div className="truncate p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+            {currentImage.alt ?? "\u00A0"}
+          </div>
+          <div className="p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
+            {currentIndex + 1} / {images.length}
+          </div>
         </div>
       </div>
-    </div>
+    </LightboxPortal >
   );
 };
