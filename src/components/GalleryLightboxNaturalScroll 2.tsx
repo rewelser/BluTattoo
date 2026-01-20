@@ -84,7 +84,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const carouselContainerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const imageContainerRef = useRef<HTMLImageElement | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const baseImgWRef = useRef<number | null>(null);
   const baseImgHRef = useRef<number | null>(null);
 
@@ -183,6 +183,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const computeIndexFromScroll = () => {
       raf = null;
 
+      // todo: replace these vibe comments
       // If you want to avoid changing "current" while zoomed/panning vertically:
       // (pick your rule; this is conservative)
       if (pendingRef.current.zoomScale > 1) return;
@@ -268,71 +269,18 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       setImageOpacity(p.imageOpacity);
     });
   };
-  // useEffect(() => { // for testing only
-  //   console.log("[scale change]", {
-  //     zoomScale,
-  //     exitScale,
-  //     time: performance.now(),
-  //   });
-  // }, [zoomScale, exitScale]);
-  // todo: make sure pan/swipes stop happening on mouse-up
-  // todo: make sure that scroll locking stays locked until zoomed all the way out, not just when "!isZoomedIn"
-  // todo: figure out when onLoad runs in the other GalleryLightbox code
-  // todo: make sure trackpad zoom out regulates pan
 
-  // useEffect(() => { // for testing only
-  //   if (!isOpen) return;
+  useEffect(() => {
+    if (!isOpen) return;
+    if (isZoomTransitioning) return;
+    if (pendingRef.current.zoomScale !== 1) return;
 
-  //   const el = carouselContainerRef.current;
-  //   if (!el) return;
+    const img = imageRef.current;
+    if (!img) return;
 
-  //   const onWheel = (e: WheelEvent) => {
-  //     // If user is mostly vertical scrolling, ignore (tweak if you want)
-  //     const dx = e.deltaX;
-  //     const dy = e.deltaY;
-  //     const mostlyHorizontal = Math.abs(dx) > Math.abs(dy);
-
-  //     // Some trackpads report horizontal intent in deltaY with shiftKey, etc.
-  //     const intendedX = mostlyHorizontal ? dx : (e.shiftKey ? dy : 0);
-  //     if (intendedX === 0) return;
-
-  //     const left = el.scrollLeft;
-  //     const maxLeft = el.scrollWidth - el.clientWidth;
-
-  //     const atStart = left <= 0;
-  //     const atEnd = left >= maxLeft - 1; // small epsilon
-
-  //     const tryingPastStart = atStart && intendedX < 0;
-  //     const tryingPastEnd = atEnd && intendedX > 0;
-
-  //     if (tryingPastStart || tryingPastEnd) {
-  //       console.log("[overscroll attempt]", {
-  //         edge: tryingPastStart ? "start" : "end",
-  //         scrollLeft: left,
-  //         maxLeft,
-  //         deltaX: dx,
-  //         deltaY: dy,
-  //         shiftKey: e.shiftKey,
-  //         time: performance.now(),
-  //       });
-  //     }
-  //   };
-
-  //   el.addEventListener("wheel", onWheel, { passive: true });
-  //   return () => el.removeEventListener("wheel", onWheel);
-  // }, [isOpen]);
-
-useEffect(() => {
-  if (!isOpen) return;
-  if (isZoomTransitioning) return;
-  if (pendingRef.current.zoomScale !== 1) return;
-
-  const img = imageRef.current;
-  if (!img) return;
-
-  const r = img.getBoundingClientRect();
-  baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
-}, [isOpen, currentIndex, isZoomTransitioning]);
+    const r = img.getBoundingClientRect();
+    baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
+  }, [isOpen, currentIndex, isZoomTransitioning]);
 
 
   const regulatePanAndZoom = () => {
@@ -342,24 +290,10 @@ useEffect(() => {
 
     pendingRef.current.zoomScale = nextZoomClamped;
 
-    const img = imageRef.current;
-    if (!img) return;
-
-    const r = img.getBoundingClientRect();
-    const effectiveScale = (exitScale * zoomScale) || 1;
-    // const baseW = r.width / effectiveScale;
-    // const baseH = r.height / effectiveScale;
-
     const container = containerRef.current;
-    // const baseWorig = baseImgWRef.current;
-    // const baseHorig = baseImgHRef.current;
+    if (!container) return;
 
     const base = baseSizeByIndexRef.current[currentIndex];
-    console.log("-- v regulatePanAndZoom v -- ");
-    console.log("baseImg(W,H)Ref: ", baseImgWRef.current, baseImgHRef.current);
-    console.log("(index): ", currentIndex);
-    console.log("(baseSizeByIndexRef): ", base);
-    console.log("-- ^ regulatePanAndZoom ^ -- ");
 
     const baseW = base?.w ?? null;
     const baseH = base?.h ?? null;
@@ -454,7 +388,6 @@ useEffect(() => {
 
   const zoomAtClientPoint = (clientX: number, clientY: number) => {
     const container = containerRef.current;
-    // const container = imageContainerRef.current;
     if (!container) return;
 
     setIsZoomTransitioning(true);
@@ -508,7 +441,6 @@ useEffect(() => {
     }, RESET_DURATION);
   };
 
-
   const scrollToIndex = (index: number, behavior: ScrollBehavior = "smooth") => {
     const container = carouselContainerRef.current;
     if (!container) return;
@@ -537,24 +469,6 @@ useEffect(() => {
       scrollToIndex(target, "smooth");
     });
   };
-
-
-  // const showPrev = () => {
-  //   const target = (currentIndex - 1 + images.length) % images.length;
-  //   setSwipeDirection(null);
-  //   pendingRef.current.swipeX = 0;
-  //   scheduleFlush();
-  //   scrollToIndex(target, "smooth");
-  // };
-
-  // const showNext = () => {
-  //   const target = (currentIndex + 1) % images.length;
-  //   setSwipeDirection(null);
-  //   pendingRef.current.swipeX = 0;
-  //   scheduleFlush();
-  //   scrollToIndex(target, "smooth");
-  // };
-
 
   // Used for manual double-tap detection
   // todo 01.16.26: question this... we are doing similar things in onPointerUp
@@ -669,7 +583,6 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isClosing, currentIndex, images.length]);
 
-  const suppressPointersUntilRef = useRef(0);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isClosing) return;
@@ -679,9 +592,6 @@ useEffect(() => {
     // Would be made redundant by onDoubleClick, except for the hold-swipe bug (see zoom() for details)
     const now = performance.now();
 
-    // if (now < suppressPointersUntilRef.current) {
-    //   return;
-    // }e.preventDefault();
     const last = lastTapRef.current;
 
     if (last) {
@@ -692,7 +602,6 @@ useEffect(() => {
 
       if (dt <= DOUBLE_TAP_MS && dist <= DOUBLE_TAP_SLOP_PX) {
         lastTapRef.current = null;
-        suppressPointersUntilRef.current = now + DOUBLE_TAP_MS;
 
         if (pendingRef.current.zoomScale > 1) { zoomOut(); }
         else { zoomAtClientPoint(e.clientX, e.clientY); }
@@ -1031,7 +940,7 @@ useEffect(() => {
     imgTy = swipeY;
   }
 
-  useEffect(() => {
+  useEffect(() => { //todo: for testing
     console.log("isZoomTransitioning: ", isZoomTransitioning);
   })
 
@@ -1208,11 +1117,7 @@ useEffect(() => {
           <div
             ref={carouselContainerRef}
             id="image-carousel"
-            // className="flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
-            // className="flex overflow-x-auto overflow-y-hidden max-w-full max-h-full snap-x snap-mandatory"
-            // className={`flex ${isZoomedIn ? "overflow-x-hidden" : "overflow-x-auto"} overflow-y-hidden max-w-full max-h-full snap-x snap-mandatory`}
             className={`flex ${(isZoomedIn || isZoomTransitioning || debugScrollLocked) ? "overflow-x-hidden" : "overflow-x-auto snap-x snap-mandatory"} overflow-y-hidden max-w-full max-h-full`}
-
             // onDoubleClick={zoom} // todo: this did not work as well as I had hoped (see zoom() for details)
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -1228,13 +1133,14 @@ useEffect(() => {
                   ref={isActive ? imageContainerRef : null}
                   key={(img.src ?? "") + index}
                   data-index={index}
-                  // className="flex items-center justify-center w-screen snap-center snap-always"
-                  // className="min-w-full flex-[0_0_100%] flex items-center justify-center snap-center snap-always"
                   className={`min-w-full flex-[0_0_100%] flex items-center justify-center ${(isZoomedIn || isZoomTransitioning || debugScrollLocked) ? "" : "snap-center snap-always"}`}
                   style={{
-                    transform: isActive && (isZoomedIn || isZoomTransitioning || swipeAxisRef.current === "y" || isClosing)
-                      ? `translate(${imgTx}px, ${imgTy}px)`
-                      : "none",
+                    // transform: isActive && (isZoomedIn || isZoomTransitioning || swipeAxisRef.current === "y" || isClosing)
+                    //   ? `translate(${imgTx}px, ${imgTy}px)`
+                    //   : "none",
+                    transform: isActive
+                      ? `translate3d(${imgTx}px, ${imgTy}px, 0)`
+                      : `translate3d(0px, 0px, 0)`,
                     transition: isPointerDown
                       ? "none"
                       : `transform ${RESET_DURATION}ms ease-out`,
