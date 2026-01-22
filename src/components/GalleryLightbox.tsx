@@ -189,7 +189,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         const container = containerRef.current;
         const baseW = baseImgWRef.current;
         const baseH = baseImgHRef.current;
-        console.log("from regulatePanAndZoom: ", baseImgWRef.current, baseImgHRef.current);
 
         let minPanX = 0, maxPanX = 0, minPanY = 0, maxPanY = 0;
 
@@ -1147,9 +1146,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                     </div>
                 )}
 
-                {/* Caption + index */}
+                {/* Caption */}
                 <div
-                    className="absolute left-1 right-1 bottom-1 z-10 flex items-stretch justify-between text-xs"
+                    className="absolute bottom-1 z-10 text-xs bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm p-3 left-1 right-auto truncate"
                     style={{
                         opacity: imageOpacity,
                         transition: isPointerDown
@@ -1157,12 +1156,20 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                             : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                     }}
                 >
-                    <div className="truncate p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
-                        {currentImage.alt ?? "\u00A0"}
-                    </div>
-                    <div className="p-3 bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
-                        {currentIndex + 1} / {images.length}
-                    </div>
+                    {currentImage.alt ?? "\u00A0"}
+                </div>
+
+                {/* Index */}
+                <div
+                    className="absolute bottom-1 z-10 text-xs bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm p-3 right-1 left-auto"
+                    style={{
+                        opacity: imageOpacity,
+                        transition: isPointerDown
+                            ? "none"
+                            : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                    }}
+                >
+                    {currentIndex + 1} / {images.length}
                 </div>
             </div>
         </LightboxPortal >
