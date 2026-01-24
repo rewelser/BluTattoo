@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
 
 interface ArtistImage {
   src: string;
@@ -481,6 +482,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (programmaticScrollRef.current) return;
       // todo: revisit whether we need something to do with e.repeat... Maybe not, given the above.
+      // todo: there is still an occasional bug here where it starts caterpillaring on repeat. Don't know how to reproduce.
       // if (e.repeat && programmaticScrollRef.current) return;
       if (e.key === "Escape") close();
       if (e.key === "ArrowLeft") showPrev();
@@ -558,6 +560,38 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
         const originDeltaX = originNextX - originX;
         const originDeltaY = originNextY - originY;
+
+        // DEBUG VARS
+        const fixedAnchorBefore = {
+          x: (originX + 50) / baseZoom,
+          y: (originY + 50) / baseZoom
+        }
+
+        const fixedAnchorAfter = {
+          x: (originNextX + 50) / nextZoomUnclamped,
+          y: (originNextY + 50) / nextZoomUnclamped
+        }
+
+        if (DEBUG) {
+
+          dbg.ensure("fixedAnchorBefore", fixedAnchorBefore, { label: "fixedAnchorBefore", crosshair: true });
+          dbg.ensure("fixedAnchorAfter", fixedAnchorAfter, { label: "fixedAnchorAfter", crosshair: true });
+          dbg.ensure("center", { x: centerX, y: centerY }, { label: "center", crosshair: true });
+          // dbg.ensure("anchor", { x: anchorX, y: anchorY }, { label: "anchor", crosshair: true });
+          dbg.ensure("origin", { x: originX, y: originY }, { label: "origin", crosshair: true });
+          dbg.ensure("originNext", { x: originNextX, y: originNextY }, { label: "originNext", crosshair: true });
+          // dbg.ensure("prevCenter", prevCenter, { label: "prevCenter (fingers)", crosshair: true });
+          // dbg.ensure("viewportCenter", viewportCenter, { label: "viewportCenter", crosshair: true });
+          // dbg.ensure("prevCenter_i", prevCenter_i, { label: "prevCenter_i", crosshair: true });
+          // console.log(prevCenter);
+          // console.log(prevCenter_i);
+
+          // const imageCenterScreen = {
+          //   x: viewportCenter.x + pendingRef.current.panX,
+          //   y: viewportCenter.y + pendingRef.current.panY,
+          // };
+          // dbg.ensure("imgCenter", imageCenterScreen, { label: "imageCenterScreen", crosshair: true });
+        }
 
         pendingRef.current.zoomScale = nextZoom;
         pendingRef.current.panX += originDeltaX;
@@ -958,14 +992,20 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     </svg>
   );
 
+  const DEBUG = true; // flip off when done
+  const dbg = useScreenDebugMarks(DEBUG);
+  // somewhere global-ish (or in the overlay component)
+  window.addEventListener("pointermove", (e) => {
+    dbg.ensure("cursor", { x: e.clientX, y: e.clientY }, { label: "cursor(client)", crosshair: true });
+  });
+
   return (
     <LightboxPortal>
+      <ScreenDebugOverlay marks={dbg.marks} />
+
       <div
         ref={containerRef}
         className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) close();
-        }}
         style={{
           pointerEvents: isClosing ? "none" : "auto",
           backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,

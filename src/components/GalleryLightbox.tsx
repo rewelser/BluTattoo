@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
+
 
 interface ArtistImage {
     src: string;
@@ -689,6 +691,54 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                 };
             }
 
+            // DEBUG VARS
+            // imageCenterScreen = viewportCenter + pan
+            const origin = {
+                x: viewportCenter.x + pendingRef.current.panX,
+                y: viewportCenter.y + pendingRef.current.panY,
+            }
+
+            const originNext = {
+                x: viewportCenter.x + nextPanXUnclamped,
+                y: viewportCenter.y + nextPanYUnclamped,
+            }
+
+            const fixedAnchorBefore = {
+                x: (origin.x + 50 / prevZoom),
+                y: (origin.y + 50 / prevZoom),
+            }
+
+            const fixedAnchorAfter = {
+                x: (originNext.x + 50 * nextZoomUnclamped),
+                y: (originNext.y + 50 * nextZoomUnclamped),
+            }
+
+            // S = C + P + z⋅i
+            const prevCenter_i_reversed = {
+                x: viewportCenter.x + prevPan.x + prevCenterX_i * prevZoom,
+                y: viewportCenter.y + prevPan.y + prevCenterY_i * prevZoom,
+            }
+
+            if (DEBUG) {
+                dbg.ensure("prevCenter_i_reversed", prevCenter_i_reversed, { label: "prevCenter_i_reversed", crosshair: true });
+                // dbg.ensure("origin", origin, { label: "origin", crosshair: true });
+                // dbg.ensure("fixedAnchorBefore", fixedAnchorBefore, { label: "fixedAnchorBefore", crosshair: true });
+                // dbg.ensure("fixedAnchorAfter", fixedAnchorAfter, { label: "fixedAnchorAfter", crosshair: true });
+                // dbg.ensure("curCenter", curCenter, { label: "curCenter (fingers)", crosshair: true });
+                // dbg.ensure("prevCenter", { x: prevCenter.x - 5, y: prevCenter.y - 5 }, { label: "prevCenter (fingers)", crosshair: true });
+                // dbg.ensure("viewportCenter", viewportCenter, { label: "viewportCenter", crosshair: true });
+                // dbg.ensure("prevCenter_i", { x: prevCenterX_i, y: prevCenterY_i }, { label: "prevCenter_i", crosshair: true });
+                // dbg.ensure("nextPanUnclamped", { x: nextPanXUnclamped, y: nextPanYUnclamped }, { label: "nextPanUnclamped", crosshair: true });
+                // console.log(prevCenter);
+                // console.log(prevCenter_i);
+
+                // const imageCenterScreen = {
+                //     x: viewportCenter.x + pendingRef.current.panX,
+                //     y: viewportCenter.y + pendingRef.current.panY,
+                // };
+                // dbg.ensure("imgCenter", imageCenterScreen, { label: "imageCenterScreen", crosshair: true });
+            }
+
             // Commit incremental updates
             pendingRef.current.zoomScale = nextZoomUnclamped;
             pendingRef.current.panX = nextPanXUnclamped;
@@ -880,14 +930,15 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         }
     };
 
+    const DEBUG = true; // flip off when done
+    const dbg = useScreenDebugMarks(DEBUG);
+
     return (
         <LightboxPortal>
+            <ScreenDebugOverlay marks={dbg.marks} />
             <div
                 ref={containerRef}
                 className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
-                onClick={(e) => {
-                    if (e.target === e.currentTarget) close();
-                }}
                 style={{
                     pointerEvents: isClosing ? "none" : "auto",
                     backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
