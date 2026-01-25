@@ -402,56 +402,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         pinchPrevCenterRef.current = null;
     };
 
-    // wheel/trackpad pinch-to-zoom
-    // todo: figure out how the math for this is different from the isPinching block and why it still works (without "// First pinch frame – initialize baseline")
-    // todo: also, figure out how center(x,y) equals the midpoint between both fingers (maybe this is automatic?)
-    useEffect(() => {
-        if (!isOpen || isClosing) return;
-        const el = containerRef.current;
-        if (!el) return;
-
-        const onWheel = (e: WheelEvent) => {
-            if (e.ctrlKey) {
-                e.preventDefault();
-                const img = imageRef.current;
-                if (!img) return;
-
-                const centerX = e.clientX;
-                const centerY = e.clientY;
-
-                const imgRect = img.getBoundingClientRect();
-                const originX = imgRect.left + imgRect.width / 2;
-                const originY = imgRect.top + imgRect.height / 2;
-
-                const sensitivity = 0.015;
-                const factor = Math.exp(-e.deltaY * sensitivity);
-
-                const baseZoom = pendingRef.current.zoomScale;
-                const nextZoomUnclamped = baseZoom * factor;
-                const nextZoom = clamp(nextZoomUnclamped, MIN_ZOOM, MAX_ZOOM);
-
-                const anchorX = (centerX - originX) / baseZoom;
-                const anchorY = (centerY - originY) / baseZoom;
-
-                const originNextX = centerX - nextZoom * anchorX;
-                const originNextY = centerY - nextZoom * anchorY;
-
-                const originDeltaX = originNextX - originX;
-                const originDeltaY = originNextY - originY;
-
-                pendingRef.current.zoomScale = nextZoom;
-                pendingRef.current.panX += originDeltaX;
-                pendingRef.current.panY += originDeltaY;
-
-                scheduleFlush();
-                regulatePanAndZoom();
-            }
-        };
-
-        el.addEventListener("wheel", onWheel, { passive: false });
-        return () => el.removeEventListener("wheel", onWheel as any);
-    }, [isOpen, isClosing]);
-
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing) return;
         e.preventDefault();
@@ -691,54 +641,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                 };
             }
 
-            // DEBUG VARS
-            // imageCenterScreen = viewportCenter + pan
-            const origin = {
-                x: viewportCenter.x + pendingRef.current.panX,
-                y: viewportCenter.y + pendingRef.current.panY,
-            }
-
-            const originNext = {
-                x: viewportCenter.x + nextPanXUnclamped,
-                y: viewportCenter.y + nextPanYUnclamped,
-            }
-
-            const fixedAnchorBefore = {
-                x: (origin.x + 50 / prevZoom),
-                y: (origin.y + 50 / prevZoom),
-            }
-
-            const fixedAnchorAfter = {
-                x: (originNext.x + 50 * nextZoomUnclamped),
-                y: (originNext.y + 50 * nextZoomUnclamped),
-            }
-
-            // S = C + P + z⋅i
-            const prevCenter_i_reversed = {
-                x: viewportCenter.x + prevPan.x + prevCenterX_i * prevZoom,
-                y: viewportCenter.y + prevPan.y + prevCenterY_i * prevZoom,
-            }
-
-            if (DEBUG) {
-                dbg.ensure("prevCenter_i_reversed", prevCenter_i_reversed, { label: "prevCenter_i_reversed", crosshair: true });
-                // dbg.ensure("origin", origin, { label: "origin", crosshair: true });
-                // dbg.ensure("fixedAnchorBefore", fixedAnchorBefore, { label: "fixedAnchorBefore", crosshair: true });
-                // dbg.ensure("fixedAnchorAfter", fixedAnchorAfter, { label: "fixedAnchorAfter", crosshair: true });
-                // dbg.ensure("curCenter", curCenter, { label: "curCenter (fingers)", crosshair: true });
-                // dbg.ensure("prevCenter", { x: prevCenter.x - 5, y: prevCenter.y - 5 }, { label: "prevCenter (fingers)", crosshair: true });
-                // dbg.ensure("viewportCenter", viewportCenter, { label: "viewportCenter", crosshair: true });
-                // dbg.ensure("prevCenter_i", { x: prevCenterX_i, y: prevCenterY_i }, { label: "prevCenter_i", crosshair: true });
-                // dbg.ensure("nextPanUnclamped", { x: nextPanXUnclamped, y: nextPanYUnclamped }, { label: "nextPanUnclamped", crosshair: true });
-                // console.log(prevCenter);
-                // console.log(prevCenter_i);
-
-                // const imageCenterScreen = {
-                //     x: viewportCenter.x + pendingRef.current.panX,
-                //     y: viewportCenter.y + pendingRef.current.panY,
-                // };
-                // dbg.ensure("imgCenter", imageCenterScreen, { label: "imageCenterScreen", crosshair: true });
-            }
-
             // Commit incremental updates
             pendingRef.current.zoomScale = nextZoomUnclamped;
             pendingRef.current.panX = nextPanXUnclamped;
@@ -852,20 +754,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         if (swipeDirection) swipeCommitGuardRef.current = false;
     }, [swipeDirection]);
 
-    useEffect(() => {
-        if (!isOpen || isClosing) return;
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") close();
-            if (e.key === "ArrowLeft") requestSwipe("prev");
-            if (e.key === "ArrowRight") requestSwipe("next");
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, isClosing, currentIndex, images.length]);
-
     ////
     // Final derived offsets:
     ////
@@ -930,12 +818,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         }
     };
 
-    const DEBUG = true; // flip off when done
-    const dbg = useScreenDebugMarks(DEBUG);
-
     return (
         <LightboxPortal>
-            <ScreenDebugOverlay marks={dbg.marks} />
             <div
                 ref={containerRef}
                 className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"

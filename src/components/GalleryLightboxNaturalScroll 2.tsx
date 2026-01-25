@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
 
 interface ArtistImage {
   src: string;
@@ -94,8 +93,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const [zoomScale, setZoomScale] = useState(1);
   const [isZoomTransitioning, setIsZoomTransitioning] = useState(false);
 
-  const pinchingRef = useRef(false);
-  const noLongerPinchingRef = useRef(false);
   const nextPanUnclampedForClampedZoom = useRef<{ x: number; y: number } | null>(null);
 
   const swipeAxisRef = useRef<"x" | "y" | null>(null);
@@ -103,21 +100,19 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const swipeDirectionRef = useRef<string | null>(null);
   const scrollLeftStartRef = useRef(0);
   const [snapDisabled, setSnapDisabled] = useState(false);
-  const programmaticScrollRef = useRef(false);
-  const settleTimerRef = useRef<number | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollingRef = useRef(false);
+  const programmaticScrollingRef = useRef(false);
 
   const startXRef = useRef(0);
   const startYRef = useRef(0);
   const evCacheRef = useRef<CachedPointer[]>([]);
   const rafIdRef = useRef<number | null>(null);
-  const pinchPrevDistanceRef = useRef<number | null>(null);
-  const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
   // todo: testing vvv
-  const trackpadPinchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const wheelEndTimerRef = useRef<number | null>(null);
-  const isWheelingRef = useRef(false);
-  const [isWheeling, setIsWheeling] = useState(false);
+  const wheelZoomingEndTimerRef = useRef<number | null>(null);
+  const isWheelZoomingRef = useRef(false);
+  const [isWheelZooming, setIsWheelZooming] = useState(false);
 
   // todo: testing ^^^
 
@@ -136,6 +131,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const pendingRef = useRef({
     panX: 0,
     panY: 0,
+    swipeX: 0,
     swipeY: 0,
     zoomScale: 1,
     exitScale: 1,
@@ -180,6 +176,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     return () => ro.disconnect();
   }, [isOpen, safeStartIndex]);
 
+
   // set current index (todo: figure out how this works)
   useEffect(() => {
     if (!isOpen) return;
@@ -190,12 +187,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
     const computeIndexFromScroll = () => {
       raf = null;
-
-      // todo: replace these vibe comments:
-      // If you want to avoid changing "current" while zoomed/panning vertically:
-      // (pick your rule; this is conservative)
-      if (pendingRef.current.zoomScale > 1) return;
-      if (swipeAxisRef.current === "y") return;
 
       const containerRect = container.getBoundingClientRect();
       const centerX = containerRect.left + containerRect.width / 2;
@@ -215,7 +206,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
           bestIndex = Number(el.dataset.index ?? 0);
         }
       });
-
       setCurrentIndex((prev) => (prev === bestIndex ? prev : bestIndex));
     };
 
@@ -235,7 +225,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     };
   }, [isOpen, images.length]);
 
-  // lock scroll when open
+  // lock body scroll when open
   useEffect(() => {
     if (!isOpen) return;
     document.body.style.overflow = "hidden";
@@ -248,6 +238,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     setIsClosing(false);
+    const carousel = carouselContainerRef.current;
+    if (!carousel) return;
     pendingRef.current.swipeY = 0;
     pendingRef.current.exitScale = 1;
     pendingRef.current.zoomScale = 1;
@@ -262,6 +254,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const scheduleFlush = () => {
     if (rafIdRef.current != null) return;
     rafIdRef.current = requestAnimationFrame(() => {
+      const carousel = carouselContainerRef.current;
+      if (!carousel) return;
       rafIdRef.current = null;
       const p = pendingRef.current;
       setPanX(p.panX);
@@ -344,7 +338,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     }
 
     // 4) Clamp pan to bounds for nextZoom (or not, in the case of wheel)
-    const shouldClampPan = !(e instanceof WheelEvent) || zoomWasClamped;
+    // const shouldClampPan = !(e instanceof WheelEvent) || zoomWasClamped;
+    const shouldClampPan = !(e instanceof WheelEvent);
 
     if (shouldClampPan) {
       pendingRef.current.panX = clamp(desiredPanX, minPanX, maxPanX);
@@ -432,7 +427,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   };
 
   const zoomOut = () => {
-    setIsZoomTransitioning(true);
+    if (pendingRef.current.zoomScale > 1) setIsZoomTransitioning(true);
     pendingRef.current.zoomScale = MIN_ZOOM;
     regulatePanAndZoom();
   }
@@ -451,13 +446,43 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     }, RESET_DURATION);
   };
 
+  const setScrolling = (set: boolean) => {
+    scrollingRef.current = set;
+    setIsScrolling(set);
+
+  }
+
+  const handleScroll = () => {
+    setScrolling(true);
+    const container = carouselContainerRef.current;
+    if (!container) return;
+    if (programmaticScrollingRef.current) return;
+
+    const start = container.clientWidth;
+    const end = container.scrollWidth - (container.clientWidth * 2);
+    const scrollingPastStart = container.scrollLeft < start;
+    const scrollingPastEnd = container.scrollLeft > end;
+
+    if (scrollingPastStart) {
+      showPrev();
+    } else if (scrollingPastEnd) {
+      showNext();
+    }
+  }
+
+  const endScroll = () => {
+    setScrolling(false)
+    pendingRef.current.zoomScale = 1;
+    scheduleFlush();
+  }
+
   const endProgrammaticScroll = () => {
-    programmaticScrollRef.current = false;
+    programmaticScrollingRef.current = false;
     setSnapDisabled(false);
   };
 
   const beginProgrammaticScroll = () => {
-    programmaticScrollRef.current = true;
+    programmaticScrollingRef.current = true;
     setSnapDisabled(true);
   };
 
@@ -468,7 +493,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     if (!el) return;
 
     swipeDirectionRef.current = null;
-    if (!programmaticScrollRef.current) beginProgrammaticScroll();
+    if (!programmaticScrollingRef.current) beginProgrammaticScroll();
     el.scrollIntoView({ behavior, inline: "center", block: "nearest" });
   };
 
@@ -502,13 +527,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     if (!isOpen || isClosing) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (programmaticScrollRef.current) return;
-      // todo: revisit whether we need something to do with e.repeat... Maybe not, given the above.
-      // todo: there is still an occasional bug here where it starts caterpillaring on repeat. Don't know how to reproduce.
-      // if (e.repeat && programmaticScrollRef.current) return;
       if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") showPrev();
-      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") { e.preventDefault(); if (e.repeat && programmaticScrollingRef.current) return; showPrev(); }
+      if (e.key === "ArrowRight") { e.preventDefault(); if (e.repeat && programmaticScrollingRef.current) return; showNext(); }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -516,55 +537,41 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isClosing, currentIndex, images.length]);
 
-  const handleScroll = () => {
-    const container = carouselContainerRef.current;
-    if (!container) return;
-    if (programmaticScrollRef.current) return;
-
-    const start = container.clientWidth;
-    const end = container.scrollWidth - (container.clientWidth * 2);
-    const scrollingPastStart = container.scrollLeft < start;
-    const scrollingPastEnd = container.scrollLeft > end;
-
-    if (scrollingPastStart) {
-      showPrev();
-    } else if (scrollingPastEnd) {
-      showNext();
-    }
-  }
-
   // Used for manual double-tap detection
   // todo 01.16.26: question this... we are doing similar things in onPointerUp
   const clearGestureState = () => {
     evCacheRef.current.length = 0;
     setAxis(null);
-    pinchingRef.current = false;
-    noLongerPinchingRef.current = false;
-    pinchPrevDistanceRef.current = null;
-    pinchPrevCenterRef.current = null;
   };
 
   // To be used primarily for wheel + scroll (e.ctrlKey) events; aka zooming on trackpad
-  const markWheelActivity = () => {
-    if (!isWheelingRef.current) {
-      isWheelingRef.current = true;
-      setIsWheeling(true);
+  const markWheelActivity = (e: WheelEvent) => {
+    if (!isWheelZoomingRef.current) {
+      isWheelZoomingRef.current = true;
+      setIsWheelZooming(true);
     }
 
-    if (wheelEndTimerRef.current != null) {
-      window.clearTimeout(wheelEndTimerRef.current);
+    if (wheelZoomingEndTimerRef.current != null) {
+      window.clearTimeout(wheelZoomingEndTimerRef.current);
     }
 
-    wheelEndTimerRef.current = window.setTimeout(() => {
-      wheelEndTimerRef.current = null;
-      isWheelingRef.current = false;
-      setIsWheeling(false);
+    wheelZoomingEndTimerRef.current = window.setTimeout(() => {
+      wheelZoomingEndTimerRef.current = null;
+      isWheelZoomingRef.current = false;
+      setIsWheelZooming(false);
 
-      regulatePanAndZoom();
+      // If zoom is too small to be intentional, zoom back out (todo: consider putting a guard like this on touch)
+      if (pendingRef.current.zoomScale <= 1.15) {
+        zoomOut();
+      }
+
+      if (Math.sign(e.deltaY) != -1) {
+        regulatePanAndZoom();
+      }
     }, 120);
   };
 
-  // wheel/trackpad pinch-to-zoom
+  // wheel + scroll (e.ctrlKey) pinch-to-zoom (onWheel inside useEffect for active preventDefault)
   useEffect(() => {
     if (!isOpen || isClosing) return;
     const container = containerRef.current;
@@ -574,7 +581,14 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       // 1) Trackpad pinch-zoom
       if (e.ctrlKey) {
         e.preventDefault();
-        markWheelActivity();
+        markWheelActivity(e);
+
+        // todo: determine if this is meaningful... Does this actually work?
+        // re:todo: it does something that looks negligible, and does not stop our side effect where an incomplete zoom will finish on another image following an arrow swipe. smdh my dang head
+        if (scrollingRef.current) {
+          // console.log("scrollking");
+          return;
+        }
 
         const prevZoom = pendingRef.current.zoomScale;
         // const nextZoom = clamp(prevZoom * Math.exp(-e.deltaY * .02), MIN_ZOOM, MAX_ZOOM);
@@ -625,7 +639,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   }, [isOpen, isClosing]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isClosing) return;
+    if (isClosing || programmaticScrollingRef.current || scrollingRef.current) return;
     e.preventDefault();
 
     /**
@@ -669,22 +683,16 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
     const evCache = evCacheRef.current;
     evCache.push(toCachedPointer(e));
-    const isPinching =
-      evCache.length === 2 &&
-      evCache.every((ev) => ev.pointerType === "touch");
 
     if (evCache.length > MAX_TOUCH_POINTS) {
       // Too many touch points: treat this as a cancelled gesture
       evCache.length = 0;
-      pinchingRef.current = false;
       setAxis(null);
-      noLongerPinchingRef.current = false;
       return;
     }
 
     // capture pointer so moves outside the image still report to this element
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    noLongerPinchingRef.current = false;
     setAxis(null);
     startXRef.current = e.clientX;
     startYRef.current = e.clientY;
@@ -693,8 +701,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       panXStartRef.current = pendingRef.current.panX;
       panYStartRef.current = pendingRef.current.panY;
     }
-
-    if (isPinching) pinchingRef.current = true;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -702,12 +708,11 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const evCache = evCacheRef.current;
     upsertCachedPointer(evCache, e);
 
-    const isPinching = pinchingRef.current;
+    if (programmaticScrollingRef.current) return;
+
     const isZoomedIn = pendingRef.current.zoomScale > 1;
 
-    if (noLongerPinchingRef.current) return;
-
-    if (!isPinching && isZoomedIn) {
+    if (isZoomedIn) {
       // Panning a zoomed image
       const deltaX = e.clientX - startXRef.current;
       const deltaY = e.clientY - startYRef.current;
@@ -717,7 +722,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       return;
     }
 
-    if (!isPinching && !isZoomedIn) {
+    if (!isZoomedIn) {
       // Swiping (y to close)
       const deltaX = e.clientX - startXRef.current;
       const deltaY = e.clientY - startYRef.current;
@@ -736,154 +741,12 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       if (swipeAxisRef.current === "y") {
         pendingRef.current.swipeY = deltaY;
       } else if (swipeAxisRef.current === "x") {
-        let carousel = carouselContainerRef.current;
+        const carousel = carouselContainerRef.current;
         if (!carousel) return;
         carousel.scrollLeft = scrollLeftStartRef.current - deltaX;
       }
       scheduleFlush();
       return;
-    }
-
-    // pinch-zoom (incremental deltas)
-    if (isPinching) {
-      const [p1, p2] = evCache;
-      if (!p1 || !p2) return;
-
-      const t1 = p1.targetEl;
-      const t2 = p2.targetEl;
-      const bothOnZoomable =
-        !!t1?.closest("[data-zoomable='true']") &&
-        !!t2?.closest("[data-zoomable='true']");
-      if (!bothOnZoomable) return;
-
-      const container = containerRef.current;
-      if (!container) return;
-
-      // X & Y midpoints between pinching fingers (screen space)
-      const curCenter = {
-        x: (p1.clientX + p2.clientX) / 2,
-        y: (p1.clientY + p2.clientY) / 2,
-      };
-
-      // Distance between the two pointers
-      const curDist = Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
-
-      /**
-       * Explanation of viewport center usage:
-       * At pan = 0, zoom = 1, image is centered in viewport, so viewport center = image center.
-       * Viewport center makes sense as a reference point because of the above, and because pan and zoom
-       * are not applied to the same element (pan on container, zoom on image), so we need a
-       * stable reference point. Because the image scales around its center, the image center
-       * (in screen space) is:
-       *
-       *     imageCenterScreen = viewportCenter + pan
-       *
-       * Now take any point on the unscaled image in image-local space i (a vector from the image center).
-       * Scaling by z makes that vector become z * i in screen pixels. So the full mapping is:
-       *
-       *     pointScreen_i = imageCenterScreen + z * i
-       *
-       * Generally:
-       *
-       *     S = C + P + z⋅i
-       *
-       * where:
-       *     screen == S (a screen-space point)
-       *     viewportCenter == C
-       *     pan == P
-       *     imageCoord == i (image-local coordinate)
-       *     zoom == z
-       */
-      const containerRect = container.getBoundingClientRect();
-      const viewportCenter = {
-        x: containerRect.left + containerRect.width / 2,
-        y: containerRect.top + containerRect.height / 2,
-      };
-
-      // Seed the incremental integrator - wait for next move to have a delta
-      if (pinchPrevDistanceRef.current == null || pinchPrevCenterRef.current == null) {
-        pinchPrevDistanceRef.current = curDist;
-        pinchPrevCenterRef.current = curCenter;
-        return;
-      }
-
-      const prevDist = pinchPrevDistanceRef.current;
-      const prevCenter = pinchPrevCenterRef.current;
-      const prevPan = { x: pendingRef.current.panX, y: pendingRef.current.panY };
-      const prevZoom = pendingRef.current.zoomScale;
-
-      // Incremental scale step for this frame
-      const zoomStepFactor = curDist / prevDist;
-      const nextZoomUnclamped = prevZoom * zoomStepFactor;
-
-      /**
-       * During the pinch, we know prevCenter (screen point between fingers) and we want to
-       * find which image-local point was under that screen point. Starting from the mapping:
-       *
-       *     S = C + P + z⋅i
-       *
-       * Solve for i:
-       *
-       *     i = (S - C - P) / z
-       *
-       * plug in prev values:
-       *     S = prevCenter
-       *     C = viewportCenter
-       *     P = prevPan
-       *     z = prevZoom
-       *
-       *     i = (prevCenter - viewportCenter - prevPan) / prevZoom
-       *
-       * i gets multiplied by nextZoom because scaling multiplies image-local
-       * offsets from the center. If i = (10, 0) means “10px right of the image center
-       * in image-local space”, then at zoom 1 it shows up 10 screen pixels right.
-       * At zoom 2, it shows up 20 screen pixels right. So on the next frame, when zoom
-       * is nextZoom, the screen-space offset of that same point becomes:
-       *
-       *     screenOffset = nextZoom * i
-       *
-       * And therefore the screen position of that point is:
-       *
-       *     S_next = C + P_next + nextZoom * i
-       *
-       * We want that to equal curCenter, because the fingers moved and you want the image point to
-       * stay under them:
-       *
-       *     curCenter = viewportCenter + nextPan + nextZoom * i
-       *
-       * Solve for the new pan:
-       *
-       *     nextPan = curCenter - viewportCenter - nextZoom * i
-       */
-      const prevCenterX_i = (prevCenter.x - viewportCenter.x - prevPan.x) / prevZoom;
-      const prevCenterY_i = (prevCenter.y - viewportCenter.y - prevPan.y) / prevZoom;
-
-      // Incremental pan update
-      const nextPanXUnclamped =
-        curCenter.x -
-        viewportCenter.x -
-        nextZoomUnclamped * prevCenterX_i;
-
-      const nextPanYUnclamped =
-        curCenter.y -
-        viewportCenter.y -
-        nextZoomUnclamped * prevCenterY_i;
-
-      if (nextPanUnclampedForClampedZoom.current === null && nextZoomUnclamped > MAX_ZOOM) {
-        nextPanUnclampedForClampedZoom.current = {
-          x: curCenter.x - viewportCenter.x - MAX_ZOOM * prevCenterX_i,
-          y: curCenter.y - viewportCenter.y - MAX_ZOOM * prevCenterY_i,
-        };
-      }
-
-      // Commit incremental updates
-      pendingRef.current.zoomScale = nextZoomUnclamped;
-      pendingRef.current.panX = nextPanXUnclamped;
-      pendingRef.current.panY = nextPanYUnclamped;
-      pinchPrevDistanceRef.current = curDist;
-      pinchPrevCenterRef.current = { x: curCenter.x, y: curCenter.y };
-
-      scheduleFlush();
     }
   };
 
@@ -892,52 +755,35 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     e.preventDefault();
 
     const evCache = evCacheRef.current;
-    const wasPinching =
-      evCache.length === 2 &&
-      evCache.every((ev) => ev.pointerType === "touch");
 
     // Remove this event from the cache
     const index = evCache.findIndex((p) => p.pointerId === e.pointerId);
     if (index > -1) evCache.splice(index, 1);
 
-    const isPinching =
-      evCache.length === 2 &&
-      evCache.every((ev) => ev.pointerType === "touch");
-    const isNoLongerPinching = wasPinching && !isPinching;
+    // if (programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it
 
     const isZoomedIn = pendingRef.current.zoomScale > 1;
 
-    // take 1st finger off: isPinching || isNoLongerPinching: false, true
-    // take 2nd finger off: !isPinching && !wasPinching: true, true
-    if (isNoLongerPinching) {
-      noLongerPinchingRef.current = true;
-    } else if (isPinching) {
-      noLongerPinchingRef.current = false;
-    } else if (!isPinching && !wasPinching) {
-      noLongerPinchingRef.current = false;
+    // Then must be:
+    // - (1) single-pointer drag (drag-y to close on release)
+    // - (2) single-pointer pan on zoomed image
+    if (!isZoomedIn) {
+      // We did (1) single-finger drag-y, so close on release
+      const axis = swipeAxisRef.current;
+      const deltaX = axis === "y" ? 0 : e.clientX - startXRef.current;
+      const deltaY = axis === "x" ? 0 : e.clientY - startYRef.current;
 
-      // Then must be:
-      // - (1) single-pointer drag (drag-y to close on release)
-      // - (2) single-pointer pan on zoomed image
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
 
-      if (!isZoomedIn) {
-        // We did (1) single-finger drag-y, so close on release
-        const axis = swipeAxisRef.current;
-        const deltaX = axis === "y" ? 0 : e.clientX - startXRef.current;
-        const deltaY = axis === "x" ? 0 : e.clientY - startYRef.current;
-
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-
-        if (axis === "y" && absY > DRAG_CLOSE_THRESHOLD) {
-          close();
-        } else if (axis === "x" && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
-          swipeDirectionRef.current = deltaX > 0 ? "prev" : "next";
-        } else {
-          swipeDirectionRef.current = null;
-          pendingRef.current.swipeY = 0;
-          scheduleFlush();
-        }
+      if (axis === "y" && absY > DRAG_CLOSE_THRESHOLD) {
+        close();
+      } else if (axis === "x" && absX > SWIPE_IMAGE_CHANGE_THRESHOLD) {
+        swipeDirectionRef.current = deltaX > 0 ? "prev" : "next";
+      } else {
+        swipeDirectionRef.current = null;
+        pendingRef.current.swipeY = 0;
+        scheduleFlush();
       }
     }
 
@@ -945,24 +791,18 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     if (evCache.length === 0) {
       regulatePanAndZoom();
       if (swipeAxis) {
-        setAxis(null);
         if (swipeDirectionRef.current === "next") {
           showNext(true);
         } else if (swipeDirectionRef.current === "prev") {
           showPrev(true);
         } else {
           scrollToIndex(currentIndex);
-
         }
       }
+      setAxis(null);
       currentIndexRef.current = null;
       swipeDirectionRef.current = null;
-      pinchingRef.current = false;
-      noLongerPinchingRef.current = false;
     }
-    // Reset pinch-specific stuff regardless
-    pinchPrevDistanceRef.current = null;
-    pinchPrevCenterRef.current = null;
   };
 
   if (!isOpen || !images.length) return null;
@@ -974,13 +814,12 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   if (!currentImage) return null;
 
   const isZoomedIn = pendingRef.current.zoomScale > 1;
-  const isPinching = pinchingRef.current;
   const isPointerDown = evCacheRef.current.length > 0;
 
   let imgTx = 0;
   let imgTy = 0;
 
-  if (isZoomedIn || isZoomTransitioning || isPinching) {
+  if (isZoomedIn || isZoomTransitioning) {
     imgTx = panX;
     imgTy = panY;
   } else {
@@ -1037,32 +876,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
               }}
             >
               {isZoomedIn ? <ZoomOutIcon /> : <ZoomInIcon />}
-            </button>
-          </div>
-
-          {/* Regulate (NEW) */}
-          <div className="p-2 mr-1 flex justify-end bg-black/60 lg:bg-black/40 lg:backdrop-blur-sm">
-            <button
-              disabled={isClosing}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                regulatePanAndZoom();
-              }}
-              className="p-1 text-sm uppercase tracking-wide cursor-pointer"
-              style={{
-                opacity: imageOpacity,
-                transition: isPointerDown
-                  ? "none"
-                  : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
-              }}
-              aria-label="Regulate pan/zoom"
-              title="Regulate pan/zoom"
-            >
-              {/* Simple “tune” icon (sliders) */}
-              <svg viewBox="0 -960 960 960" className="h-6 w-6 fill-current" aria-hidden="true">
-                <path d="M120-280v-80h320v80H120Zm0-200v-80h720v80H120Zm0-200v-80h480v80H120Zm520 400v-400h80v400h-80Zm-200 200v-400h80v400h-80Z" />
-              </svg>
             </button>
           </div>
 
@@ -1168,7 +981,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             onScroll={handleScroll}
-            onScrollEnd={endProgrammaticScroll}
+            onScrollEnd={() => { endProgrammaticScroll(); endScroll(); }}
           >
             <div
               id="dummy-slide-beginning"
@@ -1201,7 +1014,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                     src={img.src}
                     alt={img.alt ?? ""}
                     data-zoomable="true"
-                    className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
+                    className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-all-scroll" : "cursor-zoom-in active:cursor-grabbing"} ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
                     style={{
                       transformOrigin: "50% 50%",
                       transform: isActive ? `scale(${exitScale * zoomScale})` : `scale(1)`,
@@ -1218,12 +1031,14 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                     onTransitionEnd={(e) => {
                       if (!isActive) return;
                       if (e.propertyName !== "transform") return;
-                      setIsZoomTransitioning(isZoomedIn || false);
+                      setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
+                      // setIsZoomTransitioning(false);
                     }}
                     onTransitionCancel={(e) => {
                       if (!isActive) return;
                       if (e.propertyName !== "transform") return;
-                      setIsZoomTransitioning(isZoomedIn || false);
+                      setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
+                      // setIsZoomTransitioning(false);
                     }}
                   />
                 </div>
