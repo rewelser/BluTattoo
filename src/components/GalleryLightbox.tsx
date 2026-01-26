@@ -951,6 +951,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 ref={imageRef}
                                 src={currentImage.src}
                                 alt={currentImage.alt ?? ""}
+                                data-src={currentImage.src}
                                 data-zoomable="true"
                                 className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                 style={{
@@ -1009,6 +1010,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     <img
                                         src={images[prevIndex].src}
                                         alt={images[prevIndex].alt ?? ""}
+                                        data-src={images[prevIndex].src}
                                         className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
                                             transform: `translateY(${swipeY}px)`,
@@ -1038,6 +1040,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     ref={imageRef}
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
+                                    data-src={currentImage.src}
                                     data-zoomable="true"
                                     className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                     style={{
@@ -1066,6 +1069,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     <img
                                         src={images[nextIndex].src}
                                         alt={images[nextIndex].alt ?? ""}
+                                        data-src={images[nextIndex].src}
                                         className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
                                             transform: `translateY(${swipeY}px)`,

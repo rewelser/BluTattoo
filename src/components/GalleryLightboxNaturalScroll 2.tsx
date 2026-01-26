@@ -10,7 +10,7 @@ interface ArtistImage {
 interface GalleryLightboxProps {
   images: ArtistImage[];
   isOpen: boolean;
-  startIndex: number;     // which image to show when opening
+  startIndex: number;
   onClose: () => void;
 }
 
@@ -375,26 +375,27 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   };
 
   const zoom = (e: React.MouseEvent<HTMLElement>) => {
+    if (isClosing || programmaticScrollingRef.current || scrollingRef.current) return;
     e.stopPropagation();
     setIsZoomTransitioning(true);
 
     /**
-     * Would have been good, but as-is can conflict with swipe-x if user holds down second click too long,
+     * Using dblclick here would have been good, but as-is can conflict with swipe-x if user holds down second click too long,
      * so we are using manual double-tap detection instead inside of handlePointerDown. Keeping this here
      * for posterity, and in case we can fix the conflict later.
      */
-    if (e.type === "dblclick") {
-      zoomAtClientPoint(e.clientX, e.clientY);
+    // if (e.type === "dblclick") {
+    //   zoomAtClientPoint(e.clientX, e.clientY);
 
+    // } else {
+    if (pendingRef.current.zoomScale > 1) {
+      pendingRef.current.zoomScale = MIN_ZOOM;
     } else {
-      if (pendingRef.current.zoomScale > 1) {
-        pendingRef.current.zoomScale = MIN_ZOOM;
-      } else {
-        pendingRef.current.zoomScale = MAX_ZOOM;
-      }
-      scheduleFlush();
-      regulatePanAndZoom();
+      pendingRef.current.zoomScale = MAX_ZOOM;
     }
+    scheduleFlush();
+    regulatePanAndZoom();
+    // }
   };
 
   const zoomAtClientPoint = (clientX: number, clientY: number) => {
@@ -444,6 +445,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     window.setTimeout(() => {
       after?.();
     }, RESET_DURATION);
+  };
+
+  // Used for manual double-tap detection
+  // todo 01.16.26: question this... we are doing similar things in onPointerUp
+  const clearGestureState = () => {
+    evCacheRef.current.length = 0;
+    setAxis(null);
   };
 
   const setScrolling = (set: boolean) => {
@@ -527,22 +535,26 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     if (!isOpen || isClosing) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isScrolling = (programmaticScrollingRef.current || scrollingRef.current);
       if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") { e.preventDefault(); if (e.repeat && programmaticScrollingRef.current) return; showPrev(); }
-      if (e.key === "ArrowRight") { e.preventDefault(); if (e.repeat && programmaticScrollingRef.current) return; showNext(); }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        // if (e.repeat && isScrolling) return; // todo: may still need this; pend debug
+        if (isScrolling) return;
+        showPrev();
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        // if (e.repeat && isScrolling) return; // todo: may still need this; pend debug
+        if (isScrolling) return;
+        showNext();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isClosing, currentIndex, images.length]);
-
-  // Used for manual double-tap detection
-  // todo 01.16.26: question this... we are doing similar things in onPointerUp
-  const clearGestureState = () => {
-    evCacheRef.current.length = 0;
-    setAxis(null);
-  };
 
   // To be used primarily for wheel + scroll (e.ctrlKey) events; aka zooming on trackpad
   const markWheelActivity = (e: WheelEvent) => {
@@ -578,6 +590,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     if (!container) return;
 
     const onWheel = (e: WheelEvent) => {
+
+      // if (isScrolling || scrollingRef.current || programmaticScrollingRef.current) {
+      //   console.log("returned early");
+      //   e.preventDefault();
+      //   console.log("e.cancelable", e.cancelable);
+      //   return;
+      // }
       // 1) Trackpad pinch-zoom
       if (e.ctrlKey) {
         e.preventDefault();
@@ -639,7 +658,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   }, [isOpen, isClosing]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isClosing || programmaticScrollingRef.current || scrollingRef.current) return;
+    if (isClosing || scrollingRef.current || programmaticScrollingRef.current) return;
     e.preventDefault();
 
     /**
@@ -708,7 +727,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const evCache = evCacheRef.current;
     upsertCachedPointer(evCache, e);
 
-    if (programmaticScrollingRef.current) return;
+    if (scrollingRef.current || programmaticScrollingRef.current) return;
 
     const isZoomedIn = pendingRef.current.zoomScale > 1;
 
@@ -760,7 +779,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const index = evCache.findIndex((p) => p.pointerId === e.pointerId);
     if (index > -1) evCache.splice(index, 1);
 
-    // if (programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it
+    if (scrollingRef.current || programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it
 
     const isZoomedIn = pendingRef.current.zoomScale > 1;
 
@@ -867,7 +886,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
               disabled={isClosing}
               type="button"
               onClick={zoom}
-              className="p-1 text-sm uppercase tracking-wide cursor-pointer"
+              className={`p-1 text-sm uppercase tracking-wide cursor-pointer ${snapDisabled || isScrolling ? "pointer-events-none" : ""} focus:outline-none`}
               style={{
                 opacity: imageOpacity,
                 transition: isPointerDown
@@ -1013,6 +1032,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                     ref={isActive ? imageRef : null}
                     src={img.src}
                     alt={img.alt ?? ""}
+                    data-src={img.src}
                     data-zoomable="true"
                     className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-all-scroll" : "cursor-zoom-in active:cursor-grabbing"} ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
                     style={{
