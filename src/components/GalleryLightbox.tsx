@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
+import { LoadingSpinner } from "./graphics/LoadingSpinner";
+import { ErrorSpinner } from "./graphics/ErrorSpinner";
 
 
 interface ArtistImage {
@@ -73,6 +75,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 }) => {
     const [isClosing, setIsClosing] = useState(false);
     const [currentIndex, setCurrentIndex] = useState<number>(startIndex);
+
+    const [loadedBySrc, setLoadedBySrc] = useState<Record<string, boolean>>({});
+    const [erroredBySrc, setErroredBySrc] = useState<Record<string, boolean>>({});
 
     const [swipeX, setSwipeX] = useState(0);
     const [swipeY, setSwipeY] = useState(0);
@@ -148,6 +153,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             document.body.style.overflow = "";
         };
     }, [isOpen]);
+
+    const markLoaded = (src: string) =>
+        setLoadedBySrc((p) => ({ ...p, [src]: true }));
+
+    const markErrored = (src: string) =>
+        setErroredBySrc((p) => ({ ...p, [src]: true }));
+
 
     // reset internal animation state when opening
     useEffect(() => {
@@ -252,6 +264,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
         window.setTimeout(() => {
             setIsClosing(false);
+            setLoadedBySrc({});
+            setErroredBySrc({});
             onClose();
         }, BACKDROP_FADE_DURATION);
     };
@@ -946,18 +960,52 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                             onPointerUp={handlePointerUp}
                             onPointerCancel={handlePointerUp}
                         >
+
+                            {!loadedBySrc[currentImage.src] && !erroredBySrc[currentImage.src] && (
+                                <div
+                                    className="absolute inset-0 flex items-center justify-center"
+                                    style={{
+                                        visibility:
+                                            isClosing
+                                                ?
+                                                "hidden" :
+                                                "visible",
+                                    }}
+                                >
+                                    <LoadingSpinner color="currentColor" width="100" height="100" />
+                                </div>
+                            )}
+
+                            {erroredBySrc[currentImage.src] && (
+                                <div
+                                    className="absolute inset-0 flex items-center justify-center"
+                                    style={{
+                                        visibility:
+                                            isClosing
+                                                ?
+                                                "hidden" :
+                                                "visible",
+                                    }}
+                                >
+                                    <ErrorSpinner color="currentColor" width="100" height="100" />
+                                </div>
+                            )}
+
                             <img
                                 id="current-image"
                                 ref={imageRef}
                                 src={currentImage.src}
                                 alt={currentImage.alt ?? ""}
                                 data-src={currentImage.src}
+                                loading="eager"
+                                decoding="async"
+                                fetchPriority="high"
                                 data-zoomable="true"
                                 className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                 style={{
                                     transformOrigin: "50% 50%",
                                     transform: `scale(${exitScale * zoomScale})`,
-                                    opacity: imageOpacity,
+                                    opacity: erroredBySrc[currentImage.src] ? 0 : imageOpacity,
                                     transition: isPointerDown
                                         ? "none"
                                         : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
@@ -970,9 +1018,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     const effectiveScale = (exitScale * zoomScale) || 1;
                                     baseImgWRef.current = r.width / effectiveScale;
                                     baseImgHRef.current = r.height / effectiveScale;
-                                    console.log(baseImgWRef.current, baseImgHRef.current);
-                                    // console.log(baseSizeByIndexRef.current[index]);
+
+                                    markLoaded(currentImage.src);
                                 }}
+                                onError={() => markErrored(currentImage.src)}
                             />
                         </div>
                     </div>
@@ -1007,18 +1056,54 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                             {/* Prev slide (to the left) */}
                             {prevIndex !== null && (
                                 <div className="flex items-center justify-center w-screen">
+
+                                    {!loadedBySrc[images[prevIndex].src] && !erroredBySrc[images[prevIndex].src] && (
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            style={{
+                                                visibility:
+                                                    isClosing
+                                                        ?
+                                                        "hidden" :
+                                                        "visible",
+                                            }}
+                                        >
+                                            <LoadingSpinner color="currentColor" width="100" height="100" />
+                                        </div>
+                                    )}
+
+                                    {erroredBySrc[images[prevIndex].src] && (
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            style={{
+                                                visibility:
+                                                    isClosing
+                                                        ?
+                                                        "hidden" :
+                                                        "visible",
+                                            }}
+                                        >
+                                            <ErrorSpinner color="currentColor" width="100" height="100" />
+                                        </div>
+                                    )}
+
                                     <img
                                         src={images[prevIndex].src}
                                         alt={images[prevIndex].alt ?? ""}
                                         data-src={images[prevIndex].src}
+                                        loading="lazy"
+                                        decoding="async"
+                                        fetchPriority="auto"
                                         className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
                                             transform: `translateY(${swipeY}px)`,
-                                            opacity: imageOpacity,
+                                            opacity: erroredBySrc[images[prevIndex].src] ? 0 : imageOpacity,
                                             transition: isPointerDown
                                                 ? "none"
                                                 : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
+                                        onLoad={() => markLoaded(images[prevIndex].src)}
+                                        onError={() => markErrored(images[prevIndex].src)}
                                     />
                                 </div>
                             )}
@@ -1035,19 +1120,52 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                         : `transform ${RESET_DURATION}ms ease-out`,
                                 }}
                             >
+
+                                {!loadedBySrc[currentImage.src] && !erroredBySrc[currentImage.src] && (
+                                    <div
+                                        className="absolute inset-0 flex items-center justify-center"
+                                        style={{
+                                            visibility:
+                                                isClosing
+                                                    ?
+                                                    "hidden" :
+                                                    "visible",
+                                        }}
+                                    >
+                                        <LoadingSpinner color="currentColor" width="100" height="100" />
+                                    </div>
+                                )}
+
+                                {erroredBySrc[currentImage.src] && (
+                                    <div
+                                        className="absolute inset-0 flex items-center justify-center"
+                                        style={{
+                                            visibility:
+                                                isClosing
+                                                    ?
+                                                    "hidden" :
+                                                    "visible",
+                                        }}
+                                    >
+                                        <ErrorSpinner color="currentColor" width="100" height="100" />
+                                    </div>
+                                )}
+
                                 <img
                                     id="current-image"
                                     ref={imageRef}
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
                                     data-src={currentImage.src}
+                                    loading="eager"
+                                    decoding="async"
                                     fetchPriority="high"
                                     data-zoomable="true"
                                     className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                     style={{
                                         transformOrigin: "50% 50%",
                                         transform: `scale(${exitScale * zoomScale})`,
-                                        opacity: imageOpacity,
+                                        opacity: erroredBySrc[currentImage.src] ? 0 : imageOpacity,
                                         transition: isPointerDown
                                             ? "none"
                                             : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
@@ -1060,25 +1178,64 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                         const effectiveScale = (exitScale * zoomScale) || 1;
                                         baseImgWRef.current = r.width / effectiveScale;
                                         baseImgHRef.current = r.height / effectiveScale;
+
+                                        markLoaded(currentImage.src);
                                     }}
+                                    onError={() => markErrored(currentImage.src)}
                                 />
                             </div>
 
                             {/* Next slide (off to the right) */}
                             {nextIndex !== null && (
                                 <div className="flex items-center justify-center w-screen">
+
+                                    {!loadedBySrc[images[nextIndex].src] && !erroredBySrc[images[nextIndex].src] && (
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            style={{
+                                                visibility:
+                                                    isClosing
+                                                        ?
+                                                        "hidden" :
+                                                        "visible",
+                                            }}
+                                        >
+                                            <LoadingSpinner color="currentColor" width="100" height="100" />
+                                        </div>
+                                    )}
+
+                                    {erroredBySrc[images[nextIndex].src] && (
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            style={{
+                                                visibility:
+                                                    isClosing
+                                                        ?
+                                                        "hidden" :
+                                                        "visible",
+                                            }}
+                                        >
+                                            <ErrorSpinner color="currentColor" width="100" height="100" />
+                                        </div>
+                                    )}
+
                                     <img
                                         src={images[nextIndex].src}
                                         alt={images[nextIndex].alt ?? ""}
                                         data-src={images[nextIndex].src}
+                                        loading="lazy"
+                                        decoding="async"
+                                        fetchPriority="auto"
                                         className="max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20"
                                         style={{
                                             transform: `translateY(${swipeY}px)`,
-                                            opacity: imageOpacity,
+                                            opacity: erroredBySrc[images[nextIndex].src] ? 0 : imageOpacity,
                                             transition: isPointerDown
                                                 ? "none"
                                                 : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                         }}
+                                        onLoad={() => markLoaded(images[nextIndex].src)}
+                                        onError={() => markErrored(images[nextIndex].src)}
                                     />
                                 </div>
                             )}

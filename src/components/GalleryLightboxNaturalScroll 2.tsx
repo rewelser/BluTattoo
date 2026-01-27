@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { LoadingSpinner } from "./graphics/LoadingSpinner";
+import { ErrorSpinner } from "./graphics/ErrorSpinner";
 
 
 interface ArtistImage {
@@ -92,6 +93,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const baseSizeByIndexRef = useRef<Record<number, { w: number; h: number }>>({});
 
+  const [loaded, setLoaded] = useState<Record<number, boolean>>({});
+  const [errored, setErrored] = useState<Record<number, boolean>>({});
+
   const [exitScale, setExitScale] = useState(1);
   const [backdropOpacity, setBackdropOpacity] = useState(1);
   const [imageOpacity, setImageOpacity] = useState(1);
@@ -117,8 +121,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
   const wheelZoomingEndTimerRef = useRef<number | null>(null);
   const isWheelZoomingRef = useRef(false);
-  const [isWheelZooming, setIsWheelZooming] = useState(false);
-
   // todo: testing ^^^
 
   const setAxis = (axis: "x" | "y" | null) => {
@@ -144,6 +146,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     imageOpacity: 1,
   });
 
+  // todo: figure out why we need this when startIndex is set (not going to be some crazy number???)
   const safeStartIndex = useMemo(() => {
     const max = Math.max(0, images.length - 1);
     const n = Number.isFinite(startIndex) ? startIndex : 0;
@@ -239,30 +242,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     );
     return dist <= PRELOAD_RADIUS;
   };
-
-  // useEffect(() => {
-
-  //   const container = carouselContainerRef.current;
-
-  //   const PRELOAD_RADIUS = 1;
-
-  //   const slides = container?.querySelectorAll<HTMLElement>("[data-index]");
-  //   const shouldLoad = (i: number, current: number, total: number) => {
-  //     const dist = Math.min(
-  //       Math.abs(i - current),
-  //       total - Math.abs(i - current)
-  //     );
-  //     return dist <= PRELOAD_RADIUS;
-  //   };
-
-  //   let log = ", ";
-  //   slides?.forEach((el) => {
-  //     const index = Number(el.getAttribute('data-index'));
-  //     log += shouldLoad(index, currentIndex, images.length);
-  //     log += ", ";
-  //   });
-  //   console.log(log);
-  // });
 
   // lock body scroll when open
   useEffect(() => {
@@ -409,6 +388,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
     window.setTimeout(() => {
       setIsClosing(false);
+      setLoaded({});
+      setErrored({});
       onClose();
     }, BACKDROP_FADE_DURATION);
   };
@@ -599,7 +580,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   const markWheelActivity = (e: WheelEvent) => {
     if (!isWheelZoomingRef.current) {
       isWheelZoomingRef.current = true;
-      setIsWheelZooming(true);
     }
 
     if (wheelZoomingEndTimerRef.current != null) {
@@ -609,7 +589,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     wheelZoomingEndTimerRef.current = window.setTimeout(() => {
       wheelZoomingEndTimerRef.current = null;
       isWheelZoomingRef.current = false;
-      setIsWheelZooming(false);
 
       // If zoom is too small to be intentional, zoom back out (todo: consider putting a guard like this on touch)
       if (pendingRef.current.zoomScale <= 1.15) {
@@ -630,13 +609,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
     const onWheel = (e: WheelEvent) => {
 
-      // if (isScrolling || scrollingRef.current || programmaticScrollingRef.current) {
-      //   console.log("returned early");
-      //   e.preventDefault();
-      //   console.log("e.cancelable", e.cancelable);
-      //   return;
-      // }
-      // 1) Trackpad pinch-zoom
+      // Trackpad pinch-zoom
       if (e.ctrlKey) {
         e.preventDefault();
         markWheelActivity(e);
@@ -818,7 +791,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const index = evCache.findIndex((p) => p.pointerId === e.pointerId);
     if (index > -1) evCache.splice(index, 1);
 
-    if (scrollingRef.current || programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it
+    // if (scrollingRef.current || programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it // re:todo: I definitely found a bug where swipeAxis is set (to x) and never unset when this is uncommented. Makes sense. 
 
     const isZoomedIn = pendingRef.current.zoomScale > 1;
 
@@ -848,7 +821,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     // Reset other stuff only when no pointers are left (gesture is over)
     if (evCache.length === 0) {
       regulatePanAndZoom();
-      if (swipeAxis) {
+      if (swipeAxisRef.current) {
         if (swipeDirectionRef.current === "next") {
           showNext(true);
         } else if (swipeDirectionRef.current === "prev") {
@@ -905,8 +878,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z" />
     </svg>
   );
-
-  const loadingSpinnerUrl = "/uploads/misc_images/graphics/loadingSpinner.svg";
 
   return (
     <LightboxPortal>
@@ -1052,7 +1023,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             {images.map((img, index) => {
               const isActive = index === currentIndex;
               const shouldLoadImg = shouldLoad(index, currentIndex, images.length);
-              // const isLoaded = !!loaded[index];
 
               return (
                 <div
@@ -1072,42 +1042,57 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                       : `transform ${RESET_DURATION}ms ease-out`,
                   }}
                 >
-                  {/* {(shouldLoadImg) && ( */}
-                  {/* // <div className="absolute inset-0 flex items-center justify-center">
-                    //   <LoadingSpinner width={64} height={64} color="#fff" />
-                    // </div>
-                    // <div className="h-[100vh] w-[100vw] max-w-full object-contain flex items-center justify-center">
-                    //   <LoadingSpinner color="currentColor" width="100" height="100" />
-                    // </div> */}
-                  <div
-                    className="absolute inset-0 h-[100vh] w-[100vw] object-contain flex items-center justify-center"
-                    style={{
-                      visibility:
-                        isClosing
-                          ?
-                          "hidden" :
-                          "visible",
-                    }}
-                  >
-                    <LoadingSpinner color="currentColor" width="100" height="100" />
-                  </div>
+                  {!loaded[index] && !errored[index] && (
+                    <div
+                      className="absolute inset-0 h-[100vh] w-[100vw] object-contain flex items-center justify-center"
+                      style={{
+                        visibility:
+                          isClosing
+                            ?
+                            "hidden" :
+                            "visible",
+                      }}
+                    >
+                      <LoadingSpinner color="currentColor" width="100" height="100" />
+                    </div>
+                  )}
 
-                  {/* )} */}
+                  {errored[index] && (
+                    <div
+                      className="absolute inset-0 h-[100vh] w-[100vw] object-contain flex items-center justify-center"
+                      style={{
+                        visibility:
+                          isClosing
+                            ?
+                            "hidden" :
+                            "visible",
+                      }}
+                    >
+                      {/* <LoadingSpinner color="currentColor" width="100" height="100" /> */}
+                      <ErrorSpinner color="currentColor" width="100" height="100" />
+                    </div>
+                  )}
+
                   {shouldLoadImg && (
                     <img
                       ref={isActive ? imageRef : null}
                       src={img.src}
+                      // src={"/bad-url.jpg"}
                       // src={shouldLoad(index, currentIndex, images.length) ? img.src : undefined}
+                      loading={isActive ? "eager" : "lazy"}
+                      decoding="async"
                       fetchPriority={isActive ? "high" : "auto"}
                       alt={img.alt ?? ""}
                       data-src={img.src}
                       data-zoomable="true"
+                      onLoad={() => setLoaded(p => ({ ...p, [index]: true }))}
+                      onError={() => setErrored(p => ({ ...p, [index]: true }))}
                       className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-all-scroll" : "cursor-zoom-in active:cursor-grabbing"} ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
                       style={{
                         transformOrigin: "50% 50%",
                         transform: isActive ? `scale(${exitScale * zoomScale})` : `scale(1)`,
-                        opacity: imageOpacity,
-                        transition: isPointerDown
+                        opacity: errored[index] ? 0 : imageOpacity,
+                        transition: isPointerDown || errored[index]
                           ? "none"
                           : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                       }}
