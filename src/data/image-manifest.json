@@ -1,0 +1,30 @@
+{
+  "/uploads/artists/lara_headshot.jpg": {
+    "width": 1110,
+    "height": 1120
+  },
+  "/uploads/artists/sierra_headshot.jpg": {
+    "width": 1536,
+    "height": 2048
+  },
+  "/uploads/artists/zirk1.jpeg": {
+    "width": 1200,
+    "height": 799
+  },
+  "/uploads/artists/zoe_headshot.png": {
+    "width": 860,
+    "height": 1174
+  },
+  "/uploads/misc_images/backgrounds/background.jpg": {
+    "width": 2796,
+    "height": 4000
+  },
+  "/uploads/misc_images/backgrounds/francisco_de_goya_y_lucientes_-_witches_sabbath_-_google_art_project.jpg": {
+    "width": 2801,
+    "height": 4001
+  },
+  "/uploads/promos/all-your-base.jpg": {
+    "width": 1000,
+    "height": 563
+  }
+}

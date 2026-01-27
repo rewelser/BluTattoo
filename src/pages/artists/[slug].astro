@@ -4,7 +4,9 @@ import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 import InstagramProfile from "../../components/InstagramProfile.astro";
-import { ArtistGallery } from "../../components/ArtistGallery.tsx";
+// import { ArtistGallery } from "../../components/ArtistGallery.tsx";
+import { ArtistGallery } from "../../components/ArtistGalleryNoThumbs.tsx";
+import { Picture } from "astro:assets";
 
 const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
 
@@ -25,6 +27,12 @@ const ig = entry.data.instagramUser;
 
 // Render the Markdown *body* (the part after the frontmatter)
 const { Content } = await render(entry);
+
+type GalleryImg = {
+  alt?: string;
+  thumb: { src: string; width: number; height: number };
+  full:  { src: string; width: number; height: number };
+};
 ---
 <BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="mx-auto max-w-3xl space-y-6">
@@ -84,38 +92,24 @@ const { Content } = await render(entry);
       </section>
     )}
 
-    <!-- {entry.data.images?.length && (
-      <section aria-label="Portfolio" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {entry.data.images.map((img) => (
-          <figure class="overflow-hidden rounded">
-            <img
-              src={`${img.src}?w=800&auto=format`}
-              srcset={`${img.src}?w=400 400w, ${img.src}?w=800 800w, ${img.src}?w=1200 1200w`}
-              sizes="(max-width: 768px) 50vw, 33vw"
-              alt={img.alt ?? ""}
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
-          </figure>
-        ))}
-      </section>
-    )} -->
-
+    <!-- Reference: using Astro Picture components -->
     <!-- {entry.data.images?.length && (
       <section class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {entry.data.images.map((img) => (
           <figure class="overflow-hidden rounded">
-            {isAsset(img.src)
+            {/* {isAsset(img.src)
               ? <Image src={img.src as any} alt={img.alt ?? ""} width={800} height={600} class="h-full w-full object-cover" />
               : <img src={img.src as string} alt={img.alt ?? ""} loading="lazy" decoding="async" class="h-full w-full object-cover" />
-            }
+            } */}
+            {/* <Image src={img.src as any} alt={img.alt ?? ""} width={800} height={600} class="h-full w-full object-cover" /> */}
+            <Picture src={img.src as any} alt={img.alt ?? ""} width={800} height={600} class="h-full w-full object-cover" />
           </figure>
         ))}
       </section>
     )} -->
 
-    {entry.data.images?.length && (
+    <!-- Working, but fully react -->
+    <!-- {entry.data.images?.length && (
       <div class="mt-10">
         <h2 class="text-lg font-medium mb-3">Portfolio</h2>
         <ArtistGallery
@@ -123,23 +117,37 @@ const { Content } = await render(entry);
           images={entry.data.images}
         />
       </div>
-    )}
-    <!-- {entry.data.images?.length && (
+    )} -->
+
+    <!-- Secret third option? -->
+    {entry.data.images?.length && (
       <div class="mt-10">
         <h2 class="text-lg font-medium mb-3">Portfolio</h2>
-        <LightboxGallery
+        {entry.data.images.map((img, idx) => {
+          return(
+            <button
+              type="button"
+              class="overflow-hidden rounded text-left"
+              data-idx={idx}
+              onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
+            >
+              <Picture
+                src={img.src as any}
+                alt={img.alt ?? ""}
+                width={"100"}
+                height={"100"}
+                widths={[240, 360, 480, 720]}
+                inferSize={true}
+              />
+            </button>
+          )
+        })}
+        <ArtistGallery
           client:load
           images={entry.data.images}
         />
       </div>
-    )} -->
-
-    <!-- {entry.data.images && (
-      <div class="mt-10">
-        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
-        <ArtistGallery images={entry.data.images} />
-      </div>
-    )} -->
+    )}
 
     {/* Preferred: Square embed if present */}
     {entry.data.square?.enabled &&
