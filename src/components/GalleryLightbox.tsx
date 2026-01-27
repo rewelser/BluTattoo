@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
 import { LoadingSpinner } from "./graphics/LoadingSpinner";
 import { ErrorSpinner } from "./graphics/ErrorSpinner";
 

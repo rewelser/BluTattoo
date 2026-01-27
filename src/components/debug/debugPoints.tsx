@@ -1,6 +1,6 @@
 /**
  * ---- IMPORT ---- 
- * import { useScreenDebugMarks, ScreenDebugOverlay } from "./debugPoints";
+ * import { useScreenDebugMarks, ScreenDebugOverlay } from "./debug/debugPoints";
  * ...
  * 
  * ---- USAGE: ---- 

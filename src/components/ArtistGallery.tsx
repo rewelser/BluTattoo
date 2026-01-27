@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArtistGalleryThumbnailGrid } from "./ArtistGalleryThumbnailGrid";
 import { GalleryLightbox } from "./GalleryLightbox";
-// import { GalleryLightboxNaturalScroll } from "./GalleryLightboxNaturalScroll.tsx";
-import { GalleryLightbox as GalleryLightboxNaturalScroll } from "./GalleryLightboxNaturalScroll 2.tsx";
-// import { GalleryLightbox as GalleryLightboxNaturalScroll } from "./GalleryLightboxNaturalScroll 3 (under construction).tsx";
+import { GalleryLightboxNaturalScroll } from "./GalleryLightboxNaturalScroll.tsx";
 
 interface ArtistImage {
     src: string;
