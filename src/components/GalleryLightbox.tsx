@@ -1041,6 +1041,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
                                     data-src={currentImage.src}
+                                    fetchPriority="high"
                                     data-zoomable="true"
                                     className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${pendingRef.current.zoomScale > 1 ? "cursor-move" : "cursor-grab active:cursor-grabbing"}`}
                                     style={{

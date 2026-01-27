@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import { LoadingSpinner } from "./graphics/LoadingSpinner";
+
 
 interface ArtistImage {
   src: string;
@@ -71,6 +73,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(startIndex);
+  // const prevIndex = currentIndex !== null ? (currentIndex - 1 + images.length) % images.length : null;
+  // const nextIndex = currentIndex !== null ? (currentIndex + 1) % images.length : null;
+
   const currentIndexRef = useRef<number | null>(null);
 
   // No swipeX in desktop, as scrolleft is used in lieu translate
@@ -224,6 +229,40 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
       if (raf != null) cancelAnimationFrame(raf);
     };
   }, [isOpen, images.length]);
+
+  const PRELOAD_RADIUS = 1;
+
+  const shouldLoad = (i: number, current: number, total: number) => {
+    const dist = Math.min(
+      Math.abs(i - current),
+      total - Math.abs(i - current)
+    );
+    return dist <= PRELOAD_RADIUS;
+  };
+
+  // useEffect(() => {
+
+  //   const container = carouselContainerRef.current;
+
+  //   const PRELOAD_RADIUS = 1;
+
+  //   const slides = container?.querySelectorAll<HTMLElement>("[data-index]");
+  //   const shouldLoad = (i: number, current: number, total: number) => {
+  //     const dist = Math.min(
+  //       Math.abs(i - current),
+  //       total - Math.abs(i - current)
+  //     );
+  //     return dist <= PRELOAD_RADIUS;
+  //   };
+
+  //   let log = ", ";
+  //   slides?.forEach((el) => {
+  //     const index = Number(el.getAttribute('data-index'));
+  //     log += shouldLoad(index, currentIndex, images.length);
+  //     log += ", ";
+  //   });
+  //   console.log(log);
+  // });
 
   // lock body scroll when open
   useEffect(() => {
@@ -867,6 +906,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     </svg>
   );
 
+  const loadingSpinnerUrl = "/uploads/misc_images/graphics/loadingSpinner.svg";
+
   return (
     <LightboxPortal>
       <div
@@ -1010,12 +1051,15 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             {/* Current slide (center) */}
             {images.map((img, index) => {
               const isActive = index === currentIndex;
+              const shouldLoadImg = shouldLoad(index, currentIndex, images.length);
+              // const isLoaded = !!loaded[index];
+
               return (
                 <div
                   ref={isActive ? imageContainerRef : null}
                   key={(img.src ?? "") + index}
                   data-index={index}
-                  className={`min-w-full flex-[0_0_100%] flex items-center justify-center ${(isZoomedIn || isZoomTransitioning || swipeAxis === "x" || snapDisabled) ? "" : "snap-center snap-always"}`}
+                  className={`min-w-full flex-[0_0_100%] h-[100vh] w-[100vw] flex items-center justify-center ${(isZoomedIn || isZoomTransitioning || swipeAxis === "x" || snapDisabled) ? "" : "snap-center snap-always"}`}
                   style={{
                     // transform: isActive && (isZoomedIn || isZoomTransitioning || swipeAxisRef.current === "y" || isClosing)
                     //   ? `translate(${imgTx}px, ${imgTy}px)`
@@ -1028,39 +1072,64 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                       : `transform ${RESET_DURATION}ms ease-out`,
                   }}
                 >
-                  <img
-                    ref={isActive ? imageRef : null}
-                    src={img.src}
-                    alt={img.alt ?? ""}
-                    data-src={img.src}
-                    data-zoomable="true"
-                    className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-all-scroll" : "cursor-zoom-in active:cursor-grabbing"} ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
+                  {/* {(shouldLoadImg) && ( */}
+                  {/* // <div className="absolute inset-0 flex items-center justify-center">
+                    //   <LoadingSpinner width={64} height={64} color="#fff" />
+                    // </div>
+                    // <div className="h-[100vh] w-[100vw] max-w-full object-contain flex items-center justify-center">
+                    //   <LoadingSpinner color="currentColor" width="100" height="100" />
+                    // </div> */}
+                  <div
+                    className="absolute inset-0 h-[100vh] w-[100vw] object-contain flex items-center justify-center"
                     style={{
-                      transformOrigin: "50% 50%",
-                      transform: isActive ? `scale(${exitScale * zoomScale})` : `scale(1)`,
-                      opacity: imageOpacity,
-                      transition: isPointerDown
-                        ? "none"
-                        : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                      visibility:
+                        isClosing
+                          ?
+                          "hidden" :
+                          "visible",
                     }}
-                    onTransitionStart={(e) => {
-                      if (!isActive) return;
-                      if (e.propertyName !== "transform") return;
-                      setIsZoomTransitioning(true);
-                    }}
-                    onTransitionEnd={(e) => {
-                      if (!isActive) return;
-                      if (e.propertyName !== "transform") return;
-                      setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
-                      // setIsZoomTransitioning(false);
-                    }}
-                    onTransitionCancel={(e) => {
-                      if (!isActive) return;
-                      if (e.propertyName !== "transform") return;
-                      setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
-                      // setIsZoomTransitioning(false);
-                    }}
-                  />
+                  >
+                    <LoadingSpinner color="currentColor" width="100" height="100" />
+                  </div>
+
+                  {/* )} */}
+                  {shouldLoadImg && (
+                    <img
+                      ref={isActive ? imageRef : null}
+                      src={img.src}
+                      // src={shouldLoad(index, currentIndex, images.length) ? img.src : undefined}
+                      fetchPriority={isActive ? "high" : "auto"}
+                      alt={img.alt ?? ""}
+                      data-src={img.src}
+                      data-zoomable="true"
+                      className={`max-h-[100vh] w-auto max-w-full object-contain shadow-lg bg-black/20 ${isActive && pendingRef.current.zoomScale > 1 ? "cursor-all-scroll" : "cursor-zoom-in active:cursor-grabbing"} ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
+                      style={{
+                        transformOrigin: "50% 50%",
+                        transform: isActive ? `scale(${exitScale * zoomScale})` : `scale(1)`,
+                        opacity: imageOpacity,
+                        transition: isPointerDown
+                          ? "none"
+                          : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
+                      }}
+                      onTransitionStart={(e) => {
+                        if (!isActive) return;
+                        if (e.propertyName !== "transform") return;
+                        setIsZoomTransitioning(true);
+                      }}
+                      onTransitionEnd={(e) => {
+                        if (!isActive) return;
+                        if (e.propertyName !== "transform") return;
+                        setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
+                        // setIsZoomTransitioning(false);
+                      }}
+                      onTransitionCancel={(e) => {
+                        if (!isActive) return;
+                        if (e.propertyName !== "transform") return;
+                        setIsZoomTransitioning(pendingRef.current.zoomScale > 1 || false);
+                        // setIsZoomTransitioning(false);
+                      }}
+                    />
+                  )}
                 </div>
               )
             })}
