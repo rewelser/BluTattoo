@@ -46,8 +46,49 @@ const thumb = (src: string, w: number) =>
       )} -->
 
       {entry.data.photo && (
-        <img src={entry.data.photo as string} alt={`Portrait of ${entry.data.title}`} width="200" height="200" class="rounded-full" loading="lazy" decoding="async" />
+        <div class="portrait-anim portrait-glow">
+          <img 
+            src={entry.data.photo as string} 
+            alt={`Portrait of ${entry.data.title}`} 
+            width="400"
+            height="400"
+            loading="eager" 
+            decoding="async"
+            class="portrait-img"
+          />
+          <span class="portrait-glow" aria-hidden="true"></span>
+        </div>
       )}
+      <style>
+        .portrait-anim {
+          opacity: 0;
+          transform: translate3d(-200px, 0, 0);
+          animation: portraitIn 6000ms cubic-bezier(.2,.9,.2,1) forwards;
+          will-change: transform, opacity;
+        }
+
+        @keyframes portraitIn {
+          to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        .portrait-glow {
+          /* tighter than the big “blob” backdrop: glow clings to the cutout */
+          filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.35))
+                  drop-shadow(0 0 22px rgba(99, 102, 241, 0.18));
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .portrait-anim {
+            opacity: 1;
+            transform: none;
+            animation: none;
+          }
+        }
+      </style>
+
 
       <div>
         <h1 class="text-3xl font-bold">{entry.data.title}</h1>
@@ -82,17 +123,9 @@ const thumb = (src: string, w: number) =>
       </div>
     </header>
 
-    {ig && (
-      <section class="mt-8 flex justify-center border-2 border-solid border-red-500">
-        {/* <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2> */}
-        <InstagramProfile username={ig} className="overflow-hidden w-xl" />
-      </section>
-    )}
-
     <!-- Artist Gallery (no react thumbnail gallery) -->
     {entry.data.images?.length && (
       <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-      {/* <div class="mt-10"> */}
         {entry.data.images.map((img, idx) => {
           return(
             <button
@@ -120,7 +153,25 @@ const thumb = (src: string, w: number) =>
           client:load
           images={entry.data.images}
         />
-      {/* </div> */}
+      </section>
+    )}
+
+    <!-- Via react (thumbs not incorprated yet, but would work) -->
+    <!-- {entry.data.images?.length && (
+      <div class="mt-10">
+        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
+        <ArtistGallery
+          client:load
+          images={entry.data.images}
+        />
+      </div>
+    )} -->
+
+    {ig && (
+      // <section class="mt-8 flex justify-center border-2 border-solid border-red-500">
+      <section class="mt-8 flex justify-center">
+        {/* <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2> */}
+        <InstagramProfile username={ig} className="overflow-hidden w-xl" />
       </section>
     )}
 

@@ -3,6 +3,13 @@ import ReactDOM from "react-dom";
 import { LoadingSpinner } from "./graphics/LoadingSpinner";
 import { ErrorSpinner } from "./graphics/ErrorSpinner";
 
+/**
+ * TODO: since not doing the thumbnail grid in react, some things are wonky. 
+ * - min/max pan do not work at first--image must be zoomed out then zoomed back in. This could be a frame issue.
+ * - flash of image upon close & scroll
+ * - you can still tab thru the background when lightbox is open.
+ * 
+ */
 
 interface ArtistImage {
   src: string;
@@ -286,6 +293,23 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     });
   };
 
+  // Changed this to the below, in order to use a resizeObserver
+  // useEffect(() => {
+  //   if (!isOpen) return;
+  //   if (isZoomTransitioning) return;
+  //   if (pendingRef.current.zoomScale !== 1) return;
+
+  //   const img = imageRef.current;
+  //   if (!img) return;
+
+  //   const r = img.getBoundingClientRect();
+  //   baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
+  // }, [isOpen, currentIndex, isZoomTransitioning]);
+
+
+
+
+  // Calculate baseSizeByIndexRef for use by regulatePanAndZoom
   useEffect(() => {
     if (!isOpen) return;
     if (isZoomTransitioning) return;
@@ -294,9 +318,22 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     const img = imageRef.current;
     if (!img) return;
 
-    const r = img.getBoundingClientRect();
-    baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
-  }, [isOpen, currentIndex, isZoomTransitioning]);
+    const measure = () => {
+      const r = img.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
+      }
+    };
+
+    // measure now + next frame (helps when layout settles after load)
+    measure();
+    requestAnimationFrame(measure);
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(img);
+
+    return () => ro.disconnect();
+  }, [isOpen, currentIndex, loaded[currentIndex], isZoomTransitioning]);
 
   const regulatePanAndZoom = (e?: WheelEvent) => {
     const nextZoomUnclamped = pendingRef.current.zoomScale;
