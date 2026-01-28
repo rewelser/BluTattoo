@@ -23,9 +23,9 @@ const DOUBLE_TAP_SLOP_PX = 24;
 
 const DRAG_CLOSE_THRESHOLD = 120;
 const DRAG_LOCK_THRESHOLD = 10;
-const RESET_DURATION = 200; // todo 1.16.26: conflate with Backdrop fade duration?
+const RESET_DURATION = 300; // GLNS uses 200
 const BACKDROP_FADE_DURATION = 200;
-const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // 80 too small for desktop, 200 too big for mobile
+const SWIPE_IMAGE_CHANGE_THRESHOLD = 80; // GLNS uses 100
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
@@ -992,6 +992,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
                             <img
                                 id="current-image"
+                                key={currentImage.src}
                                 ref={imageRef}
                                 src={currentImage.src}
                                 alt={currentImage.alt ?? ""}
@@ -1152,6 +1153,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
                                 <img
                                     id="current-image"
+                                    key={currentImage.src}
                                     ref={imageRef}
                                     src={currentImage.src}
                                     alt={currentImage.alt ?? ""}
