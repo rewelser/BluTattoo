@@ -47,7 +47,6 @@ const thumb = (src: string, w: number) =>
             fetchpriority="high"
             class="portrait-img"
           />
-          {/* <span class="portrait-glow" aria-hidden="true"></span> */}
         </div>
       )}
       <style>
@@ -172,7 +171,7 @@ const thumb = (src: string, w: number) =>
     )} -->
 
     {/* Preferred: Square embed if present */}
-    <!-- {entry.data.square?.enabled &&
+    {entry.data.square?.enabled &&
     entry.data.square?.merchantSlug &&
     entry.data.square?.locationSlug && (
       <SquareAppointments
@@ -181,7 +180,7 @@ const thumb = (src: string, w: number) =>
         label={entry.data.square.label}
         className="mt-2"
       />
-    )} -->
+    )}
 
     {/* Fallback: a plain external booking link */}
     {!entry.data.square && entry.data.booking_link && (
