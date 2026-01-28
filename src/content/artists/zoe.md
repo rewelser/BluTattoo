@@ -1,7 +1,7 @@
 ---
 title: Zoe
 order: 5
-photo: /uploads/artists/zoe_headshot.png
+photo: /uploads/artists/zoester_transparent_cropped.png
 styles: []
 instagram: ""
 instagramUser: ztheghost.ink
