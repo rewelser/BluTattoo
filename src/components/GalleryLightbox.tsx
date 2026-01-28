@@ -947,7 +947,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                         <div
                             ref={currentImgContainerRef}
                             id="current-image-container"
-                            className="flex items-center justify-center w-screen"
+                            className="relative flex items-center justify-center w-screen"
                             style={{
                                 transform: `translate(${imgTx}px, ${imgTy}px)`,
                                 transition: isPointerDown
@@ -1054,7 +1054,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                         >
                             {/* Prev slide (to the left) */}
                             {prevIndex !== null && (
-                                <div className="flex items-center justify-center w-screen">
+                                <div className="relative flex items-center justify-center w-screen">
 
                                     {!loadedBySrc[images[prevIndex].src] && !erroredBySrc[images[prevIndex].src] && (
                                         <div
@@ -1111,7 +1111,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                             <div
                                 ref={currentImgContainerRef}
                                 id="current-image-container"
-                                className="flex items-center justify-center w-screen"
+                                className="relative flex items-center justify-center w-screen"
                                 style={{
                                     transform: `translate(${imgTx}px, ${imgTy}px)`,
                                     transition: isPointerDown
@@ -1186,7 +1186,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
                             {/* Next slide (off to the right) */}
                             {nextIndex !== null && (
-                                <div className="flex items-center justify-center w-screen">
+                                <div className="relative flex items-center justify-center w-screen">
 
                                     {!loadedBySrc[images[nextIndex].src] && !erroredBySrc[images[nextIndex].src] && (
                                         <div
