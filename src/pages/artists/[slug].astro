@@ -28,11 +28,8 @@ const ig = entry.data.instagramUser;
 // Render the Markdown *body* (the part after the frontmatter)
 const { Content } = await render(entry);
 
-type GalleryImg = {
-  alt?: string;
-  thumb: { src: string; width: number; height: number };
-  full:  { src: string; width: number; height: number };
-};
+const thumb = (src: string, w: number) =>
+  src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
 ---
 <BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="mx-auto max-w-3xl space-y-6">
@@ -121,24 +118,41 @@ type GalleryImg = {
 
     <!-- Secret third option? -->
     {entry.data.images?.length && (
-      <div class="mt-10">
-        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
+      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      {/* <div class="mt-10"> */}
         {entry.data.images.map((img, idx) => {
           return(
             <button
               type="button"
-              class="overflow-hidden rounded text-left"
+              class="overflow-hidden rounded text-left cursor-pointer"
               data-idx={idx}
               onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
             >
-              <Picture
+              {/* <Picture
                 src={img.src as any}
                 alt={img.alt ?? ""}
                 width={"100"}
                 height={"100"}
                 widths={[240, 360, 480, 720]}
                 inferSize={true}
+              /> */}
+              <img
+                src={thumb(img.src as string, 360)}
+                srcset={`${thumb(img.src as string, 240)} 240w,
+                        ${thumb(img.src as string, 360)} 360w,
+                        ${thumb(img.src as string, 480)} 480w,
+                        ${thumb(img.src as string, 720)} 720w`}
+                // sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 33vw"
+                // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
+                // sizes="(max-width: 768px) 240px, (max-width: 1200px) 33vw, 400px"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+
+                alt={img.alt ?? ""}
+                loading="lazy"
+                decoding="async"
+                class="block w-full aspect-square object-cover"
               />
+
             </button>
           )
         })}
@@ -146,7 +160,8 @@ type GalleryImg = {
           client:load
           images={entry.data.images}
         />
-      </div>
+      {/* </div> */}
+      </section>
     )}
 
     {/* Preferred: Square embed if present */}

@@ -3,6 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "node public/scripts/generate-thumbs.mjs",
+    "prebuild": "node public/scripts/generate-thumbs.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
-    "astro-decap-cms-oauth": "^0.5.1"
+    "astro-decap-cms-oauth": "^0.5.1",
+    "sharp": "^0.34.5"
   }
 }
