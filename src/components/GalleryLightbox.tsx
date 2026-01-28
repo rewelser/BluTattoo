@@ -1005,14 +1005,17 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 style={{
                                     transformOrigin: "50% 50%",
                                     transform: `scale(${exitScale * zoomScale})`,
-                                    opacity: erroredBySrc[currentImage.src] ? 0 : imageOpacity,
+                                    opacity: loadedBySrc[currentImage.src] && !erroredBySrc[currentImage.src] ? imageOpacity : 0,
                                     transition: isPointerDown
                                         ? "none"
                                         : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
-                                onLoad={() => {
+                                onLoad={(e) => {
                                     const img = imageRef.current;
                                     if (!img) return;
+                                    // possible alternative in case of bugs:
+                                    // const img = e.currentTarget;
+                                    // if (img.dataset.src !== currentImage.src) return;
 
                                     const r = img.getBoundingClientRect();
                                     const effectiveScale = (exitScale * zoomScale) || 1;
@@ -1166,14 +1169,17 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     style={{
                                         transformOrigin: "50% 50%",
                                         transform: `scale(${exitScale * zoomScale})`,
-                                        opacity: erroredBySrc[currentImage.src] ? 0 : imageOpacity,
+                                        opacity: loadedBySrc[currentImage.src] && !erroredBySrc[currentImage.src] ? imageOpacity : 0,
                                         transition: isPointerDown
                                             ? "none"
                                             : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                     }}
-                                    onLoad={() => {
+                                    onLoad={(e) => {
                                         const img = imageRef.current;
                                         if (!img) return;
+                                        // possible alternative in case of bugs:
+                                        // const img = e.currentTarget;
+                                        // if (img.dataset.src !== currentImage.src) return;
 
                                         const r = img.getBoundingClientRect();
                                         const effectiveScale = (exitScale * zoomScale) || 1;
