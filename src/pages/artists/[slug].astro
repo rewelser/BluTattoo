@@ -35,16 +35,6 @@ const thumb = (src: string, w: number) =>
   <article class="mx-auto max-w-3xl space-y-6">
     <header class="space-y-2 flex items-center gap-4">
 
-      <!-- {entry.data.photo && (
-        <Image src={entry.data.photo} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
-      )} -->
-
-      <!-- {entry.data.photo && (
-        isAsset(entry.data.photo)
-          ? <Image src={entry.data.photo as any} alt={`Portrait of ${entry.data.title}`} width={200} height={200} class="rounded-full" />
-          : <img src={entry.data.photo as string} alt={`Portrait of ${entry.data.title}`} width="200" height="200" class="rounded-full" loading="lazy" decoding="async" />
-      )} -->
-
       {entry.data.photo && (
         <div class="portrait-anim portrait-glow">
           <img 
@@ -155,17 +145,6 @@ const thumb = (src: string, w: number) =>
         />
       </section>
     )}
-
-    <!-- Via react (thumbs not incorprated yet, but would work) -->
-    <!-- {entry.data.images?.length && (
-      <div class="mt-10">
-        <h2 class="text-lg font-medium mb-3">Portfolio</h2>
-        <ArtistGallery
-          client:load
-          images={entry.data.images}
-        />
-      </div>
-    )} -->
 
     {ig && (
       // <section class="mt-8 flex justify-center border-2 border-solid border-red-500">

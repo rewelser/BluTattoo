@@ -293,22 +293,6 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     });
   };
 
-  // Changed this to the below, in order to use a resizeObserver
-  // useEffect(() => {
-  //   if (!isOpen) return;
-  //   if (isZoomTransitioning) return;
-  //   if (pendingRef.current.zoomScale !== 1) return;
-
-  //   const img = imageRef.current;
-  //   if (!img) return;
-
-  //   const r = img.getBoundingClientRect();
-  //   baseSizeByIndexRef.current[currentIndex] = { w: r.width, h: r.height };
-  // }, [isOpen, currentIndex, isZoomTransitioning]);
-
-
-
-
   // Calculate baseSizeByIndexRef for use by regulatePanAndZoom
   useEffect(() => {
     if (!isOpen) return;

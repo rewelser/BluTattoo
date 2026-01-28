@@ -132,20 +132,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         imageOpacity: 1,
     });
 
-    // Not keeping this, but for posterity: this might help later on if we have viewport size change issues (such as portrait -> landscape)
-    useEffect(() => {
-        if (!isOpen) return;
-        const el = containerRef.current;
-        if (!el) return;
-
-        const ro = new ResizeObserver(() => {
-            if (pendingRef.current.zoomScale > 1) regulatePanAndZoom();
-        });
-
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, [isOpen]);
-
     // keep currentIndex in sync when opening at a new index
     useEffect(() => {
         if (!isOpen || images.length === 0) return;
