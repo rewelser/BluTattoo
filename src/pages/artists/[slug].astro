@@ -38,12 +38,13 @@ const thumb = (src: string, w: number) =>
       {entry.data.photo && (
         <div class="portrait-anim portrait-glow">
           <img 
-            src={entry.data.photo as string} 
-            alt={`Portrait of ${entry.data.title}`} 
+            src={entry.data.photo as string}
+            alt={`Portrait of ${entry.data.title}`}
             width="400"
             height="400"
+            decoding="sync"
             loading="eager"
-            decoding="async"
+            fetchpriority="high"
             class="portrait-img"
           />
           {/* <span class="portrait-glow" aria-hidden="true"></span> */}
@@ -128,7 +129,7 @@ const thumb = (src: string, w: number) =>
       </div>
     </header>
 
-    <!-- Artist Gallery (no react thumbnail gallery) -->
+    {/* Artist Gallery (no react thumbnail gallery) */}
     {entry.data.images?.length && (
       <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {entry.data.images.map((img, idx) => {
@@ -161,16 +162,17 @@ const thumb = (src: string, w: number) =>
       </section>
     )}
 
-    {ig && (
+    {/* Instagram component -- messes with styling, so we're omitting it for now */}
+    <!-- {ig && (
       // <section class="mt-8 flex justify-center border-2 border-solid border-red-500">
       <section class="mt-8 flex justify-center">
         {/* <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2> */}
         <InstagramProfile username={ig} className="overflow-hidden w-xl" />
       </section>
-    )}
+    )} -->
 
     {/* Preferred: Square embed if present */}
-    {entry.data.square?.enabled &&
+    <!-- {entry.data.square?.enabled &&
     entry.data.square?.merchantSlug &&
     entry.data.square?.locationSlug && (
       <SquareAppointments
@@ -179,7 +181,7 @@ const thumb = (src: string, w: number) =>
         label={entry.data.square.label}
         className="mt-2"
       />
-    )}
+    )} -->
 
     {/* Fallback: a plain external booking link */}
     {!entry.data.square && entry.data.booking_link && (
