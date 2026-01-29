@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import Layout from "../layouts/Layout.astro";
 import { getEntry } from "astro:content";
 
 const site = await getEntry("siteInfo", "main");
@@ -35,7 +35,7 @@ const contactJsonLd = {
 };
 ---
 
-<BaseLayout title="BluTattoo Studio — Contact">
+<Layout title="BluTattoo Studio — Contact">
   <h1 class="mb-6 text-3xl font-bold tracking-tight">Contact Us</h1>
 
   <div class="grid gap-6 md:grid-cols-2 md:items-stretch">
@@ -200,4 +200,4 @@ const contactJsonLd = {
   <script type="application/ld+json">
     {JSON.stringify(contactJsonLd)}
   </script>
-</BaseLayout>
+</Layout>

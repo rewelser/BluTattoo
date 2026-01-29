@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
@@ -31,7 +31,7 @@ const { Content } = await render(entry);
 const thumb = (src: string, w: number) =>
   src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
 ---
-<BaseLayout title={`BluTattoo Studio — ${entry.data.title}`}>
+<Layout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="mx-auto max-w-3xl space-y-6">
     <!-- <header class="space-y-2 flex flex-wrap sm:flex-nowrap items-center gap-4"> -->
     <header class="space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -197,4 +197,4 @@ const thumb = (src: string, w: number) =>
       <Content />
     </section>
   </article>
-</BaseLayout>
+</Layout>

@@ -1,6 +1,6 @@
 ---
 // src/pages/faq.astro
-import BaseLayout from "../layouts/BaseLayout.astro";
+import Layout from "../layouts/Layout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
 const entries = (await getCollection("faqs")) as CollectionEntry<"faqs">[];
@@ -20,7 +20,7 @@ const faqJsonLd = {
 };
 ---
 
-<BaseLayout title="BluTattoo Studio — FAQ">
+<Layout title="BluTattoo Studio — FAQ">
   <h1 class="mb-6 text-3xl font-bold tracking-tight">FAQ</h1>
 
   <div class="divide-y divide-white/10 border border-white/10 bg-black/40">
@@ -50,4 +50,4 @@ const faqJsonLd = {
     Still have questions? <a href="/contact" class="underline hover:no-underline">Contact us</a> or see
     our <a href="/aftercare" class="underline hover:no-underline">Aftercare</a> guide.
   </p>
-</BaseLayout>
+</Layout>

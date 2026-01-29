@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import Layout from "../layouts/Layout.astro";
 import { getEntry, render } from "astro:content";
 
 const entry = await getEntry("aftercare", "main");
@@ -10,7 +10,7 @@ const { Content } = await render(entry);
 const title = entry.data.title ?? "Aftercare";
 ---
 
-<BaseLayout title={`BluTattoo Studio — ${title}`}>
+<Layout title={`BluTattoo Studio — ${title}`}>
   <h1 class="mb-6 text-3xl font-bold tracking-tight">{title}</h1>
 
   <article class="prose prose-invert max-w-none
@@ -18,4 +18,4 @@ const title = entry.data.title ?? "Aftercare";
                   border border-white/10 bg-black/40 p-5 md:p-6">
     <Content />
   </article>
-</BaseLayout>
+</Layout>
