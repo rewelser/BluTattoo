@@ -1,0 +1,256 @@
+---
+import Blob from "./Blob.astro";
+
+type Props = {
+    /** Desired number. If omitted, it will auto-fill based on viewport + spacing. */
+    count?: number;
+
+    /** Blob render width in px (match your w-[40rem] actual layout intent) */
+    blobWidthPx?: number;
+
+    /** How much blobs overlap horizontally (0 = no overlap). 0.25 = 25% overlap */
+    overlap?: number;
+
+    /** Clamp speed range */
+    minSpeed?: number;
+    maxSpeed?: number;
+
+    /** Optional: snap speeds to steps (e.g. 0.1 like your list) */
+    speedStep?: number;
+
+    /**
+     * If true: bias x-position by speed
+     * - faster blobs tend to one side, slower to the other
+     */
+    biasBySpeed?: boolean;
+
+    /** Which side to anchor positioning against */
+    anchor?: "right" | "left";
+
+    /** Extra class applied to each blob */
+    blobClass?: string;
+
+    /** Seed for deterministic randomness per page render */
+    seed?: number;
+};
+
+const {
+    count,
+    blobWidthPx = 20, // ~40rem @ 16px/rem = 640px
+    overlap = 0.25,
+    minSpeed = 0.3,
+    maxSpeed = 1.3,
+    speedStep = 0.1,
+    biasBySpeed = true,
+    anchor = "left",
+    blobClass = "blob",
+    seed = 1337,
+} = Astro.props as Props;
+
+// --- deterministic RNG (so SSR output is stable) ---
+function mulberry32(a: number) {
+    return function () {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+const rand = mulberry32(seed);
+
+const clamp = (n: number, lo: number, hi: number) =>
+    Math.max(lo, Math.min(hi, n));
+
+function quantize(n: number, step: number) {
+    if (!step) return n;
+    return Math.round(n / step) * step;
+}
+
+/**
+ * We can’t know the client viewport width at SSR time.
+ * So we render an initial “reasonable” set, then a tiny client script
+ * will replace it with viewport-accurate blobs on mount + resize.
+ *
+ * This SSR set prevents layout flashing / empty state.
+ */
+const SSR_FALLBACK_COUNT = count ?? 50;
+
+// Render a simple predictable initial row (client will re-hydrate + re-place)
+const initial = Array.from({ length: SSR_FALLBACK_COUNT }, (_, i) => {
+    const raw = minSpeed + (maxSpeed - minSpeed) * rand();
+    const speed = quantize(clamp(raw, minSpeed, maxSpeed), speedStep);
+
+    // fallback spacing: based on blobWidth and overlap
+    const stepPx = blobWidthPx * (1 - overlap);
+    const xPx = i * stepPx;
+
+    const cssPos =
+        anchor === "right" ? `right: ${-xPx}px;` : `left: ${xPx}px;`;
+
+    return { speed, xPx, cssPos };
+});
+---
+
+<div
+    class="blob-row relative w-full h-100 overflow-visible bg-amber-400"
+    data-blob-row
+    data-count={count ?? "100"}
+    data-blob-width={blobWidthPx}
+    data-overlap={overlap}
+    data-min-speed={minSpeed}
+    data-max-speed={maxSpeed}
+    data-speed-step={speedStep}
+    data-bias={biasBySpeed ? "1" : "0"}
+    data-anchor={anchor}
+    data-seed={seed}
+>
+    <div class="border border-2 border-green-600">
+        {
+            initial.map((b) => (
+                <Blob class={blobClass} speed={b.speed} style={b.cssPos} />
+            ))
+        }
+    </div>
+
+    <!-- <Blob class="blob right-[-12rem]" speed={1.3} />
+    <Blob class="blob right-[-11rem]" speed={1.2} />
+    <Blob class="blob right-[-10rem]" speed={1.1} />
+    <Blob class="blob right-[-9rem]" speed={1} />
+    <Blob class="blob right-[-8rem]" speed={0.9} />
+    <Blob class="blob right-[-7rem]" speed={0.8} />
+    <Blob class="blob right-[-6rem]" speed={0.7} />
+    <Blob class="blob right-[-5rem]" speed={0.6} />
+    <Blob class="blob right-[-4rem]" speed={0.5} />
+    <Blob class="blob right-[-3rem]" speed={0.4} />
+    <Blob class="blob right-[-2rem]" speed={0.3} /> -->
+</div>
+
+<!-- <script is:inline>
+    // Client-side: measure viewport + regenerate blobs so they “fill” the width.
+    (() => {
+        console.log("blobrow 1");
+        const root = document.querySelector("[data-blob-row]");
+        if (!root) return;
+        console.log("blobrow 2");
+
+        const getNum = (k) => Number(root.getAttribute(k) ?? "");
+        const getStr = (k) => String(root.getAttribute(k) ?? "");
+
+        const cfg = {
+            count: getNum("data-count"), // NaN means “auto”
+            blobWidth: getNum("data-blob-width") || 640,
+            overlap: Number(root.getAttribute("data-overlap") ?? "0.25"),
+            minSpeed: getNum("data-min-speed") || 0.3,
+            maxSpeed: getNum("data-max-speed") || 1.3,
+            speedStep: getNum("data-speed-step") || 0.1,
+            bias: getStr("data-bias") === "1",
+            anchor: getStr("data-anchor") === "left" ? "left" : "right",
+            seed: getNum("data-seed") || 1337,
+            blobClass: "", // we’ll reuse the existing class attribute from rendered Blobs
+        };
+
+        // deterministic RNG
+        function mulberry32(a) {
+            return function () {
+                let t = (a += 0x6d2b79f5);
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+        const quantize = (n, step) => (step ? Math.round(n / step) * step : n);
+
+        const blobs = () =>
+            Array.from(root.querySelectorAll("svg.ink-droplet"));
+
+        // The core idea:
+        // - stepPx controls density (via overlap)
+        // - count auto-fills: enough blobs so their coverage extends past viewport edges a bit
+        // - x positions get jittered; if bias enabled, jitter depends on speed so faster/slower
+        //   tend to different zones (but not perfectly sorted).
+        function regenerate() {
+            const vw = window.innerWidth;
+
+            const stepPx = cfg.blobWidth * (1 - cfg.overlap);
+            const padPx = cfg.blobWidth; // extend beyond edge so it still looks full while scrolling
+            const needed = Math.ceil((vw + padPx) / stepPx) + 1;
+
+            const N =
+                Number.isFinite(cfg.count) && cfg.count > 0
+                    ? Math.floor(cfg.count)
+                    : needed;
+
+            // Keep existing nodes if possible (cheaper); otherwise rebuild.
+            // We’ll rebuild only if count differs.
+            const existing = blobs();
+            if (existing.length !== N) {
+                root.innerHTML = "";
+                // We clone from a template by creating a wrapper div and injecting SVG from the first existing
+                // If none exist (edge case), bail.
+                const src = existing[0];
+                if (!src) return;
+
+                for (let i = 0; i < N; i++) {
+                    const clone = src.cloneNode(true);
+                    // ensure class stays
+                    clone.classList.add("parallax-svg");
+                    root.appendChild(clone);
+                }
+            }
+
+            const rng = mulberry32(cfg.seed);
+
+            const svgs = blobs();
+
+            for (let i = 0; i < svgs.length; i++) {
+                const el = svgs[i];
+
+                // speed: random in range, snapped
+                const rawSpeed =
+                    cfg.minSpeed + (cfg.maxSpeed - cfg.minSpeed) * rng();
+                const speed = quantize(
+                    clamp(rawSpeed, cfg.minSpeed, cfg.maxSpeed),
+                    cfg.speedStep,
+                );
+                el.dataset.speed = String(speed);
+
+                // position base: evenly spaced
+                const baseX = i * stepPx;
+
+                // jitter: a fraction of step
+                let jitter = (rng() - 0.5) * stepPx * 0.6;
+
+                // bias: map speed -> [0..1], push jitter a bit so faster tends one side
+                if (cfg.bias) {
+                    const t =
+                        (speed - cfg.minSpeed) /
+                        (cfg.maxSpeed - cfg.minSpeed || 1);
+                    // center around 0, range [-0.5..0.5]
+                    const b = t - 0.5;
+                    jitter += b * stepPx * 0.8;
+                }
+
+                const x = baseX + jitter;
+
+                if (cfg.anchor === "right") {
+                    el.style.right = `${-x}px`;
+                    el.style.left = "";
+                } else {
+                    el.style.left = `${-x}px`;
+                    el.style.right = "";
+                }
+            }
+        }
+
+        regenerate();
+
+        // debounce resize
+        let raf = 0;
+        window.addEventListener("resize", () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(regenerate);
+        });
+    })();
+</script> -->

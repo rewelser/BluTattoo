@@ -5,6 +5,7 @@ export function initParallaxSvgs(selector = ".parallax-svg") {
 
     let ticking = false;
     let lastY = window.scrollY;
+    let dir = "rest";
 
     const begin = (root: Element, id: string) => {
         const anim = root.querySelector<SVGAnimateElement>(`#${id}`);
@@ -27,11 +28,15 @@ export function initParallaxSvgs(selector = ".parallax-svg") {
     };
 
     const onScroll = () => {
-        const dir = window.scrollY > lastY ? "up" : "down";
-        lastY = window.scrollY;
         if (ticking) return;
         ticking = true;
-        morphAll(dir);
+
+        if (dir === "rest") {
+            dir = window.scrollY > lastY ? "up" : "down";
+            morphAll(dir as "rest" | "up" | "down");
+        }
+
+        lastY = window.scrollY;
 
         requestAnimationFrame(() => {
             for (const el of items) {
@@ -46,7 +51,8 @@ export function initParallaxSvgs(selector = ".parallax-svg") {
     }
 
     const onScrollEnd = () => {
-        morphAll("rest");
+        dir = "rest";
+        morphAll(dir as "rest" | "up" | "down");
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });

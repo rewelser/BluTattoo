@@ -3,18 +3,18 @@ import Layout from "../layouts/Layout.astro";
 import PromoHero from "../components/PromoHero.astro";
 import { getEntry } from "astro:content";
 import Blob from "../components/decor/Blob.astro";
+import BlobRow from "../components/decor/BlobRow copy.astro";
 
 const home = await getEntry("home", "main"); // reads src/content/home/main.json
 const h = home?.data?.promoMain;
-
-
 ---
+
 <script>
   import { initParallaxSvgs } from "../scripts/parallax-svg";
   initParallaxSvgs();
 </script>
 <Layout title="BluTattoo Studio — Home">
-  <Blob class="blob left-[-10rem]" speed={.4}/>
+  <Blob class="blob left-[-10rem]" speed={0.4} />
   <div class="text-center">
     <h1 class="text-3xl font-bold font-[Diplomata_SC]">BLUTATTOO STUDIO</h1>
     <p class="mt-2">
@@ -54,7 +54,7 @@ const h = home?.data?.promoMain;
       cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
       est laborum.
     </p>
-    <Blob class="blob left-[-10rem]" speed={.2}/>
+    <Blob class="blob left-[-10rem]" speed={0.2} />
     <p class="mt-2">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
       tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -82,7 +82,29 @@ const h = home?.data?.promoMain;
       cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
       est laborum.
     </p>
-    <Blob class="blob right-[-12rem]" speed={1.3} />
+    <!-- <Blob class="blob right-[-12rem]" speed={1.3} />
+    <Blob class="blob right-[-11rem]" speed={1.2} />
+    <Blob class="blob right-[-10rem]" speed={1.1} />
+    <Blob class="blob right-[-9rem]" speed={1} />
+    <Blob class="blob right-[-8rem]" speed={.9} />
+    <Blob class="blob right-[-7rem]" speed={.8} />
+    <Blob class="blob right-[-6rem]" speed={.7} />
+    <Blob class="blob right-[-5rem]" speed={.6} />
+    <Blob class="blob right-[-4rem]" speed={.5} />
+    <Blob class="blob right-[-3rem]" speed={.4} />
+    <Blob class="blob right-[-2rem]" speed={.3} /> -->
+    <BlobRow />
+    <!-- <BlobRow
+      blobWidthPx={640}
+      overlap={0.35}
+      minSpeed={0.4}
+      maxSpeed={1.4}
+      speedStep={0.1}
+      biasBySpeed={true}
+      anchor="right"
+      seed={42}
+    /> -->
+
     <p class="mt-2">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
       tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
