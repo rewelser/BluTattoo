@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry, getEntry } from "astro:content";
 import branding from "../content/branding.json";
 import BlobRow from "../components/decor/BlobRow copy.astro";
+import PromoBar from "./PromoBar.astro";
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -20,62 +21,98 @@ const isActive = (href: string) =>
 const site = await getEntry("siteInfo", "main");
 const logo =
   branding?.logo ?? "/uploads/mxisc_images/logos/blutattoo-trimmed.svg";
+
+const { variant = "default" } = Astro.props; // "home" | "default"
 ---
 
-<div id="promo-banner" class="sticky top-0 w-full h-[40px] bg-blue-300"></div>
+<!-- Promo announcement bar -->
+<PromoBar />
 
-<!-- Top LOGO (desktop only, not sticky) -->
-<div
-  id="desktop-top-logo"
-  class="hidden md:block relative z-50 h-screen bg-amber-50 bg-white"
->
-  <!-- backdrop -->
-  <div class="absolute inset-0 -z-10">
-    <!-- <img
+{
+  variant === "home" && (
+    <>
+      {/* Video backdrop */}
+      <div class="sticky top-0 w-full h-screen z-0">
+        {/* <img
       src="/uploads/misc_images/hero-poster.jpg"
       alt=""
       class="h-full w-full object-cover"
       loading="eager"
       decoding="async"
-    /> -->
+    /> */}
 
-    <video
-      id="heroVideo"
-      class="absolute inset-0 h-full w-full object-cover"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="none"
-      aria-hidden="true"
-      data-src-mp4="/uploads/misc_videos/hero-720.mp4"
-      data-src-webm="/uploads/misc_videos/hero-720.webm"
-    >
-      <source src="/uploads/misc_videos/hero-720.webm" type="video/webm" />
-      <source src="/uploads/misc_videos/hero-720.mp4" type="video/mp4" />
-    </video>
+        <video
+          id="heroVideo"
+          class="h-full w-full object-cover"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-hidden="true"
+          data-src-mp4="/uploads/misc_videos/hero-720.mp4"
+          data-src-webm="/uploads/misc_videos/hero-720.webm"
+        >
+          <source src="/uploads/misc_videos/hero-720.webm" type="video/webm" />
+          <source src="/uploads/misc_videos/hero-720.mp4" type="video/mp4" />
+        </video>
 
-    <!-- optional: subtle wash for legibility -->
-    <!-- <div class="absolute inset-0 bg-black/20"></div> -->
-  </div>
-  <div class="mx-auto px-4 h-full">
-    <a
-      href="/"
-      class="flex items-center py-6 md:py-8 h-full"
-      aria-label="BluTattoo Studio"
+        {/* optional: subtle wash for legibility */}
+        {/* <div class="absolute inset-0 bg-black/20"></div> */}
+      </div>
+
+      {/* Top LOGO (desktop only, not sticky) */}
+      <div
+        id="desktop-top-logo"
+        class="hidden md:block absolute top-0 w-screen h-screen"
+      >
+        <div class="mx-auto px-4 h-full">
+          <a
+            href="/"
+            class="flex items-center py-6 md:py-8 h-full"
+            aria-label="BluTattoo Studio"
+          >
+            <img
+              src={logo}
+              alt="BluTattoo Studio"
+              class="w-fit mx-auto h-20 md:h-100"
+            />
+          </a>
+          <BlobRow />
+        </div>
+      </div>
+    </>
+  )
+}
+
+{
+  variant !== "home" && (
+    // Top LOGO (desktop only, not sticky)
+    <div
+      id="desktop-top-logo"
+      class="hidden md:block top-0"
     >
-      <img
-        src={logo}
-        alt="BluTattoo Studio"
-        class="w-fit mx-auto h-20 md:h-100"
-      />
-    </a>
-    <BlobRow />
-  </div>
-</div>
+      <div class="mx-auto px-4 h-full">
+        <a
+          href="/"
+          class="flex items-center py-6 md:py-8 h-full"
+          aria-label="BluTattoo Studio"
+        >
+          <img
+            src={logo}
+            alt="BluTattoo Studio"
+            class="w-fit mx-auto h-20 md:h-50"
+          />
+        </a>
+      </div>
+    </div>
+  )
+}
 
 <!-- Sticky NAV (desktop) -->
-<div class="hidden md:block sticky top-0 border-b z-50 bg-white opacity-25">
+<div class="hidden md:block sticky top-0 border-b z-50 bg-white"
+style="top: var(--announcement-h);"
+>
   <nav class="mx-auto max-w-6xl px-4">
     <ul class="flex items-center justify-center gap-8 py-3">
       <li>

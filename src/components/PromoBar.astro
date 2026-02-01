@@ -1,0 +1,113 @@
+---
+const {
+  id = "promo-bar",
+  height = 40, // px number
+  storageKey = "bt_promo_dismissed",
+  message = "Now booking March — tap for details sdfsdfdsfsdfdsfsf",
+  href = "/booking",
+} = Astro.props;
+
+const h = `${height}px`;
+---
+
+<!-- Spacer: keeps layout from sliding under the fixed bar -->
+<div id={`${id}-spacer`} style={`height:${h};`} aria-hidden="true"></div>
+
+<aside
+  id={id}
+  class="fixed top-0 left-0 w-full z-[80]"
+  style={`height:${h};`}
+  role="region"
+  aria-label="Announcement"
+>
+  <div
+    class="h-full flex items-center justify-center gap-3 px-4 text-sm"
+    style="
+      background: linear-gradient(90deg,
+        rgba(2,0,36,1) 0%,
+        rgba(9,9,121,1) 35%,
+        rgb(0, 94, 255) 100%
+      );
+    "
+  >
+    <a class="text-black w-full h-full" href={href}>
+      <svg
+        height="100%"
+        width="100%"
+        viewBox="0 0 450 70"
+        fill="black"
+        stroke="lightgray"
+        stroke-width="10px"
+        stroke-linejoin="round"
+        paint-order="stroke"
+      >
+        <text
+          x="50%"
+          y="50%"
+          dominant-baseline="middle"
+          text-anchor="middle"
+          vector-effect="non-scaling-stroke"
+          class="promo-svg-text font-[Spectral]"
+        >
+          {message}
+        </text>
+      </svg>
+    </a>
+    <style>
+      .promo-svg-text {
+        /* font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif; */
+        font-weight: 700;
+        /* SVG font-size is in viewBox units; tune this */
+        font-size: 30px;
+        letter-spacing: 1.5px;
+      }
+    </style>
+    <button
+      type="button"
+      class="ml-auto px-2 py-1 leading-none opacity-80 hover:opacity-100 cursor-pointer"
+      aria-label="Dismiss announcement"
+      data-dismiss
+    >
+      ✕
+    </button>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const storageKey = "bt_promo_dismissed";
+      const banner = document.getElementById("promo-bar");
+      const spacer = document.getElementById("promo-bar-spacer");
+      if (!banner || !spacer) return;
+
+      const hide = () => {
+        banner.style.display = "none";
+        spacer.style.display = "none";
+        document.documentElement.style.removeProperty("--announcement-h");
+      };
+
+      // if dismissed before, hide immediately
+      try {
+        // if (localStorage.getItem(storageKey) === "1") hide();
+        // else document.documentElement.style.setProperty("--announcement-h", spacer.style.height);
+        document.documentElement.style.setProperty(
+          "--announcement-h",
+          spacer.style.height,
+        );
+      } catch {}
+
+      banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+        try {
+          localStorage.setItem(storageKey, "1");
+        } catch {}
+        hide();
+      });
+    })();
+  </script>
+</aside>

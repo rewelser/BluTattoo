@@ -904,7 +904,7 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     <LightboxPortal>
       <div
         ref={containerRef}
-        className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm"
+        className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm text-white"
         style={{
           pointerEvents: isClosing ? "none" : "auto",
           backgroundColor: `rgba(0,0,0,${0.8 * backdropOpacity})`,
