@@ -30,9 +30,9 @@ export function initParallaxSvgs(selector = ".parallax-svg") {
     const onScroll = () => {
         if (ticking) return;
         ticking = true;
-
-        if (dir === "rest") {
-            dir = window.scrollY > lastY ? "up" : "down";
+        const newDir = window.scrollY > lastY ? "up" : "down"
+        if (dir !== newDir) {
+            dir = newDir;
             morphAll(dir as "rest" | "up" | "down");
         }
 

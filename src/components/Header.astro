@@ -1,6 +1,7 @@
 ---
 import { getCollection, type CollectionEntry, getEntry } from "astro:content";
 import branding from "../content/branding.json";
+import BlobRow from "../components/decor/BlobRow copy.astro";
 
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
@@ -18,27 +19,63 @@ const isActive = (href: string) =>
 // Load site branding (logo)
 const site = await getEntry("siteInfo", "main");
 const logo =
-  branding?.logo ??
-  "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg";
+  branding?.logo ?? "/uploads/mxisc_images/logos/blutattoo-trimmed.svg";
 ---
 
+<div id="promo-banner" class="sticky top-0 w-full h-[40px] bg-blue-300"></div>
+
 <!-- Top LOGO (desktop only, not sticky) -->
-<div class="hidden md:block bg-black/80">
-  <div class="mx-auto max-w-6xl px-4">
-    <a href="/" class="block py-6 md:py-8" aria-label="BluTattoo Studio">
+<div
+  id="desktop-top-logo"
+  class="hidden md:block relative z-50 h-screen bg-amber-50 bg-white"
+>
+  <!-- backdrop -->
+  <div class="absolute inset-0 -z-10">
+    <!-- <img
+      src="/uploads/misc_images/hero-poster.jpg"
+      alt=""
+      class="h-full w-full object-cover"
+      loading="eager"
+      decoding="async"
+    /> -->
+
+    <video
+      id="heroVideo"
+      class="absolute inset-0 h-full w-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      data-src-mp4="/uploads/misc_videos/hero-720.mp4"
+      data-src-webm="/uploads/misc_videos/hero-720.webm"
+    >
+      <source src="/uploads/misc_videos/hero-720.webm" type="video/webm" />
+      <source src="/uploads/misc_videos/hero-720.mp4" type="video/mp4" />
+    </video>
+
+    <!-- optional: subtle wash for legibility -->
+    <!-- <div class="absolute inset-0 bg-black/20"></div> -->
+  </div>
+  <div class="mx-auto px-4 h-full">
+    <a
+      href="/"
+      class="flex items-center py-6 md:py-8 h-full"
+      aria-label="BluTattoo Studio"
+    >
       <img
         src={logo}
         alt="BluTattoo Studio"
-        class="w-fit mx-auto h-20 md:h-50"
+        class="w-fit mx-auto h-20 md:h-100"
       />
     </a>
+    <BlobRow />
   </div>
 </div>
 
 <!-- Sticky NAV (desktop) -->
-<div
-  class="hidden md:block sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur"
->
+<div class="hidden md:block sticky top-0 border-b z-50 bg-white opacity-25">
   <nav class="mx-auto max-w-6xl px-4">
     <ul class="flex items-center justify-center gap-8 py-3">
       <li>
@@ -64,7 +101,7 @@ const logo =
           >
             ARTISTS
             <svg
-              class="fill-orange-100"
+              class="fill-current"
               width="16"
               height="16"
               viewBox="0 0 24 24"
