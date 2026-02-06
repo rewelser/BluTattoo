@@ -4,7 +4,7 @@ function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 export function initParallaxY({
   windowSel = ".parallax-window",
   imgSel = ".parallax-media",
-  reverse = true,
+  reverse = false,
 }: {
   windowSel?: string;
   imgSel?: string;
@@ -26,7 +26,7 @@ export function initParallaxY({
 
   const update = () => {
     const winRect = win.getBoundingClientRect();
-    const vh = window.innerHeight;
+    const vh = document.documentElement.clientHeight;
 
     // progress 0..1 as window moves through viewport
     const start = vh;

@@ -1,8 +1,7 @@
 // export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 0.1) {
-export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 0.2) {
+export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 1, directionReversed = false) {
 
     const roots = Array.from(document.querySelectorAll(selector));
-    let VIEWPORT_H = window.innerHeight;
 
     type ParallaxBg = {
         parallaxWindow: Element | null;
@@ -37,43 +36,36 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
 
         requestAnimationFrame(() => {
 
-            for (const { parallaxWindow, parallaxBg } of parallaxBgs) {
+            for (const { parallaxWindow, parallaxBg, speed } of parallaxBgs) {
                 // These seemed to cause a jump on iOS Chrome:
                 // const viewportH = window.visualViewport?.height ?? window.innerHeight;
 
                 // Whereas this did not:
                 const viewportH = document.documentElement.clientHeight;
+
                 const r = parallaxWindow?.getBoundingClientRect();
                 if (!r) return;
+                const onScreen = r && r.bottom > 0 && r.top < viewportH;
 
-                const onScreen = r && r.bottom > 0 && r.top < window.innerHeight;
-                const progress = Math.round(
-                    Math.min(
-                        1, Math.max(0,
-                            (viewportH - r.top) / (viewportH + r.height)
-                        )
-                    ) * 100
-                ) + "%";
-                const progress2 = Math.min(
+                // const baselinePercent = 100 - speed * 100;
+                // console.log(baselinePercent);
+                let progressPercent = Math.min(
                     1, Math.max(0,
-                        (document.documentElement.clientHeight - r.top) / (document.documentElement.clientHeight + r.height)
+                        (viewportH - r.top) / (viewportH + r.height)
                     )
-                ) * 100;
-                // console.log(progress2);
+                ) * 100 * speed;
+
+                progressPercent = directionReversed ? progressPercent : 100 - progressPercent;
 
                 const element = parallaxBg as HTMLElement;
                 if (element && onScreen) {
-                    element.style.backgroundPosition = `50% ${progress2}%`;
+                    element.style.backgroundPosition = `50% ${progressPercent}%`;
                 }
             }
 
             ticking = false;
         });
     };
-
-    window.addEventListener("resize", () => {
-        VIEWPORT_H = window.innerHeight;
-    });
 
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
