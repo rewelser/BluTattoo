@@ -17,10 +17,11 @@ const scriptId = `square-widget-${merchantSlug}-${locationSlug}`;
     href={base}
     target="_blank"
     rel="noopener noreferrer"
-    class={`inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 ${className}`}
+    class={`inline-block rounded-t bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 ${className}`}
   >
     {label}
   </a>
+  <div class="border-b-1 border-b-gray-100" />
 
   <!-- Load the widget script once; harmless if user just clicks through -->
   <script

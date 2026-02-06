@@ -3,7 +3,7 @@ const {
   id = "promo-bar",
   height = 40, // px number
   storageKey = "bt_promo_dismissed",
-  message = "Now booking March — tap for details sdfsdfdsfsdfdsfsf",
+  message = "Now booking March!",
   href = "/booking",
 } = Astro.props;
 
@@ -20,8 +20,9 @@ const h = `${height}px`;
   role="region"
   aria-label="Announcement"
 >
+  <!-- todo: make this accept a chosen color or css gradient and if that fails, fall back to a default gradient/ color scheme -->
   <div
-    class="h-full flex items-center justify-center gap-3 px-4 text-sm"
+    class="h-full flex items-center justify-center gap-3 px-4 text-white text-sm sm:text-base md:text-2xl"
     style="
       background: linear-gradient(90deg,
         rgba(2,0,36,1) 0%,
@@ -30,48 +31,24 @@ const h = `${height}px`;
       );
     "
   >
-    <a class="text-black w-full h-full" href={href}>
-      <svg
-        height="100%"
-        width="100%"
-        viewBox="0 0 450 70"
-        fill="black"
-        stroke="lightgray"
-        stroke-width="10px"
-        stroke-linejoin="round"
-        paint-order="stroke"
-      >
-        <text
-          x="50%"
-          y="50%"
-          dominant-baseline="middle"
-          text-anchor="middle"
-          vector-effect="non-scaling-stroke"
-          class="promo-svg-text font-[Spectral]"
-        >
-          {message}
-        </text>
-      </svg>
+    <!-- <style>
+  .promo-outline{
+    font-size: 18px;
+    font-weight: 800;
+    color: black;
+    -webkit-text-stroke: 3px white;
+    paint-order: stroke fill; /* not everywhere, but helps where supported */
+  }
+</style> -->
+    <a
+      class="promo-outline flex items-center justify-center w-full h-full text-center"
+      href={href}
+    >
+      {message}
     </a>
-    <style>
-      .promo-svg-text {
-        /* font-family:
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          Helvetica,
-          Arial,
-          sans-serif; */
-        font-weight: 700;
-        /* SVG font-size is in viewBox units; tune this */
-        font-size: 30px;
-        letter-spacing: 1.5px;
-      }
-    </style>
     <button
       type="button"
-      class="ml-auto px-2 py-1 leading-none opacity-80 hover:opacity-100 cursor-pointer"
+      class="ml-auto px-2 py-1 leading-none cursor-pointer"
       aria-label="Dismiss announcement"
       data-dismiss
     >
@@ -96,6 +73,7 @@ const h = `${height}px`;
       try {
         // if (localStorage.getItem(storageKey) === "1") hide();
         // else document.documentElement.style.setProperty("--announcement-h", spacer.style.height);
+        // always setting it for now to test
         document.documentElement.style.setProperty(
           "--announcement-h",
           spacer.style.height,

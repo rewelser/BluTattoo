@@ -21,33 +21,38 @@ const faqJsonLd = {
 ---
 
 <Layout title="BluTattoo Studio — FAQ">
-  <h1 class="mb-6 text-3xl font-bold tracking-tight">FAQ</h1>
 
-  <div class="divide-y divide-white/10 border border-white/10 bg-black/40">
-    {faqs.map(({ q, a }) => (
-      <details class="group open:bg-white/5">
-        <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-white/5">
-          <span>{q}</span>
-          <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true">
-            <path d="M7 10l5 5 5-5H7z" />
-          </svg>
-        </summary>
+  <article class="mt-7 space-y-6 mx-auto max-w-6xl flex flex-col justify-center">
+    <h1 class="mb-6 text-3xl font-bold tracking-tight text-center">FAQ</h1>
 
-        <div class="px-4 pb-4 text-orange-100/90">
-          <p class="leading-relaxed">{a}</p>
-        </div>
-      </details>
-    ))}
-  </div>
+    <div class="divide-y divide-white/10 border border-white/10 bg-black/40">
+      {faqs.map(({ q, a }) => (
+        <details class="group open:bg-white/5">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-white/5">
+            <span>{q}</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden="true">
+              <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+          </summary>
+
+          <div class="px-4 pb-4 text-orange-100/90">
+            <p class="leading-relaxed">{a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-6 text-sm text-orange-100/70">
+      Still have questions? <a href="/contact" class="underline hover:no-underline">Contact us</a> or see
+      our <a href="/aftercare" class="underline hover:no-underline">Aftercare</a> guide.
+    </p>
+  </article>
+
 
   {/* SEO: FAQPage structured data */}
   <script type="application/ld+json">
     {JSON.stringify(faqJsonLd)}
   </script>
 
-    {/* Optional helper text / links */}
-    <p class="mt-6 text-sm text-orange-100/70">
-    Still have questions? <a href="/contact" class="underline hover:no-underline">Contact us</a> or see
-    our <a href="/aftercare" class="underline hover:no-underline">Aftercare</a> guide.
-  </p>
+
 </Layout>

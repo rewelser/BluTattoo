@@ -528,11 +528,13 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
   const endProgrammaticScroll = () => {
     programmaticScrollingRef.current = false;
     setSnapDisabled(false);
+    console.log("programmaticScrollingRef.current", programmaticScrollingRef.current);
   };
 
   const beginProgrammaticScroll = () => {
     programmaticScrollingRef.current = true;
     setSnapDisabled(true);
+    console.log("programmaticScrollingRef.current", programmaticScrollingRef.current);
   };
 
   const scrollToIndex = (index: number, behavior: ScrollBehavior = "smooth") => {
@@ -815,13 +817,14 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     // if (scrollingRef.current || programmaticScrollingRef.current) return; // todo: This may be a bad idea--check and make sure that we actually need it // re:todo: I definitely found a bug where swipeAxis is set (to x) and never unset when this is uncommented. Makes sense. 
 
     const isZoomedIn = pendingRef.current.zoomScale > 1;
+    const axis = swipeAxisRef.current;
 
     // Then must be:
     // - (1) single-pointer drag (drag-y to close on release)
     // - (2) single-pointer pan on zoomed image
     if (!isZoomedIn) {
       // We did (1) single-finger drag-y, so close on release
-      const axis = swipeAxisRef.current;
+
       const deltaX = axis === "y" ? 0 : e.clientX - startXRef.current;
       const deltaY = axis === "x" ? 0 : e.clientY - startYRef.current;
 
@@ -842,7 +845,7 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
     // Reset other stuff only when no pointers are left (gesture is over)
     if (evCache.length === 0) {
       regulatePanAndZoom();
-      if (swipeAxisRef.current) {
+      if (swipeAxisRef.current && axis === "x") {
         if (swipeDirectionRef.current === "next") {
           showNext(true);
         } else if (swipeDirectionRef.current === "prev") {
@@ -919,7 +922,7 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
               disabled={isClosing}
               type="button"
               onClick={zoom}
-              className={`p-1 text-sm uppercase tracking-wide cursor-pointer ${snapDisabled || isScrolling ? "pointer-events-none" : ""} focus:outline-none`}
+              className={`p-1 text-sm uppercase tracking-wide cursor-pointer ${snapDisabled || isScrolling ? "pointer-events-none" : ""}`}
               style={{
                 opacity: imageOpacity,
                 transition: isPointerDown

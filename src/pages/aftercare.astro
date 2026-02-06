@@ -9,13 +9,15 @@ if (!entry) {
 const { Content } = await render(entry);
 const title = entry.data.title ?? "Aftercare";
 ---
-
+<!-- todo: ask Chat about this prose stuff; settle on a global look -->
 <Layout title={`BluTattoo Studio — ${title}`}>
-  <h1 class="mb-6 text-3xl font-bold tracking-tight">{title}</h1>
-
-  <article class="prose prose-invert max-w-none
+  <article
+    class="mx-auto max-w-6xl prose
                   prose-headings:tracking-tight prose-p:leading-relaxed
-                  border border-white/10 bg-black/40 p-5 md:p-6">
+                  border border-white/10 p-5 md:p-6 flex flex-col"
+  >
+    <h1 class="mb-6 text-3xl font-bold tracking-tight text-center">{title}</h1>
+
     <Content />
   </article>
 </Layout>

@@ -7,3 +7,14 @@
 .site-header {
   top: var(--announcement-h);
 }
+
+@layer base {
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    @apply ring-2 ring-indigo-500 ring-offset-2;
+  }
+}
+

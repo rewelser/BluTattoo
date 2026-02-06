@@ -20,7 +20,7 @@ const isActive = (href: string) =>
 // Load site branding (logo)
 const site = await getEntry("siteInfo", "main");
 const logo =
-  branding?.logo ?? "/uploads/mxisc_images/logos/blutattoo-trimmed.svg";
+  branding?.logo ?? "/uploads/misc_images/logos/blutattoo-trimmed.svg";
 
 const { variant = "default" } = Astro.props; // "home" | "default"
 ---
@@ -78,7 +78,6 @@ const { variant = "default" } = Astro.props; // "home" | "default"
               class="w-fit mx-auto h-20 md:h-100"
             />
           </a>
-          <BlobRow />
         </div>
       </div>
     </>
@@ -88,10 +87,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 {
   variant !== "home" && (
     // Top LOGO (desktop only, not sticky)
-    <div
-      id="desktop-top-logo"
-      class="hidden md:block top-0"
-    >
+    <div id="desktop-top-logo" class="hidden md:block top-0">
       <div class="mx-auto px-4 h-full">
         <a
           href="/"
@@ -110,8 +106,10 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 }
 
 <!-- Sticky NAV (desktop) -->
-<div class="hidden md:block sticky top-0 border-b z-50 bg-white"
-style="top: var(--announcement-h);"
+<div
+  id="sticky-nav-desktop"
+  class="hidden md:block sticky top-0 border-b z-50 bg-black/60 bg-white backdrop-blur-sm"
+  style="top: var(--announcement-h);"
 >
   <nav class="mx-auto max-w-6xl px-4">
     <ul class="flex items-center justify-center gap-8 py-3">
@@ -119,7 +117,7 @@ style="top: var(--announcement-h);"
         <a
           href="/"
           data-astro-prefetch="hover"
-          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+          class={`hover:underline ${
             isActive("/") ? "font-semibold underline text-indigo-400" : ""
           }`}
         >
@@ -130,7 +128,7 @@ style="top: var(--announcement-h);"
       <li class="relative group">
         <details class="relative">
           <summary
-            class={`list-none cursor-pointer flex items-center gap-1 hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            class={`list-none cursor-pointer flex items-center gap-1 hover:underline ${
               isActive("/artists")
                 ? "font-semibold underline text-indigo-400"
                 : ""
@@ -173,7 +171,7 @@ style="top: var(--announcement-h);"
         <a
           href="/aftercare"
           data-astro-prefetch="hover"
-          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+          class={`hover:underline ${
             isActive("/aftercare")
               ? "font-semibold underline text-indigo-400"
               : ""
@@ -187,7 +185,7 @@ style="top: var(--announcement-h);"
         <a
           href="/faq"
           data-astro-prefetch="hover"
-          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+          class={`hover:underline ${
             isActive("/faq") ? "font-semibold underline text-indigo-400" : ""
           }`}
         >
@@ -199,7 +197,7 @@ style="top: var(--announcement-h);"
         <a
           href="/contact"
           data-astro-prefetch="hover"
-          class={`hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+          class={`hover:underline ${
             isActive("/contact")
               ? "font-semibold underline text-indigo-400"
               : ""
@@ -230,8 +228,7 @@ style="top: var(--announcement-h);"
       aria-haspopup="menu"
       aria-expanded="false"
       aria-controls="mobileMenuPanel"
-      class="inline-flex items-center gap-2 border px-3 py-2
-             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      class="inline-flex items-center gap-2 border px-3 py-2"
     >
       Menu
       <svg
@@ -260,7 +257,7 @@ style="top: var(--announcement-h);"
           type="button"
           aria-expanded="false"
           aria-controls="artistsAnim"
-          class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10 focus:outline-none"
+          class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10"
         >
           <span>Artists</span>
           <svg

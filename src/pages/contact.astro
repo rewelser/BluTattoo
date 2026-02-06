@@ -36,108 +36,110 @@ const contactJsonLd = {
 ---
 
 <Layout title="BluTattoo Studio — Contact">
-  <h1 class="mb-6 text-3xl font-bold tracking-tight">Contact Us</h1>
 
-  <div class="grid gap-6 md:grid-cols-2 md:items-stretch">
-    {/* Left: Contact + Hours */}
-    <section class="border border-white/10 bg-black/40 p-5 md:p-6" aria-labelledby="contact-info-heading">
-      <h2 id="contact-info-heading" class="mb-4 text-xl font-semibold">
-        Visit or reach out
-      </h2>
+  <article class="mx-auto max-w-6xl mt-7 space-y-6">
+    <h1 class="mb-6 text-3xl font-bold tracking-tight text-center">Contact Us</h1>
+    <div class="grid md:grid-cols-2 md:items-stretch">
+      {/* Left: Contact + Hours */}
+      <section class="border border-white/10 bg-black/40 p-5 md:p-6" aria-labelledby="contact-info-heading">
+        <h2 id="contact-info-heading" class="mb-4 text-xl font-semibold">
+          Visit or reach out
+        </h2>
 
-      <ul class="space-y-4 text-orange-100/90">
-        <li class="flex items-start gap-3">
-          <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
-            <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>
-          </svg>
-          <div>
-            <div class="font-medium">{shopName}</div>
-            <a
-              class="underline hover:no-underline"
-              href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-              target="_blank"
-              rel="noopener"
-            >
-              {address}
+        <ul class="space-y-4 text-orange-100/90">
+          <li class="flex items-start gap-3">
+            <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
+              <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>
+            </svg>
+            <div>
+              <div class="font-medium">{shopName}</div>
+              <a
+                class="underline hover:no-underline"
+                href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                target="_blank"
+                rel="noopener"
+              >
+                {address}
+              </a>
+            </div>
+          </li>
+
+          <li class="flex items-start gap-3">
+            <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
+              <path d="M6.6 10.8c1.3 2.5 3.1 4.6 5.6 6l1.9-1.9c.3-.3.8-.4 1.1-.2 1.2.4 2.5.7 3.8.7.6 0 1 .4 1 .9V20c0 .5-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.5-1 1-1h3.7c.5 0 .9.4.9 1 0 1.3.2 2.6.7 3.8.1.4.1.8-.2 1.1l-1.5 1.9z"/>
+            </svg>
+            <a class="underline hover:no-underline" href={phoneHref} aria-label={`Call ${shopName}`}>
+              {phone}
             </a>
+          </li>
+
+          <li class="flex items-start gap-3">
+            <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
+              <path d="M12 13L2 6.76V18a2 2 0 002 2h16a2 2 0 002-2V6.76L12 13zM21.64 5.23A2 2 0 0020 5H4a2 2 0 00-1.64.23L12 11l9.64-5.77z"/>
+            </svg>
+            <a class="underline hover:no-underline" href={emailHref} aria-label={`Email ${shopName}`}>
+              {email}
+            </a>
+          </li>
+        </ul>
+
+        {hours.length > 0 && (
+          <div class="mt-6">
+            <h3 class="mb-2 text-lg font-semibold">Hours | Drop-In*</h3>
+            <dl class="divide-y divide-white/10 border border-white/10">
+              {hours.map(({ label, value }) => (
+                <div class="grid grid-cols-2 gap-2 p-2">
+                  <dt class="text-orange-100/80">{label}</dt>
+                  <dd class="text-right">{value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </li>
+        )}
 
-        <li class="flex items-start gap-3">
-          <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
-            <path d="M6.6 10.8c1.3 2.5 3.1 4.6 5.6 6l1.9-1.9c.3-.3.8-.4 1.1-.2 1.2.4 2.5.7 3.8.7.6 0 1 .4 1 .9V20c0 .5-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.5-1 1-1h3.7c.5 0 .9.4.9 1 0 1.3.2 2.6.7 3.8.1.4.1.8-.2 1.1l-1.5 1.9z"/>
-          </svg>
-          <a class="underline hover:no-underline" href={phoneHref} aria-label={`Call ${shopName}`}>
-            {phone}
-          </a>
-        </li>
+        <p class="mt-5 text-sm text-orange-100/70 hidden">
+          Prefer forms? You can also reach us via{" "}
+          <a href="#contact-form" class="underline hover:no-underline">the contact form below</a>.
+        </p>
 
-        <li class="flex items-start gap-3">
-          <svg viewBox="0 0 24 24" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true">
-            <path d="M12 13L2 6.76V18a2 2 0 002 2h16a2 2 0 002-2V6.76L12 13zM21.64 5.23A2 2 0 0020 5H4a2 2 0 00-1.64.23L12 11l9.64-5.77z"/>
-          </svg>
-          <a class="underline hover:no-underline" href={emailHref} aria-label={`Email ${shopName}`}>
-            {email}
-          </a>
-        </li>
-      </ul>
+        <p class="mt-5 text-sm text-orange-100/70">
+          *Appointment hours can vary based upon artist availability, which can fall outside the posted hours.
+        </p>
+      </section>
 
-      {hours.length > 0 && (
-        <div class="mt-6">
-          <h3 class="mb-2 text-lg font-semibold">Hours | Drop-In*</h3>
-          <dl class="divide-y divide-white/10 border border-white/10">
-            {hours.map(({ label, value }) => (
-              <div class="grid grid-cols-2 gap-2 p-2">
-                <dt class="text-orange-100/80">{label}</dt>
-                <dd class="text-right">{value}</dd>
-              </div>
-            ))}
-          </dl>
+      {/* Right: Map embed */}
+      <section
+        class="border border-white/10 bg-black/40 p-2 md:p-3 flex flex-col"
+        aria-labelledby="map-heading"
+      >
+        <h2 id="map-heading" class="sr-only">Map</h2>
+
+        {/* Map grows to fill remaining height */}
+        <div class="relative overflow-hidden
+                    aspect-video
+                    md:aspect-auto md:flex-1
+                    md:min-h-[400px]">
+          <iframe
+            title={`${shopName} location on Google Maps`}
+            src={mapSrc}
+            loading="lazy"
+            class="absolute left-0 top-0 h-full w-full border-0"
+          ></iframe>
         </div>
-      )}
 
-      <p class="mt-5 text-sm text-orange-100/70 hidden">
-        Prefer forms? You can also reach us via{" "}
-        <a href="#contact-form" class="underline hover:no-underline">the contact form below</a>.
-      </p>
-
-      <p class="mt-5 text-sm text-orange-100/70">
-        *Appointment hours can vary based upon artist availability, which can fall outside the posted hours.
-      </p>
-    </section>
-
-    {/* Right: Map embed */}
-    <section
-      class="border border-white/10 bg-black/40 p-2 md:p-3 flex flex-col"
-      aria-labelledby="map-heading"
-    >
-      <h2 id="map-heading" class="sr-only">Map</h2>
-
-      {/* Map grows to fill remaining height */}
-      <div class="relative overflow-hidden
-                  aspect-video
-                  md:aspect-auto md:flex-1
-                  md:min-h-[400px]">
-        <iframe
-          title={`${shopName} location on Google Maps`}
-          src={mapSrc}
-          loading="lazy"
-          class="absolute left-0 top-0 h-full w-full border-0"
-        ></iframe>
-      </div>
-
-      <div class="mt-2 text-right">
-        <a
-          href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-          target="_blank"
-          rel="noopener"
-          class="text-sm underline text-orange-100/80 hover:no-underline"
-        >
-          Open in Google Maps →
-        </a>
-      </div>
-    </section>
-  </div>
+        <div class="mt-2 text-right">
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+            target="_blank"
+            rel="noopener"
+            class="text-sm underline text-orange-100/80 hover:no-underline"
+          >
+            Open in Google Maps →
+          </a>
+        </div>
+      </section>
+    </div>
+  </article>
 
   {/* Simple contact form (optional) */}
   <section id="contact-form" class="mt-6 border border-white/10 bg-black/40 p-5 md:p-6 hidden">
@@ -153,8 +155,7 @@ const contactJsonLd = {
           type="text"
           name="name"
           required
-          class="border border-white/10 bg-black/50 p-3 outline-none
-                 focus:ring-2 focus:ring-indigo-500"
+          class="border border-white/10 bg-black/50 p-3"
         />
       </label>
 
@@ -164,8 +165,7 @@ const contactJsonLd = {
           type="email"
           name="email"
           required
-          class="border border-white/10 bg-black/50 p-3 outline-none
-                 focus:ring-2 focus:ring-indigo-500"
+          class="border border-white/10 bg-black/50 p-3"
         />
       </label>
 
@@ -175,8 +175,7 @@ const contactJsonLd = {
           name="message"
           rows={5}
           required
-          class="border border-white/10 bg-black/50 p-3 outline-none
-                 focus:ring-2 focus:ring-indigo-500"
+          class="border border-white/10 bg-black/50 p-3"
         ></textarea>
       </label>
 

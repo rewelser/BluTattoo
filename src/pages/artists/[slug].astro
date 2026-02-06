@@ -32,154 +32,190 @@ const thumb = (src: string, w: number) =>
   src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
 ---
 <Layout title={`BluTattoo Studio — ${entry.data.title}`}>
-  <article class="mx-auto max-w-3xl space-y-6">
+  <article class="space-y-6">
+    <!-- mx-auto max-w-3xl -->
     <!-- <header class="space-y-2 flex flex-wrap sm:flex-nowrap items-center gap-4"> -->
-    <header class="space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {entry.data.photo && (
-        <div class="portrait-anim portrait-glow">
-          <img 
-            src={entry.data.photo as string}
-            alt={`Portrait of ${entry.data.title}`}
-            width="400"
-            height="400"
-            decoding="sync"
-            loading="eager"
-            fetchpriority="high"
-            class="portrait-img"
-          />
+    <header class="text-orange-100">
+      <div class="space-y-2 pt-10 bg-black">
+        <!-- <div class="mx-auto max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4"> -->
+        <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around">
+          {entry.data.photo && (
+            <div class="portrait-anim portrait-glow">
+              <div class="portrait-glow">
+              <img 
+                src={entry.data.photo as string}
+                alt={`Portrait of ${entry.data.title}`}
+                width="400"
+                height="400"
+                decoding="sync"
+                loading="eager"
+                fetchpriority="high"
+                class="portrait-img mask-b-from-60% mask-b-to-100%"
+              />
+              </div>
+            </div>
+          )}
+          <style>
+            .portrait-anim.portrait-glow {
+              --portrait-in: 6000ms;
+              opacity: 0;
+              transform: translate3d(-200px, 0, 0);
+              filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
+                      drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
+              animation: portraitIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards,
+              glowIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards;
+              will-change: transform, opacity;
+            }
+
+            @media (max-width: 640px) {
+              .portrait-anim.portrait-glow {
+                --portrait-in: 2000ms;
+              }
+            }
+
+            @keyframes portraitIn {
+              to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+              }
+            }
+
+            @keyframes glowIn {
+              to {
+                /* filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
+                        drop-shadow(-1px -10px 32px rgba(99, 102, 241, 0.18)); */
+                filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
+                        drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+                /* filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.35))
+                        drop-shadow(0 0 22px rgba(99, 102, 241, 0.18)); */
+              }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+              .portrait-anim {
+                opacity: 1;
+                transform: none;
+                animation: none;
+              }
+            }
+
+            .portrait-fade::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              pointer-events: none;
+
+              /* This is the fade-to-black from the bottom */
+              background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 1) 0%,
+                rgba(0, 0, 0, 0) 10%
+              );
+            }
+          </style>
+          <div>
+            <h1 class="text-3xl font-bold">{entry.data.title}</h1>
+            {entry.data.styles?.length && (
+              <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
+            )}
+      
+            {entry.data.instagram && (
+              <p>
+                <a
+                  href={entry.data.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
+                >
+                  <!-- tiny IG glyph -->
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                      fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+                  </svg>
+                  Instagram
+                </a>
+              </p>
+            )}
+        
+            {entry.data.bio && (
+              <section>
+                <h2 class="sr-only">Bio</h2>
+                <p class="whitespace-pre-line">{entry.data.bio}</p>
+              </section>
+            )}
+          </div>
         </div>
-      )}
-      <style>
-        .portrait-anim.portrait-glow {
-          --portrait-in: 6000ms;
-          opacity: 0;
-          transform: translate3d(-200px, 0, 0);
-          filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
-                  drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
-          animation: portraitIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards,
-          glowIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards;
-          will-change: transform, opacity;
-        }
-
-        @media (max-width: 640px) {
-          .portrait-anim.portrait-glow {
-            --portrait-in: 2000ms;
-          }
-        }
-
-        @keyframes portraitIn {
-          to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-          }
-        }
-
-        @keyframes glowIn {
-          to {
-            /* filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                    drop-shadow(-1px -10px 32px rgba(99, 102, 241, 0.18)); */
-            filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                    drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
-            /* filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.35))
-                    drop-shadow(0 0 22px rgba(99, 102, 241, 0.18)); */
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .portrait-anim {
-            opacity: 1;
-            transform: none;
-            animation: none;
-          }
-        }
-      </style>
-
-
-      <div>
-        <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-        {entry.data.styles?.length && (
-          <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
-        )}
-  
-        {entry.data.instagram && (
-          <p>
-            <a
-              href={entry.data.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
-            >
-              <!-- tiny IG glyph -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                   fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-              </svg>
-              Instagram
-            </a>
-          </p>
-        )}
-    
-        {entry.data.bio && (
-          <section>
-            <h2 class="sr-only">Bio</h2>
-            <p class="whitespace-pre-line">{entry.data.bio}</p>
-          </section>
-        )}
+      </div>
+      {/* Divider */}
+      <div aria-hidden="true">
+        <svg class="block h-full w-full drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)]" viewBox="1 1 590 213">
+          <path d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z" fill="black" />
+        </svg>
       </div>
     </header>
 
-    {/* Artist Gallery (no react thumbnail gallery) */}
+    <!-- Artist Gallery -->
     {entry.data.images?.length && (
-      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {entry.data.images.map((img, idx) => {
-          return(
-            <button
-              type="button"
-              class="overflow-hidden rounded text-left cursor-pointer"
-              data-idx={idx}
-              onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
-            >
-              <img
-                src={thumb(img.src as string, 360)}
-                srcset={`${thumb(img.src as string, 240)} 240w,
-                        ${thumb(img.src as string, 360)} 360w,
-                        ${thumb(img.src as string, 480)} 480w,
-                        ${thumb(img.src as string, 720)} 720w`}
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                alt={img.alt ?? ""}
-                loading="lazy"
-                decoding="async"
-                class="block w-full aspect-square object-cover"
-              />
-            </button>
-          )
-        })}
-        <ArtistGallery
-          client:load
-          images={entry.data.images}
-        />
+      <section >
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
+          <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
+            <div>
+              <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
+                Gallery
+              </h2>
+              <p class="text-sm text-gray-600">
+                Tap/click to view full size.
+              </p>
+            </div>
+
+            <p class="text-xs text-gray-500">
+              {entry.data.images.length} photos
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {entry.data.images.map((img, idx) => (
+              <button
+                type="button"
+                class="group overflow-hidden rounded-md text-left cursor-pointer"
+                data-idx={idx}
+                onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
+              >
+                <img
+                  src={thumb(img.src as string, 360)}
+                  srcset={`${thumb(img.src as string, 240)} 240w,
+                          ${thumb(img.src as string, 360)} 360w,
+                          ${thumb(img.src as string, 480)} 480w,
+                          ${thumb(img.src as string, 720)} 720w`}
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  alt={img.alt ?? ""}
+                  loading="lazy"
+                  decoding="async"
+                  class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </button>
+            ))}
+          </div>
+          <ArtistGallery
+              client:load
+              images={entry.data.images}
+          />
+        </div>
       </section>
     )}
-
-    {/* Instagram component -- messes with styling, so we're omitting it for now */}
-    <!-- {ig && (
-      // <section class="mt-8 flex justify-center border-2 border-solid border-red-500">
-      <section class="mt-8 flex justify-center">
-        {/* <h2 class="text-xl font-semibold mb-4">Latest on Instagram</h2> */}
-        <InstagramProfile username={ig} className="overflow-hidden w-xl" />
-      </section>
-    )} -->
 
     {/* Preferred: Square embed if present */}
     {entry.data.square?.enabled &&
     entry.data.square?.merchantSlug &&
     entry.data.square?.locationSlug && (
-      <SquareAppointments
-        merchantSlug={entry.data.square.merchantSlug}
-        locationSlug={entry.data.square.locationSlug}
-        label={entry.data.square.label}
-        className="mt-2"
-      />
+      <div class="p-5 mx-auto max-w-6xl">
+        <SquareAppointments
+          merchantSlug={entry.data.square.merchantSlug}
+          locationSlug={entry.data.square.locationSlug}
+          label={entry.data.square.label}
+          className="mt-2"
+        />
+      </div>
     )}
 
     {/* Fallback: a plain external booking link */}
