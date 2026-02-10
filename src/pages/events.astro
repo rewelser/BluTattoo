@@ -1,0 +1,125 @@
+---
+// src/pages/events.astro
+import Layout from "../layouts/Layout.astro";
+import PromoHero from "../components/PromoHero.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+type EventEntry = CollectionEntry<"events">;
+type EventItem = EventEntry["data"] & { id: string };
+
+const now = new Date();
+
+const parseDate = (iso: string): Date => {
+    const d = new Date(iso);
+    // guard against invalid dates coming from malformed strings
+    return Number.isNaN(d.getTime()) ? new Date(0) : d;
+};
+
+const fmtDate = (iso: string) =>
+    parseDate(iso).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+
+const fmtRange = (ev: EventItem) =>
+    ev.endDate
+        ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}`
+        : fmtDate(ev.startDate);
+
+const entries = (await getCollection(
+    "events",
+    (e) => e.data.published !== false,
+)) as EventEntry[];
+
+const events: EventItem[] = entries
+    .map((e) => ({ id: e.id, ...e.data }))
+    .sort(
+        (a, b) =>
+            parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
+    );
+
+const endOrStart = (ev: EventItem) => parseDate(ev.endDate ?? ev.startDate);
+
+const upcoming = events.filter((ev) => endOrStart(ev) >= now);
+const past = events.filter((ev) => endOrStart(ev) < now).reverse(); // most recent first
+
+const featured =
+    upcoming.find((ev) => ev.featured && ev.hero?.image) ??
+    upcoming.find((ev) => ev.hero?.image) ??
+    null;
+---
+
+<Layout title="BluTattoo Studio — Events">
+    <article class="page-article page-article--stack space-y-6">
+        <h1 class="page-title">Events</h1>
+
+        {
+            featured?.hero?.image && (
+                <PromoHero
+                    image={featured.hero.image}
+                    alt={featured.hero.alt ?? featured.title}
+                    className="p-8"
+                />
+            )
+        }
+
+        {
+            upcoming.length > 0 ? (
+                <section class="space-y-3">
+                    <h2 class="text-xl font-semibold tracking-tight">
+                        Upcoming
+                    </h2>
+
+                    <div class="divide-y divide-black/10 border border-black/10">
+                        {upcoming.map((ev) => (
+                            <a
+                                class="block p-4 hover:bg-black/5"
+                                href={`/events/${ev.id}`}
+                            >
+                                <div class="font-medium">{ev.title}</div>
+                                <div class="text-sm opacity-80">
+                                    {fmtRange(ev)}
+                                    {ev.location ? ` • ${ev.location}` : ""}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            ) : (
+                <section class="border border-black/10 p-5 md:p-6">
+                    <h2 class="text-xl font-semibold tracking-tight">
+                        Stay tuned
+                    </h2>
+                    <p class="mt-2 leading-relaxed">
+                        We’re planning events and guest spots. As soon as dates
+                        are locked in, they’ll appear here.
+                    </p>
+                </section>
+            )
+        }
+
+        {
+            past.length > 0 && (
+                <section class="space-y-3">
+                    <h2 class="text-xl font-semibold tracking-tight">Past</h2>
+
+                    <div class="divide-y divide-black/10 border border-black/10">
+                        {past.slice(0, 6).map((ev) => (
+                            <a
+                                class="block p-4 hover:bg-black/5"
+                                href={`/events/${ev.id}`}
+                            >
+                                <div class="font-medium">{ev.title}</div>
+                                <div class="text-sm opacity-80">
+                                    {fmtRange(ev)}
+                                    {ev.location ? ` • ${ev.location}` : ""}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )
+        }
+    </article>
+</Layout>

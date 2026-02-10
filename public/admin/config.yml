@@ -163,3 +163,46 @@ collections:
                 hint: "Recommended: wide image (e.g. 1600×900+)"
 
               - { name: promoAlt, label: "Image Alt Text", widget: string, required: false }
+              
+  - name: "events"
+    label: "Events"
+    folder: "src/content/events"
+    create: true
+    # slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: published, label: Published, widget: boolean, default: true }
+      - { name: featured, label: Featured, widget: boolean, required: false, default: false }
+
+      - { name: startDate, label: Start Date, widget: datetime }
+      - { name: endDate, label: End Date, widget: datetime, required: false }
+      - { name: location, label: Location, widget: string, required: false }
+
+      - label: "Hero (Events page)"
+        name: hero
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - label: "Hero Image"
+            name: image
+            widget: image
+            required: false
+            media_folder: "/public/uploads/events"
+            public_folder: "/uploads/events"
+          - { name: alt, label: Image Alt Text, widget: string, required: false }
+
+      - label: "Promo Bar (optional)"
+        name: promoBar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { name: enabled, label: Enable Promo Bar, widget: boolean, default: false }
+          - { name: message, label: Message, widget: string, required: false }
+          - { name: href, label: Link URL, widget: string, required: false }
+
+      - { name: body, label: Details, widget: markdown, required: false }
+

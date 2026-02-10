@@ -1,0 +1,53 @@
+---
+// src/pages/events/[id].astro
+import Layout from "../../layouts/Layout.astro";
+import PromoHero from "../../components/PromoHero.astro";
+import { getCollection, getEntry, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("events", (e) => e.data.published !== false);
+  return entries.map((e) => ({
+    params: { id: e.id },
+  }));
+}
+
+const { id } = Astro.params;
+if (!id) throw new Error("Missing event id param");
+
+const entry = await getEntry("events", id);
+if (!entry) throw new Error(`Event not found: ${id}`);
+
+const { Content } = await render(entry);
+const ev = entry.data;
+---
+
+<Layout title={`BluTattoo Studio — ${ev.title}`}>
+  <article class="page-article page-article--stack space-y-6">
+    <h1 class="page-title">{ev.title}</h1>
+
+    {ev.hero?.image && (
+      <PromoHero
+        image={ev.hero.image}
+        alt={ev.hero.alt ?? ev.title}
+        className="p-8"
+      />
+    )}
+
+    <div class="border border-black/10 p-5 md:p-6">
+      <div class="text-sm opacity-80">
+        {new Date(ev.startDate).toLocaleString()}
+        {ev.endDate ? ` – ${new Date(ev.endDate).toLocaleString()}` : ""}
+        {ev.location ? ` • ${ev.location}` : ""}
+      </div>
+
+      {/* Markdown body */}
+      <div class="prose mt-4 max-w-none">
+        <Content />
+      </div>
+    </div>
+
+    <p class="text-sm">
+      <a class="underline hover:no-underline" href="/events">← Back to Events</a>
+    </p>
+  </article>
+</Layout>

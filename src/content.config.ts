@@ -10,20 +10,49 @@ const emptyStrToUndef = (v: unknown) =>
 const emptyArrToUndef = (v: unknown) =>
   Array.isArray(v) && v.length === 0 ? undefined : v;
 
-const home = defineCollection({
-  loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
+// Commented out for now; home will ultimately be used for modifying splash content and that's it 
+// const home = defineCollection({
+//   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
+//   schema: z.object({
+//     promoMain: z.object({
+//       promoEnabled: z.boolean().default(true),
+//       promoImage: z.preprocess(emptyStrToUndef, z.string().optional()),
+//       promoAlt: z.preprocess(emptyStrToUndef, z.string().optional()),
+//     }).optional(),
+//   }),
+// });
+
+const events = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/events" }),
   schema: z.object({
-    promoMain: z.object({
-      promoEnabled: z.boolean().default(true),
-      promoImage: z.preprocess(emptyStrToUndef, z.string().optional()),
-      promoAlt: z.preprocess(emptyStrToUndef, z.string().optional()),
-    }).optional(),
+    title: z.string(),
+    published: z.boolean().default(true),
+    featured: z.boolean().default(false),
+
+    startDate: z.string(), // or z.coerce.date() if you prefer Date objects
+    endDate: z.preprocess(emptyStrToUndef, z.string().optional()),
+    location: z.preprocess(emptyStrToUndef, z.string().optional()),
+
+    hero: z
+      .object({
+        image: z.preprocess(emptyStrToUndef, z.string().optional()),
+        alt: z.preprocess(emptyStrToUndef, z.string().optional()),
+      })
+      .optional(),
+
+    promoBar: z
+      .object({
+        enabled: z.boolean().default(false),
+        message: z.preprocess(emptyStrToUndef, z.string().optional()),
+        href: z.preprocess(emptyStrToUndef, z.string().optional()),
+      })
+      .optional(),
   }),
 });
 
 const artists = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
-  schema:  ({ image }) => z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     order: z.number().default(999),    // ← add this
     photo: z.preprocess(emptyStrToUndef, z.string().optional()),
@@ -79,13 +108,8 @@ const siteInfo = defineCollection({
     phone: z.preprocess(emptyStrToUndef, z.string().optional()),
     email: z.preprocess(emptyStrToUndef, z.string().optional()),
     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-    promoBanner: z.object({
-      enabled: z.boolean(),
-      text: z.string(),
-      url: z.preprocess(emptyStrToUndef, z.string().optional()),
-    }).optional(),
   }),
 });
 
 
-export const collections = { artists, faqs, siteInfo, aftercare, home };
+export const collections = { artists, faqs, siteInfo, aftercare, events }; // & home

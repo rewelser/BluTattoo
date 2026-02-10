@@ -4,6 +4,54 @@ import branding from "../content/branding.json";
 import BlobRow from "../components/decor/BlobRow copy.astro";
 import PromoBar from "./PromoBar.astro";
 
+/**
+ * EVENTS
+ */
+type EventEntry = CollectionEntry<"events">;
+type EventItem = EventEntry["data"] & { id: string };
+
+const now = new Date();
+
+const parseDate = (iso: string): Date => {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? new Date(0) : d;
+};
+
+const isEventActive = (ev: EventItem): boolean => {
+  const end = ev.endDate ? parseDate(ev.endDate) : parseDate(ev.startDate);
+  return end >= now;
+};
+
+// Load events (published only)
+const eventEntries = (await getCollection(
+  "events",
+  (e) => e.data.published !== false,
+)) as EventEntry[];
+
+const events: EventItem[] = eventEntries
+  .map((e) => ({ id: e.id, ...e.data }))
+  .sort(
+    (a, b) =>
+      parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
+  );
+
+// Pick which event drives the PromoBar
+const activeWithPromoBar = events.filter(
+  (ev) => isEventActive(ev) && ev.promoBar?.enabled && !!ev.promoBar?.message,
+);
+
+const promoEvent =
+  activeWithPromoBar.find((ev) => ev.featured) ?? activeWithPromoBar[0] ?? null;
+
+const promoStorageKey = promoEvent
+  ? `bt_promo_dismissed_${promoEvent.id}`
+  : "bt_promo_dismissed";
+// (optional) allow overriding href fallback
+const promoHref = promoEvent?.promoBar?.href ?? "/events";
+
+/**
+ * ARTISTS
+ */
 // Load & order artists
 let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 artists = artists.sort(
@@ -25,8 +73,15 @@ const logo =
 const { variant = "default" } = Astro.props; // "home" | "default"
 ---
 
-<!-- Promo announcement bar -->
-<PromoBar />
+<!-- Promo announcement bar -->{
+  promoEvent?.promoBar?.message && promoEvent.promoBar.enabled && (
+    <PromoBar
+      storageKey={promoStorageKey}
+      message={promoEvent.promoBar.message}
+      href={promoEvent.promoBar.href ?? "/events"}
+    />
+  )
+}
 
 {
   variant === "home" && (
@@ -183,6 +238,18 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 
       <li>
         <a
+          href="/events"
+          data-astro-prefetch="hover"
+          class={`hover:underline ${
+            isActive("/events") ? "font-semibold underline text-indigo-400" : ""
+          }`}
+        >
+          EVENTS
+        </a>
+      </li>
+
+      <li>
+        <a
           href="/aftercare"
           data-astro-prefetch="hover"
           class={`hover:underline ${
@@ -228,6 +295,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 <header
   id="mobileHeader"
   class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative"
+  style="top: var(--announcement-h);"
 >
   <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -305,10 +373,19 @@ const { variant = "default" } = Astro.props; // "home" | "default"
             }
           </ul>
         </div>
-        <a href="/piercing" class="block px-2 py-3 hover:bg-white/10">Piercing</a>
-        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10">Aftercare</a>
+        <a href="/piercing" class="block px-2 py-3 hover:bg-white/10"
+          >Piercing</a
+        >
+        <a href="/events" class="block px-2 py-3 hover:bg-white/10"
+          >Events</a
+        >
+        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10"
+          >Aftercare</a
+        >
         <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
-        <a href="/contact" class="block px-2 py-3 hover:bg-white/10">Contact Us</a>
+        <a href="/contact" class="block px-2 py-3 hover:bg-white/10"
+          >Contact Us</a
+        >
       </nav>
     </div>
   </div>

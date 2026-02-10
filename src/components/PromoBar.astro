@@ -56,11 +56,10 @@ const h = `${height}px`;
     </button>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ storageKey, id }}>
     (() => {
-      const storageKey = "bt_promo_dismissed";
-      const banner = document.getElementById("promo-bar");
-      const spacer = document.getElementById("promo-bar-spacer");
+      const banner = document.getElementById(id);
+      const spacer = document.getElementById(`${id}-spacer`);
       if (!banner || !spacer) return;
 
       const hide = () => {
@@ -70,15 +69,29 @@ const h = `${height}px`;
       };
 
       // if dismissed before, hide immediately
+      // try {
+      //   // if (localStorage.getItem(storageKey) === "1") hide();
+      //   // else document.documentElement.style.setProperty("--announcement-h", spacer.style.height);
+      //   // always setting it for now to test
+      //   document.documentElement.style.setProperty(
+      //     "--announcement-h",
+      //     spacer.style.height,
+      //   );
+      // } catch {}
+
       try {
-        // if (localStorage.getItem(storageKey) === "1") hide();
-        // else document.documentElement.style.setProperty("--announcement-h", spacer.style.height);
-        // always setting it for now to test
+        if (localStorage.getItem(storageKey) === "1") hide();
+        else
+          document.documentElement.style.setProperty(
+            "--announcement-h",
+            spacer.style.height,
+          );
+      } catch {
         document.documentElement.style.setProperty(
           "--announcement-h",
           spacer.style.height,
         );
-      } catch {}
+      }
 
       banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
         try {
