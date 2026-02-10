@@ -36,7 +36,7 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
         ticking = true;
 
         requestAnimationFrame(() => {
-
+console.log("sdgsdfsdf");
             for (const { parallaxWindow, parallaxBg } of parallaxBgs) {
                 const r = parallaxWindow?.getBoundingClientRect();
                 if (!r) return;

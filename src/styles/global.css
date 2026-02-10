@@ -18,3 +18,20 @@
   }
 }
 
+@layer components {
+  /* Shared article shell used by FAQ / Contact / Aftercare */
+  .page-article {
+    @apply mx-auto max-w-6xl px-5 py-7 md:px-6 md:py-8;
+  }
+
+  /* If you want the article itself to be a flex column consistently */
+  .page-article--stack {
+    @apply flex flex-col;
+  }
+
+  /* Shared h1 */
+  .page-title {
+    @apply mb-6 text-center text-3xl font-bold tracking-tight;
+  }
+}
+

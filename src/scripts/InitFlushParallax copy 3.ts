@@ -43,7 +43,10 @@ export function initParallaxY({
     const end = -winH;
     const t = clamp01((start - top) / (start - end));
 
-    const y = reverse ? lerp(0, -travel, t) : lerp(-travel, 0, t);
+    // const y = reverse ? lerp(0, -travel, t) : lerp(-travel, 0, t);
+    const y = reverse ? lerp(0, -travel, t) : lerp(-travel + 300, 0, t);
+    console.log(t);
+    // const y = reverse ? lerp(0, -travel, t) : lerp(0, travel, t);
 
     // Optional: quantize to reduce subpixel shimmer on some GPUs
     img.style.setProperty("--py", `${Math.round(y)}px`);

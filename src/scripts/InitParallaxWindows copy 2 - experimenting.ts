@@ -1,11 +1,14 @@
 // export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 0.1) {
-export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 1, parallaxDirectionReversed = true) {
+export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 1, parallaxInScrollDirection = false) {
 
     const roots = Array.from(document.querySelectorAll(selector));
+    const vh = document.documentElement.clientHeight * 0.01;
 
     type ParallaxBg = {
         parallaxWindow: Element | null;
         parallaxBg: Element | null;
+        parallaxBgH: number | undefined;
+        imgH: number;
         speed: number;
     };
 
@@ -13,19 +16,26 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
 
     for (const root of roots) {
 
-        const add = (parallaxWindow: Element | null, parallaxBg: Element | null, speed: number) => {
+        const add = (parallaxWindow: Element | null, parallaxBg: Element | null, parallaxBgH: number | undefined, imgH: number, speed: number) => {
 
             parallaxBgs.push({
                 parallaxWindow: root,
                 parallaxBg: parallaxBg,
+                parallaxBgH: parallaxBgH,
+                imgH,
                 speed,
             });
         };
 
         const rect = root.getBoundingClientRect();
         if (!rect) return;
+        // const naturalH = img.naturalHeight
+        // const img = win?.querySelector<HTMLImageElement>(mediaSel);
+        const imgH = 1100;
+        const parallaxBg = root.querySelector(nestedSelector);
+        const parallaxBgH = parallaxBg?.getBoundingClientRect().height;
 
-        add(root, root.querySelector(nestedSelector), speed);
+        add(root, parallaxBg, parallaxBgH, imgH, speed);
     }
 
     let ticking = false;
@@ -38,14 +48,13 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
 
         const y = window.scrollY;
         if (y !== lastScrollY) {
-            // console.log(y > lastScrollY ? "down" : "up");
             scrollDirection = y > lastScrollY ? "down" : "up";
             lastScrollY = y;
         }
 
         requestAnimationFrame(() => {
 
-            for (const { parallaxWindow, parallaxBg, speed } of parallaxBgs) {
+            for (const { parallaxWindow, parallaxBg, parallaxBgH, imgH, speed } of parallaxBgs) {
                 // These seemed to cause a jump on iOS Chrome:
                 // const viewportH = window.visualViewport?.height ?? window.innerHeight;
 
@@ -56,20 +65,26 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
                 if (!r) return;
                 const onScreen = r && r.bottom > 0 && r.top < viewportH;
 
-                // const baselinePercent = 100 - speed * 100;
-                // console.log(baselinePercent);
-                let progressPercent = Math.min(
+                let progFraction = Math.min(
                     1, Math.max(0,
                         (viewportH - r.top) / (viewportH + r.height)
                     )
-                ) * 100 * speed;
+                );
 
-                progressPercent = parallaxDirectionReversed ? progressPercent : 100 - progressPercent;
-                // progressPercent = scrollDirection === "up" ? progressPercent+= 20 : progressPercent -= 20;
+                let progressPercent = progFraction * 100;
+                if (parallaxInScrollDirection) {
+                    progFraction = (1 - progFraction);
+                    progressPercent = (100 - progressPercent);
+                }
+
+                const offsetY = (-imgH) + (parallaxBgH! - (-imgH)) * progFraction;
+                const percentY = (100 * offsetY) / (parallaxBgH! - imgH);
+                // console.log("percentY,", percentY);
 
                 const element = parallaxBg as HTMLElement;
                 if (element && onScreen) {
-                    element.style.backgroundPosition = `50% ${progressPercent}%`;
+                    // element.style.backgroundPosition = `50% ${progressPercent}%`;
+                    element.style.backgroundPosition = `50% ${offsetY}px`;
                 }
             }
 

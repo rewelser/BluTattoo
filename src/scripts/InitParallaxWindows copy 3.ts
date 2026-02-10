@@ -57,7 +57,7 @@ export function initParallaxWindows(
 
         const element = parallaxBg as HTMLElement | null;
         if (element) {
-          element.style.backgroundPosition = `50% ${progress}%`;
+          element.style.backgroundPosition = `50% ${100 - progress}%`;
         }
       }
 

@@ -169,6 +169,20 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 
       <li>
         <a
+          href="/piercing"
+          data-astro-prefetch="hover"
+          class={`hover:underline ${
+            isActive("/piercing")
+              ? "font-semibold underline text-indigo-400"
+              : ""
+          }`}
+        >
+          PIERCING
+        </a>
+      </li>
+
+      <li>
+        <a
           href="/aftercare"
           data-astro-prefetch="hover"
           class={`hover:underline ${
@@ -291,14 +305,10 @@ const { variant = "default" } = Astro.props; // "home" | "default"
             }
           </ul>
         </div>
-
-        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10"
-          >Aftercare</a
-        >
+        <a href="/piercing" class="block px-2 py-3 hover:bg-white/10">Piercing</a>
+        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10">Aftercare</a>
         <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
-        <a href="/contact" class="block px-2 py-3 hover:bg-white/10"
-          >Contact Us</a
-        >
+        <a href="/contact" class="block px-2 py-3 hover:bg-white/10">Contact Us</a>
       </nav>
     </div>
   </div>

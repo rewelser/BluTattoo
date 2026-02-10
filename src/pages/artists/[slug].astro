@@ -36,9 +36,9 @@ const thumb = (src: string, w: number) =>
     <!-- mx-auto max-w-3xl -->
     <!-- <header class="space-y-2 flex flex-wrap sm:flex-nowrap items-center gap-4"> -->
     <header class="text-orange-100">
-      <div class="space-y-2 pt-10 bg-black">
-        <!-- <div class="mx-auto max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4"> -->
-        <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around">
+      <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
+        <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around"> -->
           {entry.data.photo && (
             <div class="portrait-anim portrait-glow">
               <div class="portrait-glow">
@@ -113,42 +113,50 @@ const thumb = (src: string, w: number) =>
               );
             }
           </style>
-          <div>
-            <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-            {entry.data.styles?.length && (
-              <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
-            )}
-      
-            {entry.data.instagram && (
-              <p>
-                <a
-                  href={entry.data.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
-                >
-                  <!-- tiny IG glyph -->
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                      fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-                  </svg>
-                  Instagram
-                </a>
-              </p>
-            )}
+          <div id="artist-bio" class="flex items-center">
+            <div>
+              <h1 class="text-3xl font-bold">{entry.data.title}</h1>
+              {entry.data.styles?.length && (
+                <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
+              )}
         
-            {entry.data.bio && (
-              <section>
-                <h2 class="sr-only">Bio</h2>
-                <p class="whitespace-pre-line">{entry.data.bio}</p>
-              </section>
-            )}
+              {entry.data.instagram && (
+                <p>
+                  <a
+                    href={entry.data.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
+                  >
+                    <!-- tiny IG glyph -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                      <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+                    </svg>
+                    Instagram
+                  </a>
+                </p>
+              )}
+          
+              {entry.data.bio && (
+                <section class="">
+                  <h2 class="sr-only">Bio</h2>
+                  <p class="whitespace-pre-line">{entry.data.bio}</p>
+                </section>
+              )}
+            </div>
           </div>
         </div>
       </div>
       {/* Divider */}
       <div aria-hidden="true">
-        <svg class="block h-full w-full drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)]" viewBox="1 1 590 213">
+        <!-- drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)] -->
+        <svg class="block h-full w-full" viewBox="1 1 590 213">
+            <defs>
+              <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
+                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+              </filter>
+            </defs>
           <path d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z" fill="black" />
         </svg>
       </div>

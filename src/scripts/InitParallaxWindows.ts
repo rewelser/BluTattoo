@@ -1,5 +1,5 @@
 // export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 0.1) {
-export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = 0.2) {
+export function initParallaxWindows(selector = ".parallax-window", nestedSelector = ".parallax-bg", speed = .8) {
 
     const roots = Array.from(document.querySelectorAll(selector));
 
@@ -29,8 +29,6 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
         if (!rect) return;
 
 
-        const speed = 0.1;
-
         const ALIGN_AT_PX = (rect.top + (rect.height / 2) + window.scrollY) - (window.innerHeight / 2);
         add(root, root.querySelector(nestedSelector), speed, speed * ALIGN_AT_PX);
     }
@@ -55,19 +53,19 @@ export function initParallaxWindows(selector = ".parallax-window", nestedSelecto
                 // );
 
                 // startOffset pushes down initially; scroll pulls upward
-                // const ty = startOffset - (y * speed);
-                console.log("y", y);
-                console.log("speed", speed);
-                const ty = (y * speed);
+                const ty = startOffset - (y * speed);
+                // console.log("y", y);
+                // console.log("speed", speed);
+                // const ty = (y * speed);
                 const element = parallaxBg as HTMLElement;
-                if (element && onScreen && false) {
-                    console.log("is adjusting");
-                    console.log(ty);
-                    element.style.transform = `translate3d(0, ${ty}px, 0)`; // -ty scrolls with, +ty scrolls against
-                }
-                // if (element) {
+                // if (element && onScreen) {
+                //     console.log("is adjusting");
+                //     console.log(ty);
                 //     element.style.transform = `translate3d(0, ${ty}px, 0)`; // -ty scrolls with, +ty scrolls against
                 // }
+                if (element) {
+                    element.style.transform = `translate3d(0, ${-ty}px, 0)`; // -ty scrolls with, +ty scrolls against
+                }
             }
 
             ticking = false;
