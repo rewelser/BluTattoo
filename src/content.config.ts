@@ -29,8 +29,8 @@ const events = defineCollection({
     published: z.boolean().default(true),
     featured: z.boolean().default(false),
 
-    startDate: z.string(), // or z.coerce.date() if you prefer Date objects
-    endDate: z.preprocess(emptyStrToUndef, z.string().optional()),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
     location: z.preprocess(emptyStrToUndef, z.string().optional()),
 
     hero: z

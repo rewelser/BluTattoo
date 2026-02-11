@@ -9,14 +9,8 @@ type EventItem = EventEntry["data"] & { id: string };
 
 const now = new Date();
 
-const parseDate = (iso: string): Date => {
-    const d = new Date(iso);
-    // guard against invalid dates coming from malformed strings
-    return Number.isNaN(d.getTime()) ? new Date(0) : d;
-};
-
-const fmtDate = (iso: string) =>
-    parseDate(iso).toLocaleDateString(undefined, {
+const fmtDate = (d: Date) =>
+    d.toLocaleDateString(undefined, {
         year: "numeric",
         month: "short",
         day: "numeric",
@@ -34,15 +28,12 @@ const entries = (await getCollection(
 
 const events: EventItem[] = entries
     .map((e) => ({ id: e.id, ...e.data }))
-    .sort(
-        (a, b) =>
-            parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
-    );
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-const endOrStart = (ev: EventItem) => parseDate(ev.endDate ?? ev.startDate);
+const endOrStart = (ev: EventItem) => ev.endDate ?? ev.startDate;
 
 const upcoming = events.filter((ev) => endOrStart(ev) >= now);
-const past = events.filter((ev) => endOrStart(ev) < now).reverse(); // most recent first
+const past = events.filter((ev) => endOrStart(ev) < now).reverse();
 
 const featured =
     upcoming.find((ev) => ev.featured && ev.hero?.image) ??

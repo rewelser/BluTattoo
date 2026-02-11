@@ -12,13 +12,8 @@ type EventItem = EventEntry["data"] & { id: string };
 
 const now = new Date();
 
-const parseDate = (iso: string): Date => {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? new Date(0) : d;
-};
-
 const isEventActive = (ev: EventItem): boolean => {
-  const end = ev.endDate ? parseDate(ev.endDate) : parseDate(ev.startDate);
+  const end = ev.endDate ?? ev.startDate;
   return end >= now;
 };
 
@@ -30,10 +25,7 @@ const eventEntries = (await getCollection(
 
 const events: EventItem[] = eventEntries
   .map((e) => ({ id: e.id, ...e.data }))
-  .sort(
-    (a, b) =>
-      parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime(),
-  );
+  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
 // Pick which event drives the PromoBar
 const activeWithPromoBar = events.filter(
@@ -376,9 +368,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
         <a href="/piercing" class="block px-2 py-3 hover:bg-white/10"
           >Piercing</a
         >
-        <a href="/events" class="block px-2 py-3 hover:bg-white/10"
-          >Events</a
-        >
+        <a href="/events" class="block px-2 py-3 hover:bg-white/10">Events</a>
         <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10"
           >Aftercare</a
         >
