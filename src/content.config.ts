@@ -45,6 +45,8 @@ const events = defineCollection({
         enabled: z.boolean().default(false),
         message: z.preprocess(emptyStrToUndef, z.string().optional()),
         href: z.preprocess(emptyStrToUndef, z.string().optional()),
+        color1: z.preprocess(emptyStrToUndef, z.string().optional()),
+        color2: z.preprocess(emptyStrToUndef, z.string().optional()),
       })
       .optional(),
   }),

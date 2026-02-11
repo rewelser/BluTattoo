@@ -121,19 +121,19 @@ collections:
         file: "src/content/branding.json"
         format: "json"
         fields:
-          - label: Background Image
-            name: background
+          - label: Logo (SVG or PNG, dark version)
+            name: logo_dark
             widget: image
             required: true
-            hint: "Large background image (jpg/png)."
-            media_folder: "/public/uploads/misc_images/backgrounds"
-            public_folder: "/uploads/misc_images/backgrounds"
+            hint: "Header logo (dark-on-light version)."
+            media_folder: "/public/uploads/misc_images/logos"
+            public_folder: "/uploads/misc_images/logos"
 
-          - label: Logo (SVG or PNG)
-            name: logo
+          - label: Logo (SVG or PNG, light version)
+            name: logo_light
             widget: image
-            required: true
-            hint: "Header logo."
+            required: false
+            hint: "Header logo (light-on-dark version)."
             media_folder: "/public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
 
@@ -203,6 +203,18 @@ collections:
           - { name: enabled, label: Enable Promo Bar, widget: boolean, default: false }
           - { name: message, label: Message, widget: string, required: false }
           - { name: href, label: Link URL, widget: string, required: false }
+
+          - label: "Color 1"
+            name: color1
+            widget: color
+            required: false
+            hint: "If only one color is set, bar uses a solid background."
+
+          - label: "Color 2"
+            name: color2
+            widget: color
+            required: false
+            hint: "If two colors are set, bar uses a left→right gradient."
 
       - { name: body, label: Details, widget: markdown, required: false }
 

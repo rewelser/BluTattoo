@@ -5,9 +5,28 @@ const {
   storageKey = "bt_promo_dismissed",
   message = "Now booking March!",
   href = "/booking",
+  color1,
+  color2,
 } = Astro.props;
 
 const h = `${height}px`;
+
+// const defaultBg = "linear-gradient(90deg, #020024 0%, #005eff 100%)";
+const defaultBg = "linear-gradient(90deg, #020024 0%, #5613ff 100%)";
+
+const c1 = typeof color1 === "string" && color1.trim() ? color1.trim() : "";
+const c2 = typeof color2 === "string" && color2.trim() ? color2.trim() : "";
+
+// Rules:
+// - 0 colors -> default gradient
+// - 1 color  -> solid
+// - 2 colors -> simple 2-stop gradient
+const background =
+  c1 && c2
+    ? `linear-gradient(90deg, ${c1} 0%, ${c2} 100%)`
+    : c1
+      ? c1
+      : defaultBg;
 ---
 
 <!-- Spacer: keeps layout from sliding under the fixed bar -->
@@ -20,26 +39,10 @@ const h = `${height}px`;
   role="region"
   aria-label="Announcement"
 >
-  <!-- todo: make this accept a chosen color or css gradient and if that fails, fall back to a default gradient/ color scheme -->
   <div
     class="h-full flex items-center justify-center gap-3 px-4 text-white text-sm sm:text-base md:text-2xl"
-    style="
-      background: linear-gradient(90deg,
-        rgba(2,0,36,1) 0%,
-        rgba(9,9,121,1) 35%,
-        rgb(0, 94, 255) 100%
-      );
-    "
+    style={`background: ${background};`}
   >
-    <!-- <style>
-  .promo-outline{
-    font-size: 18px;
-    font-weight: 800;
-    color: black;
-    -webkit-text-stroke: 3px white;
-    paint-order: stroke fill; /* not everywhere, but helps where supported */
-  }
-</style> -->
     <a
       class="promo-outline flex items-center justify-center w-full h-full text-center"
       href={href}
@@ -80,7 +83,7 @@ const h = `${height}px`;
       // } catch {}
 
       try {
-        if (localStorage.getItem(storageKey) === "1") hide();
+        if (localStorage.getItem(storageKey) === "1" && false) hide(); // todo: remove false for prod
         else
           document.documentElement.style.setProperty(
             "--announcement-h",

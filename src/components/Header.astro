@@ -59,8 +59,8 @@ const isActive = (href: string) =>
 
 // Load site branding (logo)
 const site = await getEntry("siteInfo", "main");
-const logo =
-  branding?.logo ?? "/uploads/misc_images/logos/blutattoo-trimmed.svg";
+const logo_dark = branding?.logo_dark ?? "/uploads/misc_images/logos/blutattoo-trimmed.svg";
+const logo_light = branding?.logo_light ?? "/uploads/misc_images/logos/blutattoo-trimmed.svg";
 
 const { variant = "default" } = Astro.props; // "home" | "default"
 ---
@@ -71,6 +71,8 @@ const { variant = "default" } = Astro.props; // "home" | "default"
       storageKey={promoStorageKey}
       message={promoEvent.promoBar.message}
       href={promoEvent.promoBar.href ?? "/events"}
+      color1={promoEvent.promoBar.color1}
+      color2={promoEvent.promoBar.color2}
     />
   )
 }
@@ -120,7 +122,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
             aria-label="BluTattoo Studio"
           >
             <img
-              src={logo}
+              src={logo_dark}
               alt="BluTattoo Studio"
               class="w-fit mx-auto h-20 md:h-100"
             />
@@ -165,7 +167,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           href="/"
           data-astro-prefetch="hover"
           class={`hover:underline ${
-            isActive("/") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/") ? "font-semibold underline text-indigo-600" : ""
           }`}
         >
           HOME
@@ -177,7 +179,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           <summary
             class={`list-none cursor-pointer flex items-center gap-1 hover:underline ${
               isActive("/artists")
-                ? "font-semibold underline text-indigo-400"
+                ? "font-semibold underline text-indigo-600"
                 : ""
             }`}
           >
@@ -220,7 +222,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           data-astro-prefetch="hover"
           class={`hover:underline ${
             isActive("/piercing")
-              ? "font-semibold underline text-indigo-400"
+              ? "font-semibold underline text-indigo-600"
               : ""
           }`}
         >
@@ -233,7 +235,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           href="/events"
           data-astro-prefetch="hover"
           class={`hover:underline ${
-            isActive("/events") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/events") ? "font-semibold underline text-indigo-600" : ""
           }`}
         >
           EVENTS
@@ -246,7 +248,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           data-astro-prefetch="hover"
           class={`hover:underline ${
             isActive("/aftercare")
-              ? "font-semibold underline text-indigo-400"
+              ? "font-semibold underline text-indigo-600"
               : ""
           }`}
         >
@@ -259,7 +261,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           href="/faq"
           data-astro-prefetch="hover"
           class={`hover:underline ${
-            isActive("/faq") ? "font-semibold underline text-indigo-400" : ""
+            isActive("/faq") ? "font-semibold underline text-indigo-600" : ""
           }`}
         >
           FAQ
@@ -272,7 +274,7 @@ const { variant = "default" } = Astro.props; // "home" | "default"
           data-astro-prefetch="hover"
           class={`hover:underline ${
             isActive("/contact")
-              ? "font-semibold underline text-indigo-400"
+              ? "font-semibold underline text-indigo-600"
               : ""
           }`}
         >
@@ -284,15 +286,12 @@ const { variant = "default" } = Astro.props; // "home" | "default"
 </div>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header
-  id="mobileHeader"
-  class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative"
-  style="top: var(--announcement-h);"
->
+<!-- <header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative" style="top: var(--announcement-h);"> -->
+<header id="mobileHeader" class="md:hidden sticky top-0 z-50 border-b bg-black/80 text-orange-100 backdrop-blur relative" style="top: var(--announcement-h);">
   <!-- top row: logo + button -->
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2" aria-label="BluTattoo Studio">
-      <img src={logo} alt="" class="h-15 w-auto" />
+      <img src={logo_light} alt="" class="h-15 w-auto" />
       <span class="sr-only">BluTattoo Studio</span>
     </a>
 

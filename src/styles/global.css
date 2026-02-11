@@ -31,7 +31,7 @@
 
   /* Shared h1 */
   .page-title {
-    @apply mb-6 text-center text-3xl font-bold tracking-tight;
+    @apply mb-6 text-center text-4xl font-bold tracking-tight;
   }
 }
 

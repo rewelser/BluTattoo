@@ -14,12 +14,9 @@ import diplomataUrl from "@fontsource/diplomata-sc/files/diplomata-sc-latin-400-
 import "@fontsource/spectral/400.css";
 // import '@fontsource/spectral/700.css';
 import "@fontsource/diplomata-sc/400.css";
-import branding from "../content/branding.json";
 
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
-const bg =
-  branding?.background ?? "/uploads/misc_images/backgrounds/background.jpg";
 ---
 
 <!doctype html>
@@ -33,7 +30,6 @@ const bg =
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
     <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
-    <link rel="preload" as="image" href={bg} />
     <link
       rel="preload"
       href={spectral400Url}
@@ -70,7 +66,7 @@ const bg =
     </main> -->
     <main class="mx-auto">
       <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
-      <div class="bg-white shadow-2xl ring-1 ring-black/5">
+      <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
         <div>
           <Header variant={isHome ? "home" : "default"} class="site-header" />
           <div id="pagecontent-wrap" class="relative z-40 bg-white">
