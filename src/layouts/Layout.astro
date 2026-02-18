@@ -69,6 +69,7 @@ const site = await getEntry("siteInfo", "main");
       <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
         <div>
           <Header variant={isHome ? "home" : "default"} class="site-header" />
+          <!-- todo: what is this doing? vvv -->
           <div id="pagecontent-wrap" class="relative z-40 bg-white">
             <slot />
             {/* page content goes here */}

@@ -29,9 +29,7 @@ const background =
       : defaultBg;
 ---
 
-<!-- Spacer: keeps layout from sliding under the fixed bar -->
-<div id={`${id}-spacer`} style={`height:${h};`} aria-hidden="true"></div>
-
+<!-- Spacer: keeps layout from sliding under the fixed bar --><!-- <div id={`${id}-spacer`} style={`height:${h};`} aria-hidden="true"></div> -->
 <aside
   id={id}
   class="fixed top-0 left-0 w-full z-[80]"
@@ -63,11 +61,11 @@ const background =
     (() => {
       const banner = document.getElementById(id);
       const spacer = document.getElementById(`${id}-spacer`);
-      if (!banner || !spacer) return;
-
+      // if (!banner || !spacer) return;
+      if (!banner) return;
       const hide = () => {
         banner.style.display = "none";
-        spacer.style.display = "none";
+        // spacer.style.display = "none";
         document.documentElement.style.removeProperty("--announcement-h");
       };
 
@@ -81,20 +79,33 @@ const background =
       //     spacer.style.height,
       //   );
       // } catch {}
-
       try {
-        if (localStorage.getItem(storageKey) === "1" && false) hide(); // todo: remove false for prod
-        else
+        if (localStorage.getItem(storageKey) === "1" && false) {
+          hide(); // todo: remove false for prod
+          console.log("if");
+        } else {
+          // document.documentElement.style.setProperty(
+          //   "--announcement-h",
+          //   spacer.style.height,
+          // );
           document.documentElement.style.setProperty(
             "--announcement-h",
-            spacer.style.height,
+            banner.style.height,
           );
+          console.log("else");
+        }
       } catch {
+        // document.documentElement.style.setProperty(
+        //   "--announcement-h",
+        //   spacer.style.height,
+        // );
         document.documentElement.style.setProperty(
           "--announcement-h",
-          spacer.style.height,
+          banner.style.height,
         );
+        console.log("catch");
       }
+      // console.log("--announcement-h", --announcement-h);
 
       banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
         try {

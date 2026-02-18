@@ -1,11 +1,11 @@
 // mobile-menu.js
 (function () {
   function setupMobileMenu() {
-    const header      = document.getElementById("mobileHeader");
-    const mobileBtn   = document.getElementById("mobileMenuBtn");
-    const mobileAnim  = document.getElementById("mobileMenuAnim");
-    const artistsBtn  = document.getElementById("artistsToggle");
-    const artistsAnim = document.getElementById("artistsAnim");
+    const header      = document.getElementById("mobile-header");
+    const mobileBtn   = document.getElementById("mobile-menu-btn");
+    const mobileAnim  = document.getElementById("mobile-menu-anim");
+    const artistsBtn  = document.getElementById("artists-toggle");
+    const artistsAnim = document.getElementById("artists-anim");
 
     if (!header || !mobileBtn || !mobileAnim || !artistsBtn || !artistsAnim) return;
     if (mobileBtn.dataset.mmBound === "1") return;

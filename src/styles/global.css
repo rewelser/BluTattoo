@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "./hamburger-elastic.css";
+@import "./hamburger-base.css";
+@import "./hamburger-spring.css";
+@import "./hamburger-squeeze.css";
 @plugin "@tailwindcss/typography";
 
 :root {

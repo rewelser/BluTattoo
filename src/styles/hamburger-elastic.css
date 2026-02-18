@@ -1,0 +1,34 @@
+/* Hamburger type: elastic (type-only file). */
+.hb.hamburger--elastic .hamburger-inner {
+  top: calc(var(--hb-height) / 2);
+  margin-top: 0; /* override base centering */
+  transition-duration: 0.275s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hb.hamburger--elastic .hamburger-inner::before {
+  top: calc(var(--hb-height) + var(--hb-spacing));
+  transition: opacity 0.125s 0.275s ease;
+}
+
+.hb.hamburger--elastic .hamburger-inner::after {
+  top: calc(var(--hb-height) * 2 + var(--hb-spacing) * 2);
+  bottom: auto; /* override base */
+  transition: transform 0.275s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hb.hamburger--elastic.is-active .hamburger-inner {
+  --hb-y: calc(var(--hb-spacing) + var(--hb-height));
+  transform: translate3d(0, var(--hb-y), 0) rotate(135deg);
+  transition-delay: 0.075s;
+}
+
+.hb.hamburger--elastic.is-active .hamburger-inner::before {
+  transition-delay: 0s;
+  opacity: 0;
+}
+
+.hb.hamburger--elastic.is-active .hamburger-inner::after {
+  transform: translate3d(0, calc(var(--hb-y) * -2), 0) rotate(-270deg);
+  transition-delay: 0.075s;
+}
