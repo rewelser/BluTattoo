@@ -1,0 +1,480 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { MobileMenuItem } from "./Header.astro";
+
+type ArtistEntry = CollectionEntry<"artists">;
+
+const {
+  menuItems,
+  logo_light,
+  variant = "default",
+} = Astro.props as {
+  menuItems: MobileMenuItem[];
+  logo_light: string;
+  variant?: "home" | "default";
+};
+---
+
+<style>
+  #mobile-header scroll-state(stuck: top) {
+    /* Styles applied only when stuck to top */
+    background-color: red;
+  }
+</style>
+
+<!-- Mobile: single sticky bar (logo + menu button) -->
+<header
+  id="mobile-header"
+  class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
+    variant !== "home" ? "bg-black/80 backdrop-blur" : ""
+  }`}
+  style="top: var(--announcement-h);"
+>
+  <!-- top row: logo + button -->
+  <div
+    class="flex items-center flex-col justify-center mx-auto max-w-6xl min-h-[10vh]"
+  >
+    <div
+      id="mobile-logo-container"
+      class="absolute"
+      style={`${variant === "home" ? "transform: translateY(-55vh)" : ""}`}
+    >
+      <a href="/" aria-label="BluTattoo Studio">
+        <img
+          id="mobile-logo"
+          src={logo_light}
+          alt=""
+          class={`w-auto p-2 ${variant === "home" ? "h-[35vh]" : "h-[10vh]"}`}
+        />
+        <span class="sr-only">BluTattoo Studio</span>
+      </a>
+    </div>
+
+    <button
+      id="mobile-menu-btn"
+      class="hb hamburger hamburger--elastic inline-flex items-center border px-3 py-2 self-end"
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu-panel"
+      aria-label="Menu"
+      data-burger
+    >
+      <span class="hamburger-box" aria-hidden="true">
+        <span class="hamburger-inner"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- panel sits below the top row -->
+  <div id="mobile-menu-panel" class="inset-x-0 top-full px-4 text-center">
+    <div
+      id="mobile-menu-anim"
+      class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
+      inert
+    >
+      <nav class="p-2 shadow-xl" id="mobile-menu-nav">
+        {
+          menuItems.map((item, i) => {
+            const baseId = `mi-${i}`;
+            if (item.type === "link") {
+              return (
+                <a
+                  href={item.href}
+                  class="block px-2 py-3 hover:bg-white/10"
+                  {...(item.prefetch ? { "data-astro-prefetch": "hover" } : {})}
+                >
+                  {item.label}
+                </a>
+              );
+            }
+
+            // submenu
+            const btnId = `${baseId}-toggle`;
+            const panelId = `${baseId}-panel`;
+
+            return (
+              <>
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10"
+                  data-submenu-toggle
+                  aria-expanded="false"
+                  aria-controls={panelId}
+                  id={btnId}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="ml-2 h-4 w-4 transition-transform fill-orange-100"
+                    aria-hidden="true"
+                    data-chevron
+                  >
+                    <path d="M7 10l5 5 5-5H7z" />
+                  </svg>
+                </button>
+
+                <div
+                  id={panelId}
+                  class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]"
+                  data-submenu-panel
+                  aria-labelledby={btnId}
+                  inert
+                >
+                  <ul class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10">
+                    {item.items.map((sub) => (
+                      <li>
+                        <a
+                          href={sub.href}
+                          class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                          {...(sub.prefetch
+                            ? { "data-astro-prefetch": "hover" }
+                            : {})}
+                        >
+                          {sub.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            );
+          })
+        }
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const header = document.getElementById("mobile-header");
+    const mobileBtn = document.getElementById("mobile-menu-btn");
+    const mobileAnim = document.getElementById("mobile-menu-anim");
+    const nav = document.getElementById("mobile-menu-nav");
+
+    if (!header || !mobileBtn || !mobileAnim || !nav) return;
+
+    const isExpanded = (btn) => btn.getAttribute("aria-expanded") === "true";
+
+    // --- accessibility helpers ---------------------------------------------
+
+    const isFocusInside = (container) =>
+      !!(container && container.contains(document.activeElement));
+
+    // For collapsed panels: inert prevents tab/focus/interaction inside.
+    // (Optionally also toggle `hidden` if you want it out of the accessibility tree.)
+    const setPanelInteractive = (panel, interactive) => {
+      if (!panel) return;
+      panel.inert = !interactive;
+      // If you want *also* hidden:
+      // panel.hidden = !interactive;
+      // If you use hidden, you must set hidden=false before measuring scrollHeight.
+    };
+
+    // Ensure focus ends up somewhere sensible if we're about to collapse something
+    const ensureFocusNotIn = (panel, fallbackEl) => {
+      if (!panel) return;
+      if (isFocusInside(panel)) {
+        // If focus is currently in the collapsing panel, move it back to the toggle (or other fallback)
+        fallbackEl?.focus?.();
+      }
+    };
+
+    // --- animation helpers --------------------------------------------------
+
+    const getTransitionMs = (el) => {
+      const cs = getComputedStyle(el);
+      const toMs = (s) =>
+        s
+          .split(",")
+          .map((x) => x.trim())
+          .map((x) => (x.endsWith("ms") ? parseFloat(x) : parseFloat(x) * 1000))
+          .filter((n) => !Number.isNaN(n));
+      const maxDur = Math.max(0, ...(toMs(cs.transitionDuration) || [0]));
+      const maxDel = Math.max(0, ...(toMs(cs.transitionDelay) || [0]));
+      return maxDur + maxDel + 50;
+    };
+
+    const lock = (btn, panel) => {
+      btn.disabled = true;
+      panel.style.pointerEvents = "none";
+      panel.dataset.animating = "1";
+    };
+
+    const unlock = (btn, panel) => {
+      delete panel.dataset.animating;
+      btn.disabled = false;
+      panel.style.pointerEvents = "";
+    };
+
+    const ensurePixelHeight = (panel) => {
+      if (
+        getComputedStyle(panel).height === "auto" ||
+        panel.style.height === "auto"
+      ) {
+        panel.style.height = panel.scrollHeight + "px";
+        void panel.offsetHeight;
+      }
+    };
+
+    const expand = (panel) => {
+      ensurePixelHeight(panel);
+      panel.style.height = panel.scrollHeight + "px";
+    };
+
+    const collapse = (panel) => {
+      ensurePixelHeight(panel);
+      panel.style.height = "0px";
+    };
+
+    /**
+     * setExpanded:
+     * - updates aria-expanded + chevron
+     * - animates height open/closed
+     * - manages inert:
+     *    - expanded: inert=false immediately (so keyboard can enter after open)
+     *    - collapsed: inert=true after collapse finishes (so we don't "kick" focus mid-transition)
+     * - basic focus management:
+     *    - if collapsing while focus is inside panel, return focus to btn
+     */
+    const setExpanded = (btn, panel, expanded, chevron) => {
+      // Focus management before collapsing
+      if (!expanded) ensureFocusNotIn(panel, btn);
+      btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+      chevron?.classList.toggle("rotate-180", expanded);
+
+      // inert rules
+      if (expanded) {
+        setPanelInteractive(panel, true);
+      }
+
+      lock(btn, panel);
+      const totalMs = getTransitionMs(panel);
+
+      let ended = false;
+      const finish = () => {
+        if (ended) return;
+        ended = true;
+        if (expanded) {
+          panel.style.height = "auto";
+        } else {
+          setPanelInteractive(panel, false);
+        }
+        unlock(btn, panel);
+      };
+
+      const onEnd = (e) => {
+        if (e.propertyName !== "height") return;
+        panel.removeEventListener("transitionend", onEnd);
+        clearTimeout(fallback);
+        finish();
+      };
+      panel.addEventListener("transitionend", onEnd);
+
+      const fallback = setTimeout(finish, totalMs);
+
+      expanded ? expand(panel) : collapse(panel);
+    };
+
+    const closeAllSubmenus = () => {
+      nav.querySelectorAll("[data-submenu-toggle]").forEach((btn) => {
+        if (!isExpanded(btn)) return;
+        const controls = btn.getAttribute("aria-controls");
+        const panel = controls && document.getElementById(controls);
+        if (!panel) return;
+
+        setExpanded(btn, panel, false, btn.querySelector("[data-chevron]"));
+      });
+    };
+
+    const closeOuter = () => {
+      // If focus is anywhere inside the whole menu region, return it to the hamburger button
+      ensureFocusNotIn(mobileAnim, mobileBtn);
+      closeAllSubmenus();
+      setExpanded(mobileBtn, mobileAnim, false);
+      mobileBtn.classList.toggle("is-active", false);
+    };
+
+    // Outer toggle
+    mobileBtn.addEventListener("click", () => {
+      const nextExpansionState = !isExpanded(mobileBtn);
+      mobileBtn.classList.toggle("is-active", nextExpansionState);
+
+      if (!nextExpansionState) closeAllSubmenus();
+      setExpanded(mobileBtn, mobileAnim, nextExpansionState);
+    });
+
+    // Delegated submenu clicks
+    nav.addEventListener("click", (e) => {
+      const btn = e.target.closest?.("[data-submenu-toggle]");
+      if (!btn) return;
+
+      // avoid races while outer animating
+      if (mobileAnim.dataset.animating === "1") return;
+
+      const panelId = btn.getAttribute("aria-controls");
+      const panel = panelId && document.getElementById(panelId);
+      if (!panel) return;
+
+      // Close other submenus first
+      nav
+        .querySelectorAll('[data-submenu-toggle][aria-expanded="true"]')
+        .forEach((openBtn) => {
+          if (openBtn === btn) return;
+          const id = openBtn.getAttribute("aria-controls");
+          const p = id && document.getElementById(id);
+          if (!p) return;
+          setExpanded(
+            openBtn,
+            p,
+            false,
+            openBtn.querySelector("[data-chevron]"),
+          );
+        });
+
+      const chevron = btn.querySelector("[data-chevron]");
+      setExpanded(btn, panel, !isExpanded(btn), chevron);
+    });
+
+    // Outside click closes all
+    document.addEventListener(
+      "pointerdown",
+      (e) => {
+        if (header.contains(e.target)) return;
+        if (mobileAnim.dataset.animating === "1") return;
+        closeOuter();
+      },
+      { passive: true },
+    );
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeOuter();
+    });
+  })();
+</script>
+
+{variant === "home" && (
+<script is:inline>
+  (() => {
+  // const hero = document.getElementById("backdrop-double");
+  const hero = document.getElementById("hero-video-container");
+  const overlay = document.getElementById("hero-video-scroll-wash");
+  const mobilenav = document.getElementById("mobile-header");
+  const logo = document.getElementById("mobile-logo");
+  const logo_container = document.getElementById("mobile-logo-container");
+  const mobile_menu_btn = document.getElementById("mobile-menu-btn");
+  const promo_bar = document.getElementById("promo-bar");
+  // if (!hero || !overlay || !mobilenav) return;
+  // Targets:
+  // - bg-black/80 => alpha 0.80
+  // - backdrop-blur-sm in Tailwind is typically 4px (if you customized it, change this)
+  const MAX_ALPHA = 0.8;
+  const MAX_BLUR_PX = 8;
+  const MAX_SCALE = 2;
+  const MAX_OPACITY = 1;
+
+  // Make sure we start at 0
+  overlay.style.backgroundColor = "rgba(0,0,0,0)";
+  overlay.style.backdropFilter = "blur(0px)";
+  overlay.style.webkitBackdropFilter = "blur(0px)";
+
+  mobile_menu_btn.style.opacity = 0;
+  // logo.style.transform = "scale(2)";
+
+  let ticking = false;
+  let menuStuck = false; // todo: maybe we can just use css scroll-state; search on that
+
+  function clamp01(x) {
+    return Math.max(0, Math.min(1, x));
+  }
+
+  function update() {
+    ticking = false;
+
+    function vhToPx(vh) {
+      return (vh / 100) * document.documentElement.clientHeight;
+      // return (vh / document.documentElement.clientHeight) / 100;
+    }
+
+    const rect = hero.getBoundingClientRect();
+    // console.log(document.documentElement.style.removeProperty("--announcement-h"));
+    const promo_bar_height =
+      promo_bar.style.display === "none" ? 0 : parseInt(promo_bar.style.height);
+    // console.log("promo_bar_height", promo_bar_height);
+
+    // account for height of promo bar if present
+    const earlyFinishPx = vhToPx(10) + promo_bar_height;
+    const denom = Math.max(1, rect.height - earlyFinishPx);
+
+    // old progress calc, before earlyFinishPx was taken into account
+    // const progress = clamp01(-rect.y / rect.height);
+    const progress = clamp01(-rect.y / denom);
+    // console.log("-------");
+    // console.log("earlyFinishPx", earlyFinishPx);
+    // console.log("rect.top", rect.top);
+    // console.log("-rect.top", -rect.top);
+    // console.log("rect.height", rect.height);
+    // console.log("progress", progress);
+
+    const alpha = progress * MAX_ALPHA;
+    const blur = progress * MAX_BLUR_PX;
+    const opacity = progress * MAX_OPACITY;
+
+    const scale = 1 - progress * MAX_SCALE;
+
+    overlay.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
+    overlay.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
+    overlay.style.webkitBackdropFilter = `blur(${blur.toFixed(2)}px)`;
+
+    mobilenav.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
+    mobilenav.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
+    mobilenav.style.webkitBackdropFilter = `blur(${blur.toFixed(2)}px)`;
+
+    mobile_menu_btn.style.opacity = `${opacity.toFixed(2)}`;
+
+    // logo.style.scale = `${scale.toFixed(2)}`;
+
+    // --- mobile logo tween ---
+    // const logo = document.getElementById("mobile-logo");
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    /**
+     * todos here:
+     * - these numbers are for testing
+     * - need to adust the negative margin on the video container
+     * - make sure parallax can be applied to video without bad
+     * - use translateY and scale together, or use them separately (new separate values)
+     * - make it so svg scales with nav size
+     * - make svg not suck, lol
+     * - remove mt on mobile menu panel; achieve that somehow else
+     */
+
+    // if (logo) {
+    const startTranslateYVh = -55;
+    const startHeightVh = 35;
+    const endHeightVh = 10; // h-15
+    const translateYVh = lerp(startTranslateYVh, 0, progress);
+    const heightVh = lerp(startHeightVh, endHeightVh, progress);
+    // console.log("translateYVh", translateYVh);
+    logo_container.style.transform = `translateY(${translateYVh}vh)`;
+    const p = (1 - progress.toFixed(2)) * 100;
+    // console.log("1 - progress.toFixed(2)", 1 - progress.toFixed(2));
+    // logo.style.height = `calc(${(1 - progress).toFixed(2)} * ${startHeightVh}vh + ${p} * ${endHeightVh}vh)`;
+    logo.style.height = `${heightVh.toFixed(2)}vh`;
+    // logo.style.height = `${p}vh`;
+    // }
+  }
+
+  function onScrollOrResize() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize);
+  update(); // initial paint
+  })();
+</script>
+)}

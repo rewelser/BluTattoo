@@ -5,6 +5,22 @@ import BlobRow from "../components/decor/BlobRow copy.astro";
 import PromoBar from "./PromoBar.astro";
 import MenuIcon from "../components/graphics/MenuIcon.astro";
 
+// menu model type (put in a .ts file or inline)
+type MenuLink = {
+  type: "link";
+  label: string;
+  href: string;
+  prefetch?: boolean;
+};
+
+type MenuSubmenu = {
+  type: "submenu";
+  label: string;
+  items: MenuLink[];
+};
+
+export type MobileMenuItem = MenuLink | MenuSubmenu;
+
 /**
  * EVENTS
  */
@@ -53,6 +69,23 @@ artists = artists.sort(
     a.data.title.localeCompare(b.data.title),
 );
 
+const artistLinks = artists.map((entry) => ({
+  type: "link" as const,
+  label: entry.data.title,
+  href: `/artists/${entry.id}/`,
+  prefetch: true,
+}));
+
+const menuItems: MobileMenuItem[] = [
+  { type: "link", label: "Home", href: "/" },
+  { type: "submenu", label: "Artists", items: artistLinks },
+  { type: "link", label: "Piercing", href: "/piercing" },
+  { type: "link", label: "Events", href: "/events" },
+  { type: "link", label: "Aftercare", href: "/aftercare" },
+  { type: "link", label: "FAQ", href: "/faq" },
+  { type: "link", label: "Contact Us", href: "/contact" },
+];
+
 // Active link helper
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
@@ -66,7 +99,7 @@ const logo_light =
   branding?.logo_light ?? "/uploads/misc_images/logos/blutattoo-trimmed.svg";
 
 const { variant = "default" } = Astro.props; // "home" | "default"
-const { controls = "site-nav", id = "burger" } = Astro.props;
+import MobileMenu from "./MobileMenu 4.astro";
 ---
 
 <!-- Promo announcement bar -->{
@@ -299,354 +332,15 @@ const { controls = "site-nav", id = "burger" } = Astro.props;
   }
 </style>
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header
-  id="mobile-header"
-  class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${variant !== "home" ? "bg-black/80 backdrop-blur" : ""}`}
-  style="top: var(--announcement-h);"
->
-  <!-- top row: logo + button -->
-  <div
-    class="flex items-center flex-col justify-center mx-auto max-w-6xl min-h-[10vh]"
-  >
-    <div
-      id="mobile-logo-container"
-      class="absolute"
-      style="transform: translateY(-55vh)"
-    >
-      <a href="/" aria-label="BluTattoo Studio">
-        <img
-          id="mobile-logo"
-          src={logo_light}
-          alt=""
-          class="w-auto p-2 h-[35vh]"
-        />
-        <span class="sr-only">BluTattoo Studio</span>
-      </a>
-    </div>
+<!-- import MobileMenu from "./MobileMenu.astro"; -->
+<!-- import MobileMenu from "./MobileMenu 3.astro"; -->
+<!-- <MobileMenu artists={artists} logo_light={logo_light} variant={variant} /> -->
+<!-- <MobileMenu artists={artists} logo_light={logo_light} variant={variant} /> -->
+<MobileMenu menuItems={menuItems} logo_light={logo_light} variant={variant} />
 
-    <!-- <button
-      id="mobile-menu-btn"
-      type="button"
-      aria-haspopup="menu"
-      aria-expanded="false"
-      aria-controls="mobile-menu-panel"
-      class="absolute inline-flex items-center gap-2 border px-3 py-2"
-    >
-      Menu
-      <svg
-        viewBox="0 0 24 24"
-        class="h-4 w-4 transition-transform fill-orange-100"
-        aria-hidden="true"
-      >
-        <path d="M7 10l5 5 5-5H7z"></path>
-      </svg>
-    </button> -->
-    <button
-      id="mobile-menu-btn"
-      type="button"
-      aria-haspopup="menu"
-      aria-expanded="false"
-      aria-controls="mobile-menu-panel"
-      class="inline-flex items-center border px-3 py-2 text-orange-100 self-end"
-    >
-      <span class="sr-only">Menu</span>
-      <MenuIcon class="h-[1.25em] w-[1.25em] shrink-0" />
-    </button>
-    <button
-      id={id}
-      class="hb hamburger hamburger--elastic"
-      type="button"
-      aria-label="Menu"
-      aria-controls={controls}
-      aria-expanded="false"
-      data-burger
-    >
-      <span class="hamburger-box" aria-hidden="true">
-        <span class="hamburger-inner"></span>
-      </span>
-    </button>
 
-    <script>
-      // Find the button explicitly; do not use document.currentScript.
-      const btn = document.querySelector('[data-burger][id="burger"]');
 
-      if (!btn) {
-        console.warn("Burger button not found");
-      } else {
-        btn.addEventListener("click", () => {
-          const isActive = btn.classList.toggle("is-active");
-          btn.setAttribute("aria-expanded", isActive ? "true" : "false");
 
-          const controls = btn.getAttribute("aria-controls");
-          const menu = controls && document.getElementById(controls);
-          if (menu) menu.toggleAttribute("data-open", isActive);
-        });
-      }
-    </script>
-  </div>
-
-  <!-- panel sits below the top row -->
-  <div id="mobile-menu-panel" class="inset-x-0 top-full px-4 text-center">
-    <!-- The element we animate is this wrapper -->
-    <div
-      id="mobile-menu-anim"
-      class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
-    >
-      <nav class="p-2 shadow-xl" role="menu">
-        <a href="/" class="block px-2 py-3 hover:bg-white/10">Home</a>
-
-        <!-- Artists submenu -->
-        <button
-          id="artists-toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="artistsAnim"
-          class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10"
-        >
-          <span>Artists</span>
-          <svg
-            viewBox="0 0 24 24"
-            class="h-4 w-4 transition-transform fill-orange-100"
-            aria-hidden="true"
-          >
-            <path d="M7 10l5 5 5-5H7z"></path>
-          </svg>
-        </button>
-
-        <div
-          id="artists-anim"
-          class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]"
-        >
-          <ul
-            class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10"
-          >
-            {
-              artists.map((entry) => (
-                <li>
-                  <a
-                    href={`/artists/${entry.id}/`}
-                    class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
-                    data-astro-prefetch="hover"
-                  >
-                    {entry.data.title}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-        <a href="/piercing" class="block px-2 py-3 hover:bg-white/10"
-          >Piercing</a
-        >
-        <a href="/events" class="block px-2 py-3 hover:bg-white/10">Events</a>
-        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10"
-          >Aftercare</a
-        >
-        <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
-        <a href="/contact" class="block px-2 py-3 hover:bg-white/10"
-          >Contact Us</a
-        >
-      </nav>
-    </div>
-  </div>
-</header>
-
-<!-- <script is:inline>
-  (() => {
-    const hero = document.getElementById("backdrop-double");
-    const overlay = document.getElementById("hero-video-scroll-wash");
-    const mobilenav = document.getElementById("mobile-header");
-    if (!hero || !overlay || !mobilenav) return;
-
-    // Targets:
-    // - bg-black/80 => alpha 0.80
-    // - backdrop-blur-sm in Tailwind is typically 4px (if you customized it, change this)
-    const MAX_ALPHA = 0.8;
-    const MAX_BLUR_PX = 4;
-
-    // Make sure we start at 0
-    overlay.style.backgroundColor = "rgba(0,0,0,0)";
-    overlay.style.backdropFilter = "blur(0px)";
-    overlay.style.webkitBackdropFilter = "blur(0px)";
-
-    let ticking = false;
-
-    function clamp01(x) {
-      return Math.max(0, Math.min(1, x));
-    }
-
-    function update() {
-      ticking = false;
-
-      const rect = hero.getBoundingClientRect();
-      const progress = clamp01(-rect.top / rect.height);
-      // console.log("-------");
-      // console.log("rect.top", rect.top);
-      // console.log("-rect.top", -rect.top);
-      // console.log("rect.height", rect.height);
-      // console.log("progress", progress);
-
-      const alpha = progress * MAX_ALPHA;
-      const blur = progress * MAX_BLUR_PX;
-
-      overlay.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(4)})`;
-      overlay.style.backdropFilter = `blur(${blur.toFixed(8)}px)`;
-      overlay.style.webkitBackdropFilter = `blur(${blur.toFixed(8)}px)`;
-
-      mobilenav.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(4)})`;
-      mobilenav.style.backdropFilter = `blur(${blur.toFixed(8)}px)`;
-      mobilenav.style.webkitBackdropFilter = `blur(${blur.toFixed(8)}px)`;
-
-      // --- mobile logo tween ---
-      const logo = document.getElementById("mobile-logo");
-      const lerp = (a, b, t) => a + (b - a) * t;
-
-      if (logo) {
-        const startTranslateYVh = 0;
-        const startHeightVh = 50;
-
-        const endHeightPx = 70; // h-15
-
-        // const translateYVh = lerp(startTranslateYVh, 0, progress);
-        // logo.style.transform = `translateY(${translateYVh}vh)`;
-
-        const p = progress.toFixed(6);
-        logo.style.height = `calc(${(1 - progress).toFixed(6)} * ${startHeightVh}vh + ${p} * ${endHeightPx}px)`;
-      }
-    }
-
-    function onScrollOrResize() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
-    }
-
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
-    update(); // initial paint
-  })();
-</script> -->
-
-<script is:inline>
-  // const hero = document.getElementById("backdrop-double");
-  const hero = document.getElementById("hero-video-container");
-  const overlay = document.getElementById("hero-video-scroll-wash");
-  const mobilenav = document.getElementById("mobile-header");
-  const logo = document.getElementById("mobile-logo");
-  const logo_container = document.getElementById("mobile-logo-container");
-  const mobile_menu_btn = document.getElementById("mobile-menu-btn");
-  const promo_bar = document.getElementById("promo-bar");
-  // if (!hero || !overlay || !mobilenav) return;
-  // Targets:
-  // - bg-black/80 => alpha 0.80
-  // - backdrop-blur-sm in Tailwind is typically 4px (if you customized it, change this)
-  const MAX_ALPHA = 0.8;
-  const MAX_BLUR_PX = 8;
-  const MAX_SCALE = 2;
-  const MAX_OPACITY = 1;
-
-  // Make sure we start at 0
-  overlay.style.backgroundColor = "rgba(0,0,0,0)";
-  overlay.style.backdropFilter = "blur(0px)";
-  overlay.style.webkitBackdropFilter = "blur(0px)";
-
-  mobile_menu_btn.style.opacity = 0;
-  // logo.style.transform = "scale(2)";
-
-  let ticking = false;
-  let menuStuck = false; // todo: maybe we can just use css scroll-state; search on that
-
-  function clamp01(x) {
-    return Math.max(0, Math.min(1, x));
-  }
-
-  function update() {
-    ticking = false;
-
-    function vhToPx(vh) {
-      return (vh / 100) * document.documentElement.clientHeight;
-      // return (vh / document.documentElement.clientHeight) / 100;
-    }
-
-    const rect = hero.getBoundingClientRect();
-    // console.log(document.documentElement.style.removeProperty("--announcement-h"));
-    const promo_bar_height =
-      promo_bar.style.display === "none" ? 0 : parseInt(promo_bar.style.height);
-    console.log("promo_bar_height", promo_bar_height);
-
-    // account for height of promo bar if present
-    const earlyFinishPx = vhToPx(10) + promo_bar_height;
-    const denom = Math.max(1, rect.height - earlyFinishPx);
-
-    // old progress calc, before earlyFinishPx was taken into account
-    // const progress = clamp01(-rect.y / rect.height);
-    const progress = clamp01(-rect.y / denom);
-    // console.log("-------");
-    // console.log("earlyFinishPx", earlyFinishPx);
-    // console.log("rect.top", rect.top);
-    // console.log("-rect.top", -rect.top);
-    // console.log("rect.height", rect.height);
-    // console.log("progress", progress);
-
-    const alpha = progress * MAX_ALPHA;
-    const blur = progress * MAX_BLUR_PX;
-    const opacity = progress * MAX_OPACITY;
-
-    const scale = 1 - progress * MAX_SCALE;
-
-    overlay.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
-    overlay.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
-    overlay.style.webkitBackdropFilter = `blur(${blur.toFixed(2)}px)`;
-
-    mobilenav.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
-    mobilenav.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
-    mobilenav.style.webkitBackdropFilter = `blur(${blur.toFixed(2)}px)`;
-
-    mobile_menu_btn.style.opacity = `${opacity.toFixed(2)}`;
-
-    // logo.style.scale = `${scale.toFixed(2)}`;
-
-    // --- mobile logo tween ---
-    // const logo = document.getElementById("mobile-logo");
-    const lerp = (a, b, t) => a + (b - a) * t;
-
-    /**
-     * todos here:
-     * - these numbers are for testing
-     * - need to adust the negative margin on the video container
-     * - make sure parallax can be applied to video without bad
-     * - use translateY and scale together, or use them separately (new separate values)
-     * - make it so svg scales with nav size
-     * - make svg not suck, lol
-     * - remove mt on mobile menu panel; achieve that somehow else
-     */
-
-    // if (logo) {
-    const startTranslateYVh = -55;
-    const startHeightVh = 35;
-    const endHeightVh = 10; // h-15
-    const translateYVh = lerp(startTranslateYVh, 0, progress);
-    const heightVh = lerp(startHeightVh, endHeightVh, progress);
-    // console.log("translateYVh", translateYVh);
-    logo_container.style.transform = `translateY(${translateYVh}vh)`;
-    const p = (1 - progress.toFixed(2)) * 100;
-    // console.log("1 - progress.toFixed(2)", 1 - progress.toFixed(2));
-    // logo.style.height = `calc(${(1 - progress).toFixed(2)} * ${startHeightVh}vh + ${p} * ${endHeightVh}vh)`;
-    logo.style.height = `${heightVh.toFixed(2)}vh`;
-    // logo.style.height = `${p}vh`;
-    // }
-  }
-
-  function onScrollOrResize() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(update);
-  }
-
-  window.addEventListener("scroll", onScrollOrResize, { passive: true });
-  window.addEventListener("resize", onScrollOrResize);
-  update(); // initial paint
-</script>
 
 <style>
   summary {

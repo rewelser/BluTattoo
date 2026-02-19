@@ -44,7 +44,7 @@ const site = await getEntry("siteInfo", "main");
       type="font/woff2"
       crossorigin
     />
-    <script is:inline src="/scripts/mobile-menu.js"></script>
+    <!-- <script is:inline src="/scripts/mobile-menu.js"></script> -->
   </head>
   <body
     class="min-h-screen text-emerald-950 font-[Spectral] bg-black"
@@ -70,7 +70,7 @@ const site = await getEntry("siteInfo", "main");
         <div>
           <Header variant={isHome ? "home" : "default"} class="site-header" />
           <!-- todo: what is this doing? vvv -->
-          <div id="pagecontent-wrap" class="relative z-40 bg-white">
+          <div id="pagecontent-wrap" class="relative z-40 bg-white" style={`${!isHome ? "top: var(--announcement-h);" : ""}`}>
             <slot />
             {/* page content goes here */}
           </div>

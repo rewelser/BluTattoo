@@ -41,6 +41,7 @@
     };
 
     const expand = (panel) => {
+      console.log("expand", panel.id);
       const cs = getComputedStyle(panel);
       if (cs.height === "auto" || panel.style.height === "auto") {
         panel.style.height = panel.scrollHeight + "px";
@@ -56,6 +57,7 @@
     };
 
     const collapse = (panel) => {
+      console.log("collapse", panel.id);
       const cs = getComputedStyle(panel);
       if (cs.height === "auto" || panel.style.height === "auto") {
         panel.style.height = panel.scrollHeight + "px";
@@ -65,6 +67,7 @@
     };
 
     const snapClosed = (panel) => {
+      console.log("snapClosed", panel.id);
       const prev = panel.style.transition;
       panel.style.transition = "none";
       if (getComputedStyle(panel).height === "auto" || panel.style.height === "auto") {

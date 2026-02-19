@@ -1,0 +1,255 @@
+---
+/**
+ * MobileMenu.astro
+ *
+ * Props expected:
+ * - variant: string (e.g. "home" | ...)
+ * - logo_light: string (src url)
+ * - artists: array of entries used in your map
+ */
+
+ 
+const { variant, logo_light, artists } = Astro.props;
+---
+
+<header
+  id="mobile-header"
+  class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${variant !== "home" ? "bg-black/80 backdrop-blur" : ""}`}
+  style="top: var(--announcement-h);"
+>
+  <!-- top row: logo + button -->
+  <div class="flex items-center flex-col justify-center mx-auto max-w-6xl min-h-[10vh]">
+    <div
+      id="mobile-logo-container"
+      class="absolute"
+      style="transform: translateY(-55vh)"
+    >
+      <a href="/" aria-label="BluTattoo Studio">
+        <img
+          id="mobile-logo"
+          src={logo_light}
+          alt=""
+          class="w-auto p-2 h-[35vh]"
+        />
+        <span class="sr-only">BluTattoo Studio</span>
+      </a>
+    </div>
+
+    <button
+      id="mobile-menu-btn"
+      class="hb hamburger hamburger--elastic inline-flex items-center border px-3 py-2 self-end"
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu-panel"
+      aria-label="Menu"
+      data-burger
+    >
+      <span class="hamburger-box" aria-hidden="true">
+        <span class="hamburger-inner"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- panel sits below the top row -->
+  <div id="mobile-menu-panel" class="inset-x-0 top-full px-4 text-center">
+    <!-- The element we animate is this wrapper -->
+    <div
+      id="mobile-menu-anim"
+      class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
+    >
+      <nav class="p-2 shadow-xl" role="menu">
+        <a href="/" class="block px-2 py-3 hover:bg-white/10">Home</a>
+
+        <!-- Artists submenu -->
+        <button
+          id="artists-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="artists-anim"
+          class="flex w-full items-center justify-center px-2 py-3 hover:bg-white/10"
+        >
+          <span>Artists</span>
+          <svg
+            viewBox="0 0 24 24"
+            class="h-4 w-4 transition-transform fill-orange-100"
+            aria-hidden="true"
+          >
+            <path d="M7 10l5 5 5-5H7z"></path>
+          </svg>
+        </button>
+
+        <div
+          id="artists-anim"
+          class="overflow-hidden h-0 transition-[height] duration-200 ease-out will-change-[height]"
+        >
+          <ul
+            class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10"
+          >
+            {artists.map((entry) => (
+              <li>
+                <a
+                  href={`/artists/${entry.id}/`}
+                  class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                  data-astro-prefetch="hover"
+                >
+                  {entry.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <a href="/piercing" class="block px-2 py-3 hover:bg-white/10">Piercing</a>
+        <a href="/events" class="block px-2 py-3 hover:bg-white/10">Events</a>
+        <a href="/aftercare" class="block px-2 py-3 hover:bg-white/10">Aftercare</a>
+        <a href="/faq" class="block px-2 py-3 hover:bg-white/10">FAQ</a>
+        <a href="/contact" class="block px-2 py-3 hover:bg-white/10">Contact Us</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Keep this inline so it runs with the component and survives Astro swaps -->
+<script is:inline>
+  (() => {
+    function setupMobileMenu() {
+      const header = document.getElementById("mobile-header");
+      if (!header) return;
+
+      const mobileBtn = header.querySelector('#mobile-menu-btn[data-burger]');
+      const mobilePanel = header.querySelector("#mobile-menu-panel");
+      const mobileAnim = header.querySelector("#mobile-menu-anim");
+
+      const artistsBtn = header.querySelector("#artists-toggle");
+      const artistsAnim = header.querySelector("#artists-anim");
+      const artistIcon = artistsBtn?.querySelector("svg") || null;
+
+      if (!mobileBtn || !mobilePanel || !mobileAnim || !artistsBtn || !artistsAnim) return;
+      if (header.dataset.mmBound === "1") return;
+      header.dataset.mmBound = "1";
+
+      const isExpanded = (btn) => btn.getAttribute("aria-expanded") === "true";
+
+      const expandHeight = (panel) => {
+        panel.style.height = panel.scrollHeight + "px";
+        const onEnd = (e) => {
+          if (e.propertyName !== "height") return;
+          panel.style.height = "auto";
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+      };
+
+      const collapseHeight = (panel) => {
+        if (getComputedStyle(panel).height === "auto" || panel.style.height === "auto") {
+          panel.style.height = panel.scrollHeight + "px";
+          void panel.offsetHeight;
+        }
+        panel.style.height = "0px";
+      };
+
+      const setPanelOpen = (panel, open) => {
+        open ? expandHeight(panel) : collapseHeight(panel);
+      };
+
+      // Key fix: when submenu opens/closes, grow/shrink the OUTER wrapper too.
+      const syncOuterToContent = () => {
+        // If outer is closed, nothing to do
+        if (!isExpanded(mobileBtn)) return;
+
+        // If outer is already auto, it will naturally fit content after submenu anim ends
+        // but during transitions it might be a fixed px. Force it to animate to new scrollHeight.
+        const wasAuto = panelIsAuto(mobileAnim);
+
+        if (wasAuto) {
+          // lock current height to px so it can animate
+          mobileAnim.style.height = mobileAnim.scrollHeight + "px";
+          void mobileAnim.offsetHeight;
+        }
+
+        // Now animate to new full height (including submenu)
+        mobileAnim.style.height = mobileAnim.scrollHeight + "px";
+
+        const onEnd = (e) => {
+          if (e.propertyName !== "height") return;
+          mobileAnim.style.height = "auto";
+          mobileAnim.removeEventListener("transitionend", onEnd);
+        };
+        mobileAnim.addEventListener("transitionend", onEnd);
+      };
+
+      const panelIsAuto = (el) =>
+        el.style.height === "auto" || getComputedStyle(el).height === "auto";
+
+      const setArtistsOpen = (open) => {
+        artistsBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        if (artistIcon) artistIcon.classList.toggle("rotate-180", open);
+
+        setPanelOpen(artistsAnim, open);
+
+        // Let the submenu start its height change, then re-sync the outer wrapper.
+        requestAnimationFrame(syncOuterToContent);
+      };
+
+      const closeAll = () => {
+        setArtistsOpen(false);
+
+        mobileBtn.classList.remove("is-active");
+        mobileBtn.setAttribute("aria-expanded", "false");
+        mobilePanel.toggleAttribute("data-open", false);
+        setPanelOpen(mobileAnim, false);
+      };
+
+      // initial state
+      closeAll();
+
+      // hamburger logic + outer menu open/close
+      mobileBtn.addEventListener("click", () => {
+        const isActive = mobileBtn.classList.toggle("is-active");
+        mobileBtn.setAttribute("aria-expanded", isActive ? "true" : "false");
+
+        const controls = mobileBtn.getAttribute("aria-controls");
+        const controlled = controls && document.getElementById(controls);
+        if (controlled) controlled.toggleAttribute("data-open", isActive);
+
+        if (!isActive) setArtistsOpen(false);
+        setPanelOpen(mobileAnim, isActive);
+      });
+
+      // artists submenu
+      artistsBtn.addEventListener("click", () => {
+        if (!isExpanded(mobileBtn)) return;
+        setArtistsOpen(!isExpanded(artistsBtn));
+      });
+
+      document.addEventListener(
+        "pointerdown",
+        (e) => {
+          if (!isExpanded(mobileBtn) && !isExpanded(artistsBtn)) return;
+          if (header.contains(e.target)) return;
+          closeAll();
+        },
+        { passive: true }
+      );
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", setupMobileMenu, { once: true });
+    } else {
+      setupMobileMenu();
+    }
+
+    document.addEventListener("astro:page-load", setupMobileMenu);
+    document.addEventListener("astro:after-swap", setupMobileMenu);
+
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) setupMobileMenu();
+    });
+  })();
+</script>
+
+</header>
