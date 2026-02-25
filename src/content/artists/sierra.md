@@ -2,9 +2,6 @@
 title: Sierra
 order: 3
 photo: /uploads/artists/sierra_headshot.jpg
-styles:
-  - flowers
-  - guts
 instagram: https://www.instagram.com/ztheghost.ink/
 images:
   - src: /uploads/artists/sierra_headshot.jpg
@@ -15,8 +12,5 @@ images:
     alt: zirk1
   - src: /uploads/artists/zoe_headshot.png
     alt: zoe_headshot
-bio: |
-  Sierra makes blood, guts, and flowers.
 ---
-
-You can put optional longer bio content here if you want to render it on the artist page later.
+Sierra makes blood, guts, and flowers.

@@ -1,0 +1,79 @@
+---
+type VideoSources = {
+    mp4: string;
+    webm?: string;
+    poster?: string;
+};
+
+const {
+    logo_dark,
+    siteName = "",
+    video,
+} = Astro.props as {
+    logo_dark: string;
+    siteName?: string;
+    video?: VideoSources;
+};
+
+const fallback: VideoSources = {
+    mp4: "/uploads/misc_videos/hero-720.mp4",
+    webm: "/uploads/misc_videos/hero-720.webm",
+    poster: "/uploads/misc_images/hero-poster.jpg",
+};
+
+const heroVid = {
+    mp4: video?.mp4 ?? fallback.mp4,
+    webm: video?.webm ?? fallback.webm,
+    poster: video?.poster ?? fallback.poster,
+};
+---
+
+<>
+    {/* Video backdrop */}
+    <div
+        id="hero-video-container"
+        class="relative top-0 w-full h-screen z-0 -mb-[10vh]"
+    >
+        <!-- todo: consider changing preload to metadata or auto, and revisit the need for data-src attributes and lazy loading, since this is a critical above-the-fold asset. We want it to load as soon as possible, but also want to be mindful of mobile data usage and performance. -->
+        <video
+            id="hero-video"
+            class="h-full w-full object-cover"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={heroVid.poster}
+            aria-hidden="true"
+        >
+            <source src={heroVid.webm} type="video/webm" />
+            <source src={heroVid.mp4} type="video/mp4" />
+        </video>
+
+        {/* optional: subtle wash for legibility */}
+        <div aria-hidden="true" class="absolute inset-0 bg-black/50"></div>
+    </div>
+
+    <div
+        aria-hidden="true"
+        id="hero-video-scroll-wash"
+        class="absolute inset-0 h-screen"
+    >
+    </div>
+
+    {/* Top LOGO (desktop only, not sticky - HOME variant) */}
+    <div
+        id="desktop-top-logo"
+        class="hidden md:block absolute top-0 w-screen h-screen"
+    >
+        <div class="mx-auto px-4 h-full">
+            <a href="/" class="flex items-center py-6 md:py-8 h-full">
+                <img
+                    src={logo_dark}
+                    alt={`${siteName} Homepage`}
+                    class="w-fit mx-auto h-20 md:h-100"
+                />
+            </a>
+        </div>
+    </div>
+</>

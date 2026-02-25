@@ -58,12 +58,7 @@ const artists = defineCollection({
     title: z.string(),
     order: z.number().default(999),    // ← add this
     photo: z.preprocess(emptyStrToUndef, z.string().optional()),
-    styles: z.preprocess(
-      (v) => emptyArrToUndef(v),
-      z.array(z.string()).optional()
-    ),
     instagram: z.preprocess(emptyStrToUndef, z.string().url().optional()),
-    instagramUser: z.preprocess(emptyStrToUndef, z.string().optional()),
     images: z
       .array(
         z.object({
@@ -72,7 +67,6 @@ const artists = defineCollection({
         })
       )
       .optional(),
-    bio: z.preprocess(emptyStrToUndef, z.string().optional()),
     // NEW: Square Appointments embed
     square: z.object({
       enabled: z.boolean().optional(),
@@ -106,6 +100,7 @@ const faqs = defineCollection({
 const siteInfo = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
   schema: z.object({
+    siteName: z.string(),
     address: z.string(),
     phone: z.preprocess(emptyStrToUndef, z.string().optional()),
     email: z.preprocess(emptyStrToUndef, z.string().optional()),

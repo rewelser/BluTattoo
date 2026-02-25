@@ -3,7 +3,6 @@ import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
-import InstagramProfile from "../../components/InstagramProfile.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
 import { ArtistGallery } from "../../components/ArtistGalleryNoThumbs.tsx";
 import { Picture } from "astro:assets";
@@ -23,7 +22,6 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const ig = entry.data.instagramUser;
 
 // Render the Markdown *body* (the part after the frontmatter)
 const { Content } = await render(entry);
@@ -113,12 +111,9 @@ const thumb = (src: string, w: number) =>
               );
             }
           </style>
-          <div id="artist-bio" class="flex items-center">
+          <div id="artist-bio" class="flex items-center p-5">
             <div>
               <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-              {entry.data.styles?.length && (
-                <p class="text-gray-600">{entry.data.styles.join(", ")}</p>
-              )}
         
               {entry.data.instagram && (
                 <p>
@@ -138,12 +133,12 @@ const thumb = (src: string, w: number) =>
                 </p>
               )}
           
-              {entry.data.bio && (
-                <section class="">
-                  <h2 class="sr-only">Bio</h2>
-                  <p class="whitespace-pre-line">{entry.data.bio}</p>
-                </section>
-              )}
+              <section>
+                <h2 class="sr-only">Bio</h2>
+                <p class="whitespace-pre-line">
+                  <Content />
+                </p>
+              </section>
             </div>
           </div>
         </div>
@@ -235,10 +230,5 @@ const thumb = (src: string, w: number) =>
         </a>
       </p>
     )}
-
-    {/* Markdown body content (the part after the --- in the file) */}
-    <section class="prose max-w-none">
-      <Content />
-    </section>
   </article>
 </Layout>

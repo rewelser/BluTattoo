@@ -1,5 +1,11 @@
 {
-  "background": "/uploads/misc_images/backgrounds/francisco_de_goya_y_lucientes_-_witches_sabbath_-_google_art_project.jpg",
   "logo_dark": "/uploads/misc_images/logos/blutattoo-trimmed-black.svg",
-  "logo_light": "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg"
+  "logo_light": "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg",
+  "hero": {
+    "video": {
+      "mp4": "/uploads/misc_videos/hero-720.mp4",
+      "webm": "/uploads/misc_videos/hero-720.webm",
+      "poster": "/uploads/misc_images/hero-poster.jpg"
+    }
+  }
 }

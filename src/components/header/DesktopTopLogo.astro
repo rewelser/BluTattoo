@@ -1,0 +1,26 @@
+---
+const {
+  logo_dark,
+  heightClass = "md:h-50",
+  siteName = "",
+} = Astro.props as {
+  logo_dark: string;
+  heightClass?: string;
+  siteName?: string;
+};
+---
+
+<div id="desktop-top-logo" class="hidden md:block top-0">
+  <div class="mx-auto px-4 h-full">
+    <a
+      href="/"
+      class="flex items-center py-6 md:py-8 h-full"
+    >
+      <img
+        src={logo_dark}
+        alt={`${siteName} Homepage`}
+        class={`w-fit mx-auto h-20 ${heightClass}`}
+      />
+    </a>
+  </div>
+</div>

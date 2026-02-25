@@ -1,0 +1,62 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import PromoBar from "./PromoBar.astro";
+
+type EventEntry = CollectionEntry<"events">;
+type EventItem = EventEntry["data"] & { id: string };
+
+// Props (optional knobs)
+const {
+  // if you want to reuse loader elsewhere, you can override the fallback href
+  fallbackHref = "/events",
+  // allow forcing a promo off (e.g., on some pages/layouts)
+  enabled = true,
+} = Astro.props as {
+  fallbackHref?: string;
+  enabled?: boolean;
+};
+
+if (!enabled) return;
+
+const now = new Date();
+
+const isEventActive = (ev: EventItem): boolean => {
+  const end = ev.endDate ?? ev.startDate;
+  return end >= now;
+};
+
+// Load events (published only)
+const eventEntries = (await getCollection(
+  "events",
+  (e) => e.data.published !== false,
+)) as EventEntry[];
+
+const events: EventItem[] = eventEntries
+  .map((e) => ({ id: e.id, ...e.data }))
+  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+// Active events that have promoBar enabled + message
+const eligible = events.filter(
+  (ev) => isEventActive(ev) && ev.promoBar?.enabled && !!ev.promoBar?.message,
+);
+
+// Pick featured first, else the first eligible (soonest by startDate due to sort above)
+const promoEvent =
+  eligible.find((ev) => ev.featured) ?? eligible[0] ?? null;
+
+if (!promoEvent?.promoBar?.message) {
+  return;
+}
+
+const storageKey = `bt_promo_dismissed_${promoEvent.id}`;
+const href = promoEvent.promoBar.href ?? fallbackHref;
+const { message, color1, color2 } = promoEvent.promoBar;
+---
+
+<PromoBar
+  storageKey={storageKey}
+  message={message}
+  href={href}
+  color1={color1}
+  color2={color2}
+/>

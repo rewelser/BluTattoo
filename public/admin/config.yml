@@ -35,9 +35,7 @@ collections:
       - { name: title, label: Name, widget: string }
       - { name: order, label: Order, widget: number, default: 999 }
       - { name: photo, label: Photo, widget: image, required: false }
-      - { name: styles, label: Styles, widget: list, required: false }
       - { name: instagram, label: Instagram URL, widget: string, required: false }
-      - { name: "instagramUser", label: Instagram Username for page embed, widget: "string", required: false }
 
       - label: Portfolio Images
         name: images
@@ -46,7 +44,6 @@ collections:
         fields:
           - { name: src, label: Image, widget: image }
           - { name: alt, label: Alt text, widget: string, required: false }
-      - { name: bio, label: Short Bio, widget: text, required: false }
 
       - label: "Square Appointments"
         name: square
@@ -91,7 +88,6 @@ collections:
           - { name: title, label: Title, widget: string, default: "Aftercare" }
           - { name: body, label: Body, widget: markdown }
 
-
   - name: "siteInfo"
     label: "Site Info"
     files:
@@ -100,6 +96,7 @@ collections:
         file: "src/content/siteInfo/main.json"
         format: "json"
         fields:
+          - { name: siteName, label: Site Name, widget: string, default: "BluTattoo Studio" }
           - { name: address, label: Address (single line), widget: string }
           - { name: phone, label: Phone, widget: string, required: false }
           - { name: email, label: Email, widget: string, required: false }
@@ -112,30 +109,60 @@ collections:
               - { name: label, label: Day, widget: string }
               - { name: value, label: Hours, widget: string }
 
-
   - name: "branding"
     label: "Branding"
-    files:
-      - name: "branding"
-        label: "Logos"
-        file: "src/content/branding.json"
-        format: "json"
-        fields:
-          - label: Logo (SVG or PNG, dark version)
-            name: logo_dark
-            widget: image
-            required: true
-            hint: "Header logo (dark-on-light version)."
-            media_folder: "/public/uploads/misc_images/logos"
-            public_folder: "/uploads/misc_images/logos"
+    file: "src/content/branding.json"
+    format: "json"
+    fields:
+      - label: Logo (SVG or PNG, dark version)
+        name: logo_dark
+        widget: image
+        required: true
+        hint: "Header logo (dark-on-light version)."
+        media_folder: "/public/uploads/misc_images/logos"
+        public_folder: "/uploads/misc_images/logos"
 
-          - label: Logo (SVG or PNG, light version)
-            name: logo_light
-            widget: image
+      - label: Logo (SVG or PNG, light version)
+        name: logo_light
+        widget: image
+        required: false
+        hint: "Header logo (light-on-dark version)."
+        media_folder: "/public/uploads/misc_images/logos"
+        public_folder: "/uploads/misc_images/logos"
+
+      - label: Hero
+        name: hero
+        widget: object
+        required: false
+        fields:
+          - label: Video
+            name: video
+            widget: object
             required: false
-            hint: "Header logo (light-on-dark version)."
-            media_folder: "/public/uploads/misc_images/logos"
-            public_folder: "/uploads/misc_images/logos"
+            fields:
+              - label: MP4
+                name: mp4
+                widget: file
+                required: true
+                hint: "Fallback format for most browsers."
+                media_folder: "/public/uploads/misc_videos"
+                public_folder: "/uploads/misc_videos"
+
+              - label: WebM
+                name: webm
+                widget: file
+                required: false
+                hint: "Smaller/faster in supported browsers."
+                media_folder: "/public/uploads/misc_videos"
+                public_folder: "/uploads/misc_videos"
+
+              - label: Poster image
+                name: poster
+                widget: image
+                required: false
+                hint: "Shown before video loads / if autoplay fails."
+                media_folder: "/public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
 
   - name: "home"
     label: "Homepage"

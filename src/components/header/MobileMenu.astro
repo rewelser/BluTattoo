@@ -1,30 +1,29 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import type { MobileMenuItem } from "./Header.astro";
-
-type ArtistEntry = CollectionEntry<"artists">;
+import type { MenuItem } from "./types";
 
 const {
   menuItems,
   logo_light,
   variant = "default",
+  siteName = "",
 } = Astro.props as {
-  menuItems: MobileMenuItem[];
+  menuItems: MenuItem[];
   logo_light: string;
   variant?: "home" | "default";
+  siteName?: string;
 };
 ---
 
 <style>
-  #mobile-header scroll-state(stuck: top) {
+  #mobile-menu scroll-state(stuck: top) {
     /* Styles applied only when stuck to top */
     background-color: red;
   }
 </style>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header
-  id="mobile-header"
+<div
+  id="mobile-menu"
   class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
     variant !== "home" ? "bg-black/80 backdrop-blur" : ""
   }`}
@@ -39,14 +38,14 @@ const {
       class="absolute"
       style={`${variant === "home" ? "transform: translateY(-55vh)" : ""}`}
     >
-      <a href="/" aria-label="BluTattoo Studio">
+      <a href="/">
         <img
           id="mobile-logo"
           src={logo_light}
-          alt=""
+          alt={`${siteName} Homepage`}
           class={`w-auto p-2 ${variant === "home" ? "h-[35vh]" : "h-[10vh]"}`}
         />
-        <span class="sr-only">BluTattoo Studio</span>
+        <span class="sr-only">${siteName} Homepage</span>
       </a>
     </div>
 
@@ -73,7 +72,7 @@ const {
       class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
       inert
     >
-      <nav class="p-2 shadow-xl" id="mobile-menu-nav">
+      <nav aria-label="Primary" class="p-2 shadow-xl" id="mobile-menu-nav">
         {
           menuItems.map((item, i) => {
             const baseId = `mi-${i}`;
@@ -144,11 +143,11 @@ const {
       </nav>
     </div>
   </div>
-</header>
+</div>
 
 <script is:inline>
   (() => {
-    const header = document.getElementById("mobile-header");
+    const header = document.getElementById("mobile-menu");
     const mobileBtn = document.getElementById("mobile-menu-btn");
     const mobileAnim = document.getElementById("mobile-menu-anim");
     const nav = document.getElementById("mobile-menu-nav");
@@ -360,7 +359,7 @@ const {
   // const hero = document.getElementById("backdrop-double");
   const hero = document.getElementById("hero-video-container");
   const overlay = document.getElementById("hero-video-scroll-wash");
-  const mobilenav = document.getElementById("mobile-header");
+  const mobilenav = document.getElementById("mobile-menu");
   const logo = document.getElementById("mobile-logo");
   const logo_container = document.getElementById("mobile-logo-container");
   const mobile_menu_btn = document.getElementById("mobile-menu-btn");
