@@ -3,12 +3,11 @@
 import Layout from "../../layouts/Layout.astro";
 import PromoHero from "../../components/PromoHero.astro";
 import { getCollection, getEntry, render } from "astro:content";
+import { fmtDateRange, fmtTimeWindow } from "../../scripts/events";
 
 export async function getStaticPaths() {
   const entries = await getCollection("events", (e) => e.data.published !== false);
-  return entries.map((e) => ({
-    params: { id: e.id },
-  }));
+  return entries.map((e) => ({ params: { id: e.id } }));
 }
 
 const { id } = Astro.params;
@@ -26,21 +25,17 @@ const ev = entry.data;
     <h1 class="page-title">{ev.title}</h1>
 
     {ev.hero?.image && (
-      <PromoHero
-        image={ev.hero.image}
-        alt={ev.hero.alt ?? ev.title}
-        className="p-8"
-      />
+      <PromoHero image={ev.hero.image} alt={ev.hero.alt ?? ev.title} className="p-8" />
     )}
 
     <div class="border border-black/10 p-5 md:p-6">
       <div class="text-sm opacity-80">
-        {new Date(ev.startDate).toLocaleString()}
-        {ev.endDate ? ` – ${new Date(ev.endDate).toLocaleString()}` : ""}
+        {fmtDateRange(ev)}
+        {" • "}
+        {fmtTimeWindow(ev)}
         {ev.location ? ` • ${ev.location}` : ""}
       </div>
 
-      {/* Markdown body */}
       <div class="prose mt-4 max-w-none">
         <Content />
       </div>

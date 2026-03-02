@@ -364,7 +364,7 @@ const {
   const logo_container = document.getElementById("mobile-logo-container");
   const mobile_menu_btn = document.getElementById("mobile-menu-btn");
   const promo_bar = document.getElementById("promo-bar");
-  // if (!hero || !overlay || !mobilenav) return;
+  if (!hero || !overlay || !mobilenav || !logo || !logo_container || !mobile_menu_btn) return;
   // Targets:
   // - bg-black/80 => alpha 0.80
   // - backdrop-blur-sm in Tailwind is typically 4px (if you customized it, change this)
@@ -398,8 +398,17 @@ const {
 
     const rect = hero.getBoundingClientRect();
     // console.log(document.documentElement.style.removeProperty("--announcement-h"));
-    const promo_bar_height =
-      promo_bar.style.display === "none" ? 0 : parseInt(promo_bar.style.height);
+    // const promo_bar_present = !!promo_bar; // todo: this also needs to account for dynamic changes (e.g. if promo bar can be dismissed & be display: none (promo_bar.style.display === "none")
+    // const promo_bar_height = !promo_bar_present ? 0 : parseInt(promo_bar.style.height);
+    const promo_bar_height = (() => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue("--announcement-h")
+        .trim(); // e.g. "40px" or ""
+
+      if (!v) return 0;
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+  })();
     // console.log("promo_bar_height", promo_bar_height);
 
     // account for height of promo bar if present

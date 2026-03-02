@@ -127,7 +127,7 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 <DualFlourish durationMs={1000} easing="linear" />
 
 
-<style>
+<!-- <style>
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(50px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -168,11 +168,11 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 
     els.forEach((el) => io.observe(el));
   })();
-</script>
+</script> -->
 
 <!-- /////////////////////////////////////////// -->
   
-<ScrollPeelStack
+<!-- <ScrollPeelStack
   id="beforeafter-test"
   heightVh={400}
   images={[
@@ -180,6 +180,26 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
     "/uploads/misc_images/hero-poster.jpg",
     "/uploads/misc_images/hero-poster-red.jpg",
   ]}
+/> -->
+
+<ScrollPeelStack
+  id="beforeafter-test"
+  heightVh={520}
+  images={[
+    "/uploads/artists/zirk1.jpeg",
+    "/uploads/misc_images/hero-poster.jpg",
+    "/uploads/misc_images/hero-poster-red.jpg",
+  ]}
+  sideImages={{
+    left: [
+      { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A" },
+      { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B" },
+    ],
+    right: [
+      { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C" },
+      { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D" },
+    ],
+  }}
 />
 
   <section class="parallax-window relative h-[50vh]">

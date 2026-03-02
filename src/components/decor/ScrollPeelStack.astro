@@ -1,22 +1,43 @@
 ---
+type SideImage = {
+    src: string;
+    alt?: string;
+};
+
+type SideImages = {
+    left: [SideImage, SideImage];
+    right: [SideImage, SideImage];
+};
+
 type Props = {
     id?: string;
     images: string[]; // top -> bottom
+    sideImages?: SideImages;
     heightVh?: number;
     class?: string;
     imgClass?: string;
+
+    // Optional tuning (you can ignore these for now)
+    openStartVh?: number; // default 0.8
+    peelFrac?: number; // default 0.75
 };
 
 const {
     id = "scroll-peel",
     images,
+    sideImages,
     heightVh = 400,
     class: className = "",
     imgClass = "",
+    openStartVh = 0.8,
+    peelFrac = 0.75,
 } = Astro.props as Props;
 
 if (!images || images.length < 2) {
     throw new Error("ScrollPeelStack.astro requires at least 2 images.");
+}
+if (peelFrac <= 0 || peelFrac >= 1) {
+    throw new Error("ScrollPeelStack.astro: peelFrac must be between 0 and 1.");
 }
 
 const bottomIndex = images.length - 1;
@@ -25,49 +46,124 @@ const bottomSrc = images[bottomIndex];
 // peel layers (everything above bottom), in logical order: top -> down
 const peelLayers = images.slice(0, bottomIndex);
 const phases = peelLayers.length;
+
+// Provide safe defaults if sideImages not passed
+const sides: SideImages = sideImages ?? {
+    left: [
+        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Left image 1" },
+        {
+            src: "/uploads/misc_images/hero-poster-red.jpg",
+            alt: "Left image 2",
+        },
+    ],
+    right: [
+        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Right image 1" },
+        {
+            src: "/uploads/misc_images/hero-poster-red.jpg",
+            alt: "Right image 2",
+        },
+    ],
+};
 ---
 
 <section id={id} class="relative" style={`height:${heightVh}vh;`}>
-    <div
-        class="sticky top-0 h-screen overflow-hidden flex items-center justify-center"
-    >
-        <!-- We keep reveal container for clipping (border radius fallback still works) -->
-        <div data-peel-reveal class="h-full overflow-hidden">
-            <!-- This stays full size; we will apply clip-path to THIS stage for the opening -->
+    <div class="sticky top-0 h-screen overflow-hidden">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <!-- Side images (initially offscreen; animated in during exit) -->
             <div
-                data-peel-stage
-                class={`relative h-full ${className}`}
-                style="width:100vw; clip-path: inset(0 50% 0 50% round 24px); will-change: clip-path;"
+                data-side="l1"
+                class="absolute left-0 top-[10%] w-[24vw] max-w-[300px] opacity-0 pointer-events-none"
+                style="transform: translateX(-120%); will-change: transform, opacity;"
             >
-                <!-- Bottom (always visible) -->
                 <img
-                    src={bottomSrc}
-                    alt=""
-                    class={`absolute inset-0 w-full h-full object-cover ${imgClass}`}
-                    style="z-index:0;"
-                    loading="eager"
+                    src={sides.left[0].src}
+                    alt={sides.left[0].alt ?? ""}
+                    class="w-full h-auto rounded-2xl object-cover"
+                    loading="lazy"
                     decoding="async"
                 />
+            </div>
 
-                <!-- Peel layers top -> down with explicit z-index -->
-                {
-                    peelLayers.map((src, i) => {
-                        const z = phases - i;
-                        return (
-                            <img
-                                src={src}
-                                alt=""
-                                class={`absolute inset-0 w-full h-full object-cover will-change-[clip-path] ${imgClass}`}
-                                style={`clip-path: inset(0 0 0 0); z-index:${z};`}
-                                data-peel-layer
-                                loading="eager"
-                                decoding="async"
-                            />
-                        );
-                    })
-                }
+            <div
+                data-side="l2"
+                class="absolute left-0 top-[55%] w-[24vw] max-w-[300px] opacity-0 pointer-events-none"
+                style="transform: translateX(-120%); will-change: transform, opacity;"
+            >
+                <img
+                    src={sides.left[1].src}
+                    alt={sides.left[1].alt ?? ""}
+                    class="w-full h-auto rounded-2xl object-cover"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
 
-                <script define:vars={{ id, phases }}>
+            <div
+                data-side="r1"
+                class="absolute right-0 top-[16%] w-[24vw] max-w-[300px] opacity-0 pointer-events-none"
+                style="transform: translateX(120%); will-change: transform, opacity;"
+            >
+                <img
+                    src={sides.right[0].src}
+                    alt={sides.right[0].alt ?? ""}
+                    class="w-full h-auto rounded-2xl object-cover"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
+
+            <div
+                data-side="r2"
+                class="absolute right-0 top-[62%] w-[24vw] max-w-[300px] opacity-0 pointer-events-none"
+                style="transform: translateX(120%); will-change: transform, opacity;"
+            >
+                <img
+                    src={sides.right[1].src}
+                    alt={sides.right[1].alt ?? ""}
+                    class="w-full h-auto rounded-2xl object-cover"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </div>
+
+            <!-- We keep reveal container for clipping (border radius fallback still works) -->
+            <div data-peel-reveal class="h-full overflow-hidden">
+                <!-- Stage stays full size; we apply clip-path to THIS stage for open + exit -->
+                <div
+                    data-peel-stage
+                    class={`relative h-full ${className}`}
+                    style="width:100vw; clip-path: inset(0 50% 0 50% round 24px); will-change: clip-path;"
+                >
+                    <!-- Bottom (always visible) -->
+                    <img
+                        src={bottomSrc}
+                        alt=""
+                        class={`absolute inset-0 w-full h-full object-cover ${imgClass}`}
+                        style="z-index:0;"
+                        loading="eager"
+                        decoding="async"
+                    />
+
+                    <!-- Peel layers top -> down with explicit z-index -->
+                    {
+                        peelLayers.map((src, i) => {
+                            const z = phases - i;
+                            return (
+                                <img
+                                    src={src}
+                                    alt=""
+                                    class={`absolute inset-0 w-full h-full object-cover will-change-[clip-path] ${imgClass}`}
+                                    style={`clip-path: inset(0 0 0 0); z-index:${z};`}
+                                    data-peel-layer
+                                    loading="eager"
+                                    decoding="async"
+                                />
+                            );
+                        })
+                    }
+                </div>
+
+                <script define:vars={{ id, phases, openStartVh, peelFrac }}>
                     (() => {
                         const section = document.getElementById(id);
                         if (!section) return;
@@ -77,19 +173,150 @@ const phases = peelLayers.length;
                         const layers = Array.from(
                             section.querySelectorAll("[data-peel-layer]"),
                         );
+                        const sideEls = Array.from(
+                            section.querySelectorAll("[data-side]"),
+                        );
 
                         if (!stage) return;
 
                         const clamp01 = (n) => Math.max(0, Math.min(1, n));
+                        const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+                        const lerp = (a, b, t) => a + (b - a) * t;
+                        const ramp = (t, t0, t1) =>
+                            clamp01((t - t0) / (t1 - t0));
 
-                        // --- TUNING KNOBS ---
-                        // Opening starts when section top reaches this fraction of viewport height.
-                        // 0.8 = ~80% down the screen (starts a little after it appears)
-                        const openStartVh = 0.8;
+                        // --- TUNING KNOBS (visual) ---
+                        const openStartRadius = 24;
+                        const openEndRadius = 0;
 
-                        // Rounded corners while opening (clip-path round)
-                        const startRadius = 24; // px at fully closed
-                        const endRadius = 0; // px at fully open
+                        // Bring back some rounding during exit (optional)
+                        const exitRadius = 16;
+
+                        // Collision padding between side images and center column
+                        const gapPx = 12;
+
+                        // How much extra breathing room between the left/right side columns and the screen edge,
+                        // if you later change left-0/right-0 to left-[x]/right-[x], bake that in here.
+                        // For now with left-0/right-0 it's 0.
+                        const edgeInsetPx = 0;
+
+                        // Side image entrance timings (stagger)
+                        const sideTimings = {
+                            l1: [0.12, 0.55],
+                            r1: [0.18, 0.6],
+                            l2: [0.3, 0.78],
+                            r2: [0.36, 0.85],
+                        };
+
+                        // --- Measure side sizes for constraint-based center sizing + clamping ---
+                        const sideSizes = new Map(); // el -> {w,h}
+                        const measureSides = () => {
+                            sideSizes.clear();
+                            for (const el of sideEls) {
+                                const rect = el.getBoundingClientRect();
+                                sideSizes.set(el, {
+                                    w: rect.width || 0,
+                                    h: rect.height || 0,
+                                });
+                            }
+                        };
+
+                        // Helpers to get max widths by column
+                        const maxWFor = (prefix) => {
+                            let m = 0;
+                            for (const el of sideEls) {
+                                const key = el.getAttribute("data-side") || "";
+                                if (!key.startsWith(prefix)) continue;
+                                const s = sideSizes.get(el);
+                                m = Math.max(m, s?.w || 0);
+                            }
+                            return m;
+                        };
+
+                        // Constraint-derived exit targets (computed on resize)
+                        let exitSidePctFinal = 30; // fallback default
+                        let exitVertPctFinal = 15; // fallback default
+
+                        const computeExitTargets = () => {
+                            const vw = window.innerWidth || 1;
+                            const vh = window.innerHeight || 1;
+
+                            // Column widths from actual side elements (their CSS determines this)
+                            const leftColW = maxWFor("l");
+                            const rightColW = maxWFor("r");
+
+                            // Desired center width derived from constraints
+                            // (Subtract left col + right col + gaps between center<->cols + optional edge inset)
+                            const desiredCenterW =
+                                vw -
+                                (leftColW + rightColW) -
+                                2 * gapPx -
+                                2 * edgeInsetPx;
+
+                            // Clamp center width so it never becomes negative or absurdly small/large.
+                            // These clamps prevent madness at extremely narrow widths.
+                            // const minCenterW = Math.min(vw, 220); // don't go below ~220px unless viewport is smaller
+                            const minCenterW = 0; // don't go below ~220px unless viewport is smaller
+                            // const maxCenterW = Math.min(vw, vw); // can't exceed viewport
+                            // const centerW = clamp(
+                            //     desiredCenterW,
+                            //     minCenterW,
+                            //     maxCenterW,
+                            // );
+
+                            // const maxCenterFrac = 0.36; // tweak: 0.33 = true thirds, 0.38 = looser
+                            const maxCenterFrac = 0.36; // tweak: 0.33 = true thirds, 0.38 = looser
+                            const maxCenterW = vw * maxCenterFrac;
+
+                            const centerW = clamp(
+                                Math.min(desiredCenterW, maxCenterW),
+                                minCenterW,
+                                vw,
+                            );
+
+                            // Convert centerW -> side inset percent for clip-path:
+                            // sidePct = 50 * (1 - centerW/vw)
+                            const sidePct = 50 * (1 - centerW / vw);
+
+                            // Final side inset percent with safety bounds:
+                            // - never below 0 (full width)
+                            // - never above 49 (almost closed)
+                            exitSidePctFinal = clamp(sidePct, 0, 49);
+
+                            // --- Vertical target (robust-ish constraint)
+                            // We *could* derive this from side heights, but those depend on image aspect ratios.
+                            // This version targets a "theater-ish" center height that adapts to viewport height,
+                            // with clamps so it doesn't look silly on tiny/tall screens.
+                            //
+                            // Idea: choose a center visible height between 60% and 80% of vh depending on vh,
+                            // then convert to vert inset percent.
+                            //   const desiredCenterH = clamp(vh * 0.5, 320, vh); // center wants ~70% height, at least 320px
+                            //   const vertPct = 50 * (1 - desiredCenterH / vh);  // symmetric top/bottom inset
+                            //   exitVertPctFinal = clamp(vertPct, 0, 40);        // cap at 40% inset (visible height >= 20%)
+
+                            // width-driven height target
+                            const vwMin = 360; // "mobile-ish"
+                            const vwMax = 1250; // "desktop-ish"
+                            const k = clamp01((vw - vwMin) / (vwMax - vwMin));
+
+                            // visible height fraction: ~40% on narrow -> ~70% on wide
+                            const centerHFrac = lerp(0.4, 0.7, k);
+
+                            // convert to symmetric inset percent
+                            exitVertPctFinal = clamp(
+                                50 * (1 - centerHFrac),
+                                0,
+                                45,
+                            );
+
+                            // If you want it to “shrink taller on mobile” later, we can tie this to vw/vh.
+                        };
+
+                        // Initial measure/compute after layout
+                        requestAnimationFrame(() => {
+                            measureSides();
+                            computeExitTargets();
+                        });
 
                         let rafId = 0;
 
@@ -98,47 +325,111 @@ const phases = peelLayers.length;
 
                             const r = section.getBoundingClientRect();
                             const vh = window.innerHeight || 1;
+                            const vw = window.innerWidth || 1;
 
                             // ---------------------------
                             // OPENING (approach phase)
                             // ---------------------------
-                            // openT = 0 when section top is at/below startPx
-                            // openT = 1 when section top hits 0 (sticky engages)
                             const startPx = vh * openStartVh;
-                            const openT = clamp01((startPx - r.top) / startPx);
+                            const openT = clamp01(
+                                (startPx - r.top) / (startPx || 1),
+                            );
 
-                            // Clip inset from left/right symmetrically:
-                            // openT=0 -> side=50% (fully closed)
-                            // openT=1 -> side=0%  (fully open)
-                            const side = ((1 - openT) * 50).toFixed(3) + "%";
-                            const rad = (
-                                startRadius +
-                                (endRadius - startRadius) * openT
-                            ).toFixed(2);
-
-                            // Use clip-path aperture opening (no distortion)
-                            stage.style.clipPath = `inset(0 ${side} 0 ${side} round ${rad}px)`;
+                            const openSidePct = (1 - openT) * 50;
+                            const openRad = lerp(
+                                openStartRadius,
+                                openEndRadius,
+                                openT,
+                            );
 
                             // ---------------------------
-                            // PEELING (sticky+scroll)
+                            // STICKY SCENE timeline (0..1)
                             // ---------------------------
-                            // Only begin peeling after sticky engages: clamp traveled >= 0
                             const scrollable = r.height - vh;
                             const traveled = Math.max(0, -r.top);
-                            const tPeelMaster = clamp01(
+                            const tScene = clamp01(
                                 traveled / (scrollable || 1),
-                            ); // 0..1
+                            );
 
+                            const peelT = clamp01(tScene / peelFrac);
+                            const exitT = clamp01(
+                                (tScene - peelFrac) / (1 - peelFrac),
+                            );
+
+                            // ---------------------------
+                            // STAGE CLIP (open then exit shrink)
+                            // ---------------------------
+                            const shrinkT = ramp(exitT, 0.0, 0.6);
+
+                            const exitSide = lerp(0, exitSidePctFinal, shrinkT);
+                            const exitVert = lerp(0, exitVertPctFinal, shrinkT);
+                            const rad = lerp(openRad, exitRadius, shrinkT);
+
+                            const effectiveSide = Math.max(
+                                openSidePct,
+                                exitSide,
+                            );
+
+                            stage.style.clipPath = `inset(${exitVert.toFixed(3)}% ${effectiveSide.toFixed(3)}% ${exitVert.toFixed(3)}% ${effectiveSide.toFixed(3)}% round ${rad.toFixed(2)}px)`;
+
+                            // ---------------------------
+                            // PEELING (uses peelT so it finishes before exit begins)
+                            // ---------------------------
                             for (let i = 0; i < phases; i++) {
                                 const img = layers[i];
                                 if (!img) continue;
 
                                 const start = i / phases;
-                                const local = clamp01(
-                                    (tPeelMaster - start) * phases,
-                                );
-                                const bottom = (local * 100).toFixed(3) + "%";
-                                img.style.clipPath = `inset(0 0 ${bottom} 0)`;
+                                const local = clamp01((peelT - start) * phases);
+                                img.style.clipPath = `inset(0 0 ${(local * 100).toFixed(3)}% 0)`;
+                            }
+
+                            // ---------------------------
+                            // SIDE IMAGES float in during exit (with collision clamp)
+                            // ---------------------------
+                            const centerLeft = (vw * effectiveSide) / 100;
+                            const centerRight = vw - centerLeft;
+
+                            for (const el of sideEls) {
+                                const key = el.getAttribute("data-side") || "";
+                                const timing = sideTimings[key];
+                                const tIn = timing
+                                    ? ramp(exitT, timing[0], timing[1])
+                                    : exitT;
+
+                                const isLeft = key.startsWith("l");
+                                const dir = isLeft ? -1 : 1;
+
+                                const rectW =
+                                    sideSizes.get(el)?.w ||
+                                    el.getBoundingClientRect().width ||
+                                    0;
+
+                                // Offscreen distance in px: enough to fully hide element plus a little extra.
+                                const off = rectW + 80;
+
+                                let xDesired = lerp(dir * off, 0, tIn);
+                                let xClamped = xDesired;
+
+                                if (isLeft) {
+                                    const maxX =
+                                        centerLeft -
+                                        gapPx -
+                                        rectW -
+                                        edgeInsetPx;
+                                    xClamped = Math.min(xDesired, maxX);
+                                } else {
+                                    const minX =
+                                        centerRight +
+                                        gapPx +
+                                        edgeInsetPx -
+                                        (vw - rectW);
+                                    xClamped = Math.max(xDesired, minX);
+                                }
+
+                                const o = lerp(0, 1, tIn);
+                                el.style.transform = `translateX(${xClamped.toFixed(2)}px)`;
+                                el.style.opacity = String(o);
                             }
                         };
 
@@ -147,17 +438,26 @@ const phases = peelLayers.length;
                             rafId = requestAnimationFrame(update);
                         };
 
+                        const onResize = () => {
+                            requestAnimationFrame(() => {
+                                measureSides();
+                                computeExitTargets();
+                                onScroll();
+                            });
+                        };
+
                         window.addEventListener("scroll", onScroll, {
                             passive: true,
                         });
-                        window.addEventListener("resize", onScroll);
+                        window.addEventListener("resize", onResize);
+
                         update();
 
                         document.addEventListener(
                             "astro:before-swap",
                             () => {
                                 window.removeEventListener("scroll", onScroll);
-                                window.removeEventListener("resize", onScroll);
+                                window.removeEventListener("resize", onResize);
                                 if (rafId) cancelAnimationFrame(rafId);
                             },
                             { once: true },

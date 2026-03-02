@@ -2,115 +2,74 @@
 // src/pages/events.astro
 import Layout from "../layouts/Layout.astro";
 import PromoHero from "../components/PromoHero.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
-
-type EventEntry = CollectionEntry<"events">;
-type EventItem = EventEntry["data"] & { id: string };
+import {
+  loadEventsPublished,
+  splitUpcomingPast,
+  pickFeaturedHero,
+  fmtDateRange,
+} from "../scripts/events";
 
 const now = new Date();
 
-const fmtDate = (d: Date) =>
-    d.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-
-const fmtRange = (ev: EventItem) =>
-    ev.endDate
-        ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}`
-        : fmtDate(ev.startDate);
-
-const entries = (await getCollection(
-    "events",
-    (e) => e.data.published !== false,
-)) as EventEntry[];
-
-const events: EventItem[] = entries
-    .map((e) => ({ id: e.id, ...e.data }))
-    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-
-const endOrStart = (ev: EventItem) => ev.endDate ?? ev.startDate;
-
-const upcoming = events.filter((ev) => endOrStart(ev) >= now);
-const past = events.filter((ev) => endOrStart(ev) < now).reverse();
-
-const featured =
-    upcoming.find((ev) => ev.featured && ev.hero?.image) ??
-    upcoming.find((ev) => ev.hero?.image) ??
-    null;
+const events = await loadEventsPublished();
+const { upcoming, past } = splitUpcomingPast(events, now);
+const featured = pickFeaturedHero(upcoming);
 ---
 
 <Layout title="BluTattoo Studio — Events">
-    <article class="page-article page-article--stack space-y-6">
-        <h1 class="page-title">Events</h1>
+  <article class="page-article page-article--stack space-y-6">
+    <h1 class="page-title">Events</h1>
 
-        {
-            featured?.hero?.image && (
-                <PromoHero
-                    image={featured.hero.image}
-                    alt={featured.hero.alt ?? featured.title}
-                    className="p-8"
-                />
-            )
-        }
+    {featured?.hero?.image && (
+      <PromoHero
+        image={featured.hero.image}
+        alt={featured.hero.alt ?? featured.title}
+        className="p-8"
+      />
+    )}
 
-        {
-            upcoming.length > 0 ? (
-                <section class="space-y-3">
-                    <h2 class="text-xl font-semibold tracking-tight">
-                        Upcoming
-                    </h2>
+    {upcoming.length > 0 ? (
+      <section class="space-y-3">
+        <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
 
-                    <div class="divide-y divide-black/10 border border-black/10">
-                        {upcoming.map((ev) => (
-                            <a
-                                class="block p-4 hover:bg-black/5"
-                                href={`/events/${ev.id}`}
-                            >
-                                <div class="font-medium">{ev.title}</div>
-                                <div class="text-sm opacity-80">
-                                    {fmtRange(ev)}
-                                    {ev.location ? ` • ${ev.location}` : ""}
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            ) : (
-                <section class="border border-black/10 p-5 md:p-6">
-                    <h2 class="text-xl font-semibold tracking-tight">
-                        Stay tuned
-                    </h2>
-                    <p class="mt-2 leading-relaxed">
-                        We’re planning events and guest spots. As soon as dates
-                        are locked in, they’ll appear here.
-                    </p>
-                </section>
-            )
-        }
+        <div class="divide-y divide-black/10 border border-black/10">
+          {upcoming.map((ev) => (
+            <a class="block p-4 hover:bg-black/5" href={`/events/${ev.id}`}>
+              <div class="font-medium">{ev.title}</div>
+              <div class="text-sm opacity-80">
+                {fmtDateRange(ev)}
+                {ev.location ? ` • ${ev.location}` : ""}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ) : (
+      <section class="border border-black/10 p-5 md:p-6">
+        <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
+        <p class="mt-2 leading-relaxed">
+          We’re planning events and guest spots. As soon as dates are locked in,
+          they’ll appear here.
+        </p>
+      </section>
+    )}
 
-        {
-            past.length > 0 && (
-                <section class="space-y-3">
-                    <h2 class="text-xl font-semibold tracking-tight">Past</h2>
+    {past.length > 0 && (
+      <section class="space-y-3">
+        <h2 class="text-xl font-semibold tracking-tight">Past</h2>
 
-                    <div class="divide-y divide-black/10 border border-black/10">
-                        {past.slice(0, 6).map((ev) => (
-                            <a
-                                class="block p-4 hover:bg-black/5"
-                                href={`/events/${ev.id}`}
-                            >
-                                <div class="font-medium">{ev.title}</div>
-                                <div class="text-sm opacity-80">
-                                    {fmtRange(ev)}
-                                    {ev.location ? ` • ${ev.location}` : ""}
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            )
-        }
-    </article>
+        <div class="divide-y divide-black/10 border border-black/10">
+          {past.slice(0, 6).map((ev) => (
+            <a class="block p-4 hover:bg-black/5" href={`/events/${ev.id}`}>
+              <div class="font-medium">{ev.title}</div>
+              <div class="text-sm opacity-80">
+                {fmtDateRange(ev)}
+                {ev.location ? ` • ${ev.location}` : ""}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
 </Layout>

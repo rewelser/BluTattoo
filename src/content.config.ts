@@ -49,6 +49,19 @@ const socialsSchema = z
 //   }),
 // });
 
+const timeHM = z.string().regex(/^\d{2}:\d{2}$/, "Use HH:mm");
+
+const toHm = (v: unknown): unknown => {
+  if (v instanceof Date) return v.toISOString().slice(11, 16); // HH:mm
+  if (typeof v === "string") {
+    const s = v.trim();
+    if (/^\d{2}:\d{2}$/.test(s)) return s;
+    const m = s.match(/T(\d{2}:\d{2})/);
+    if (m?.[1]) return m[1];
+  }
+  return v;
+};
+
 const events = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/events" }),
   schema: z.object({
@@ -56,9 +69,25 @@ const events = defineCollection({
     published: z.boolean().default(true),
     featured: z.boolean().default(false),
 
+    archived: z.boolean().default(false),
+
+    // date-only values will parse fine; you'll treat endDate as inclusive in your logic
     startDate: z.coerce.date(),
     endDate: z.coerce.date().optional(),
+
+    // optional time-only window
+    startTime: z.preprocess(toHm, timeHM.optional()).optional(),
+    endTime: z.preprocess(toHm, timeHM.optional()).optional(),
+
     location: z.preprocess(emptyStrToUndef, z.string().optional()),
+
+    recurrence: z
+      .object({
+        freq: z.enum(["weekly"]),
+        interval: z.number().int().min(1).default(1).optional(),
+        byWeekday: z.array(z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"])),
+      })
+      .optional(),
 
     hero: z
       .object({

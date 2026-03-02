@@ -223,21 +223,81 @@ collections:
 
               - { name: promoAlt, label: "Image Alt Text", widget: string, required: false }
               
-  - name: "events"
-    label: "Events"
+  - name: "events_active"
+    label: "Events (Active)"
     folder: "src/content/events"
     create: true
-    # slug: "{{slug}}"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     format: "frontmatter"
+    filter: { field: "archived", value: false }
+    summary: "{{startDate}} — {{title}}"
+    sortable_fields: ["startDate", "title", "commit_date"]
     fields:
       - { name: title, label: Title, widget: string }
       - { name: published, label: Published, widget: boolean, default: true }
       - { name: featured, label: Featured, widget: boolean, required: false, default: false }
+      - { name: archived, label: Archived, widget: boolean, required: false, default: false }
 
-      - { name: startDate, label: Start Date, widget: datetime }
-      - { name: endDate, label: End Date, widget: datetime, required: false }
+      # DATE RANGE (inclusive endDate)
+      - name: startDate
+        label: Start Date
+        widget: datetime
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        # picker_utc: true  # optional
+
+      - name: endDate
+        label: End Date (inclusive, optional)
+        widget: datetime
+        required: false
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        # picker_utc: true  # optional
+
+      # OPTIONAL TIME WINDOW (if omitted => all-day)
+      - name: startTime
+        label: Start Time (optional)
+        widget: datetime
+        required: false
+        date_format: false
+        time_format: "HH:mm"
+
+      - name: endTime
+        label: End Time (optional)
+        widget: datetime
+        required: false
+        date_format: false
+        time_format: "HH:mm"
+
       - { name: location, label: Location, widget: string, required: false }
+
+      - label: "Recurrence (optional)"
+        name: recurrence
+        widget: object
+        required: false
+        collapsed: true
+        hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
+        fields:
+          - label: Frequency
+            name: freq
+            widget: select
+            required: true
+            options:
+              - { label: Weekly, value: weekly }
+          - { name: interval, label: Every N weeks, widget: number, required: false, default: 1, min: 1 }
+          - label: Weekdays
+            name: byWeekday
+            widget: select
+            multiple: true
+            required: true
+            options:
+              - { label: Mon, value: MO }
+              - { label: Tue, value: TU }
+              - { label: Wed, value: WE }
+              - { label: Thu, value: TH }
+              - { label: Fri, value: FR }
+              - { label: Sat, value: SA }
+              - { label: Sun, value: SU }
 
       - label: "Hero (Events page)"
         name: hero
@@ -263,17 +323,128 @@ collections:
           - { name: message, label: Message, widget: string, required: false }
           - { name: href, label: Link URL, widget: string, required: false }
 
-          - label: "Color 1"
-            name: color1
-            widget: color
-            required: false
-            hint: "If only one color is set, bar uses a solid background."
+            - label: "Color 1"
+              name: color1
+              widget: color
+              required: false
+              hint: "If only one color is set, bar uses a solid background."
 
-          - label: "Color 2"
-            name: color2
-            widget: color
-            required: false
-            hint: "If two colors are set, bar uses a left→right gradient."
+            - label: "Color 2"
+              name: color2
+              widget: color
+              required: false
+              hint: "If two colors are set, bar uses a left→right gradient."
 
       - { name: body, label: Details, widget: markdown, required: false }
 
+  - name: "events_archive"
+    label: "Events (Archive)"
+    folder: "src/content/events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "frontmatter"
+    filter: { field: "archived", value: true }
+    summary: "{{startDate}} — {{title}}"
+    sortable_fields: ["startDate", "title", "commit_date"]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: published, label: Published, widget: boolean, default: true }
+      - { name: featured, label: Featured, widget: boolean, required: false, default: false }
+      - { name: archived, label: Archived, widget: boolean, required: false, default: true }
+
+      - name: startDate
+        label: Start Date
+        widget: datetime
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        # picker_utc: true  # optional
+
+      - name: endDate
+        label: End Date (inclusive, optional)
+        widget: datetime
+        required: false
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        # picker_utc: true  # optional
+
+      - name: startTime
+        label: Start Time (optional)
+        widget: datetime
+        required: false
+        date_format: false
+        time_format: "HH:mm"
+
+      - name: endTime
+        label: End Time (optional)
+        widget: datetime
+        required: false
+        date_format: false
+        time_format: "HH:mm"
+
+      - { name: location, label: Location, widget: string, required: false }
+
+      - label: "Recurrence (optional)"
+        name: recurrence
+        widget: object
+        required: false
+        collapsed: true
+        hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
+        fields:
+          - label: Frequency
+            name: freq
+            widget: select
+            required: true
+            options:
+              - { label: Weekly, value: weekly }
+          - { name: interval, label: Every N weeks, widget: number, required: false, default: 1, min: 1 }
+          - label: Weekdays
+            name: byWeekday
+            widget: select
+            multiple: true
+            required: true
+            options:
+              - { label: Mon, value: MO }
+              - { label: Tue, value: TU }
+              - { label: Wed, value: WE }
+              - { label: Thu, value: TH }
+              - { label: Fri, value: FR }
+              - { label: Sat, value: SA }
+              - { label: Sun, value: SU }
+
+      - label: "Hero (Events page)"
+        name: hero
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - label: "Hero Image"
+            name: image
+            widget: image
+            required: false
+            media_folder: "/public/uploads/events"
+            public_folder: "/uploads/events"
+          - { name: alt, label: Image Alt Text, widget: string, required: false }
+
+      - label: "Promo Bar (optional)"
+        name: promoBar
+        widget: object
+        required: false
+        collapsed: true
+        fields:
+          - { name: enabled, label: Enable Promo Bar, widget: boolean, default: false }
+          - { name: message, label: Message, widget: string, required: false }
+          - { name: href, label: Link URL, widget: string, required: false }
+
+            - label: "Color 1"
+              name: color1
+              widget: color
+              required: false
+              hint: "If only one color is set, bar uses a solid background."
+
+            - label: "Color 2"
+              name: color2
+              widget: color
+              required: false
+              hint: "If two colors are set, bar uses a left→right gradient."
+
+      - { name: body, label: Details, widget: markdown, required: false }
