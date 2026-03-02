@@ -3,6 +3,7 @@
 @import "./hamburger-base.css";
 @import "./hamburger-spring.css";
 @import "./hamburger-squeeze.css";
+@import "./js-fade-up.css";
 @plugin "@tailwindcss/typography";
 
 :root {
@@ -38,4 +39,3 @@
     @apply mb-6 text-center text-4xl font-bold tracking-tight;
   }
 }
-

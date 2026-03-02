@@ -13,15 +13,15 @@ const siteName = site?.data?.siteName ?? defaults.siteName;
 const { title = siteName, isHome = false } = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/spectral";
+import "@fontsource/fleur-de-leah";
 
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
 import diplomataUrl from "@fontsource/diplomata-sc/files/diplomata-sc-latin-400-normal.woff2?url";
+import fleurdeleahUrl from "@fontsource/fleur-de-leah/files/fleur-de-leah-latin-400-normal.woff2?url";
 
 import "@fontsource/spectral/400.css";
-// import '@fontsource/spectral/700.css';
 import "@fontsource/diplomata-sc/400.css";
-
-
+import "@fontsource/fleur-de-leah/400.css";
 ---
 
 <!doctype html>
@@ -49,9 +49,16 @@ import "@fontsource/diplomata-sc/400.css";
       type="font/woff2"
       crossorigin
     />
+    <link
+      rel="preload"
+      href={fleurdeleahUrl}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
   </head>
   <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
-   <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
+  <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
   <body
     class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
     style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
@@ -75,7 +82,12 @@ import "@fontsource/diplomata-sc/400.css";
       <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
       <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
         <div>
-          <Header variant={isHome ? "home" : "default"} defaults={defaults} site={site} class="site-header" />
+          <Header
+            variant={isHome ? "home" : "default"}
+            defaults={defaults}
+            site={site}
+            class="site-header"
+          />
           <!-- todo: what is this doing? vvv -->
           <div id="pagecontent-wrap" class="relative z-40 bg-white">
             <slot />

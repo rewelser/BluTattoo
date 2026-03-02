@@ -1,0 +1,170 @@
+---
+type Props = {
+    id?: string;
+    images: string[]; // top -> bottom
+    heightVh?: number;
+    class?: string;
+    imgClass?: string;
+};
+
+const {
+    id = "scroll-peel",
+    images,
+    heightVh = 400,
+    class: className = "",
+    imgClass = "",
+} = Astro.props as Props;
+
+if (!images || images.length < 2) {
+    throw new Error("ScrollPeelStack.astro requires at least 2 images.");
+}
+
+const bottomIndex = images.length - 1;
+const bottomSrc = images[bottomIndex];
+
+// peel layers (everything above bottom), in logical order: top -> down
+const peelLayers = images.slice(0, bottomIndex);
+const phases = peelLayers.length;
+---
+
+<section id={id} class="relative" style={`height:${heightVh}vh;`}>
+    <div
+        class="sticky top-0 h-screen overflow-hidden flex items-center justify-center"
+    >
+        <!-- We keep reveal container for clipping (border radius fallback still works) -->
+        <div data-peel-reveal class="h-full overflow-hidden">
+            <!-- This stays full size; we will apply clip-path to THIS stage for the opening -->
+            <div
+                data-peel-stage
+                class={`relative h-full ${className}`}
+                style="width:100vw; clip-path: inset(0 50% 0 50% round 24px); will-change: clip-path;"
+            >
+                <!-- Bottom (always visible) -->
+                <img
+                    src={bottomSrc}
+                    alt=""
+                    class={`absolute inset-0 w-full h-full object-cover ${imgClass}`}
+                    style="z-index:0;"
+                    loading="eager"
+                    decoding="async"
+                />
+
+                <!-- Peel layers top -> down with explicit z-index -->
+                {
+                    peelLayers.map((src, i) => {
+                        const z = phases - i;
+                        return (
+                            <img
+                                src={src}
+                                alt=""
+                                class={`absolute inset-0 w-full h-full object-cover will-change-[clip-path] ${imgClass}`}
+                                style={`clip-path: inset(0 0 0 0); z-index:${z};`}
+                                data-peel-layer
+                                loading="eager"
+                                decoding="async"
+                            />
+                        );
+                    })
+                }
+
+                <script define:vars={{ id, phases }}>
+                    (() => {
+                        const section = document.getElementById(id);
+                        if (!section) return;
+
+                        const stage =
+                            section.querySelector("[data-peel-stage]");
+                        const layers = Array.from(
+                            section.querySelectorAll("[data-peel-layer]"),
+                        );
+
+                        if (!stage) return;
+
+                        const clamp01 = (n) => Math.max(0, Math.min(1, n));
+
+                        // --- TUNING KNOBS ---
+                        // Opening starts when section top reaches this fraction of viewport height.
+                        // 0.8 = ~80% down the screen (starts a little after it appears)
+                        const openStartVh = 0.8;
+
+                        // Rounded corners while opening (clip-path round)
+                        const startRadius = 24; // px at fully closed
+                        const endRadius = 0; // px at fully open
+
+                        let rafId = 0;
+
+                        const update = () => {
+                            rafId = 0;
+
+                            const r = section.getBoundingClientRect();
+                            const vh = window.innerHeight || 1;
+
+                            // ---------------------------
+                            // OPENING (approach phase)
+                            // ---------------------------
+                            // openT = 0 when section top is at/below startPx
+                            // openT = 1 when section top hits 0 (sticky engages)
+                            const startPx = vh * openStartVh;
+                            const openT = clamp01((startPx - r.top) / startPx);
+
+                            // Clip inset from left/right symmetrically:
+                            // openT=0 -> side=50% (fully closed)
+                            // openT=1 -> side=0%  (fully open)
+                            const side = ((1 - openT) * 50).toFixed(3) + "%";
+                            const rad = (
+                                startRadius +
+                                (endRadius - startRadius) * openT
+                            ).toFixed(2);
+
+                            // Use clip-path aperture opening (no distortion)
+                            stage.style.clipPath = `inset(0 ${side} 0 ${side} round ${rad}px)`;
+
+                            // ---------------------------
+                            // PEELING (sticky+scroll)
+                            // ---------------------------
+                            // Only begin peeling after sticky engages: clamp traveled >= 0
+                            const scrollable = r.height - vh;
+                            const traveled = Math.max(0, -r.top);
+                            const tPeelMaster = clamp01(
+                                traveled / (scrollable || 1),
+                            ); // 0..1
+
+                            for (let i = 0; i < phases; i++) {
+                                const img = layers[i];
+                                if (!img) continue;
+
+                                const start = i / phases;
+                                const local = clamp01(
+                                    (tPeelMaster - start) * phases,
+                                );
+                                const bottom = (local * 100).toFixed(3) + "%";
+                                img.style.clipPath = `inset(0 0 ${bottom} 0)`;
+                            }
+                        };
+
+                        const onScroll = () => {
+                            if (rafId) return;
+                            rafId = requestAnimationFrame(update);
+                        };
+
+                        window.addEventListener("scroll", onScroll, {
+                            passive: true,
+                        });
+                        window.addEventListener("resize", onScroll);
+                        update();
+
+                        document.addEventListener(
+                            "astro:before-swap",
+                            () => {
+                                window.removeEventListener("scroll", onScroll);
+                                window.removeEventListener("resize", onScroll);
+                                if (rafId) cancelAnimationFrame(rafId);
+                            },
+                            { once: true },
+                        );
+                    })();
+                </script>
+            </div>
+        </div>
+    </div>
+</section>

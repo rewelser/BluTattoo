@@ -35,7 +35,21 @@ collections:
       - { name: title, label: Name, widget: string }
       - { name: order, label: Order, widget: number, default: 999 }
       - { name: photo, label: Photo, widget: image, required: false }
-      - { name: instagram, label: Instagram URL, widget: string, required: false }
+
+      - label: "Socials"
+        name: "socials"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "TikTok", name: "tiktok", widget: "string", required: false }
+          - { label: "YouTube", name: "youtube", widget: "string", required: false }
+          - { label: "Facebook", name: "facebook", widget: "string", required: false }
+          - { label: "X (Twitter)", name: "x", widget: "string", required: false }
+          - { label: "Threads", name: "threads", widget: "string", required: false }
+          - { label: "Tumblr", name: "tumblr", widget: "string", required: false }
+          - { label: "Pinterest", name: "pinterest", widget: "string", required: false }
 
       - label: Portfolio Images
         name: images
@@ -108,6 +122,21 @@ collections:
             fields:
               - { name: label, label: Day, widget: string }
               - { name: value, label: Hours, widget: string }
+
+          - label: "Socials"
+            name: "socials"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - { label: "Instagram", name: "instagram", widget: "string", required: false }
+              - { label: "TikTok", name: "tiktok", widget: "string", required: false }
+              - { label: "YouTube", name: "youtube", widget: "string", required: false }
+              - { label: "Facebook", name: "facebook", widget: "string", required: false }
+              - { label: "X (Twitter)", name: "x", widget: "string", required: false }
+              - { label: "Threads", name: "threads", widget: "string", required: false }
+              - { label: "Tumblr", name: "tumblr", widget: "string", required: false }
+              - { label: "Pinterest", name: "pinterest", widget: "string", required: false }
 
   - name: "branding"
     label: "Branding"

@@ -11,5 +11,9 @@
         { "label": "Fri", "value": "12:00–8:00" },
         { "label": "Sat", "value": "12:00–8:00" },
         { "label": "Sun", "value": "Closed" }
-    ]
+    ],
+    "socials": {
+        "facebook": "https://www.facebook.com/profile.php?id=100072946814920",
+        "instagram": "https://www.instagram.com/blutattoostudiollc/"
+    }
 }

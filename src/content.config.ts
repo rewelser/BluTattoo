@@ -10,6 +10,33 @@ const emptyStrToUndef = (v: unknown) =>
 const emptyArrToUndef = (v: unknown) =>
   Array.isArray(v) && v.length === 0 ? undefined : v;
 
+const urlOpt = z.preprocess(emptyStrToUndef, z
+  .string()
+  .trim()
+  .url()
+  .optional());
+
+const socialKeys = [
+  "instagram",
+  "tiktok",
+  "youtube",
+  "facebook",
+  "x",
+  "threads",
+  "tumblr",
+  "pinterest",
+] as const;
+
+const socialsSchema = z
+  .object(
+    Object.fromEntries(socialKeys.map((k) => [k, urlOpt])) as Record<
+      (typeof socialKeys)[number],
+      typeof urlOpt
+    >
+  )
+  .partial()
+  .default({});
+
 // Commented out for now; home will ultimately be used for modifying splash content and that's it 
 // const home = defineCollection({
 //   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/home" }),
@@ -58,7 +85,7 @@ const artists = defineCollection({
     title: z.string(),
     order: z.number().default(999),    // ← add this
     photo: z.preprocess(emptyStrToUndef, z.string().optional()),
-    instagram: z.preprocess(emptyStrToUndef, z.string().url().optional()),
+    socials: socialsSchema,
     images: z
       .array(
         z.object({
@@ -105,6 +132,7 @@ const siteInfo = defineCollection({
     phone: z.preprocess(emptyStrToUndef, z.string().optional()),
     email: z.preprocess(emptyStrToUndef, z.string().optional()),
     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+    socials: socialsSchema,
   }),
 });
 

@@ -2,7 +2,10 @@
 title: Zoe
 order: 5
 photo: /uploads/artists/zoester_transparent_cropped.png
-instagram: ""
+socials:
+  instagram: "https://www.instagram.com/example/"
+  facebook: "https://www.facebook.com/example/"
+  threads: "https://www.threads.net/@example"
 images:
   - src: /uploads/artists/zoe_headshot.png
     alt: big snake of poop on forearm

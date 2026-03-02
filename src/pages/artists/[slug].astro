@@ -6,18 +6,23 @@ import SquareAppointments from "../../components/SquareAppointments.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
 import { ArtistGallery } from "../../components/ArtistGalleryNoThumbs.tsx";
 import { Picture } from "astro:assets";
+import SocialRow from "../../components/SocialRow.astro";
 
-const isAsset = (v: unknown) => typeof v === "object" && v !== null && "src" in (v as any);
+const isAsset = (v: unknown) =>
+  typeof v === "object" && v !== null && "src" in (v as any);
 
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
-  let artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
-  artists = artists.sort((a, b) =>
-    a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+  let artists = (await getCollection(
+    "artists",
+  )) as CollectionEntry<"artists">[];
+  artists = artists.sort(
+    (a, b) =>
+      a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
   );
   return artists.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry }
+    props: { entry },
   }));
 }
 
@@ -29,6 +34,7 @@ const { Content } = await render(entry);
 const thumb = (src: string, w: number) =>
   src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
 ---
+
 <Layout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="space-y-6">
     <!-- mx-auto max-w-3xl -->
@@ -36,32 +42,37 @@ const thumb = (src: string, w: number) =>
     <header class="text-orange-100">
       <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
         <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around"> -->
-          {entry.data.photo && (
-            <div class="portrait-anim portrait-glow">
-              <div class="portrait-glow">
-              <img 
-                src={entry.data.photo as string}
-                alt={`Portrait of ${entry.data.title}`}
-                width="400"
-                height="400"
-                decoding="sync"
-                loading="eager"
-                fetchpriority="high"
-                class="portrait-img mask-b-from-60% mask-b-to-100%"
-              />
+          <!-- <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around"> -->
+          {
+            entry.data.photo && (
+              <div class="portrait-anim portrait-glow">
+                <div class="portrait-glow">
+                  <img
+                    src={entry.data.photo as string}
+                    alt={`Portrait of ${entry.data.title}`}
+                    width="400"
+                    height="400"
+                    decoding="sync"
+                    loading="eager"
+                    fetchpriority="high"
+                    class="portrait-img mask-b-from-60% mask-b-to-100%"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )
+          }
           <style>
             .portrait-anim.portrait-glow {
               --portrait-in: 6000ms;
               opacity: 0;
               transform: translate3d(-200px, 0, 0);
               filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
-                      drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
-              animation: portraitIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards,
-              glowIn var(--portrait-in) cubic-bezier(.2,.9,.2,1) forwards;
+                drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
+              animation:
+                portraitIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
+                  forwards,
+                glowIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
+                  forwards;
               will-change: transform, opacity;
             }
 
@@ -83,7 +94,7 @@ const thumb = (src: string, w: number) =>
                 /* filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
                         drop-shadow(-1px -10px 32px rgba(99, 102, 241, 0.18)); */
                 filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                        drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+                  drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
                 /* filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.35))
                         drop-shadow(0 0 22px rgba(99, 102, 241, 0.18)); */
               }
@@ -114,25 +125,15 @@ const thumb = (src: string, w: number) =>
           <div id="artist-bio" class="flex items-center p-5">
             <div>
               <h1 class="text-3xl font-bold">{entry.data.title}</h1>
-        
-              {entry.data.instagram && (
-                <p>
-                  <a
-                    href={entry.data.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 text-indigo-600 hover:underline"
-                  >
-                    <!-- tiny IG glyph -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                        fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                      <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-                    </svg>
-                    Instagram
-                  </a>
-                </p>
-              )}
-          
+
+              {
+                entry.data.socials && (
+                  <p>
+                    <SocialRow links={entry.data.socials} class="my-3" anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200" />
+                  </p>
+                )
+              }
+
               <section>
                 <h2 class="sr-only">Bio</h2>
                 <p class="whitespace-pre-line">
@@ -147,88 +148,102 @@ const thumb = (src: string, w: number) =>
       <div aria-hidden="true">
         <!-- drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)] -->
         <svg class="block h-full w-full" viewBox="1 1 590 213">
-            <defs>
-              <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
-                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
-              </filter>
-            </defs>
-          <path d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z" fill="black" />
+          <defs>
+            <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
+              <feDropShadow
+                dx="2"
+                dy="4"
+                stdDeviation="3"
+                flood-color="#000"
+                flood-opacity="0.5"></feDropShadow>
+            </filter>
+          </defs>
+          <path
+            d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z"
+            fill="black"></path>
         </svg>
       </div>
     </header>
 
     <!-- Artist Gallery -->
-    {entry.data.images?.length && (
-      <section >
-        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
-          <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
-            <div>
-              <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
-                Gallery
-              </h2>
-              <p class="text-sm text-gray-600">
-                Tap/click to view full size.
+    {
+      entry.data.images?.length && (
+        <section>
+          <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
+            <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
+              <div>
+                <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
+                  Gallery
+                </h2>
+                <p class="text-sm text-gray-600">
+                  Tap/click to view full size.
+                </p>
+              </div>
+
+              <p class="text-xs text-gray-500">
+                {entry.data.images.length} photos
               </p>
             </div>
 
-            <p class="text-xs text-gray-500">
-              {entry.data.images.length} photos
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {entry.data.images.map((img, idx) => (
-              <button
-                type="button"
-                class="group overflow-hidden rounded-md text-left cursor-pointer"
-                data-idx={idx}
-                onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
-              >
-                <img
-                  src={thumb(img.src as string, 360)}
-                  srcset={`${thumb(img.src as string, 240)} 240w,
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {entry.data.images.map((img, idx) => (
+                <button
+                  type="button"
+                  class="group overflow-hidden rounded-md text-left cursor-pointer"
+                  data-idx={idx}
+                  onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
+                >
+                  <img
+                    src={thumb(img.src as string, 360)}
+                    srcset={`${thumb(img.src as string, 240)} 240w,
                           ${thumb(img.src as string, 360)} 360w,
                           ${thumb(img.src as string, 480)} 480w,
                           ${thumb(img.src as string, 720)} 720w`}
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  alt={img.alt ?? ""}
-                  loading="lazy"
-                  decoding="async"
-                  class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                />
-              </button>
-            ))}
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    alt={img.alt ?? ""}
+                    loading="lazy"
+                    decoding="async"
+                    class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                </button>
+              ))}
+            </div>
+            <ArtistGallery client:load images={entry.data.images} />
           </div>
-          <ArtistGallery
-              client:load
-              images={entry.data.images}
-          />
-        </div>
-      </section>
-    )}
+        </section>
+      )
+    }
 
     {/* Preferred: Square embed if present */}
-    {entry.data.square?.enabled &&
-    entry.data.square?.merchantSlug &&
-    entry.data.square?.locationSlug && (
-      <div class="p-5 mx-auto max-w-6xl">
-        <SquareAppointments
-          merchantSlug={entry.data.square.merchantSlug}
-          locationSlug={entry.data.square.locationSlug}
-          label={entry.data.square.label}
-          className="mt-2"
-        />
-      </div>
-    )}
+    {
+      entry.data.square?.enabled &&
+        entry.data.square?.merchantSlug &&
+        entry.data.square?.locationSlug && (
+          <div class="p-5 mx-auto max-w-6xl">
+            <SquareAppointments
+              merchantSlug={entry.data.square.merchantSlug}
+              locationSlug={entry.data.square.locationSlug}
+              label={entry.data.square.label}
+              className="mt-2"
+            />
+          </div>
+        )
+    }
 
     {/* Fallback: a plain external booking link */}
-    {!entry.data.square && entry.data.booking_link && (
-      <p>
-        <a href={entry.data.booking_link} target="_blank" rel="noopener noreferrer"
-          class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-          Book with {entry.data.title}
-        </a>
-      </p>
-    )}
+    {
+      !entry.data.square && entry.data.booking_link && (
+        <p>
+          <a
+            href={entry.data.booking_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+          >
+            Book with {entry.data.title}
+          </a>
+        </p>
+      )
+    }
   </article>
 </Layout>

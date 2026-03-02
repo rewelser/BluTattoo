@@ -1,0 +1,35 @@
+---
+import { socialDefs, type SocialLinks } from "./graphics/socialmedia/registry";
+
+const {
+    links = {},
+    class: className = "",
+    anchorClass = "",
+    iconClass = "w-6 h-6 fill-current",
+} = Astro.props as {
+    links?: SocialLinks;
+    class?: string;
+    anchorClass?: string;
+    iconClass?: string;
+};
+
+const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
+---
+
+<div class={`flex items-center gap-3 ${className}`}>
+    {
+        socialDefs.map(({ key, label, Icon }) => {
+            const href = links[key];
+            return href ? (
+                <a
+                    href={href}
+                    aria-label={label}
+                    {...aAttrs}
+                    class={`flex items-center ${anchorClass}`}
+                >
+                    <Icon class={iconClass} />
+                </a>
+            ) : null;
+        })
+    }
+</div>
