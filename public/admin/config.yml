@@ -140,58 +140,61 @@ collections:
 
   - name: "branding"
     label: "Branding"
-    file: "src/content/branding.json"
-    format: "json"
-    fields:
-      - label: Logo (SVG or PNG, dark version)
-        name: logo_dark
-        widget: image
-        required: true
-        hint: "Header logo (dark-on-light version)."
-        media_folder: "/public/uploads/misc_images/logos"
-        public_folder: "/uploads/misc_images/logos"
-
-      - label: Logo (SVG or PNG, light version)
-        name: logo_light
-        widget: image
-        required: false
-        hint: "Header logo (light-on-dark version)."
-        media_folder: "/public/uploads/misc_images/logos"
-        public_folder: "/uploads/misc_images/logos"
-
-      - label: Hero
-        name: hero
-        widget: object
-        required: false
+    files:
+      - name: "main"
+        label: "Branding"
+        file: "src/content/branding.json"
+        format: "json"
         fields:
-          - label: Video
-            name: video
+          - label: Logo (SVG or PNG, dark version)
+            name: logo_dark
+            widget: image
+            required: true
+            hint: "Header logo (dark-on-light version)."
+            media_folder: "public/uploads/misc_images/logos"
+            public_folder: "/uploads/misc_images/logos"
+
+          - label: Logo (SVG or PNG, light version)
+            name: logo_light
+            widget: image
+            required: false
+            hint: "Header logo (light-on-dark version)."
+            media_folder: "public/uploads/misc_images/logos"
+            public_folder: "/uploads/misc_images/logos"
+
+          - label: Hero
+            name: hero
             widget: object
             required: false
             fields:
-              - label: MP4
-                name: mp4
-                widget: file
-                required: true
-                hint: "Fallback format for most browsers."
-                media_folder: "/public/uploads/misc_videos"
-                public_folder: "/uploads/misc_videos"
-
-              - label: WebM
-                name: webm
-                widget: file
+              - label: Video
+                name: video
+                widget: object
                 required: false
-                hint: "Smaller/faster in supported browsers."
-                media_folder: "/public/uploads/misc_videos"
-                public_folder: "/uploads/misc_videos"
+                fields:
+                  - label: MP4
+                    name: mp4
+                    widget: file
+                    required: true
+                    hint: "Fallback format for most browsers."
+                    media_folder: "public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
 
-              - label: Poster image
-                name: poster
-                widget: image
-                required: false
-                hint: "Shown before video loads / if autoplay fails."
-                media_folder: "/public/uploads/misc_images"
-                public_folder: "/uploads/misc_images"
+                  - label: WebM
+                    name: webm
+                    widget: file
+                    required: false
+                    hint: "Smaller/faster in supported browsers."
+                    media_folder: "public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - label: Poster image
+                    name: poster
+                    widget: image
+                    required: false
+                    hint: "Shown before video loads / if autoplay fails."
+                    media_folder: "public/uploads/misc_images"
+                    public_folder: "/uploads/misc_images"
 
   - name: "home"
     label: "Homepage"
