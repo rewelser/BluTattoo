@@ -4,9 +4,7 @@ import PromoHero from "../components/PromoHero.astro";
 import { getEntry } from "astro:content";
 import Blob from "../components/decor/Blob.astro";
 import BlobRow from "../components/decor/BlobRow copy.astro";
-// import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-4.astro";
-import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-4-2.astro";
-// import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-5.astro";
+import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
@@ -129,60 +127,8 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 <DualFlourish durationMs={1000} easing="linear" />
 
 
-<!-- <style>
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .js-fade-up {
-    opacity: 0;
-    transform: translateY(50px);
-    will-change: opacity, transform;
-  }
-
-  .js-fade-up.is-in {
-    animation: fadeUp 5000ms cubic-bezier(.2,.8,.2,1) both;
-  }
-
-  /* Respect reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .js-fade-up { opacity: 1; transform: none; }
-    .js-fade-up.is-in { animation: none; }
-  }
-</style>
-
-<script>
-  (() => {
-    const els = Array.from(document.querySelectorAll(".js-fade-up"));
-    if (!els.length) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          e.target.classList.add("is-in");
-          io.unobserve(e.target); // animate once
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
-    );
-
-    els.forEach((el) => io.observe(el));
-  })();
-</script> -->
-
 <!-- /////////////////////////////////////////// -->
   
-<!-- <ScrollPeelStack
-  id="beforeafter-test"
-  heightVh={400}
-  images={[
-    "/uploads/artists/zirk1.jpeg",
-    "/uploads/misc_images/hero-poster.jpg",
-    "/uploads/misc_images/hero-poster-red.jpg",
-  ]}
-/> -->
 
 <ScrollPeelStack
   id="beforeafter-test"
