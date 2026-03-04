@@ -4,7 +4,9 @@ import PromoHero from "../components/PromoHero.astro";
 import { getEntry } from "astro:content";
 import Blob from "../components/decor/Blob.astro";
 import BlobRow from "../components/decor/BlobRow copy.astro";
-import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
+// import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-4.astro";
+import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-4-2.astro";
+// import ScrollPeelStack from "../components/decor/ScrollPeelStack copy 3-5.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
@@ -184,7 +186,7 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 
 <ScrollPeelStack
   id="beforeafter-test"
-  heightVh={520}
+  heightVh={500}
   images={[
     "/uploads/artists/zirk1.jpeg",
     "/uploads/misc_images/hero-poster.jpg",
@@ -202,30 +204,5 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
   }}
 />
 
-  <section class="parallax-window relative h-[50vh]">
-    <!-- <div class="parallax-bg absolute inset-0 bg-[url(/uploads/misc_images/bigroom_narrow.webp)]"> -->
-    <!-- <div class="parallax-bg will-change-transform absolute inset-0 bg-[url(/uploads/misc_images/bigroom.webp)]"> -->
-    <div
-      class="parallax-bg will-change-transform absolute inset-0 h-screen w-screen bg-[url(/uploads/misc_images/bigroom.webp)]"
-    >
-      <!-- 185 to ...-90? -->
-      <!-- <img
-      class="parallax-bg w-full h-full min-h-[1406px]"
-      src="/uploads/misc_images/bigroom_narrow.webp"
-      alt=""
-    /> -->
-    </div>
 
-    <style>
-      .parallax-window {
-        contain: paint;
-      }
-
-      .parallax-bg {
-        /* background-repeat: no-repeat; */
-        /* background-size: cover; */
-        /* height: 1406px; */
-      }
-    </style>
-  </section>
 </Layout>

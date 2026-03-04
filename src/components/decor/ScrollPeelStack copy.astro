@@ -193,9 +193,11 @@ const sides: SideImages = sideImages ?? {
                         const exitRadius = 16;
 
                         // Collision padding between side images and center column
-                        const gapPx = 2;
+                        const gapPx = 12;
 
-                        // If you later change left-0/right-0 to left-[x]/right-[x], reflect that here (px)
+                        // How much extra breathing room between the left/right side columns and the screen edge,
+                        // if you later change left-0/right-0 to left-[x]/right-[x], bake that in here.
+                        // For now with left-0/right-0 it's 0.
                         const edgeInsetPx = 0;
 
                         // Side image entrance timings (stagger)
@@ -219,6 +221,7 @@ const sides: SideImages = sideImages ?? {
                             }
                         };
 
+                        // Helpers to get max widths by column
                         const maxWFor = (prefix) => {
                             let m = 0;
                             for (const el of sideEls) {
@@ -238,51 +241,58 @@ const sides: SideImages = sideImages ?? {
                             const vw = window.innerWidth || 1;
                             const vh = window.innerHeight || 1;
 
+                            // Measured side column widths (what your CSS actually yields)
                             const leftColW = maxWFor("l");
                             const rightColW = maxWFor("r");
 
+                            // 1) Hard constraint: what center width can fit given side columns + gaps
                             const availableCenterW =
                                 vw -
                                 (leftColW + rightColW) -
                                 2 * gapPx -
                                 2 * edgeInsetPx;
 
-                            // --- Reference-inspired width model ---
-                            const prefCenterW = vw * 0.507;
-                            const minCenterW = 154;
+                            // 2) Preferred center width (reference-inspired)
+                            // centerW ≈ clamp(vw * 0.507, 154, 345)
+                            const prefCenterW = clamp(vw * 0.507, 154, 345);
 
-                            const maxCenterFrac = 0.285; // tune 0.284–0.288
-                            const maxCenterW = vw * maxCenterFrac;
-
+                            // 3) Final center width: must fit, and should match reference feel
+                            // Also prevent nonsense if available is negative.
                             const centerW = clamp(
                                 Math.min(prefCenterW, availableCenterW),
-                                minCenterW,
-                                maxCenterW,
+                                0,
+                                vw,
                             );
 
+                            // Convert centerW -> side inset percent
                             exitSidePctFinal = clamp(
                                 50 * (1 - centerW / vw),
                                 0,
                                 49,
                             );
 
-                            // ---- HEIGHT: (rolled back to your previous behavior) ----
-                            const aspect = 1.7; // keep whatever you had that felt right
+                            // ---- HEIGHT: tie to width (fixes “too long for how wide it was” on phones) ----
+                            // Reference feel is roughly 1.6–1.75 tall/ wide; tune this.
+                            const aspect = 1.7;
+
+                            // preferred center height based on width
                             const prefCenterH = centerW * aspect;
 
-                            const minCenterH = Math.min(vh, 220);
-                            const maxCenterH = vh * 0.8; // <-- rollback (no overflow)
+                            // clamp height so it never exceeds viewport dramatically
+                            const minCenterH = Math.min(vh, 220); // allow smaller boxes on very small screens
+                            const maxCenterH = vh * 0.8; // don't eat entire height
                             const centerH = clamp(
                                 prefCenterH,
                                 minCenterH,
                                 maxCenterH,
                             );
 
+                            // Convert centerH -> vertical inset percent (top/bottom symmetric)
                             exitVertPctFinal = clamp(
                                 50 * (1 - centerH / vh),
                                 0,
                                 45,
-                            ); // <-- rollback (no negative)
+                            );
                         };
 
                         // Initial measure/compute after layout
@@ -378,6 +388,7 @@ const sides: SideImages = sideImages ?? {
                                     el.getBoundingClientRect().width ||
                                     0;
 
+                                // Offscreen distance in px: enough to fully hide element plus a little extra.
                                 const off = rectW + 80;
 
                                 let xDesired = lerp(dir * off, 0, tIn);
