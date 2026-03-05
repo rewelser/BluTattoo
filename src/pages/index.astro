@@ -1,9 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PromoHero from "../components/PromoHero.astro";
 import { getEntry } from "astro:content";
-import Blob from "../components/decor/Blob.astro";
-import BlobRow from "../components/decor/BlobRow copy.astro";
 import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
@@ -16,60 +13,11 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 ---
 
 <script>
-  // import { initParallaxSvgs } from "../scripts/parallax-svg";
-  // initParallaxSvgs();
-
-  import { initParallaxWindows } from "../scripts/InitParallaxWindows";
-  initParallaxWindows();
-  // import { initParallaxWindows } from "../scripts/InitParallaxWindows copy";
-  // initParallaxWindows();
-  // import { initParallaxWindows } from "../scripts/InitParallaxWindows copy 2";
-  // initParallaxWindows(); // <-- this is the one
-  // import { initParallaxWindows } from "../scripts/InitParallaxWindows copy 2 - experimenting";
-  // initParallaxWindows(); // <-- this is the one
-  // import { initParallaxWindows } from "../scripts/InitParallaxWindows copy 3";
-  // initParallaxWindows();
-
-  // import { initFlushParallax } from "../scripts/InitFlushParallax";
-  // initFlushParallax();
-  // import { initFlushParallax } from "../scripts/InitFlushParallax copy";
-  // initFlushParallax();
-  // import { initParallaxY } from "../scripts/InitFlushParallax copy 2";
-  // initParallaxY();
-  // import { initParallaxY } from "../scripts/InitFlushParallax copy 3";
-  // initParallaxY();
-
-  // import { initParallaxWindowsFixedDistance } from "../scripts/InitParallaxWindowsFixedDistance";
-
-  // const cleanup = await initParallaxWindowsFixedDistance({
-  //   scrollLengthPx: 1200, // tune this until it matches Squarespace “buttery”
-  //   speed: 1,
-  //   parallaxInScrollDirection: true,
-  // });
-
-  import { initParallax } from "../scripts/InitParallax 5";
-
-  initParallax({
-    startVisiblePercent: 0, // your knob
-    smart: true,
-  });
-
-  // import { initParallax } from "../scripts/InitParallax 3";
-
-  // initParallax({
-  //   startVisiblePercent: 25,
-  //   speed: 0.6, // 👈 THIS is the knob you want
-  // });
-
   import { bootFadeUp } from "../scripts/fade-up";
   bootFadeUp({ observeMutations: true });
 </script>
-<!-- <script type="module">
-  import { bootFadeUp } from "../scripts/fade-up";
-  bootFadeUp({ observeMutations: true });
-</script> -->
+
 <Layout isHome title="BluTattoo Studio — Home">
-  <Blob class="blob left-[-10rem]" speed={0.4} />
 
   <section class="relative w-full py-32 px-6 overflow-hidden">
     <!-- subtle background glow / depth -->
@@ -130,14 +78,14 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 
   <!-- /////////////////////////////////////////// -->
   <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
-  <ParallaxWindow src="/uploads/misc_images/bigroom.webp" kind="image" windowHeight="35vh" strength={0.85}>
+  <ParallaxWindow src="/uploads/misc_images/bigroom.webp" kind="image" windowHeight="35vh" strength={.55}>
     <!-- optional overlay -->
     <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
       A window into the scene
     </h2>
   </ParallaxWindow>
 
-  <ParallaxWindow
+  <!-- <ParallaxWindow
   src="/uploads/misc_videos/hero-720.mp4"
   kind="video"
   strength={0.95}
@@ -145,7 +93,7 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
   autoplay={true}
   loop={true}
   playsinline={true}
-/>
+/> -->
 
   <ScrollPeelStack
     id="beforeafter-test"

@@ -1,0 +1,146 @@
+---
+type VideoSources = {
+  mp4: string;
+  webm?: string;
+  poster?: string;
+};
+
+const {
+  logo_dark,
+  siteName = "",
+  video,
+  // 1.0 = same speed as scroll, <1 = slower, 0 = locked in place
+  parallaxStrength = 0.35,
+} = Astro.props as {
+  logo_dark: string;
+  siteName?: string;
+  video?: VideoSources;
+  parallaxStrength?: number;
+};
+
+const fallback: VideoSources = {
+  mp4: "/uploads/misc_videos/hero-720.mp4",
+  webm: "/uploads/misc_videos/hero-720.webm",
+  poster: "/uploads/misc_images/hero-poster.jpg",
+};
+
+const heroVid = {
+  mp4: video?.mp4 ?? fallback.mp4,
+  webm: video?.webm ?? fallback.webm,
+  poster: video?.poster ?? fallback.poster,
+};
+
+// Clamp strength to [0, 1]
+const strength = Math.max(0, Math.min(1, parallaxStrength));
+---
+
+<>
+  <div
+    id="hero-video-container"
+    class="relative top-0 w-full h-screen z-0 -mb-[10vh] md:m-auto overflow-hidden"
+    style={`--hero-parallax-strength:${strength};`}
+  >
+    <div
+      id="hero-parallax-layer"
+      class="absolute inset-0 will-change-transform"
+      style="transform: translate3d(0,0,0);"
+      data-hero-parallax-layer
+    >
+      <video
+        id="hero-video"
+        class="h-full w-full object-cover"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="none"
+        poster={heroVid.poster}
+        aria-hidden="true"
+      >
+        <source src={heroVid.webm} type="video/webm" />
+        <source src={heroVid.mp4} type="video/mp4" />
+      </video>
+
+      {/* optional: subtle wash for legibility */}
+      <div aria-hidden="true" class="absolute inset-0 bg-black/50"></div>
+    </div>
+  </div>
+
+  <div
+    aria-hidden="true"
+    id="hero-video-scroll-wash"
+    class="absolute inset-0 h-screen"
+  >
+  </div>
+
+  <div
+    id="desktop-top-logo"
+    class="hidden md:block absolute top-0 w-screen h-screen"
+  >
+    <div class="mx-auto px-4 h-full">
+      <a href="/" class="flex items-center py-6 md:py-8 h-full">
+        <img
+          src={logo_dark}
+          alt={`${siteName} Homepage`}
+          class="w-fit mx-auto h-20 md:h-100"
+        />
+      </a>
+    </div>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const layer = document.querySelector("[data-hero-parallax-layer]");
+      const container = document.getElementById("hero-video-container");
+      if (!layer || !container) return;
+
+      const prefersReduced = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)",
+      )?.matches;
+      if (prefersReduced) return;
+
+      const strength = (() => {
+        const raw = getComputedStyle(container)
+          .getPropertyValue("--hero-parallax-strength")
+          .trim();
+        const n = Number(raw);
+        return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0.35;
+      })();
+
+      const cancelFactor = 1 - strength;
+      if (cancelFactor <= 0) return;
+
+      let rafId = 0;
+      let active = false;
+
+      const apply = () => {
+        rafId = 0;
+        if (!active) return;
+
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        const y = scrollY * cancelFactor; // translate DOWN to slow perceived upward motion
+        layer.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+      };
+
+      const requestApply = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(apply);
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          active = !!entries[0]?.isIntersecting;
+          if (active) requestApply();
+          else layer.style.transform = "translate3d(0,0,0)";
+        },
+        { root: null, threshold: 0, rootMargin: "20% 0px 20% 0px" },
+      );
+
+      io.observe(container);
+
+      window.addEventListener("scroll", requestApply, { passive: true });
+      window.addEventListener("resize", requestApply);
+      requestApply();
+    })();
+  </script>
+</>

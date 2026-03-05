@@ -1,0 +1,198 @@
+---
+type VideoSources = {
+  mp4: string;
+  webm?: string;
+  poster?: string;
+};
+
+const {
+  logo_dark,
+  siteName = "",
+  video,
+  strength = 0.18, // subtle for hero
+  bleed,           // optional override
+} = Astro.props as {
+  logo_dark: string;
+  siteName?: string;
+  video?: VideoSources;
+  strength?: number;
+  bleed?: number;
+};
+
+const fallback: VideoSources = {
+  mp4: "/uploads/misc_videos/hero-720.mp4",
+  webm: "/uploads/misc_videos/hero-720.webm",
+  poster: "/uploads/misc_images/hero-poster.jpg",
+};
+
+const heroVid = {
+  mp4: video?.mp4 ?? fallback.mp4,
+  webm: video?.webm ?? fallback.webm,
+  poster: video?.poster ?? fallback.poster,
+};
+---
+
+<>
+  <div
+    id="hero-video-container"
+    class="pw relative top-0 w-full h-screen z-0 -mb-[10vh] md:m-auto overflow-hidden"
+    data-strength={strength}
+    data-bleed={bleed ?? ""}
+  >
+    <!-- parallax layer -->
+    <div class="pw__layer absolute inset-0 will-change-transform" aria-hidden="true">
+      <video
+        id="hero-video"
+        class="pw__media h-full w-full object-cover"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="none"
+        poster={heroVid.poster}
+        aria-hidden="true"
+      >
+        {heroVid.webm ? <source src={heroVid.webm} type="video/webm" /> : null}
+        <source src={heroVid.mp4} type="video/mp4" />
+      </video>
+    </div>
+
+    <!-- wash stays on top of video -->
+    <div aria-hidden="true" class="absolute inset-0 bg-black/50"></div>
+  </div>
+
+  <div aria-hidden="true" id="hero-video-scroll-wash" class="absolute inset-0 h-screen"></div>
+
+  <div id="desktop-top-logo" class="hidden md:block absolute top-0 w-screen h-screen">
+    <div class="mx-auto px-4 h-full">
+      <a href="/" class="flex items-center py-6 md:py-8 h-full">
+        <img
+          src={logo_dark}
+          alt={`${siteName} Homepage`}
+          class="w-fit mx-auto h-20 md:h-100"
+        />
+      </a>
+    </div>
+  </div>
+</>
+
+<style>
+  /* shared media rules */
+  .pw__media {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(-50%, -50%, 0);
+    object-fit: cover;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+  }
+</style>
+
+<script is:inline>
+(() => {
+  const root = document.currentScript?.previousElementSibling;
+  if (!(root instanceof HTMLElement)) return;
+
+  const layer = root.querySelector(".pw__layer");
+  const media = root.querySelector(".pw__media");
+  if (!(layer instanceof HTMLElement) || !(media instanceof HTMLElement)) return;
+
+  const strength = clamp(parseFloat(root.dataset.strength || "0.18"), 0, 1);
+
+  let bleedPx = parseFloat(root.dataset.bleed || "");
+  const computeAutoBleed = () => {
+    const h = root.getBoundingClientRect().height; // ~vh
+    // hero gets more bleed by default because it’s tall
+    return Math.ceil(h * (0.25 + strength * 0.9));
+  };
+  if (!Number.isFinite(bleedPx)) bleedPx = computeAutoBleed();
+
+  const applySizing = () => {
+    media.style.height = `calc(100% + ${bleedPx * 2}px)`;
+    media.style.width = "100%";
+  };
+
+  let rafId = 0;
+  let isActive = false;
+
+  const update = () => {
+    console.log("update");
+    rafId = 0;
+    if (!isActive) return;
+
+    const rect = root.getBoundingClientRect();
+    const vh = document.documentElement.clientHeight;
+
+    const start = vh;
+    const end = -rect.height;
+    const t = (start - rect.top) / (start - end);
+    const progress = clamp(t, 0, 1);
+
+    const maxShift = bleedPx;
+    const shift = (progress - 0.5) * 2 * maxShift * strength;
+    const clamped = clamp(shift, -maxShift, maxShift);
+
+    layer.style.transform = `translate3d(0, ${clamped}px, 0)`;
+  };
+
+  const requestTick = () => {
+    if (rafId) return;
+    console.log("requesting tick");
+    rafId = requestAnimationFrame(update);
+  };
+
+  const onScroll = () => requestTick();
+  const onResize = () => {
+    if (!root.dataset.bleed) bleedPx = computeAutoBleed();
+    applySizing();
+    requestTick();
+  };
+
+  const io = new IntersectionObserver(
+    console.log("setting up intersection observer"),
+    (entries) => {
+      const entry = entries[0];
+      const nowActive = !!entry?.isIntersecting;
+      console.log("intersection", nowActive);
+      if (nowActive === isActive) return;
+
+      isActive = nowActive;
+
+      if (isActive) {
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onResize, { passive: true });
+        applySizing();
+        requestTick();
+      } else {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onResize);
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    },
+    { threshold: 0, rootMargin: "200px 0px 200px 0px" }
+  );
+
+  const ready = () => {
+    console.log("ready");
+    applySizing();
+    io.observe(root);
+    requestTick();
+  };
+
+  if (media.tagName === "VIDEO") {
+    const vid = media;
+    if (vid.readyState >= 1) ready();
+    else vid.addEventListener("loadedmetadata", ready, { once: true });
+  } else {
+    ready();
+  }
+
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+})();
+</script>

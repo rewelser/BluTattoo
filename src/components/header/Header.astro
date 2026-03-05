@@ -5,7 +5,8 @@ import BlobRow from "../../components/decor/BlobRow copy.astro";
 import PromoBarLoader from "./PromoBarLoader.astro";
 import MobileMenu from "./MobileMenu.astro";
 import DesktopMenu from "./DesktopMenu.astro";
-import HeroBackdrop from "./HeroBackdrop.astro";
+// import HeroBackdrop from "./HeroBackdrop.astro";
+import HeroParallaxBackdrop from "./HeroParallaxBackdrop2.astro";
 import DesktopTopLogo from "./DesktopTopLogo.astro";
 import type { MenuItem } from "./types";
 
@@ -48,9 +49,16 @@ const heroVideo = branding?.hero?.video;
 <!-- Promo announcement bar -->
 <PromoBarLoader fallbackHref="/events" />
 
-{
+<!-- {
   variant === "home" ? (
     <HeroBackdrop logo_dark={logo_dark} siteName={siteName} video={heroVideo} />
+  ) : (
+    <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} />
+  )
+} -->
+{
+  variant === "home" ? (
+    <HeroParallaxBackdrop logo_dark={logo_dark} siteName={siteName} video={heroVideo} strength={.90} />
   ) : (
     <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} />
   )
