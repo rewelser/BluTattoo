@@ -1,0 +1,202 @@
+---
+/**
+ * ParallaxWindow
+ * - windowHeight: CSS height for the "window" (default 35vh)
+ * - strength: how much slower than scroll (0.2 = subtle, 0.35 = stronger)
+ * - bleed: extra pixels above/below to prevent gaps (auto if not provided)
+ */
+export interface Props {
+  src: string;
+  alt?: string;
+  windowHeight?: string; // e.g. "35vh"
+  strength?: number; // 0..1 (smaller = slower/subtler)
+  bleed?: number; // px of extra content above/below
+  class?: string;
+}
+
+const {
+  src,
+  alt = "",
+  windowHeight = "35vh",
+  strength = 0.28,
+  bleed,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class={`pw ${className}`}
+  style={`--pw-height:${windowHeight};`}
+  data-strength={strength}
+  data-bleed={bleed ?? ""}
+>
+  <!-- The moving layer -->
+  <div class="pw__layer" aria-hidden="true">
+    <img class="pw__img" src={src} alt={alt} loading="lazy" decoding="async" />
+  </div>
+
+  <!-- Optional slot for overlay content (text, button, etc.) -->
+  <div class="pw__content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .pw {
+    position: relative;
+    height: var(--pw-height);
+    overflow: hidden;
+    border-radius: 16px; /* tweak */
+  }
+
+  .pw__layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* The image is sized to cover + allow translation without gaps */
+  .pw__img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(-50%, -50%, 0);
+    object-fit: cover;
+    /* Prevent iOS “flash” while transforming */
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .pw__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    /* if you don't need overlay content, you can remove this block */
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+  // No-scroll-listener version:
+  // - IntersectionObserver toggles "active"
+  // - While active, an rAF loop runs continuously and updates transform
+  const root = document.currentScript?.previousElementSibling; // the .pw div
+
+  if (!(root instanceof HTMLElement)) {
+    // no-op
+  } else {
+    const layer = root.querySelector(".pw__layer");
+    const img = root.querySelector(".pw__img");
+
+    if (!(layer instanceof HTMLElement) || !(img instanceof HTMLImageElement)) {
+      // no-op
+    } else {
+      const strength = clamp(parseFloat(root.dataset.strength || "0.28"), 0, 1);
+
+      let bleedPx = parseFloat(root.dataset.bleed || "");
+      const computeAutoBleed = () => {
+        const h = root.getBoundingClientRect().height;
+        return Math.ceil(h * (0.2 + strength * 0.6));
+      };
+      if (!Number.isFinite(bleedPx)) bleedPx = computeAutoBleed();
+
+      const applySizing = () => {
+        img.style.height = `calc(100% + ${bleedPx * 2}px)`;
+        img.style.width = "100%";
+      };
+
+      let rafId = 0;
+      let isActive = false;
+
+      const update = () => {
+        rafId = 0;
+        if (!isActive) return;
+
+        const rect = root.getBoundingClientRect();
+        const vh = document.documentElement.clientHeight;
+
+        const start = vh;
+        const end = -rect.height;
+        const t = (start - rect.top) / (start - end);
+        const progress = clamp(t, 0, 1);
+
+        const maxShift = bleedPx;
+        const shift = (progress - 0.5) * 2 * maxShift * strength;
+        const clamped = clamp(shift, -maxShift, maxShift);
+
+        layer.style.transform = `translate3d(0, ${clamped}px, 0)`;
+
+        // keep running while active
+        rafId = requestAnimationFrame(update);
+      };
+
+      const startLoop = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(update);
+      };
+
+      const stopLoop = () => {
+        if (!rafId) return;
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      };
+
+      const onResize = () => {
+        // If bleed was auto-derived, recompute on resize
+        if (!root.dataset.bleed) bleedPx = computeAutoBleed();
+        applySizing();
+        // If active, the loop will pick it up next frame
+        // If inactive, we can set one transform update when it re-enters
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          const nowActive = !!entry?.isIntersecting;
+          if (nowActive === isActive) return;
+
+          isActive = nowActive;
+
+          if (isActive) {
+            applySizing();
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        },
+        {
+          root: null,
+          threshold: 0,
+          rootMargin: "100px 0px 100px 0px",
+        },
+      );
+
+      // Set up resize handler once (cheaper than binding/unbinding repeatedly)
+      window.addEventListener("resize", onResize, { passive: true });
+
+      // Wait for the image to be ready to avoid a first-frame jump
+      if (img.complete) {
+        applySizing();
+        io.observe(root);
+      } else {
+        img.addEventListener(
+          "load",
+          () => {
+            applySizing();
+            io.observe(root);
+          },
+          { once: true },
+        );
+      }
+
+      function clamp(n, min, max) {
+        return Math.max(min, Math.min(max, n));
+      }
+    }
+  }
+</script>

@@ -1,0 +1,243 @@
+---
+/**
+ * ParallaxWindow (image OR video)
+ * - kind: "image" | "video"
+ * - src: media url
+ * - windowHeight: CSS height for the "window" (default 35vh)
+ * - strength: how much slower than scroll (0.2 subtle, 0.35 stronger)
+ * - bleed: extra pixels above/below to prevent gaps (auto if not provided)
+ *
+ * Video notes:
+ * - For mobile autoplay: muted + playsinline are important.
+ */
+export interface Props {
+  kind?: "image" | "video";
+  src: string;
+  alt?: string; // only used for images
+  windowHeight?: string;
+  strength?: number;
+  bleed?: number;
+  class?: string;
+
+  // video extras (optional)
+  autoplay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  playsinline?: boolean;
+  controls?: boolean;
+  preload?: "none" | "metadata" | "auto";
+  poster?: string;
+}
+
+const {
+  kind = "image",
+  src,
+  alt = "",
+  windowHeight = "35vh",
+  strength = 0.28,
+  bleed,
+  class: className = "",
+
+  autoplay = true,
+  muted = true,
+  loop = true,
+  playsinline = true,
+  controls = false,
+  preload = "metadata",
+  poster,
+} = Astro.props;
+---
+
+<div
+  class={`pw ${className}`}
+  style={`--pw-height:${windowHeight};`}
+  data-strength={strength}
+  data-bleed={bleed ?? ""}
+>
+  <div class="pw__layer" aria-hidden="true">
+    {
+      kind === "video" ? (
+        <video
+          class="pw__media"
+          src={src}
+          autoplay={autoplay}
+          muted={muted}
+          loop={loop}
+          playsinline={playsinline}
+          controls={controls}
+          preload={preload}
+          poster={poster}
+        />
+      ) : (
+        <img
+          class="pw__media"
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+        />
+      )
+    }
+  </div>
+
+  <div class="pw__content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .pw {
+    position: relative;
+    height: var(--pw-height);
+    overflow: hidden;
+    /* border-radius: 16px; */
+  }
+
+  .pw__layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* shared for img/video */
+  .pw__media {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(-50%, -50%, 0);
+    object-fit: cover;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .pw__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    // Scroll-listener version (like your original), but supports IMG or VIDEO.
+
+    const root = document.currentScript?.previousElementSibling; // the .pw div
+
+    if (!(root instanceof HTMLElement)) {
+      // no-op
+    } else {
+      const layer = root.querySelector(".pw__layer");
+      const media = root.querySelector(".pw__media");
+
+      if (!(layer instanceof HTMLElement) || !(media instanceof HTMLElement)) {
+        // no-op
+      } else {
+        const strength = clamp(
+          parseFloat(root.dataset.strength || "0.28"),
+          0,
+          1,
+        );
+
+        let bleedPx = parseFloat(root.dataset.bleed || "");
+        const computeAutoBleed = () => {
+          const h = root.getBoundingClientRect().height;
+          return Math.ceil(h * (0.2 + strength * 0.6));
+        };
+        if (!Number.isFinite(bleedPx)) bleedPx = computeAutoBleed();
+
+        const applySizing = () => {
+          media.style.height = `calc(100% + ${bleedPx * 2}px)`;
+          media.style.width = "100%";
+        };
+
+        let rafId = 0;
+        let isActive = false;
+
+        const update = () => {
+          rafId = 0;
+          if (!isActive) return;
+
+          const rect = root.getBoundingClientRect();
+          const vh = document.documentElement.clientHeight;
+
+          const start = vh;
+          const end = -rect.height;
+          const t = (start - rect.top) / (start - end);
+          const progress = clamp(t, 0, 1);
+
+          const maxShift = bleedPx;
+          const shift = (progress - 0.5) * 2 * maxShift * strength;
+          const clamped = clamp(shift, -maxShift, maxShift);
+
+          layer.style.transform = `translate3d(0, ${clamped}px, 0)`;
+        };
+
+        const requestTick = () => {
+          if (rafId) return;
+          rafId = requestAnimationFrame(update);
+        };
+
+        const onScroll = () => requestTick();
+
+        const onResize = () => {
+          if (!root.dataset.bleed) bleedPx = computeAutoBleed();
+          applySizing();
+          requestTick();
+        };
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            const nowActive = !!entry?.isIntersecting;
+            if (nowActive === isActive) return;
+
+            isActive = nowActive;
+
+            if (isActive) {
+              window.addEventListener("scroll", onScroll, { passive: true });
+              window.addEventListener("resize", onResize, { passive: true });
+              applySizing();
+              requestTick();
+            } else {
+              window.removeEventListener("scroll", onScroll);
+              window.removeEventListener("resize", onResize);
+              if (rafId) cancelAnimationFrame(rafId);
+              rafId = 0;
+            }
+          },
+          { root: null, threshold: 0, rootMargin: "100px 0px 100px 0px" },
+        );
+
+        const ready = () => {
+          applySizing();
+          io.observe(root);
+          requestTick();
+        };
+
+        // Wait for media readiness to avoid first-frame jumps.
+        if (media.tagName === "IMG") {
+          const img = media;
+          if (img.complete) ready();
+          else img.addEventListener("load", ready, { once: true });
+        } else if (media.tagName === "VIDEO") {
+          const vid = media;
+          // readyState >= 1 means metadata is available (dimensions known)
+          if (vid.readyState >= 1) ready();
+          else vid.addEventListener("loadedmetadata", ready, { once: true });
+        } else {
+          ready();
+        }
+
+        function clamp(n, min, max) {
+          return Math.max(min, Math.min(max, n));
+        }
+      }
+    }
+  })();
+</script>

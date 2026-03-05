@@ -1,0 +1,218 @@
+---
+/**
+ * ParallaxWindow
+ * - windowHeight: CSS height for the "window" (default 35vh)
+ * - strength: how much slower than scroll (0.2 = subtle, 0.35 = stronger)
+ * - bleed: extra pixels above/below to prevent gaps (auto if not provided)
+ */
+export interface Props {
+  src: string;
+  alt?: string;
+  windowHeight?: string; // e.g. "35vh"
+  strength?: number; // 0..1 (smaller = slower/subtler)
+  bleed?: number; // px of extra content above/below
+  class?: string;
+}
+
+const {
+  src,
+  alt = "",
+  windowHeight = "35vh",
+  strength = 0.28,
+  bleed,
+  class: className = "",
+} = Astro.props;
+---
+
+<!-- Initial Prompt: Hey Chat, I need your help in creating an astro component to be used on my index.astro page. The desired component is going to be a parallax window that will accept an image to be parallaxed. The parallax effect should only begin once the window enters the viewport, and should only last as long as the window is on screen. I'm planning the window to only be about 35vh tall, so it will truly be like a "window" into the parallax effect. The parallaxed image, of course, should move in the same direction as the rest of the content as the user scrolls by it, but simply slower by an amount. I don't want any gaps to appear in the window above or below the image being parallaxed, so we need to control for that somehow. The visual needs to work and look pretty much the same at all possible viewport dimensions, so however we control for that, let's do it. Also, since the effect needs to work on mobile as well as desktop, I've found that using document.documentElement.clientHeight where one might otherwise have used window.innerHeight reacts better to mobile devices' browsers' penchant for actively changing the viewport size while scrolling/changing scroll direction. This bit of instruction may not matter if you don't end up needing such values, but it's there if you do.  -->
+<div
+  class={`pw ${className}`}
+  style={`--pw-height:${windowHeight};`}
+  data-strength={strength}
+  data-bleed={bleed ?? ""}
+>
+  <!-- The moving layer -->
+  <div class="pw__layer" aria-hidden="true">
+    <img class="pw__img" src={src} alt={alt} loading="lazy" decoding="async" />
+  </div>
+
+  <!-- Optional slot for overlay content (text, button, etc.) -->
+  <div class="pw__content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .pw {
+    position: relative;
+    height: var(--pw-height);
+    overflow: hidden;
+    border-radius: 16px; /* tweak */
+  }
+
+  .pw__layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* The image is sized to cover + allow translation without gaps */
+  .pw__img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(-50%, -50%, 0);
+    object-fit: cover;
+    /* Prevent iOS “flash” while transforming */
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .pw__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    /* if you don't need overlay content, you can remove this block */
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+  // Parallax logic:
+  // - Uses IntersectionObserver to only animate when on-screen
+  // - Computes a scroll progress while element is in view
+  // - Translates the layer by a clamped amount so no gaps appear
+  const root = document.currentScript?.previousElementSibling; // the .pw div
+  console.log("document.currentScript", document.currentScript);
+
+  if (!(root instanceof HTMLElement)) {
+    console.log("no-op");
+    // no-op
+  } else {
+    const layer = root.querySelector(".pw__layer");
+    const img = root.querySelector(".pw__img");
+    console.log("op");
+
+    if (!(layer instanceof HTMLElement) || !(img instanceof HTMLImageElement)) {
+      // no-op
+    } else {
+      const strength = clamp(parseFloat(root.dataset.strength || "0.28"), 0, 1);
+
+      // If bleed isn't provided, we choose a safe default.
+      // Larger "strength" needs more bleed, and bigger windows need more too.
+      let bleedPx = parseFloat(root.dataset.bleed || "");
+      const computeAutoBleed = () => {
+        const h = root.getBoundingClientRect().height;
+        // A practical heuristic: up to ~40% of the window height, scaled by strength
+        return Math.ceil(h * (0.2 + strength * 0.6));
+      };
+      if (!Number.isFinite(bleedPx)) bleedPx = computeAutoBleed();
+
+      // We oversize the image vertically by 2*bleed so we can translate safely.
+      // That keeps coverage at all viewport sizes.
+      const applySizing = () => {
+        // ensure image is tall enough to cover when moved
+        img.style.height = `calc(100% + ${bleedPx * 2}px)`;
+        img.style.width = "100%"; // keep cover behavior (object-fit)
+      };
+
+      let rafId = 0;
+      let isActive = false;
+
+      const update = () => {
+        console.log("update");
+        rafId = 0;
+        if (!isActive) return;
+
+        const rect = root.getBoundingClientRect();
+        const vh = document.documentElement.clientHeight;
+
+        // Define the "active range" as the element being anywhere on screen.
+        // progress: 0 when bottom hits top, 1 when top hits bottom
+        const start = vh; // rect.top == vh (element just below)
+        const end = -rect.height; // rect.top == -height (element just above)
+        const t = (start - rect.top) / (start - end); // normalized 0..1
+        const progress = clamp(t, 0, 1);
+
+        // Map progress to a translation that follows scroll direction but slower.
+        // Centered around 0 at progress=0.5.
+        const maxShift = bleedPx; // clamp shift so we never reveal gaps
+        const shift = (progress - 0.5) * 2 * maxShift * strength;
+
+        // Clamp to be extra safe (especially after resize)
+        const clamped = clamp(shift, -maxShift, maxShift);
+
+        layer.style.transform = `translate3d(0, ${clamped}px, 0)`;
+      };
+
+      const requestTick = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(update);
+      };
+
+      const onScroll = () => requestTick();
+      const onResize = () => {
+        // Recompute bleed if it was auto-derived
+        if (!root.dataset.bleed) bleedPx = computeAutoBleed();
+        applySizing();
+        requestTick();
+      };
+
+      // Observe visibility; only attach scroll listeners while intersecting.
+      const io = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          const nowActive = !!entry?.isIntersecting;
+          if (nowActive === isActive) return;
+
+          isActive = nowActive;
+
+          if (isActive) {
+            window.addEventListener("scroll", onScroll, { passive: true });
+            window.addEventListener("resize", onResize, { passive: true });
+            applySizing();
+            requestTick();
+          } else {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onResize);
+            // optional: cancel any pending frame
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = 0;
+          }
+        },
+        {
+          root: null,
+          threshold: 0,
+          // Start slightly before it enters for smoother first frame
+          rootMargin: "100px 0px 100px 0px",
+        },
+      );
+
+      // Wait for image to have dimensions to avoid “jump” on first paint.
+      if (img.complete) {
+        applySizing();
+        io.observe(root);
+        requestTick();
+      } else {
+        img.addEventListener(
+          "load",
+          () => {
+            applySizing();
+            io.observe(root);
+            requestTick();
+          },
+          { once: true },
+        );
+      }
+
+      function clamp(n, min, max) {
+        return Math.max(min, Math.min(max, n));
+      }
+    }
+  }
+</script>

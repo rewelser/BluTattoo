@@ -6,10 +6,15 @@ import Blob from "../components/decor/Blob.astro";
 import BlobRow from "../components/decor/BlobRow copy.astro";
 import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
+// import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
+// import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
+// import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
+import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
 ---
+
 <script>
   // import { initParallaxSvgs } from "../scripts/parallax-svg";
   // initParallaxSvgs();
@@ -56,7 +61,7 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
   //   speed: 0.6, // 👈 THIS is the knob you want
   // });
 
-    import { bootFadeUp } from "../scripts/fade-up";
+  import { bootFadeUp } from "../scripts/fade-up";
   bootFadeUp({ observeMutations: true });
 </script>
 <!-- <script type="module">
@@ -66,9 +71,7 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 <Layout isHome title="BluTattoo Studio — Home">
   <Blob class="blob left-[-10rem]" speed={0.4} />
 
-  <section
-    class="relative w-full py-32 px-6 overflow-hidden"
-  >
+  <section class="relative w-full py-32 px-6 overflow-hidden">
     <!-- subtle background glow / depth -->
     <!-- <div class="pointer-events-none absolute inset-0">
       <div
@@ -123,32 +126,44 @@ import DualFlourish from "../components/decor/DualFlourish.astro";
 
   <!-- /////////////////////////////////////////// -->
 
+  <DualFlourish durationMs={1000} easing="linear" />
 
-<DualFlourish durationMs={1000} easing="linear" />
+  <!-- /////////////////////////////////////////// -->
+  <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
+  <ParallaxWindow src="/uploads/misc_images/bigroom.webp" kind="image" windowHeight="35vh" strength={0.85}>
+    <!-- optional overlay -->
+    <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
+      A window into the scene
+    </h2>
+  </ParallaxWindow>
 
-
-<!-- /////////////////////////////////////////// -->
-  
-
-<ScrollPeelStack
-  id="beforeafter-test"
-  heightVh={500}
-  images={[
-    "/uploads/artists/zirk1.jpeg",
-    "/uploads/misc_images/hero-poster.jpg",
-    "/uploads/misc_images/hero-poster-red.jpg",
-  ]}
-  sideImages={{
-    left: [
-      { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A" },
-      { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B" },
-    ],
-    right: [
-      { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C" },
-      { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D" },
-    ],
-  }}
+  <ParallaxWindow
+  src="/uploads/misc_videos/hero-720.mp4"
+  kind="video"
+  strength={0.95}
+  muted={true}
+  autoplay={true}
+  loop={true}
+  playsinline={true}
 />
 
-
+  <ScrollPeelStack
+    id="beforeafter-test"
+    heightVh={500}
+    images={[
+      "/uploads/artists/zirk1.jpeg",
+      "/uploads/misc_images/hero-poster.jpg",
+      "/uploads/misc_images/hero-poster-red.jpg",
+    ]}
+    sideImages={{
+      left: [
+        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A" },
+        { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B" },
+      ],
+      right: [
+        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C" },
+        { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D" },
+      ],
+    }}
+  />
 </Layout>
