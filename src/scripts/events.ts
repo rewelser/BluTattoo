@@ -12,6 +12,8 @@ const startOfDayLocal = (d: Date) =>
 
 export const eventEndDate = (ev: EventItem): Date => ev.endDate ?? ev.startDate;
 
+
+// todo: redundant with isEventVisible + hasEventEnded?
 export const isEventUpcomingOrOngoing = (ev: EventItem, now = new Date()): boolean => {
     if (ev.archived) return false;
     if (ev.published === false) return false;
@@ -19,6 +21,15 @@ export const isEventUpcomingOrOngoing = (ev: EventItem, now = new Date()): boole
     return end >= now;
 };
 
+export function isEventVisible(ev: EventItem): boolean {
+    return ev.published !== false && !ev.archived;
+}
+
+export function hasEventEnded(ev: EventItem, now = new Date()): boolean {
+    return (ev.endDate ?? ev.startDate) < now;
+}
+
+// todo: is this the endDate-inclusive logic? and if so, what does "now" mean, if this only runs on a nightly cron? Rather, how does this meaningfully differ from hasEventEnded, if it only runs at, like, 3am nightly?
 export const isEventPast = (ev: EventItem, now = new Date()): boolean => {
     const today = startOfDayLocal(now);
     const end = startOfDayLocal(eventEndDate(ev));
@@ -44,6 +55,21 @@ export function splitUpcomingPast(events: EventItem[], now = new Date()) {
     return { upcoming, past };
 }
 
+export async function loadVisibleEvents(): Promise<EventItem[]> {
+    const events = await loadEventsPublished();
+    return events.filter(isEventVisible);
+}
+
+export async function loadPromoCandidateEvents(now = new Date()): Promise<EventItem[]> {
+    const events = await loadVisibleEvents();
+    return events.filter(
+        (ev) =>
+            !hasEventEnded(ev, now) &&
+            ev.promoBar?.enabled &&
+            !!ev.promoBar?.message
+    );
+}
+
 // ----- Picks -----
 
 export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
@@ -52,27 +78,6 @@ export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
         upcoming.find((ev) => ev.image) ??
         null
     );
-}
-
-export function pickPromoEvent(
-    events: EventItem[],
-    now = new Date(),
-): EventItem | null {
-    const eligible = events.filter(
-        (ev) => isEventUpcomingOrOngoing(ev, now) && ev.promoBar?.enabled && !!ev.promoBar?.message,
-    );
-    return eligible.find((ev) => ev.featured) ?? eligible[0] ?? null;
-}
-
-export async function loadPromoCandidateEvents(now = new Date()): Promise<EventItem[]> {
-  const events = await loadEventsPublished();
-
-  return events.filter((ev) =>
-    !ev.archived &&
-    (ev.endDate ?? ev.startDate) >= now &&
-    ev.promoBar?.enabled &&
-    !!ev.promoBar?.message
-  );
 }
 
 // ----- Formatting (display-only) -----
