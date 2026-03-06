@@ -271,6 +271,40 @@ collections:
 
       - { name: location, label: Location, widget: string, required: false }
 
+      - label: 'Test List'
+        name: 'sections'
+        widget: 'list'
+        min: 1
+        max: 1
+        types:
+        - label: 'test list option'
+          name: 'testing list recurrence'
+          widget: object
+          required: false
+          collapsed: true
+          hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
+          fields:
+            - label: Frequency
+              name: freq
+              widget: select
+              required: true
+              options:
+                - { label: Weekly, value: weekly }
+            - { name: interval, label: Every N weeks, widget: number, required: true, default: 1, min: 1 }
+            - label: Weekdays
+              name: byWeekday
+              widget: select
+              multiple: true
+              required: true
+              options:
+                - { label: Mon, value: MO }
+                - { label: Tue, value: TU }
+                - { label: Wed, value: WE }
+                - { label: Thu, value: TH }
+                - { label: Fri, value: FR }
+                - { label: Sat, value: SA }
+                - { label: Sun, value: SU }
+
       - label: "Recurrence (optional)"
         name: recurrence
         widget: object
