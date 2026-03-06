@@ -234,6 +234,15 @@ collections:
     sortable_fields: ["startDate", "title", "commit_date"]
     fields:
       - { name: title, label: Title, widget: string }
+      - { name: detailsShort, label: Details (short), widget: string, required: false }
+      - { name: body, label: Details, widget: markdown, required: false }
+      - label: "Hero Image"
+        name: image
+        widget: image
+        required: false
+        media_folder: "/public/uploads/events"
+        public_folder: "/uploads/events"
+      - { name: alt, label: Hero Image Alt Text, widget: string, required: false }
       - { name: published, label: Published, widget: boolean, default: true }
       - { name: featured, label: Featured, widget: boolean, required: false, default: false }
       - { name: archived, label: Archived, widget: boolean, required: false, default: false }
@@ -367,20 +376,6 @@ collections:
                   - { label: Last, value: -1 }
                 hint: "Use for 'Ordinal weekday' mode"
 
-      - label: "Hero (Events page)"
-        name: hero
-        widget: object
-        required: false
-        collapsed: true
-        fields:
-          - label: "Hero Image"
-            name: image
-            widget: image
-            required: false
-            media_folder: "/public/uploads/events"
-            public_folder: "/uploads/events"
-          - { name: alt, label: Image Alt Text, widget: string, required: false }
-
       - label: "Promo Bar (optional)"
         name: promoBar
         widget: object
@@ -402,8 +397,6 @@ collections:
             widget: color
             required: false
             hint: "If two colors are set, bar uses a left→right gradient."
-
-      - { name: body, label: Details, widget: markdown, required: false }
 
   - name: "events_archive"
     label: "Events (Archive)"
