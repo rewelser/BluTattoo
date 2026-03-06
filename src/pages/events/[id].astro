@@ -24,8 +24,8 @@ const ev = entry.data;
   <article class="page-article page-article--stack space-y-6">
     <h1 class="page-title">{ev.title}</h1>
 
-    {ev.hero?.image && (
-      <PromoHero image={ev.hero.image} alt={ev.hero.alt ?? ev.title} className="p-8" />
+    {ev.image && (
+      <PromoHero image={ev.image} alt={ev.alt ?? ev.title} className="p-8" />
     )}
 
     <div class="border border-black/10 p-5 md:p-6">

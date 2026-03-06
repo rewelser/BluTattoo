@@ -48,8 +48,8 @@ export function splitUpcomingPast(events: EventItem[], now = new Date()) {
 
 export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
     return (
-        upcoming.find((ev) => ev.featured && ev.hero?.image) ??
-        upcoming.find((ev) => ev.hero?.image) ??
+        upcoming.find((ev) => ev.featured && ev.image) ??
+        upcoming.find((ev) => ev.image) ??
         null
     );
 }
@@ -79,11 +79,4 @@ export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): str
     if (startTime && !endTime) return `Starts ${startTime}`;
     if (!startTime && endTime) return `Until ${endTime}`;
     return "All day";
-}
-
-export function getOccurrencesForMonth(ev: EventItem, month: number, year: number): MonthOccurrence {
-    const { startDate, endDate, recurrence } = ev;
-    // if (!recurrence) return [];
-    const testOccurences: MonthOccurrence = {"date": startDate, "event": ev};
-    return testOccurences;
 }

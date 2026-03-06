@@ -21,10 +21,10 @@ const featured = pickFeaturedHero(upcoming);
         <h1 class="page-title">Events</h1>
 
         {
-            featured?.hero?.image && (
+            featured?.image && (
                 <PromoHero
-                    image={featured.hero.image}
-                    alt={featured.hero.alt ?? featured.title}
+                    image={featured.image}
+                    alt={featured.alt ?? featured.title}
                     className="p-8"
                 />
             )

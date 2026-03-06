@@ -62,13 +62,19 @@ const toHm = (v: unknown): unknown => {
   return v;
 };
 
+const weekdayEnum = z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"]);
+
 const events = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/events" }),
   schema: z.object({
     title: z.string(),
+    detailsShort: z.preprocess(emptyStrToUndef, z.string().optional()),
+
+    image: z.preprocess(emptyStrToUndef, z.string().optional()),
+    alt: z.preprocess(emptyStrToUndef, z.string().optional()),
+
     published: z.boolean().default(true),
     featured: z.boolean().default(false),
-
     archived: z.boolean().default(false),
 
     // date-only values will parse fine; you'll treat endDate as inclusive in your logic
@@ -81,19 +87,33 @@ const events = defineCollection({
 
     location: z.preprocess(emptyStrToUndef, z.string().optional()),
 
-    recurrence: z
-      .object({
-        freq: z.enum(["weekly"]),
-        interval: z.number().int().min(1).default(1).optional(),
-        byWeekday: z.array(z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"])),
-      })
-      .optional(),
-
-    hero: z
-      .object({
-        image: z.preprocess(emptyStrToUndef, z.string().optional()),
-        alt: z.preprocess(emptyStrToUndef, z.string().optional()),
-      })
+    recurrenceRule: z
+      .array(
+        z.union([
+          z.object({
+            recurrenceRuleWeekly: z.object({
+              interval: z.number().int().min(1).default(1).optional(),
+              byWeekday: z.array(weekdayEnum).min(1),
+            }),
+          }),
+          z.object({
+            recurrenceRuleMonthly: z.object({
+              interval: z.number().int().min(1).default(1).optional(),
+              monthlyMode: z.enum(["monthday", "ordinalWeekday"]),
+              byMonthDay: z.number().int().min(1).max(31).optional(),
+              byWeekday: weekdayEnum.optional(),
+              bySetPos: z.union([
+                z.literal(1),
+                z.literal(2),
+                z.literal(3),
+                z.literal(4),
+                z.literal(-1),
+              ]).optional(),
+            }),
+          }),
+        ])
+      )
+      .max(1)
       .optional(),
 
     promoBar: z
