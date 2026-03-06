@@ -271,67 +271,101 @@ collections:
 
       - { name: location, label: Location, widget: string, required: false }
 
-      - label: 'Test List'
-        name: 'sections'
+      - label: 'Recurrence (optional - add only one rule)'
+        name: 'recurrenceRule'
         widget: 'list'
         min: 0
         max: 1
         types:
-        - label: 'test list option'
-          name: 'testing list recurrence'
-          widget: object
-          required: false
-          collapsed: true
-          hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
-          fields:
-            - label: Frequency
-              name: freq
-              widget: select
-              required: true
-              options:
-                - { label: Weekly, value: weekly }
-            - { name: interval, label: Every N weeks, widget: number, required: true, default: 1, min: 1 }
-            - label: Weekdays
-              name: byWeekday
-              widget: select
-              multiple: true
-              required: true
-              options:
-                - { label: Mon, value: MO }
-                - { label: Tue, value: TU }
-                - { label: Wed, value: WE }
-                - { label: Thu, value: TH }
-                - { label: Fri, value: FR }
-                - { label: Sat, value: SA }
-                - { label: Sun, value: SU }
+          - label: 'Recurrence - Weekly'
+            name: 'recurrenceRuleWeekly'
+            widget: object
+            required: false
+            collapsed: true
+            hint: "Repeats on selected weekdays between Start Date and End Date."
+            fields:
+              - label: Interval
+                name: interval
+                widget: number
+                required: false
+                default: 1
+                value_type: int
+                min: 1
+                hint: "Every 1 week, every 2 weeks, etc."
 
-      - label: "Recurrence (optional)"
-        name: recurrence
-        widget: object
-        required: false
-        collapsed: true
-        hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
-        fields:
-          - label: Frequency
-            name: freq
-            widget: select
+              - label: Weekdays
+                name: byWeekday
+                widget: select
+                multiple: true
+                required: true
+                options:
+                  - { label: Mon, value: MO }
+                  - { label: Tue, value: TU }
+                  - { label: Wed, value: WE }
+                  - { label: Thu, value: TH }
+                  - { label: Fri, value: FR }
+                  - { label: Sat, value: SA }
+                  - { label: Sun, value: SU }
+
+          - label: 'Recurrence - Monthly'
+            name: 'recurrenceRuleMonthly'
+            widget: object
             required: false
-            options:
-              - { label: Weekly, value: weekly }
-          - { name: interval, label: Every N weeks, widget: number, required: false, default: 1, min: 1 }
-          - label: Weekdays
-            name: byWeekday
-            widget: select
-            multiple: true
-            required: false
-            options:
-              - { label: Mon, value: MO }
-              - { label: Tue, value: TU }
-              - { label: Wed, value: WE }
-              - { label: Thu, value: TH }
-              - { label: Fri, value: FR }
-              - { label: Sat, value: SA }
-              - { label: Sun, value: SU }
+            collapsed: true
+            hint: "Repeats monthly between Start Date and End Date."
+            fields:
+              - label: Interval
+                name: interval
+                widget: number
+                required: false
+                default: 1
+                value_type: int
+                min: 1
+                hint: "Every 1 month, every 2 months, etc."
+
+              - label: Monthly Mode
+                name: monthlyMode
+                widget: select
+                required: true
+                default: monthday
+                options:
+                  - { label: "Same day of month", value: monthday }
+                  - { label: "Ordinal weekday", value: ordinalWeekday }
+
+              - label: Day of month
+                name: byMonthDay
+                widget: number
+                required: false
+                value_type: int
+                min: 1
+                max: 31
+                hint: "Use for 'Same day of month' mode, e.g. 15"
+
+              - label: Weekday
+                name: byWeekday
+                widget: select
+                required: false
+                options:
+                  - { label: Mon, value: MO }
+                  - { label: Tue, value: TU }
+                  - { label: Wed, value: WE }
+                  - { label: Thu, value: TH }
+                  - { label: Fri, value: FR }
+                  - { label: Sat, value: SA }
+                  - { label: Sun, value: SU }
+                hint: "Use for 'Ordinal weekday' mode"
+
+              - label: Position in month
+                name: bySetPos
+                widget: select
+                required: false
+                options:
+                  - { label: First, value: 1 }
+                  - { label: Second, value: 2 }
+                  - { label: Third, value: 3 }
+                  - { label: Fourth, value: 4 }
+                  - { label: Last, value: -1 }
+                hint: "Use for 'Ordinal weekday' mode"
 
       - label: "Hero (Events page)"
         name: hero
