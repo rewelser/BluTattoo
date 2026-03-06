@@ -1,6 +1,6 @@
 ---
 import PromoBar from "./PromoBar.astro";
-import { loadEventsPublished, pickPromoEvent } from "../../scripts/events";
+import { loadPromoCandidateEvents, loadEventsPublished, pickPromoEvent } from "../../scripts/events";
 
 const {
   fallbackHref = "/events",
@@ -11,8 +11,8 @@ const {
 };
 if (!enabled) return;
 
-const events = await loadEventsPublished();
-const promoEvent = pickPromoEvent(events, new Date());
+const events = await loadPromoCandidateEvents(new Date());
+const promoEvent = events.find((ev) => ev.featured) ?? events[0] ?? null;
 
 if (!promoEvent?.promoBar?.message) return;
 

@@ -64,6 +64,17 @@ export function pickPromoEvent(
     return eligible.find((ev) => ev.featured) ?? eligible[0] ?? null;
 }
 
+export async function loadPromoCandidateEvents(now = new Date()): Promise<EventItem[]> {
+  const events = await loadEventsPublished();
+
+  return events.filter((ev) =>
+    !ev.archived &&
+    (ev.endDate ?? ev.startDate) >= now &&
+    ev.promoBar?.enabled &&
+    !!ev.promoBar?.message
+  );
+}
+
 // ----- Formatting (display-only) -----
 
 export const fmtDate = (d: Date) =>
