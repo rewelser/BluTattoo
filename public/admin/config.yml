@@ -410,10 +410,19 @@ collections:
     sortable_fields: ["startDate", "title", "commit_date"]
     fields:
       - { name: title, label: Title, widget: string }
+      - { name: detailsShort, label: Details (short), widget: string, required: false }
+      - label: "Hero Image"
+        name: image
+        widget: image
+        required: false
+        media_folder: "/public/uploads/events"
+        public_folder: "/uploads/events"
+      - { name: alt, label: Hero Image Alt Text, widget: string, required: false }
       - { name: published, label: Published, widget: boolean, default: true }
       - { name: featured, label: Featured, widget: boolean, required: false, default: false }
       - { name: archived, label: Archived, widget: boolean, required: false, default: true }
 
+      # DATE RANGE (inclusive endDate)
       - name: startDate
         label: Start Date
         widget: datetime
@@ -429,6 +438,7 @@ collections:
         time_format: false
         # picker_utc: true  # optional
 
+      # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
         label: Start Time (optional)
         widget: datetime
@@ -445,47 +455,101 @@ collections:
 
       - { name: location, label: Location, widget: string, required: false }
 
-      - label: "Recurrence (optional)"
-        name: recurrence
-        widget: object
-        required: false
-        collapsed: true
-        hint: "If set, this event repeats on selected weekdays between Start/End Date. Leave empty for a one-time event."
-        fields:
-          - label: Frequency
-            name: freq
-            widget: select
-            required: true
-            options:
-              - { label: Weekly, value: weekly }
-          - { name: interval, label: Every N weeks, widget: number, required: false, default: 1, min: 1 }
-          - label: Weekdays
-            name: byWeekday
-            widget: select
-            multiple: true
-            required: true
-            options:
-              - { label: Mon, value: MO }
-              - { label: Tue, value: TU }
-              - { label: Wed, value: WE }
-              - { label: Thu, value: TH }
-              - { label: Fri, value: FR }
-              - { label: Sat, value: SA }
-              - { label: Sun, value: SU }
-
-      - label: "Hero (Events page)"
-        name: hero
-        widget: object
-        required: false
-        collapsed: true
-        fields:
-          - label: "Hero Image"
-            name: image
-            widget: image
+      - label: 'Recurrence (optional - add only one rule)'
+        name: 'recurrenceRule'
+        widget: 'list'
+        min: 0
+        max: 1
+        types:
+          - label: 'Recurrence - Weekly'
+            name: 'recurrenceRuleWeekly'
+            widget: object
             required: false
-            media_folder: "/public/uploads/events"
-            public_folder: "/uploads/events"
-          - { name: alt, label: Image Alt Text, widget: string, required: false }
+            collapsed: true
+            hint: "Repeats on selected weekdays between Start Date and End Date."
+            fields:
+              - label: Interval
+                name: interval
+                widget: number
+                required: false
+                default: 1
+                value_type: int
+                min: 1
+                hint: "Every 1 week, every 2 weeks, etc."
+
+              - label: Weekdays
+                name: byWeekday
+                widget: select
+                multiple: true
+                required: true
+                options:
+                  - { label: Mon, value: MO }
+                  - { label: Tue, value: TU }
+                  - { label: Wed, value: WE }
+                  - { label: Thu, value: TH }
+                  - { label: Fri, value: FR }
+                  - { label: Sat, value: SA }
+                  - { label: Sun, value: SU }
+
+          - label: 'Recurrence - Monthly'
+            name: 'recurrenceRuleMonthly'
+            widget: object
+            required: false
+            collapsed: true
+            hint: "Repeats monthly between Start Date and End Date."
+            fields:
+              - label: Interval
+                name: interval
+                widget: number
+                required: false
+                default: 1
+                value_type: int
+                min: 1
+                hint: "Every 1 month, every 2 months, etc."
+
+              - label: Monthly Mode
+                name: monthlyMode
+                widget: select
+                required: true
+                default: monthday
+                options:
+                  - { label: "Same day of month", value: monthday }
+                  - { label: "Ordinal weekday", value: ordinalWeekday }
+
+              - label: Day of month
+                name: byMonthDay
+                widget: number
+                required: false
+                value_type: int
+                min: 1
+                max: 31
+                hint: "Use for 'Same day of month' mode, e.g. 15"
+
+              - label: Weekday
+                name: byWeekday
+                widget: select
+                required: false
+                options:
+                  - { label: Mon, value: MO }
+                  - { label: Tue, value: TU }
+                  - { label: Wed, value: WE }
+                  - { label: Thu, value: TH }
+                  - { label: Fri, value: FR }
+                  - { label: Sat, value: SA }
+                  - { label: Sun, value: SU }
+                hint: "Use for 'Ordinal weekday' mode"
+
+              - label: Position in month
+                name: bySetPos
+                widget: select
+                required: false
+                options:
+                  - { label: First, value: 1 }
+                  - { label: Second, value: 2 }
+                  - { label: Third, value: 3 }
+                  - { label: Fourth, value: 4 }
+                  - { label: Last, value: -1 }
+                hint: "Use for 'Ordinal weekday' mode"
 
       - label: "Promo Bar (optional)"
         name: promoBar
@@ -509,4 +573,4 @@ collections:
             required: false
             hint: "If two colors are set, bar uses a left→right gradient."
 
-      - { name: body, label: Details, widget: markdown, required: false }
+      - { name: body, label: Details (long - event page), widget: markdown, required: false }
