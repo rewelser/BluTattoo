@@ -435,16 +435,16 @@ collections:
           - { name: message, label: Message, widget: string, required: false }
           - { name: href, label: Link URL, widget: string, required: false }
 
-            - label: "Color 1"
-              name: color1
-              widget: color
-              required: false
-              hint: "If only one color is set, bar uses a solid background."
+          - label: "Color 1"
+            name: color1
+            widget: color
+            required: false
+            hint: "If only one color is set, bar uses a solid background."
 
-            - label: "Color 2"
-              name: color2
-              widget: color
-              required: false
-              hint: "If two colors are set, bar uses a left→right gradient."
+          - label: "Color 2"
+            name: color2
+            widget: color
+            required: false
+            hint: "If two colors are set, bar uses a left→right gradient."
 
       - { name: body, label: Details, widget: markdown, required: false }
