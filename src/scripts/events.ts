@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export type EventEntry = CollectionEntry<"events">;
 export type EventItem = EventEntry["data"] & { id: string };
+export type MonthOccurrence = { date: Date; event: EventItem };
 
 // ----- Date helpers (inclusive endDate, day-level comparisons) -----
 
@@ -78,4 +79,11 @@ export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): str
     if (startTime && !endTime) return `Starts ${startTime}`;
     if (!startTime && endTime) return `Until ${endTime}`;
     return "All day";
+}
+
+export function getOccurrencesForMonth(ev: EventItem, month: number, year: number): MonthOccurrence {
+    const { startDate, endDate, recurrence } = ev;
+    // if (!recurrence) return [];
+    const testOccurences: MonthOccurrence = {"date": startDate, "event": ev};
+    return testOccurences;
 }

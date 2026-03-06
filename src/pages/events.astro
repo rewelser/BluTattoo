@@ -3,10 +3,10 @@
 import Layout from "../layouts/Layout.astro";
 import PromoHero from "../components/PromoHero.astro";
 import {
-  loadEventsPublished,
-  splitUpcomingPast,
-  pickFeaturedHero,
-  fmtDateRange,
+    loadEventsPublished,
+    splitUpcomingPast,
+    pickFeaturedHero,
+    fmtDateRange,
 } from "../scripts/events";
 
 const now = new Date();
@@ -17,59 +17,162 @@ const featured = pickFeaturedHero(upcoming);
 ---
 
 <Layout title="BluTattoo Studio — Events">
-  <article class="page-article page-article--stack space-y-6">
-    <h1 class="page-title">Events</h1>
+    <article class="page-article page-article--stack space-y-6">
+        <h1 class="page-title">Events</h1>
 
-    {featured?.hero?.image && (
-      <PromoHero
-        image={featured.hero.image}
-        alt={featured.hero.alt ?? featured.title}
-        className="p-8"
-      />
-    )}
+        {
+            featured?.hero?.image && (
+                <PromoHero
+                    image={featured.hero.image}
+                    alt={featured.hero.alt ?? featured.title}
+                    className="p-8"
+                />
+            )
+        }
 
-    {upcoming.length > 0 ? (
-      <section class="space-y-3">
-        <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
+        {
+            upcoming.length > 0 ? (
+                <section class="space-y-3">
+                    <h2 class="text-xl font-semibold tracking-tight">
+                        Upcoming
+                    </h2>
 
-        <div class="divide-y divide-black/10 border border-black/10">
-          {upcoming.map((ev) => (
-            <a class="block p-4 hover:bg-black/5" href={`/events/${ev.id}`}>
-              <div class="font-medium">{ev.title}</div>
-              <div class="text-sm opacity-80">
-                {fmtDateRange(ev)}
-                {ev.location ? ` • ${ev.location}` : ""}
-              </div>
-            </a>
-          ))}
+                    <div class="divide-y divide-black/10 border border-black/10">
+                        {upcoming.map((ev) => (
+                            <a
+                                class="block p-4 hover:bg-black/5"
+                                href={`/events/${ev.id}`}
+                            >
+                                <div class="font-medium">{ev.title}</div>
+                                <div class="text-sm opacity-80">
+                                    {fmtDateRange(ev)}
+                                    {ev.location ? ` • ${ev.location}` : ""}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            ) : (
+                <section class="border border-black/10 p-5 md:p-6">
+                    <h2 class="text-xl font-semibold tracking-tight">
+                        Stay tuned
+                    </h2>
+                    <p class="mt-2 leading-relaxed">
+                        We’re planning events and guest spots. As soon as dates
+                        are locked in, they’ll appear here.
+                    </p>
+                </section>
+            )
+        }
+
+        <div class="grid h-full w-full grid-cols-7 items-center gap-1">
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day today"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
+            <div class="calendar-day"><div class="date-num">1</div></div>
         </div>
-      </section>
-    ) : (
-      <section class="border border-black/10 p-5 md:p-6">
-        <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
-        <p class="mt-2 leading-relaxed">
-          We’re planning events and guest spots. As soon as dates are locked in,
-          they’ll appear here.
-        </p>
-      </section>
-    )}
 
-    {past.length > 0 && (
-      <section class="space-y-3">
-        <h2 class="text-xl font-semibold tracking-tight">Past</h2>
+        <div class="date-num"><p>1</p></div>
 
-        <div class="divide-y divide-black/10 border border-black/10">
-          {past.slice(0, 6).map((ev) => (
-            <a class="block p-4 hover:bg-black/5" href={`/events/${ev.id}`}>
-              <div class="font-medium">{ev.title}</div>
-              <div class="text-sm opacity-80">
-                {fmtDateRange(ev)}
-                {ev.location ? ` • ${ev.location}` : ""}
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-  </article>
+        <style>
+            /* multiple events will be listed inside the calendar day box, with the title, time, and short description. Each event will be a link to the event page. */
+            .calendar-day {
+                display: flex;
+                align-items: end;
+                flex-direction: column;
+                padding: 5px;
+                aspect-ratio: 1 / 1;
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            .calendar-day.today {
+                background-color: rgba(0, 0, 0, 0);
+                border: 2px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .calendar-day.closed {
+                background-image: url("/assets/closed.png");
+            }
+
+            .date-num {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            @media (width >= 40rem) {
+                .date-num {
+                    height: calc(var(--spacing) * 6);
+                    width: calc(var(--spacing) * 6);
+                }
+
+                .calendar-day.bg-img .date-num {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+        </style>
+
+        {
+            past.length > 0 && (
+                <section class="space-y-3">
+                    <h2 class="text-xl font-semibold tracking-tight">Past</h2>
+
+                    <div class="divide-y divide-black/10 border border-black/10">
+                        {past.slice(0, 6).map((ev) => (
+                            <a
+                                class="block p-4 hover:bg-black/5"
+                                href={`/events/${ev.id}`}
+                            >
+                                <div class="font-medium">{ev.title}</div>
+                                <div class="text-sm opacity-80">
+                                    {fmtDateRange(ev)}
+                                    {ev.location ? ` • ${ev.location}` : ""}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )
+        }
+    </article>
 </Layout>

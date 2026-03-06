@@ -19,38 +19,65 @@ const {
     /* Styles applied only when stuck to top */
     background-color: red;
   }
+
+  #mobile-logo-container {
+    will-change: transform;
+    transform: translate3d(0,0,0);
+  }
+
+  html.scroll-locked,
+  body.scroll-locked {
+    overflow: hidden;
+  }
+
+  #mobile-menu-anim.is-open {
+    overflow: auto;
+  }
+
+  #mobile-menu-anim:not(.is-open) {
+    overflow: hidden;
+  }
 </style>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<!-- <div
+<div
   id="mobile-menu"
   class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
     variant !== "home" ? "bg-black/80 backdrop-blur" : ""
   }`}
   style="top: var(--announcement-h);"
-> -->
-<div
+>
+<!-- <div
   id="mobile-menu"
   class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
     variant !== "home" ? "bg-black/20" : ""
   }`}
   style="top: var(--announcement-h);"
->
+> -->
   <!-- top row: logo + button -->
   <div
-    class="flex items-center flex-col justify-center mx-auto max-w-6xl min-h-[10vh]"
+    class="flex items-center flex-col justify-center flex-end mx-auto max-w-6xl min-h-[10vh]"
   >
-    <div
+    <!-- <div
       id="mobile-logo-container"
       class="absolute"
       style={`${variant === "home" ? "transform: translateY(-55vh)" : ""}`}
+    > -->
+        <div
+      id="mobile-logo-container"
+      class="absolute left-1/2 w-screen"
+      style={`${variant === "home" ? "transform: translate3d(-50%, -55vh, 0) scale(1)" : "transform: translate3d(-50%, 0, 0)"}`}
     >
+        <!-- <div
+      id="mobile-logo-container"
+      class="absolute"
+    > -->
       <a href="/">
         <img
           id="mobile-logo"
           src={logo_light}
           alt={`${siteName} Homepage`}
-          class={`w-auto p-2 ${variant === "home" ? "h-[35vh]" : "h-[10vh]"}`}
+          class={`absolute top-1/2 left-1/2 -translate-1/2 p-2 ${variant === "home" ? "h-[35vh] landscape:h-[55vh]" : "h-[10vh]"}`}
         />
         <span class="sr-only">${siteName} Homepage</span>
       </a>
@@ -76,7 +103,7 @@ const {
   <div id="mobile-menu-panel" class="inset-x-0 top-full px-4 text-center">
     <div
       id="mobile-menu-anim"
-      class="overflow-hidden h-0 transition-[height] duration-300 ease-out will-change-[height]"
+      class="h-0 transition-[height] duration-300 ease-out will-change-[height]"
       inert
     >
       <nav aria-label="Primary" class="p-2 shadow-xl" id="mobile-menu-nav">
@@ -224,6 +251,15 @@ const {
       }
     };
 
+    const updateMobileMenuViewportBounds = () => {
+      console.log("updateMobileMenuViewportBounds");
+      const headerRect = header.getBoundingClientRect();
+      const top = headerRect.bottom;
+      const available = window.innerHeight - top;
+
+      mobileAnim.style.maxHeight = `${Math.max(0, available)}px`;
+    };
+
     const expand = (panel) => {
       ensurePixelHeight(panel);
       panel.style.height = panel.scrollHeight + "px";
@@ -245,6 +281,7 @@ const {
      *    - if collapsing while focus is inside panel, return focus to btn
      */
     const setExpanded = (btn, panel, expanded, chevron) => {
+      console.log("setExpanded");
       // Focus management before collapsing
       if (!expanded) ensureFocusNotIn(panel, btn);
       btn.setAttribute("aria-expanded", expanded ? "true" : "false");
@@ -294,21 +331,35 @@ const {
       });
     };
 
+    const openOuter = () => {
+      updateMobileMenuViewportBounds();
+      // document.documentElement.classList.add("scroll-locked");
+      document.body.classList.add("scroll-locked");
+      mobileBtn.classList.add("is-active");
+      mobileAnim.classList.add("is-open");
+      setExpanded(mobileBtn, mobileAnim, true);
+    };
+
     const closeOuter = () => {
       // If focus is anywhere inside the whole menu region, return it to the hamburger button
       ensureFocusNotIn(mobileAnim, mobileBtn);
       closeAllSubmenus();
       setExpanded(mobileBtn, mobileAnim, false);
-      mobileBtn.classList.toggle("is-active", false);
+      mobileBtn.classList.remove("is-active");
+      mobileAnim.classList.remove("is-open");
+      // document.documentElement.classList.remove("scroll-locked");
+      document.body.classList.remove("scroll-locked");
+      mobileAnim.style.maxHeight = "";
     };
 
     // Outer toggle
     mobileBtn.addEventListener("click", () => {
       const nextExpansionState = !isExpanded(mobileBtn);
-      mobileBtn.classList.toggle("is-active", nextExpansionState);
-
-      if (!nextExpansionState) closeAllSubmenus();
-      setExpanded(mobileBtn, mobileAnim, nextExpansionState);
+      if (nextExpansionState) {
+        openOuter();
+      } else {
+        closeOuter();
+      }
     });
 
     // Delegated submenu clicks
@@ -377,8 +428,17 @@ const {
   // - backdrop-blur-sm in Tailwind is typically 4px (if you customized it, change this)
   const MAX_ALPHA = 0.8;
   const MAX_BLUR_PX = 8;
-  const MAX_SCALE = 2;
+  const MAX_SCALE = 1;
+  const MIN_SCALE = 0.25;
   const MAX_OPACITY = 1;
+  let startTranslateYPx = 0;
+
+  const viewportH = () => document.documentElement.clientHeight;
+
+  function recalc() {
+    startTranslateYPx = -0.55 * viewportH();
+  }
+  recalc();
 
   // Make sure we start at 0
   overlay.style.backgroundColor = "rgba(0,0,0,0)";
@@ -386,7 +446,7 @@ const {
   overlay.style.webkitBackdropFilter = "blur(0px)";
 
   mobile_menu_btn.style.opacity = 0;
-  // logo.style.transform = "scale(2)";
+  // logo.style.transform = "scale(1)";
 
   let ticking = false;
   let menuStuck = false; // todo: maybe we can just use css scroll-state; search on that
@@ -421,6 +481,9 @@ const {
     // account for height of promo bar if present
     const earlyFinishPx = vhToPx(10) + promo_bar_height;
     const denom = Math.max(1, rect.height - earlyFinishPx);
+    // --- mobile logo tween ---
+    // const logo = document.getElementById("mobile-logo");
+    const lerp = (a, b, t) => a + (b - a) * t;
 
     // old progress calc, before earlyFinishPx was taken into account
     // const progress = clamp01(-rect.y / rect.height);
@@ -436,7 +499,9 @@ const {
     const blur = progress * MAX_BLUR_PX;
     const opacity = progress * MAX_OPACITY;
 
-    const scale = 1 - progress * MAX_SCALE;
+    // let scale = 1 - progress * MAX_SCALE;
+    // scale = Math.max(scale, 0.25);
+    const scale = lerp(MAX_SCALE, MIN_SCALE, progress);
 
     overlay.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
     overlay.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
@@ -444,15 +509,11 @@ const {
 
     mobilenav.style.backgroundColor = `rgba(0,0,0,${alpha.toFixed(2)})`;
     mobilenav.style.backdropFilter = `blur(${blur.toFixed(2)}px)`;
-    mobilenav.style.webkitBackdropFilter = `blur(${blur.toFixed(2)}px)`;
+    mobilenav.style.webkitBackdropFilter = `blur?(${blur.toFixed(2)}px)`;
 
     mobile_menu_btn.style.opacity = `${opacity.toFixed(2)}`;
 
     // logo.style.scale = `${scale.toFixed(2)}`;
-
-    // --- mobile logo tween ---
-    // const logo = document.getElementById("mobile-logo");
-    const lerp = (a, b, t) => a + (b - a) * t;
 
     /**
      * todos here:
@@ -466,17 +527,20 @@ const {
      */
 
     // if (logo) {
-    const startTranslateYVh = -55;
+    // const startTranslateYVh = -55;
+    // const startTranslateYPx = -0.55 * document.documentElement.clientHeight;
     const startHeightVh = 35;
     const endHeightVh = 10; // h-15
-    const translateYVh = lerp(startTranslateYVh, 0, progress);
-    const heightVh = lerp(startHeightVh, endHeightVh, progress);
+    // const translateYVh = lerp(startTranslateYVh, 0, progress);
+    const translateYPx = lerp(startTranslateYPx, 0, progress);
+    // const heightVh = lerp(startHeightVh, endHeightVh, progress);
     // console.log("translateYVh", translateYVh);
-    logo_container.style.transform = `translateY(${translateYVh}vh)`;
-    const p = (1 - progress.toFixed(2)) * 100;
+    // logo_container.style.transform = `translateY(${translateYVh}vh)`;
+    logo_container.style.transform = `translate3d(-50%, ${translateYPx}px, 0) scale(${scale})`;
+    // const p = (1 - progress.toFixed(2)) * 100;
     // console.log("1 - progress.toFixed(2)", 1 - progress.toFixed(2));
     // logo.style.height = `calc(${(1 - progress).toFixed(2)} * ${startHeightVh}vh + ${p} * ${endHeightVh}vh)`;
-    logo.style.height = `${heightVh.toFixed(2)}vh`;
+    // logo.style.height = `${heightVh.toFixed(2)}vh`; // <-- this is the one we were using
     // logo.style.height = `${p}vh`;
     // }
   }
@@ -485,10 +549,16 @@ const {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(update);
+    // update();
   }
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
-  window.addEventListener("resize", onScrollOrResize);
+  window.addEventListener("resize", () => {recalc(); onScrollOrResize();});
+  window.visualViewport?.addEventListener("resize", () => {
+    recalc();
+    onScrollOrResize();
+  });
+
   update(); // initial paint
   })();
 </script>
