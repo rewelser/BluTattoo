@@ -252,7 +252,6 @@ const {
     };
 
     const updateMobileMenuViewportBounds = () => {
-      console.log("updateMobileMenuViewportBounds");
       const headerRect = header.getBoundingClientRect();
       const top = headerRect.bottom;
       const available = window.innerHeight - top;
@@ -281,7 +280,6 @@ const {
      *    - if collapsing while focus is inside panel, return focus to btn
      */
     const setExpanded = (btn, panel, expanded, chevron) => {
-      console.log("setExpanded");
       // Focus management before collapsing
       if (!expanded) ensureFocusNotIn(panel, btn);
       btn.setAttribute("aria-expanded", expanded ? "true" : "false");
@@ -400,12 +398,14 @@ const {
       (e) => {
         if (header.contains(e.target)) return;
         if (mobileAnim.dataset.animating === "1") return;
+        if (!isExpanded(mobileBtn)) return;
         closeOuter();
       },
       { passive: true },
     );
 
     document.addEventListener("keydown", (e) => {
+      if (!isExpanded(mobileBtn)) return;
       if (e.key === "Escape") closeOuter();
     });
   })();

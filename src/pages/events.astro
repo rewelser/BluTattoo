@@ -2,16 +2,22 @@
 // src/pages/events.astro
 import Layout from "../layouts/Layout.astro";
 import PromoHero from "../components/PromoHero.astro";
+import { EventsCalendar } from "../components/EventsCalendar copy";
+import { buildEventsByYearMonthDay } from "../scripts/events";
+import type { EventItem, EventsByYearMonthDay } from "../scripts/events";
+
 import {
-    loadEventsPublished,
+    loadEventsPublishedCached,
     splitUpcomingPast,
     pickFeaturedHero,
-    fmtDateRange,
+    fmtDateRange
 } from "../scripts/events";
 
 const now = new Date();
 
-const events = await loadEventsPublished();
+const events: EventItem[] = await loadEventsPublishedCached();
+const eventsByYearMonthDay: EventsByYearMonthDay = await buildEventsByYearMonthDay(events);
+// const events = await loadEventsPublished();
 const { upcoming, past } = splitUpcomingPast(events, now);
 const featured = pickFeaturedHero(upcoming);
 ---
@@ -65,92 +71,7 @@ const featured = pickFeaturedHero(upcoming);
             )
         }
 
-        <div class="grid h-full w-full grid-cols-7 items-center gap-1">
-            <div class="calendar-day-header">Sun</div>
-            <div class="calendar-day-header">Mon</div>
-            <div class="calendar-day-header">Tue</div>
-            <div class="calendar-day-header">Wed</div>
-            <div class="calendar-day-header">Thu</div>
-            <div class="calendar-day-header">Fri</div>
-            <div class="calendar-day-header">Sat</div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day today"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-            <div class="calendar-day"><div class="date-num">1</div></div>
-        </div>
-
-        <div class="date-num"><p>1</p></div>
-
-        <style>
-            /* multiple events will be listed inside the calendar day box, with the title, time, and short description. Each event will be a link to the event page. */
-            .calendar-day {
-                display: flex;
-                align-items: end;
-                flex-direction: column;
-                padding: 5px;
-                aspect-ratio: 1 / 1;
-                background-color: rgba(0, 0, 0, 0.05);
-            }
-
-            .calendar-day.today {
-                background-color: rgba(0, 0, 0, 0);
-                border: 2px solid rgba(0, 0, 0, 0.05);
-            }
-
-            .calendar-day.closed {
-                background-image: url("/assets/closed.png");
-            }
-
-            .date-num {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            @media (width >= 40rem) {
-                .date-num {
-                    height: calc(var(--spacing) * 6);
-                    width: calc(var(--spacing) * 6);
-                }
-
-                .calendar-day.bg-img .date-num {
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-            }
-        </style>
+<EventsCalendar client:load eventsByYearMonthDay={eventsByYearMonthDay} currentDate={now} />
 
         {
             past.length > 0 && (
