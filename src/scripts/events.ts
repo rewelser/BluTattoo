@@ -36,8 +36,8 @@ export function getEventStartMoment(ev: EventItem): Date {
     return d;
 }
 
-export function isEventPublished(ev: EventItem): boolean {
-    return ev.published !== false;
+export function isEventArchived(ev: EventItem): boolean {
+    return ev.archived === true;
 }
 
 export function hasEventEnded(ev: EventItem, now = new Date()): boolean {
@@ -70,6 +70,14 @@ export function splitUpcomingPast(events: EventItem[], now = new Date()) {
     const upcoming = events.filter((ev) => !hasEventEnded(ev, now));
     const past = events.filter((ev) => hasEventEnded(ev, now)).reverse();
     return { upcoming, past };
+}
+
+export function loadLikelyUpcomingEvents(events: EventItem[], now = new Date()) {
+    return events.filter(
+        (ev) =>
+            !hasEventEnded(ev, now) &&
+            !isEventArchived(ev)
+    );
 }
 
 export async function loadPromoCandidateEvents(now = new Date()): Promise<EventItem[]> {
