@@ -16,7 +16,7 @@ import {
 const now = new Date();
 
 const events: EventItem[] = await loadEventsPublishedCached();
-const eventsByYearMonthDay: EventsByYearMonthDay = await buildEventsByYearMonthDay(events);
+const eventsByYearMonthDay: EventsByYearMonthDay = buildEventsByYearMonthDay(events);
 // const events = await loadEventsPublished();
 const { upcoming, past } = splitUpcomingPast(events, now);
 const featured = pickFeaturedHero(upcoming);
@@ -24,7 +24,7 @@ const featured = pickFeaturedHero(upcoming);
 
 <Layout title="BluTattoo Studio — Events">
     <article class="page-article page-article--stack space-y-6">
-        <h1 class="page-title">Events</h1>
+        <h1 class="page-title">Events {now}</h1>
 
         {
             featured?.image && (

@@ -10,17 +10,16 @@ export type EventsByYearMonthDay = Record<string, Record<string, Record<string, 
 
 export function getEventEndMoment(ev: EventItem): Date {
     const base = ev.endDate ?? ev.startDate;
-
     const d = new Date(base);
 
     if (ev.endTime) {
         const [h, m] = ev.endTime.split(":").map(Number);
-        d.setHours(h, m, 0, 0);
+        d.setUTCHours(h, m, 0, 0);
         return d;
     }
 
     // Inclusive all-day end
-    d.setHours(23, 59, 59, 999);
+    d.setUTCHours(23, 59, 59, 999);
     return d;
 }
 
@@ -29,11 +28,11 @@ export function getEventStartMoment(ev: EventItem): Date {
 
     if (ev.startTime) {
         const [h, m] = ev.startTime.split(":").map(Number);
-        d.setHours(h, m, 0, 0);
+        d.setUTCHours(h, m, 0, 0);
         return d;
     }
 
-    d.setHours(0, 0, 0, 0);
+    d.setUTCHours(0, 0, 0, 0);
     return d;
 }
 
@@ -96,8 +95,14 @@ export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
 
 // ----- Formatting (display-only) -----
 
-export const fmtDate = (d: Date) =>
-    d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+const utcDateFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+});
+
+const fmtDate = (d: Date) => utcDateFormatter.format(d);
 
 export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
@@ -111,135 +116,14 @@ export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): str
     return "All day";
 }
 
-// export function buildMonthlyEventsObject2(evItems: EventItem[]) {
-//     const dates = [];
-//     console.log("currentDate");
-//     const monthlyEvItems = evItems.map((ev) => ({
-//         ...ev, published: false
-//     }));
-
-//     // const resultObject = Object.fromEntries(
-//     //     evItems.map(item => [item["startDate"], getMonthFromDate(item.startDate), item])
-//     // );
-
-//     // const resultObject = Object.fromEntries(
-//     //     evItems.map(ev => [ev.startDate, ev.title])
-//     // );
-
-
-//     function groupBy<T>(arr: T[], key: (item: T) => string) {
-//         return arr.reduce<Record<string, T[]>>((acc, item) => {
-//             const k = key(item);
-//             if (!acc[k]) acc[k] = [];
-//             acc[k].push(item);
-//             return acc;
-//         }, {});
-//     }
-
-//     // const byMonth = groupBy(events, e => e.month);
-
-//     // const byMonthAndDay = Object.fromEntries(
-//     //     Object.entries(byMonth).map(([month, events]) => [
-//     //         month,
-//     //         groupBy(events, e => e.day)
-//     //     ])
-//     // );
-
-
-//     ///-----------------------------------
-
-//     function groupByMany<T>(
-//         items: T[],
-//         ...getKeys: Array<(item: T) => string>
-//     ) {
-//         const result: Record<string, any> = {};
-
-//         for (const item of items) {
-//             let currentLevel = result;
-
-//             for (let i = 0; i < getKeys.length; i++) {
-//                 const key = getKeys[i](item);
-//                 const isLastKey = i === getKeys.length - 1;
-
-//                 if (!currentLevel[key]) {
-//                     currentLevel[key] = isLastKey ? [] : {};
-//                 }
-
-//                 if (isLastKey) {
-//                     currentLevel[key].push(item);
-//                 } else {
-//                     currentLevel = currentLevel[key];
-//                 }
-//             }
-//         }
-
-//         return result;
-//     }
-
-//     ///---------------------
-
-//     type EventsByYearMonthDay = Record<string, Record<string, Record<string, EventItem[]>>>;
-
-//     function buildEventsByYearMonthDay(events: EventItem[]): EventsByYearMonthDay {
-//         const result: EventsByYearMonthDay = {};
-
-//         for (const ev of events) {
-//             const year = ev.startDate.getFullYear().toString();
-//             const month = ev.startDate.getMonth().toString();
-//             const day = ev.startDate.getDate().toString();
-
-//             result[year] ||= {};
-//             result[year][month] ||= {};
-//             result[year][month][day] ||= [];
-
-//             result[year][month][day].push(ev);
-//         }
-
-//         return result;
-//     }
-//     ///---------------------
-
-//     export const buildEventsByYearMonth = () => {
-
-//     }
-//     const eventsByYearMonth: Record<string, Record<string, EventItem[]>> = {};
-//     // const rez2: Record<string, EventItem[]> = {};
-
-//     for (const ev of evItems) {
-//         const year = ev.startDate.getFullYear();
-//         const month = ev.startDate.getMonth();
-//         eventsByYearMonth[year] ||= {};
-//         eventsByYearMonth[year][month] ||= [];
-
-//         eventsByYearMonth[ev.startDate.getFullYear()][ev.startDate.getMonth()].push(ev);
-//     }
-
-//     console.log(rez);
-
-//     // console.log(evItems[9].startDate.getFullYear());
-
-
-//     // const array = [1, 2, 3, 4];
-//     // const sumWithInitial = array.reduce(
-//     //     (accumulator, currentValue) => accumulator + currentValue
-//     // );
-
-//     // console.log(sumWithInitial);
-
-//     // console.log(resultObject);
-//     // console.log(evItems);
-//     // console.log(monthlyEvItems);
-// }
-
-
 export const buildEventsByYearMonthDay = (evItems: EventItem[]) => {
-
     const eventsByYearMonthDay: EventsByYearMonthDay = {};
 
     for (const ev of evItems) {
-        const year = ev.startDate.getFullYear();
-        const month = ev.startDate.getMonth();
-        const date = ev.startDate.getDate();
+        const year = ev.startDate.getUTCFullYear();
+        const month = ev.startDate.getUTCMonth();
+        const date = ev.startDate.getUTCDate();
+
         eventsByYearMonthDay[year] ||= {};
         eventsByYearMonthDay[year][month] ||= {};
         eventsByYearMonthDay[year][month][date] ||= [];
@@ -248,4 +132,4 @@ export const buildEventsByYearMonthDay = (evItems: EventItem[]) => {
     }
 
     return eventsByYearMonthDay;
-}
+};
