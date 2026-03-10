@@ -66,13 +66,17 @@ export function loadEventsPublishedCached(): Promise<EventItem[]> {
     return publishedEventsPromise;
 }
 
-export function splitUpcomingPast(events: EventItem[], now = new Date()) {
+export function splitUpcoming(events: EventItem[], now = new Date()) {
     const upcoming = events.filter((ev) => !hasEventEnded(ev, now));
-    const past = events.filter((ev) => hasEventEnded(ev, now)).reverse();
-    return { upcoming, past };
+    return upcoming;
 }
 
-export function loadLikelyUpcomingEvents(events: EventItem[], now = new Date()) {
+export async function loadUpcomingCandidates(now = new Date()): Promise<EventItem[]> {
+    const events = await loadEventsPublishedCached();
+    return getUpcomingCandidates(events, now);
+}
+
+export function getUpcomingCandidates(events: EventItem[], now = new Date()) {
     return events.filter(
         (ev) =>
             !hasEventEnded(ev, now) &&
@@ -80,12 +84,9 @@ export function loadLikelyUpcomingEvents(events: EventItem[], now = new Date()) 
     );
 }
 
-export async function loadPromoCandidateEvents(now = new Date()): Promise<EventItem[]> {
-    const events = await loadEventsPublishedCached();
-
+export function getPromoCandidates(events: EventItem[], now = new Date()) {
     return events.filter(
         (ev) =>
-            !hasEventEnded(ev, now) &&
             ev.promoBar?.enabled &&
             !!ev.promoBar?.message
     );

@@ -27,6 +27,9 @@ const background =
     : c1
       ? c1
       : defaultBg;
+
+// todo: server rendering
+const now = new Date();
 ---
 
 <!-- Spacer: keeps layout from sliding under the fixed bar --><!-- <div id={`${id}-spacer`} style={`height:${h};`} aria-hidden="true"></div> -->
@@ -45,7 +48,7 @@ const background =
       class="promo-outline flex items-center justify-center w-full h-full text-center"
       href={href}
     >
-      {message}
+      {message} {now}
     </a>
     <button
       type="button"

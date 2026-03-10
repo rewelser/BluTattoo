@@ -1,4 +1,5 @@
 ---
+// SSR on this page only. Elsewhere, SSG
 export const prerender = false;
 
 // src/pages/events.astro
@@ -10,17 +11,19 @@ import type { EventItem, EventsByYearMonthDay } from "../scripts/events";
 
 import {
     loadEventsPublishedCached,
-    splitUpcomingPast,
+    getUpcomingCandidates,
     pickFeaturedHero,
-    fmtDateRange
+    fmtDateRange,
 } from "../scripts/events";
 
 const now = new Date();
 
 const events: EventItem[] = await loadEventsPublishedCached();
-const eventsByYearMonthDay: EventsByYearMonthDay = buildEventsByYearMonthDay(events);
-// const events = await loadEventsPublished();
-const { upcoming, past } = splitUpcomingPast(events, now);
+const eventsByYearMonthDay: EventsByYearMonthDay =
+    buildEventsByYearMonthDay(events);
+
+// upcoming / featured if SSR; upcomingCandidates / featuredCandidate(s) if only SSG (name should match render choice)
+const upcoming = getUpcomingCandidates(events, now);
 const featured = pickFeaturedHero(upcoming);
 ---
 
@@ -73,29 +76,10 @@ const featured = pickFeaturedHero(upcoming);
             )
         }
 
-<EventsCalendar client:load eventsByYearMonthDay={eventsByYearMonthDay} currentDate={now} />
-
-        {
-            past.length > 0 && (
-                <section class="space-y-3">
-                    <h2 class="text-xl font-semibold tracking-tight">Past</h2>
-
-                    <div class="divide-y divide-black/10 border border-black/10">
-                        {past.slice(0, 6).map((ev) => (
-                            <a
-                                class="block p-4 hover:bg-black/5"
-                                href={`/events/${ev.id}`}
-                            >
-                                <div class="font-medium">{ev.title}</div>
-                                <div class="text-sm opacity-80">
-                                    {fmtDateRange(ev)}
-                                    {ev.location ? ` • ${ev.location}` : ""}
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-                </section>
-            )
-        }
+        <EventsCalendar
+            client:load
+            eventsByYearMonthDay={eventsByYearMonthDay}
+            currentDate={now}
+        />
     </article>
 </Layout>
