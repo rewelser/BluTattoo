@@ -8,9 +8,8 @@ interface Props {
 const { image, alt = "", className = "" } = Astro.props;
 ---
 
-<section class={`relative overflow-hidden shadow-lg ${className}`}>
-  <div data-skeleton-image class="skeleton-promo-hero-image h-[70vh]"></div>
-  <!-- had used onload attribute before switching to initPromoImage below, but onload fires only after image fully loads, not before paint(?) adds it to layout -->
+<section class={`relative overflow-hidden shadow-lg ${className}`} data-promo-hero-root>
+  <div data-skeleton-image class="skeleton-promo-hero-image"></div>
   <img
     data-promo-image
     src={image}
@@ -23,10 +22,10 @@ const { image, alt = "", className = "" } = Astro.props;
 </section>
 
 <script is:inline>
-  async function initPromoImage(img) {
-    console.log("i1");
-    const skeleton = img.parentElement?.querySelector("[data-skeleton-image]");
-    if (!skeleton) return;
+  async function initPromoImage(root) {
+    const img = root.querySelector("[data-promo-image]");
+    const skeleton = root.querySelector("[data-skeleton-image]");
+    if (!img || !skeleton) return;
 
     const reveal = async () => {
       try {
@@ -45,11 +44,13 @@ const { image, alt = "", className = "" } = Astro.props;
 
     if (img.complete) {
       reveal();
-      console.log("fishfish");
     } else {
       img.addEventListener("load", reveal, { once: true });
     }
   }
 
-  document.querySelectorAll("[data-promo-image]").forEach(initPromoImage);
+  const root = document.currentScript?.previousElementSibling;
+  if (root?.matches("[data-promo-hero-root]")) {
+    initPromoImage(root);
+  }
 </script>

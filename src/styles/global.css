@@ -47,5 +47,5 @@
 }
 
 .skeleton-promo-hero-image {
-  @apply rounded bg-black/20 animate-pulse;
+  @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
 }
