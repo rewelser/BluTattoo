@@ -9,13 +9,16 @@ const { image, alt = "", className = "" } = Astro.props;
 ---
 
 <section class={`relative overflow-hidden shadow-lg ${className}`}>
-  <div class="skeleton-promo-hero-img h-[70vh] absolute inset-0"></div>
+  <div class="skeleton-promo-hero-img h-[70vh]"></div>
+  <!-- had used onload="this.previousElementSibling.remove();", but this fires only after image loads, not before paint(?) -->
   <img
     src={image}
     alt={alt}
     class="w-full h-auto"
     loading="eager"
-    decoding="async"
+    fetchpriority="high"
+    decoding="sync"
+    onload="this.previousElementSibling.remove();"
   />
 
   <!-- gradient overlay -->

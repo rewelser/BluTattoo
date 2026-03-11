@@ -29,7 +29,6 @@ const background =
       : defaultBg;
 ---
 
-<!-- Spacer: keeps layout from sliding under the fixed bar --><!-- <div id={`${id}-spacer`} style={`height:${h};`} aria-hidden="true"></div> -->
 <aside
   id={id}
   class="fixed top-0 left-0 w-full z-[80]"
@@ -38,14 +37,13 @@ const background =
   aria-label="Announcement"
 >
   <div
-    class="h-full flex items-center justify-center gap-3 px-4 text-white text-sm sm:text-base md:text-2xl"
+    class="h-full flex items-center justify-center gap-3 px-4 text-white text-sm sm:text-base md:text-2xl animate-pulse"
     style={`background: ${background};`}
   >
     <a
       class="promo-outline flex items-center justify-center w-full h-full text-center"
       href={href}
     >
-      {message}
     </a>
     <button
       type="button"

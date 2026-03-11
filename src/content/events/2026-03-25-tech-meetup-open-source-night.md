@@ -1,6 +1,7 @@
 ---
 title: "Tech Meetup: Open Source Night"
 detailsShort: "Lightning talks and networking for developers."
+image: "/uploads/events/womenswednesday.jpg"
 published: true
 featured: false
 archived: false

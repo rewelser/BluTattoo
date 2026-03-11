@@ -1,0 +1,56 @@
+---
+import type { EventItem } from "../scripts/events";
+import {
+    getUpcomingCandidates,
+    pickFeaturedHero,
+    fmtDateRange,
+} from "../scripts/events";
+import PromoHero from "../components/PromoHero.astro";
+
+const n = 6;
+---
+
+<!-- {
+    featured?.image && (
+        <PromoHero
+            image={featured.image}
+            alt={featured.alt ?? featured.title}
+            className="p-8"
+        />
+    )
+} -->
+<section class="relative overflow-hidden shadow-lg p-8">
+  <div
+  class="skeleton-promo-hero-image h-[70vh]"
+/>
+</section>
+
+<section class="space-y-3">
+    <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
+    <div class="divide-y divide-black/10 border border-black/10">
+        {
+            Array.from({ length: n }).map(() => (
+                <div class="block p-4 hover:bg-black/5">
+                    <div class="font-medium">
+                        <div class="skeleton-text w-[15%]" />
+                    </div>
+                    <div class="flex items-center w-fit pb-1 text-sm opacity-80 border-b-2 border-dotted border-black/20">
+                        <div class="skeleton-text w-[10vw]" /> •{" "}
+                        <div class="skeleton-text w-[15vw]" />
+                    </div>
+                    <div class="flex flex-wrap w-[50%] pt-2">
+                        <div class="skeleton-text w-[17%]" />
+                        <div class="skeleton-text w-[31%]" />
+                        <div class="skeleton-text w-[7%]" />
+                        <div class="skeleton-text w-[15%]" />
+                        <div class="skeleton-text w-[20%]" />
+                        <div class="skeleton-text w-[8%]" />
+                        <div class="skeleton-text w-[15%]" />
+                        <div class="skeleton-text w-[11%]" />
+                    </div>
+                </div>
+            ))
+        }
+        <!-- <hr class="w-[30%] my-1 border-t-2 border-dotted border-black/10"> -->
+    </div>
+</section>

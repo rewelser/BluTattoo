@@ -10,9 +10,9 @@ endTime: 20:00
 location: "Central Park Amphitheater"
 promoBar:
   enabled: true
-  message: "Bring blankets and lawn chairs!"
-  color1: "#1e3c72"
-  color2: "#2a5298"
+  message: "Bring blankets and lawn chairs! 0"
+  color1: "#020024"
+  color2: "#5613ff"
 ---
 
 A large outdoor screen and popcorn stand make this a fun night for the whole family.

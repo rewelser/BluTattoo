@@ -111,7 +111,17 @@ const utcDateFormatter = new Intl.DateTimeFormat(undefined, {
     timeZone: "UTC",
 });
 
-const fmtDate = (d: Date) => utcDateFormatter.format(d);
+// const fmtDate = (d: Date) => utcDateFormatter.format(d);
+
+const fmtDate = (d: Date | string | number) => {
+    const date = d instanceof Date ? d : new Date(d);
+
+    if (Number.isNaN(date.getTime())) {
+        throw new Error(`Invalid date: ${String(d)}`);
+    }
+
+    return utcDateFormatter.format(date);
+};
 
 export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);

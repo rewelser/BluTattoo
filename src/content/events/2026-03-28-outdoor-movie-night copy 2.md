@@ -1,5 +1,5 @@
 ---
-title: "Outdoor Movie Night Copy"
+title: "Outdoor Movie Night Copy 2"
 detailsShort: "Family-friendly movie under the stars Again."
 published: true
 featured: true
@@ -10,7 +10,7 @@ endTime: 22:00
 location: "Central Park Amphitheater"
 promoBar:
   enabled: true
-  message: "Bring blankets and lawn chairs! 1"
+  message: "Bring blankets and lawn chairs! 2"
   color1: "#1e3c72"
   color2: "#2a5298"
 ---
