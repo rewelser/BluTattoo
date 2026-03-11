@@ -8,7 +8,10 @@ interface Props {
 const { image, alt = "", className = "" } = Astro.props;
 ---
 
-<section class={`relative overflow-hidden shadow-lg ${className}`} data-promo-hero-root>
+<section
+  class={`relative overflow-hidden shadow-lg ${className}`}
+  data-promo-hero-root
+>
   <div data-skeleton-image class="skeleton-promo-hero-image"></div>
   <img
     data-promo-image
@@ -22,35 +25,37 @@ const { image, alt = "", className = "" } = Astro.props;
 </section>
 
 <script is:inline>
-  async function initPromoImage(root) {
-    const img = root.querySelector("[data-promo-image]");
-    const skeleton = root.querySelector("[data-skeleton-image]");
-    if (!img || !skeleton) return;
+  (() => {
+    async function initPromoImage(root) {
+      const img = root.querySelector("[data-promo-image]");
+      const skeleton = root.querySelector("[data-skeleton-image]");
+      if (!img || !skeleton) return;
 
-    const reveal = async () => {
-      try {
-        await img.decode();
-      } catch {}
-
-      requestAnimationFrame(() => {
-        img.classList.remove("hidden");
-        skeleton.remove();
+      const reveal = async () => {
+        try {
+          await img.decode();
+        } catch {}
 
         requestAnimationFrame(() => {
-          img.classList.remove("opacity-0");
+          img.classList.remove("hidden");
+          skeleton.remove();
+
+          requestAnimationFrame(() => {
+            img.classList.remove("opacity-0");
+          });
         });
-      });
-    };
+      };
 
-    if (img.complete) {
-      reveal();
-    } else {
-      img.addEventListener("load", reveal, { once: true });
+      if (img.complete) {
+        reveal();
+      } else {
+        img.addEventListener("load", reveal, { once: true });
+      }
     }
-  }
 
-  const root = document.currentScript?.previousElementSibling;
-  if (root?.matches("[data-promo-hero-root]")) {
-    initPromoImage(root);
-  }
+    const root = document.currentScript?.previousElementSibling;
+    if (root?.matches("[data-promo-hero-root]")) {
+      initPromoImage(root);
+    }
+  })();
 </script>
