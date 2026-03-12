@@ -127,6 +127,7 @@ export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): stri
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
 }
 
+// todo: what was this added for?
 export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): string {
     const { startTime, endTime } = ev;
     if (startTime && endTime) return `${startTime}–${endTime}`;

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import type { EventsByYearMonthDay, fmtDateRange } from "../scripts/events";
+import type { EventsByYearMonthDay, EventItem } from "../scripts/events";
 import "../styles/EventsCalendar.css";
 
 interface EventsCalendarProps {
@@ -17,6 +17,55 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
             1
         ));
     });
+
+    const utcDateFormatter = new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+    });
+
+    // const fmtDate = (d: Date) => utcDateFormatter.format(d);
+
+    const fmtDate = (d: Date | string | number) => {
+        const date = d instanceof Date ? d : new Date(d);
+
+        if (Number.isNaN(date.getTime())) {
+            throw new Error(`Invalid date: ${String(d)}`);
+        }
+
+        return utcDateFormatter.format(date);
+    };
+
+    function fmtTime(time: string): string {
+        const [rawHour, rawMinute] = time.split(":");
+        const hour = Number(rawHour);
+        const minute = Number(rawMinute);
+
+        if (
+            !Number.isInteger(hour) ||
+            !Number.isInteger(minute) ||
+            hour < 0 ||
+            hour > 23 ||
+            minute < 0 ||
+            minute > 59
+        ) {
+            throw new Error(`Invalid time: ${time}`);
+        }
+
+        const suffix = hour >= 12 ? "PM" : "AM";
+        const hour12 = hour % 12 || 12;
+
+        return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
+    }
+
+    function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
+        return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
+    }
+
+    function fmtTimeRange(ev: Pick<EventItem, "startTime" | "endTime">): string {
+        return ev.endTime ? `${fmtTime(ev.startTime!)} – ${fmtTime(ev.endTime)}` : fmtTime(ev.startTime!);
+    }
 
     const traversedMonthDates = useMemo(() => {
         const year = traversedDate.getUTCFullYear();
@@ -123,24 +172,46 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                                 <div className="date-num">
                                     {day}
                                 </div>
-                                <div className="daily-events text-sm">
-                                    {dailyEvents.map((ev) => (
+                                <div className="daily-events text-sm leading-none">
+                                    {dailyEvents.map((ev, index) => (
                                         <div
-                                            className="daily-event"
+                                            className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : "fish"}`}
                                             key={ev.id}
                                         >
-                                            • {ev.title}
+                                            {ev.startTime && (<><span className="italic font-bold">{fmtTime(ev.startTime)}</span><br /></>)}
+                                            {ev.title}
                                         </div>
                                     ))}
                                 </div>
-                                {dailyEvents.map((ev) => (
-                                    <div
-                                        key={ev.id}
-                                        className="overlay p-5"
-                                    >
-                                        Big panel
+                                {dailyEvents.length && (
+                                    <div className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"}`}>
+                                        <div className="overlay-events">
+                                            {dailyEvents.map((ev, index) => (
+                                                <div key={ev.id}>
+                                                    <section
+                                                        className=
+                                                        {`overlay-event p-5 
+                                                        ${index > 0 ? "scalloped-border-top" : ""} 
+                                                        ${!ev.detailsShort ? "no-short-details" : ""}
+                                                        `}
+                                                    >
+                                                        <h1 className="text-xl">{ev.title}</h1>
+                                                        <span className="text-xs">
+                                                            {fmtTimeRange(ev)}
+                                                            {ev.location && ` • ${ev.location}`}
+                                                        </span>
+                                                        {ev.detailsShort && (
+                                                            <>
+                                                                <hr className="border-0 border-t-6 border-dotted border-black/40 mb-2"></hr>
+                                                                <p>{ev.detailsShort}</p>
+                                                            </>
+                                                        )}
+                                                    </section>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
+                                )}
                             </div>
                         )
                     })}

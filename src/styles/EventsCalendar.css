@@ -7,16 +7,15 @@
     padding: 5px;
     aspect-ratio: 1 / 1;
     background-color: rgba(0, 0, 0, 0.05);
-    /* overflow: hidden; */
-    /* filter: drop-shadow(0px 10px 5px rgba(0,0,0,0.1)); */
-
 }
 
 .calendar-day.today {
     background-color: rgba(0, 0, 0, 0);
-    border: 2px solid rgba(0, 0, 0, 0.05);
+    outline: 3px solid rgba(0, 0, 0, 0.05);
+    outline-offset: -3px;
 }
 
+/* this does nothing yet */
 .calendar-day.closed {
     background-image: url("/assets/closed.png");
 }
@@ -30,25 +29,156 @@
     flex: 1;
 }
 
-.daily-events::after {
-    /* content: "...";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    background-color: lightgray;
-    padding-left: 0.25em;
-    width: 100%; */
-}
-
 .date-num {
     height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* border-radius: 50%; */
-    /* background-color: rgba(0, 0, 0, 0.1); */
 }
+
+/* event info tooltip overlay rules for mobile */
+.overlay {
+    position: absolute;
+    width: calc(500% + 1rem);
+    height: calc(200% + 0.25rem);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 160ms ease;
+    background-color: #B8B8FF;
+}
+
+.overlay.short {
+    background-color: aliceblue;
+}
+
+.overlay .overlay-events {
+    height: 100%;
+    overflow: scroll;
+}
+
+.overlay-event {
+    background: linear-gradient(rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+}
+
+.overlay-event.scalloped-border-top {
+    padding-top: 40px;
+    mask:
+        linear-gradient(180deg, #0000 30px, #000 0),
+        radial-gradient(30px, #000 calc(100% - 1px), #0000) top/55.5px 60px;
+}
+
+.overlay::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: inherit;
+}
+
+@media (width <40rem) {
+    .calendar-day {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .daily-events {
+        display: none;
+    }
+
+    .calendar-day:not(:has(.overlay)) {
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    .date-num {
+        height: 50%;
+        width: 50%;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .calendar-day:not(:has(.overlay)) .date-num {
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    /*** overlay ***/
+    .overlay {
+        top: calc(100% + .25rem);
+    }
+
+    /* bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay {
+        top: calc(-200% - .50rem);
+    }
+
+    /* columns 1-7 */
+    .calendar-grid> :nth-child(7n + 1) .overlay {
+        right: calc(-400% - 1rem);
+    }
+
+    .calendar-grid> :nth-child(7n + 2) .overlay {
+        right: calc(-400% - 1rem);
+    }
+
+    .calendar-grid> :nth-child(7n + 3) .overlay {
+        right: calc(-300% - .75rem);
+    }
+
+    .calendar-grid> :nth-child(7n + 4) .overlay {
+        right: calc(-200% - .50rem);
+    }
+
+    .calendar-grid> :nth-child(7n + 5) .overlay {
+        right: calc(-100% - .25rem);
+    }
+
+    .calendar-grid> :nth-child(7n + 6) .overlay {
+        right: 0;
+    }
+
+    .calendar-grid> :nth-child(7n) .overlay {
+        right: 0;
+    }
+
+    /*** ::after ***/
+    .overlay::after {
+        bottom: 99%;
+        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
+        transform: translateX(-50%);
+    }
+
+    /* bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay::after {
+        top: 99%;
+        right: 99%;
+        transform: translateX(-50%);
+        clip-path: polygon(50% 50%, 0 0, 100% 0);
+    }
+
+    .calendar-grid> :nth-child(7n + 1) .overlay::after,
+    .calendar-grid> :nth-child(7n + 2) .overlay::after {
+        right: 85%;
+    }
+
+    .calendar-grid> :nth-child(7n + 3) .overlay::after {
+        right: 65%;
+    }
+
+    .calendar-grid> :nth-child(7n + 4) .overlay::after {
+        right: 45%;
+    }
+
+    .calendar-grid> :nth-child(7n + 5) .overlay::after {
+        right: 25%;
+    }
+
+    .calendar-grid> :nth-child(7n + 6) .overlay::after,
+    .calendar-grid> :nth-child(7n + 7) .overlay::after {
+        right: 5%;
+    }
+}
+
 
 @media (width >=40rem) {
     .date-num {
@@ -59,103 +189,87 @@
     .calendar-day.bg-img .date-num {
         background-color: rgba(0, 0, 0, 0.1);
     }
+
+    /*** overlay ***/
+    .overlay {
+        top: 0;
+        left: calc(100% + 0.25rem);
+        width: calc(200% + 0.25rem);
+        height: calc(200% + 0.25rem);
+    }
+
+    /* top row */
+    .calendar-grid> :nth-child(-n + 7) .overlay {
+        left: calc(100% + 0.25rem);
+    }
+
+    /* bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay {
+        top: calc(-100% - .25rem);
+    }
+
+    /* right 3 columns */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay {
+        left: calc(-200% - 0.50rem);
+        /* width: calc(200% + 0.50rem); */
+        /* left: calc(-200% - 0.25rem); */
+    }
+
+    .overlay.short {
+        left: calc(100% + 0.25rem);
+        width: calc(200% + 0.25rem);
+        height: 100%;
+    }
+
+
+    /*** ::after ***/
+    /* left side, bottom row (by default) */
+    .calendar-grid> :nth-child(n + 22) .overlay::after {
+        top: 75%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    /* right side, bottom row */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):is(:nth-child(n + 22)) .overlay::after {
+        top: 75%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    /* right side, not bottom */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-child(n + 22)) .overlay::after {
+        top: 25%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    /* not right side, not bottom (everywhere else) */
+    .calendar-grid> :not(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-child(n + 22)) .overlay:not(.short)::after {
+        top: 25%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    /*** overlay.short::after ***/
+    .calendar-grid> :nth-child(n + 22) .overlay.short:not(.medium)::after {
+        top: 50%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay.short:not(.medium)::after {
+        top: 50%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
 }
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: calc(100% + 0.25rem);
-    width: calc(200% + 0.25rem);
-    /* width: calc(400% + 0.75rem); */
-    height: calc(200% + 0.25rem);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 20;
-    transition: opacity 160ms ease;
-    background-color: rgba(255, 243, 228, 0.5);
-    background-color: #8A8AFF;
-    background-color: #B8B8FF;
-    
-    backdrop-filter: blur(8px);
-}
-
-/* top row */
-.calendar-grid> :nth-child(-n + 7) .overlay {
-    left: calc(100% + 0.25rem);
-}
-
-/* bottom row */
-.calendar-grid> :nth-last-child(-n+7) .overlay {
-    top: calc(-100% - .25rem);
-}
-
-/* left column */
-.calendar-grid> :nth-child(7n+1) .overlay {}
-
-/* right 3 columns */
-.calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay {
-    left: calc(-200% - 0.5rem);
-}
-
-/* bottom row, left side */
-.calendar-grid> :nth-last-child(-n+7) .overlay::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 75%;
-    right: 99%;
-    transform: translateY(-50%);
-    clip-path: polygon(100% 0, 50% 50%, 100% 100%);
-    background: inherit;
-    backdrop-filter: blur(8px);
-}
-
-/* bottom row, right side */
-.calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):is(:nth-last-child(-n+7)) .overlay::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 75%;
-    left: 99%;
-    transform: translateY(-50%);
-    clip-path: polygon(0 0, 50% 50%, 0 100%);
-    background: inherit;
-    backdrop-filter: blur(8px);
-}
-
-/* right side, not bottom */
-.calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-last-child(-n+7)) .overlay::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 25%;
-    left: 99%;
-    transform: translateY(-50%);
-    clip-path: polygon(0 0, 50% 50%, 0 100%);
-    background: inherit;
-    backdrop-filter: blur(8px);
-}
-
-/* not bottom, not right side (everywhere else) */
-.calendar-grid> :not(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-last-child(-n+7)) .overlay::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 25%;
-    right: 99%;
-    transform: translateY(-50%);
-    clip-path: polygon(100% 0, 50% 50%, 100% 100%);
-    background: inherit;
-    backdrop-filter: blur(8px);
-}
-
-
-
-
 
 
 .calendar-day:hover .overlay,
