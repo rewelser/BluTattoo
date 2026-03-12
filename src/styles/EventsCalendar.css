@@ -42,15 +42,16 @@
     position: absolute;
     width: calc(500% + 1rem);
     height: calc(200% + 0.25rem);
+    height: calc(400% + 0.75rem);
     opacity: 0;
     pointer-events: none;
     z-index: 20;
     transition: opacity 160ms ease;
     background-color: #B8B8FF;
-}
-
-.overlay.short {
     background-color: aliceblue;
+    background-color: #265eac;
+    background-color: #6598e0;
+    background-color: #73adff;
 }
 
 .overlay .overlay-events {
@@ -58,11 +59,13 @@
     overflow: scroll;
 }
 
-.overlay-event {
-    background: linear-gradient(rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+.overlay.short .overlay-events {
+    background: linear-gradient(0.25turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    background: linear-gradient(0.75turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
 }
 
 .overlay-event.scalloped-border-top {
+    background: linear-gradient(rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
     padding-top: 40px;
     mask:
         linear-gradient(180deg, #0000 30px, #000 0),
@@ -75,6 +78,7 @@
     width: 20px;
     height: 20px;
     background: inherit;
+    z-index: 19;
 }
 
 @media (width <40rem) {
@@ -110,14 +114,11 @@
     /* bottom row */
     .calendar-grid> :nth-child(n + 22) .overlay {
         top: calc(-200% - .50rem);
+        top: calc(-400% - 1rem);
     }
 
     /* columns 1-7 */
-    .calendar-grid> :nth-child(7n + 1) .overlay {
-        right: calc(-400% - 1rem);
-    }
-
-    .calendar-grid> :nth-child(7n + 2) .overlay {
+    .calendar-grid>:is(:nth-child(7n + 1), :nth-child(7n + 2)) .overlay {
         right: calc(-400% - 1rem);
     }
 
@@ -133,49 +134,56 @@
         right: calc(-100% - .25rem);
     }
 
-    .calendar-grid> :nth-child(7n + 6) .overlay {
-        right: 0;
-    }
-
-    .calendar-grid> :nth-child(7n) .overlay {
+    .calendar-grid>:is(:nth-child(7n + 6), :nth-child(7n)) .overlay {
         right: 0;
     }
 
     /*** ::after ***/
     .overlay::after {
         bottom: 99%;
-        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
+        left: 50%;
         transform: translateX(-50%);
+        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
     }
 
     /* bottom row */
     .calendar-grid> :nth-child(n + 22) .overlay::after {
         top: 99%;
-        right: 99%;
+        bottom: auto;
+        left: 50%;
         transform: translateX(-50%);
         clip-path: polygon(50% 50%, 0 0, 100% 0);
     }
 
     .calendar-grid> :nth-child(7n + 1) .overlay::after,
     .calendar-grid> :nth-child(7n + 2) .overlay::after {
-        right: 85%;
+        left: 10%;
     }
 
     .calendar-grid> :nth-child(7n + 3) .overlay::after {
-        right: 65%;
+        left: 30%;
     }
 
     .calendar-grid> :nth-child(7n + 4) .overlay::after {
-        right: 45%;
+        left: 50%;
     }
 
     .calendar-grid> :nth-child(7n + 5) .overlay::after {
-        right: 25%;
+        left: 70%;
     }
 
     .calendar-grid> :nth-child(7n + 6) .overlay::after,
     .calendar-grid> :nth-child(7n + 7) .overlay::after {
-        right: 5%;
+        left: 90%;
+    }
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(1turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+
+    /*** overlay-events ***/
+    .calendar-grid> :nth-child(n + 22) .overlay.short .overlay-events {
+        background: linear-gradient(0.50turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
     }
 }
 
@@ -221,7 +229,6 @@
         height: 100%;
     }
 
-
     /*** ::after ***/
     /* left side, bottom row (by default) */
     .calendar-grid> :nth-child(n + 22) .overlay::after {
@@ -248,7 +255,7 @@
     }
 
     /* not right side, not bottom (everywhere else) */
-    .calendar-grid> :not(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-child(n + 22)) .overlay:not(.short)::after {
+    .calendar-grid> :not(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)):not(:nth-child(n + 22)) .overlay::after {
         top: 25%;
         right: 99%;
         transform: translateY(-50%);
@@ -256,7 +263,7 @@
     }
 
     /*** overlay.short::after ***/
-    .calendar-grid> :nth-child(n + 22) .overlay.short:not(.medium)::after {
+    .calendar-grid .overlay.short:not(.medium)::after {
         top: 50%;
         right: 99%;
         transform: translateY(-50%);
@@ -268,6 +275,15 @@
         left: 99%;
         transform: translateY(-50%);
         clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(0.75turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+
+    /*** overlay-events ***/
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay.short .overlay-events {
+        background: linear-gradient(0.25turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
     }
 }
 

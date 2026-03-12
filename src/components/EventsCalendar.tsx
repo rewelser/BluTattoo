@@ -190,20 +190,20 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                                                 <div key={ev.id}>
                                                     <section
                                                         className=
-                                                        {`overlay-event p-5 
+                                                        {`overlay-event p-5 leading-none
                                                         ${index > 0 ? "scalloped-border-top" : ""} 
                                                         ${!ev.detailsShort ? "no-short-details" : ""}
                                                         `}
                                                     >
-                                                        <h1 className="text-xl">{ev.title}</h1>
-                                                        <span className="text-xs">
+                                                        <h1 className="text-xl leading-none">{ev.title}</h1>
+                                                        <div className="text-xs leading-none py-2">
                                                             {fmtTimeRange(ev)}
                                                             {ev.location && ` • ${ev.location}`}
-                                                        </span>
+                                                        </div>
                                                         {ev.detailsShort && (
                                                             <>
-                                                                <hr className="border-0 border-t-6 border-dotted border-black/40 mb-2"></hr>
-                                                                <p>{ev.detailsShort}</p>
+                                                                <hr className="border-0 border-t-6 border-dotted border-black/40 my-2"></hr>
+                                                                <p className="leading-none">{ev.detailsShort}</p>
                                                             </>
                                                         )}
                                                     </section>
