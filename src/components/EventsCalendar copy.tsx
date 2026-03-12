@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import type { EventsByYearMonthDay, fmtDateRange } from "../scripts/events";
+import type { EventsByYearMonthDay } from "../scripts/events";
 import "../styles/EventsCalendar.css";
 
 interface EventsCalendarProps {
@@ -105,7 +105,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                     ))}
                 </div>
                 <div className="calendar-grid grid h-full w-full grid-cols-7 items-center gap-1">
-                    {traversedMonthDates.map((date) => {
+                    {traversedMonthDates.map((date, index) => {
                         const year = date.getUTCFullYear();
                         const month = date.getUTCMonth();
                         const day = date.getUTCDate();
@@ -115,10 +115,25 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                             day === currentDate.getUTCDate();
                         const dailyEventsObj = eventsByYearMonthDay[year]?.[month]?.[day];
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
+
+                        const col = index % 7;
+                        const row = Math.floor(index / 7);
+                        const totalRows = Math.ceil(traversedMonthDates.length / 7);
+
+                        const isLeft = col < 3; // 0,1,2
+                        const isTop = row < Math.ceil(totalRows / 2);
+
+                        const quadrantClass = isTop
+                            ? isLeft
+                                ? "quadrant-top-left"
+                                : "quadrant-top-right"
+                            : isLeft
+                                ? "quadrant-bottom-left"
+                                : "quadrant-bottom-right";
                         return (
                             <div
                                 key={date.toISOString()}
-                                className={`calendar-day ${isToday ? "today" : ""}`}
+                                className={`calendar-day ${quadrantClass} ${isToday ? "today" : ""}`}
                             >
                                 <div className="date-num">
                                     {day}
@@ -133,14 +148,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                                         </div>
                                     ))}
                                 </div>
-                                {dailyEvents.map((ev) => (
-                                    <div
-                                        key={ev.id}
-                                        className="overlay p-5"
-                                    >
-                                        Big panel
-                                    </div>
-                                ))}
+                                <div className="overlay">Big panel</div>
                             </div>
                         )
                     })}
