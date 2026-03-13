@@ -1,3 +1,7 @@
+/* Prompt: All of these CSS rules work exactly how I need them to work. I know that some have duplicate values overriding ones above them in the same rule block; that is simply because I was testing different things out (such as several different background colors on .overlay). Aside from that, is there any way to refactor this css to make it neater; better organized & more readable? */
+
+/* Fun fact: this is broken */
+
 /* ========================================
    TOKENS
 ======================================== */
@@ -59,7 +63,7 @@
     position: relative;
     width: 100%;
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .date-num {
@@ -90,7 +94,7 @@
 
 .overlay .overlay-events {
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .overlay.short .overlay-events {
