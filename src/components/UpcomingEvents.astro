@@ -39,7 +39,7 @@ const featured = pickFeaturedHero(upcoming);
                         href={`/events/${ev.id}`}
                     >
                         <div class="font-medium">{ev.title}</div>
-                        <div class="w-fit pb-1 text-sm opacity-80 border-b-2 border-dotted border-black/20">
+                        <div class={`w-fit pb-1 text-sm opacity-80 ${ev.detailsShort ? "border-b-2 border-dotted border-black/20" : ""}`}>
                             {fmtDateRange(ev)}
                             {ev.location ? ` • ${ev.location}` : ""}
                         </div>

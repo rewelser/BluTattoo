@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import type { EventsByYearMonthDay, EventItem } from "../scripts/events";
-import "../styles/EventsCalendar copy.css";
+import "../styles/EventsCalendar.css";
 
 interface EventsCalendarProps {
     eventsByYearMonthDay: EventsByYearMonthDay;
@@ -17,6 +17,12 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
             1
         ));
     });
+
+    const [openDayKey, setOpenDayKey] = useState<string | null>(null);
+
+    const toggleDay = (dayKey: string) => {
+        setOpenDayKey((prev) => (prev === dayKey ? null : dayKey));
+    };
 
     const utcDateFormatter = new Intl.DateTimeFormat(undefined, {
         year: "numeric",
@@ -158,33 +164,46 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                         const year = date.getUTCFullYear();
                         const month = date.getUTCMonth();
                         const day = date.getUTCDate();
+                        const dayKey = `${year}-${month}-${day}`;
                         const isToday =
                             year === currentDate.getUTCFullYear() &&
                             month === currentDate.getUTCMonth() &&
                             day === currentDate.getUTCDate();
+                        const isOpen = openDayKey === dayKey;
+
                         const dailyEventsObj = eventsByYearMonthDay[year]?.[month]?.[day];
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
                         return (
                             <div
                                 key={date.toISOString()}
-                                className={`calendar-day ${isToday ? "today" : ""}`}
+                                className={`calendar-day ${isToday ? "today" : ""} ${isOpen ? "is-open" : ""}`}
                             >
-                                <div className="date-num">
-                                    {day}
-                                </div>
-                                <div className="daily-events text-sm leading-none">
-                                    {dailyEvents.map((ev, index) => (
-                                        <div
-                                            className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
-                                            key={ev.id}
-                                        >
-                                            {ev.startTime && (<><span className="italic font-bold">{fmtTime(ev.startTime)}</span><br /></>)}
-                                            {ev.title}
-                                        </div>
-                                    ))}
-                                </div>
+                                <button
+                                    type="button"
+                                    className="calendar-day-trigger"
+                                    onClick={() => dailyEvents.length > 0 && toggleDay(dayKey)}
+                                    aria-expanded={isOpen}
+                                    aria-controls={`overlay-${dayKey}`}
+                                >
+                                    <div className="date-num">
+                                        {day}
+                                    </div>
+                                    <div className="daily-events text-sm leading-none">
+                                        {dailyEvents.map((ev, index) => (
+                                            <div
+                                                className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
+                                                key={ev.id}
+                                            >
+                                                {ev.startTime && (<><span className="italic font-bold">{fmtTime(ev.startTime)}</span><br /></>)}
+                                                {ev.title}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </button>
                                 {dailyEvents.length > 0 && (
-                                    <div className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"}`}>
+                                    <div
+                                        id={`overlay-${dayKey}`}
+                                        className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"}`}>
                                         <div className="overlay-events">
                                             {dailyEvents.map((ev, index) => (
                                                 <div key={ev.id}>
@@ -216,7 +235,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                         )
                     })}
                 </div>
-            </div>
+            </div >
         </>
     );
 };

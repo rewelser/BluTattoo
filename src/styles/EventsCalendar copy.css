@@ -1,0 +1,400 @@
+/* ========================================
+   TOKENS
+======================================== */
+
+:root {
+    --calendar-bg: rgb(0 0 0 / 0.05);
+    --calendar-bg-transparent: rgb(0 0 0 / 0);
+    --calendar-outline: rgb(0 0 0 / 0.05);
+
+    --date-pill-size-mobile: calc(var(--spacing) * 7);
+    --date-pill-size-desktop: calc(var(--spacing) * 6);
+
+    --overlay-bg: #73adff;
+    --overlay-fade: rgb(217 217 253 / 0.4);
+    --fade-to: rgb(0 0 0 / 0);
+
+    --gap-1: 0.25rem;
+    --gap-2: 0.50rem;
+    --gap-3: 0.75rem;
+    --gap-4: 1rem;
+
+    --arrow-size: 20px;
+    --overlay-z: 20;
+    --overlay-transition: opacity 160ms ease;
+}
+
+
+/* ========================================
+   CALENDAR DAY
+======================================== */
+
+.calendar-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    padding: 5px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--calendar-bg);
+}
+
+.calendar-day.today {
+    background-color: var(--calendar-bg-transparent);
+    outline: 3px solid var(--calendar-outline);
+    outline-offset: -3px;
+}
+
+/* does nothing yet */
+.calendar-day.closed {
+    background-image: url("/assets/closed.png");
+}
+
+
+/* ========================================
+   DAY CONTENT
+======================================== */
+
+.daily-events {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: scroll;
+}
+
+.date-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* ========================================
+   OVERLAY: BASE
+======================================== */
+
+.overlay {
+    position: absolute;
+    z-index: var(--overlay-z);
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--overlay-transition);
+
+    width: calc(500% + var(--gap-4));
+    height: calc(400% + var(--gap-3));
+
+    background-color: var(--overlay-bg);
+}
+
+.overlay .overlay-events {
+    height: 100%;
+    overflow: scroll;
+}
+
+.overlay.short .overlay-events {
+    background: linear-gradient(0.75turn, var(--overlay-fade), var(--fade-to));
+}
+
+.overlay-event.scalloped-border-top {
+    padding-top: 40px;
+    background: linear-gradient(var(--overlay-fade), var(--fade-to));
+    mask:
+        linear-gradient(180deg, #0000 30px, #000 0),
+        radial-gradient(30px, #000 calc(100% - 1px), #0000) top / 55.5px 60px;
+}
+
+.overlay::after {
+    content: "";
+    position: absolute;
+    z-index: calc(var(--overlay-z) - 1);
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    background: inherit;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (width < 40rem) {
+    .calendar-day {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .daily-events {
+        display: none;
+    }
+
+    .calendar-day:not(:has(.overlay)) {
+        background-color: var(--calendar-bg-transparent);
+    }
+
+    .date-num {
+        width: var(--date-pill-size-mobile);
+        height: var(--date-pill-size-mobile);
+        border-radius: 50%;
+        background-color: var(--calendar-bg);
+    }
+
+    .calendar-day:not(:has(.overlay)) .date-num {
+        background-color: var(--calendar-bg-transparent);
+    }
+
+    /* ------------------------------------
+       Overlay box placement
+    ------------------------------------ */
+
+    .overlay {
+        top: calc(100% + var(--gap-1));
+    }
+
+    .overlay.short {
+        height: calc(200% + var(--gap-1));
+    }
+
+    /* bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay {
+        top: calc(-400% - var(--gap-4));
+    }
+
+    .calendar-grid> :nth-child(n + 22) .overlay.short {
+        top: calc(-200% - var(--gap-2));
+    }
+
+    /* horizontal placement by column */
+    .calendar-grid> :is(:nth-child(7n + 1), :nth-child(7n + 2)) .overlay {
+        right: calc(-400% - var(--gap-4));
+    }
+
+    .calendar-grid> :nth-child(7n + 3) .overlay {
+        right: calc(-300% - var(--gap-3));
+    }
+
+    .calendar-grid> :nth-child(7n + 4) .overlay {
+        right: calc(-200% - var(--gap-2));
+    }
+
+    .calendar-grid> :nth-child(7n + 5) .overlay {
+        right: calc(-100% - var(--gap-1));
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 6), :nth-child(7n)) .overlay {
+        right: 0;
+    }
+
+    /* ------------------------------------
+       Overlay arrow
+    ------------------------------------ */
+
+    .overlay::after {
+        bottom: 99%;
+        left: 50%;
+        transform: translateX(-50%);
+        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
+    }
+
+    .calendar-grid> :nth-child(n + 22) .overlay::after {
+        top: 99%;
+        bottom: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        clip-path: polygon(50% 50%, 0 0, 100% 0);
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 1), :nth-child(7n + 2)) .overlay::after {
+        left: 10%;
+    }
+
+    .calendar-grid> :nth-child(7n + 3) .overlay::after {
+        left: 30%;
+    }
+
+    .calendar-grid> :nth-child(7n + 4) .overlay::after {
+        left: 50%;
+    }
+
+    .calendar-grid> :nth-child(7n + 5) .overlay::after {
+        left: 70%;
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 6), :nth-child(7n + 7)) .overlay::after {
+        left: 90%;
+    }
+
+    /* ------------------------------------
+       Overlay bridge
+    ------------------------------------ */
+
+    .overlay::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        height: var(--gap-1);
+        width: 100%;
+    }
+
+    .calendar-grid> :nth-child(n + 22) .overlay::before {
+        bottom: 0;
+        top: 100%;
+        right: auto;
+    }
+
+    /* ------------------------------------
+       Overlay content gradients
+    ------------------------------------ */
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(1turn, var(--overlay-fade), var(--fade-to));
+    }
+
+    .calendar-grid> :nth-child(n + 22) .overlay.short .overlay-events {
+        background: linear-gradient(0.50turn, var(--overlay-fade), var(--fade-to));
+    }
+}
+
+
+/* ========================================
+   DESKTOP
+======================================== */
+
+@media (width >=40rem) {
+    .date-num {
+        width: var(--date-pill-size-desktop);
+        height: var(--date-pill-size-desktop);
+    }
+
+    .calendar-day.bg-img .date-num {
+        background-color: rgb(0 0 0 / 0.1);
+    }
+
+    /* ------------------------------------
+       Overlay box placement
+    ------------------------------------ */
+
+    .overlay {
+        top: 0;
+        left: calc(100% + var(--gap-1));
+        width: calc(200% + var(--gap-1));
+        height: calc(200% + var(--gap-1));
+    }
+
+    .overlay.short {
+        top: 0;
+        left: calc(100% + var(--gap-1));
+        width: calc(200% + var(--gap-1));
+        height: 100%;
+    }
+
+    /* bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay:not(.short) {
+        top: calc(-100% - var(--gap-1));
+    }
+
+    /* right 3 columns */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay {
+        left: calc(-200% - var(--gap-2));
+    }
+
+    /* ------------------------------------
+       Overlay arrow
+    ------------------------------------ */
+
+    /* left side, bottom row */
+    .calendar-grid> :nth-child(n + 22) .overlay::after {
+        top: 75%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    /* right side, bottom row */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) :is(:nth-child(n + 22)) .overlay::after {
+        top: 75%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    /* right side, not bottom */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) :not(:nth-child(n + 22)) .overlay::after {
+        top: 25%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    /* everywhere else */
+    .calendar-grid> :not(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) :not(:nth-child(n + 22)) .overlay::after {
+        top: 25%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    /* short overlay arrow */
+    .calendar-grid .overlay.short:not(.medium)::after {
+        top: 50%;
+        right: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay.short:not(.medium)::after {
+        top: 50%;
+        left: 99%;
+        transform: translateY(-50%);
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+    }
+
+    /* ------------------------------------
+       Overlay bridge
+    ------------------------------------ */
+
+    .overlay::before {
+        content: "";
+        position: absolute;
+        right: 100%;
+        width: var(--gap-1);
+        height: 100%;
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay::before {
+        left: 100%;
+        right: auto;
+    }
+
+    /* ------------------------------------
+       Overlay content gradients
+    ------------------------------------ */
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(0.75turn, var(--overlay-fade), var(--fade-to));
+    }
+
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay.short .overlay-events {
+        background: linear-gradient(0.25turn, var(--overlay-fade), var(--fade-to));
+    }
+}
+
+
+/* ========================================
+   INTERACTION
+======================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .calendar-day:hover .overlay,
+    .calendar-day:focus-within .overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.calendar-day.is-open .overlay {
+    opacity: 1;
+    pointer-events: auto;
+}

@@ -98,6 +98,8 @@
     .date-num {
         height: 50%;
         width: 50%;
+        height: calc(var(--spacing) * 7);
+        width: calc(var(--spacing) * 7);
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.05);
     }
@@ -111,10 +113,18 @@
         top: calc(100% + .25rem);
     }
 
+    .overlay.short {
+        height: calc(200% + 0.25rem);
+    }
+
     /* bottom row */
     .calendar-grid> :nth-child(n + 22) .overlay {
         top: calc(-200% - .50rem);
         top: calc(-400% - 1rem);
+    }
+
+    .calendar-grid> :nth-child(n + 22) .overlay.short {
+        top: calc(-200% - .50rem);
     }
 
     /* columns 1-7 */
@@ -212,7 +222,7 @@
     }
 
     /* bottom row */
-    .calendar-grid> :nth-child(n + 22) .overlay {
+    .calendar-grid> :nth-child(n + 22) .overlay:not(.short) {
         top: calc(-100% - .25rem);
     }
 
@@ -224,6 +234,7 @@
     }
 
     .overlay.short {
+        top: 0;
         left: calc(100% + 0.25rem);
         width: calc(200% + 0.25rem);
         height: 100%;
@@ -277,6 +288,25 @@
         clip-path: polygon(0 0, 50% 50%, 0 100%);
     }
 
+    /*** ::before ***/
+    /* left side */
+    .overlay::before {
+        content: "";
+        position: absolute;
+        right: 100%;
+        width: .25rem;
+        height: 100%;
+    }
+
+    /* right side */
+    .calendar-grid> :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay::before {
+        content: "";
+        position: absolute;
+        left: 100%;
+        width: .25rem;
+        height: 100%;
+    }
+
     .calendar-grid .overlay.short .overlay-events {
         background: linear-gradient(0.75turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
     }
@@ -288,8 +318,16 @@
 }
 
 
-.calendar-day:hover .overlay,
-.calendar-day:focus-within .overlay {
+@media (hover: hover) and (pointer: fine) {
+
+    .calendar-day:hover .overlay,
+    .calendar-day:focus-within .overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.calendar-day.is-open .overlay {
     opacity: 1;
     pointer-events: auto;
 }
