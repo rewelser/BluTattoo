@@ -327,7 +327,10 @@
     }
 }
 
-.calendar-day.is-open .overlay {
-    opacity: 1;
-    pointer-events: auto;
+@media (hover: none),
+(pointer: coarse) {
+    .calendar-day .overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
