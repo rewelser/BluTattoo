@@ -80,6 +80,7 @@ const events = defineCollection({
     // date-only values will parse fine; you'll treat endDate as inclusive in your logic
     startDate: z.coerce.date(),
     endDate: z.coerce.date().optional(),
+    funDate: z.coerce.date().optional(),
 
     // optional time-only window
     startTime: z.preprocess(toHm, timeHM.optional()).optional(),

@@ -3,7 +3,6 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export type EventEntry = CollectionEntry<"events">;
 export type EventItem = EventEntry["data"] & { id: string };
-export type MonthOccurrence = { date: Date; event: EventItem };
 export type EventsByYearMonthDay = Record<string, Record<string, Record<string, EventItem[]>>>;
 
 // ----- Date helpers (inclusive endDate, day-level comparisons) -----
@@ -127,13 +126,54 @@ export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): stri
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
 }
 
-// todo: what was this added for?
+// used in events/[id].astro
 export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): string {
     const { startTime, endTime } = ev;
-    if (startTime && endTime) return `${startTime}–${endTime}`;
-    if (startTime && !endTime) return `Starts ${startTime}`;
-    if (!startTime && endTime) return `Until ${endTime}`;
+    if (startTime && endTime) return `${fmtTime(startTime)}–${fmtTime(endTime)}`;
+    if (startTime && !endTime) return `Starts ${fmtTime(startTime)}`;
+    if (!startTime && endTime) return `Until ${fmtTime(endTime)}`;
     return "All day";
+}
+
+function fmtTime(time: string): string {
+    const [rawHour, rawMinute] = time.split(":");
+    const hour = Number(rawHour);
+    const minute = Number(rawMinute);
+
+    if (
+        !Number.isInteger(hour) ||
+        !Number.isInteger(minute) ||
+        hour < 0 ||
+        hour > 23 ||
+        minute < 0 ||
+        minute > 59
+    ) {
+        throw new Error(`Invalid time: ${time}`);
+    }
+
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+
+    return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
+}
+
+const getDatesBetween = (startDate: Date, endDate: Date) => {
+    const dates = [];
+
+    let currentDate = new Date(startDate);
+
+    // let testCount = 0;
+    while (currentDate <= endDate) {
+        // if (testCount < 1) {
+        //     console.log("startDate", startDate);
+        //     console.log("currentDate", currentDate);
+        //     console.log("endDate", endDate);
+        // }
+        // testCount++;
+        dates.push(new Date(currentDate));
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+    return dates;
 }
 
 export const buildEventsByYearMonthDay = (evItems: EventItem[]) => {
@@ -148,8 +188,57 @@ export const buildEventsByYearMonthDay = (evItems: EventItem[]) => {
         eventsByYearMonthDay[year][month] ||= {};
         eventsByYearMonthDay[year][month][date] ||= [];
 
+        // console.log("ev.endDate", ev.endDate);
+
+        let failCount = 0;
+
+        if (!!ev.endDate) {
+            // console.log("!!ev.endDate", !!ev.endDate);
+            // console.log("ev.title", ev.title);
+            // console.log("ev.endDate", ev.endDate);
+            // console.log("----------");
+            // console.log("ev.startDate", ev.startDate);
+            // console.log("----------");
+
+            if (!ev.recurrenceRule) {
+                const dateRange = getDatesBetween(ev.startDate, ev.endDate);
+                // console.log("dateRange.length", dateRange.length);
+
+                dateRange.forEach((date: Date) => {
+                    const curYear = date.getUTCFullYear();
+                    const curMonth = date.getUTCMonth();
+                    const curDate = date.getUTCDate();
+                    // console.log("ev", ev);
+
+                    eventsByYearMonthDay[curYear] ||= {};
+                    eventsByYearMonthDay[curYear][curMonth] ||= {};
+                    eventsByYearMonthDay[curYear][curMonth][curDate] ||= [];
+
+                    // eventsByYearMonthDay[curYear][curMonth][curDate].push(ev);
+
+                    // try {
+                    //     eventsByYearMonthDay[curYear][curMonth][date.getUTCDate()].push(ev);
+                    // } catch {
+                    //     failCount++;
+                    // }
+                    failCount++;
+                });
+            }
+
+        } else {
+            try {
+                // eventsByYearMonthDay[year][month][date].push(ev);
+            } catch {
+                // console.log("failed inside else");
+            }
+        }
         eventsByYearMonthDay[year][month][date].push(ev);
+
+        failCount && console.log("failCount", failCount);
     }
+    // console.log(eventsByYearMonthDay["2026"]["2"]["13"]);
+    // console.log("-------------------");
+    // console.log(eventsByYearMonthDay["2026"]["2"]["14"]);
 
     return eventsByYearMonthDay;
 };

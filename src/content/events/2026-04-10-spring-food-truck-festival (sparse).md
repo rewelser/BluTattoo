@@ -3,8 +3,8 @@ title: "Spring Food Truck Festival (sparse)"
 published: true
 featured: true
 archived: false
-startDate: 2026-04-11
-endDate: 2026-04-11
+startDate: 2026-05-11
+endDate: 2026-06-11
 startTime: 11:00
 endTime: 20:00
 promoBar:

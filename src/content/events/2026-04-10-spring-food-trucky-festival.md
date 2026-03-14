@@ -1,5 +1,5 @@
 ---
-title: "Spring Food Truck Festival"
+title: "Spring Food Truck Festival 1"
 detailsShort: "A celebration of local food trucks and live music."
 published: true
 featured: true

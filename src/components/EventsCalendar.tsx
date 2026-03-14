@@ -170,9 +170,16 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                     const dayKey = `${year}-${month}-${day}`;
 
                     const isToday =
-                        year === currentDate.getUTCFullYear() &&
-                        month === currentDate.getUTCMonth() &&
-                        day === currentDate.getUTCDate();
+                        year === currentDate.getFullYear() &&
+                        month === currentDate.getMonth() &&
+                        day === currentDate.getDate();
+                    if (isToday) {
+                        console.log("--------");
+                        console.log("date", date);
+                        console.log("currentDate", currentDate);
+                        console.log("currentDate.getDate()", currentDate.getDate());
+                        console.log("day", day);
+                    }
 
                     const dailyEventsObj = eventsByYearMonthDay[year]?.[month]?.[day];
                     const dailyEvents = Array.from(dailyEventsObj ?? {});
@@ -193,15 +200,17 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                                 {dailyEvents.map((ev, index) => (
                                     <div
                                         className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
-                                        key={ev.id}
+                                        key={`${ev.id}-${dayKey}`}
                                     >
-                                        {ev.startTime && (
-                                            <>
-                                                <span className="italic font-bold">{fmtTime(ev.startTime)}</span>
-                                                <br />
-                                            </>
-                                        )}
-                                        {ev.title}
+                                        <a href={`/events/${ev.id}`}>
+                                            {ev.startTime && (
+                                                <>
+                                                    <span className="italic font-bold">{fmtTime(ev.startTime)}</span>
+                                                    <br />
+                                                </>
+                                            )}
+                                            {ev.title}
+                                        </a>
                                     </div>
                                 ))}
                             </div>
@@ -220,7 +229,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
                                                         ${!ev.detailsShort ? "no-short-details" : ""}
                                                         `}
                                                 >
-                                                    <h2 className="text-xl leading-none">{ev.title}</h2>
+                                                    <a href={`/events/${ev.id}`}>
+                                                        <h2 className="text-xl leading-none">{ev.title} →</h2>
+                                                    </a>
                                                     <div className="text-xs leading-none py-2">
                                                         {fmtTimeRange(ev)}
                                                         {ev.location && ` • ${ev.location}`}
