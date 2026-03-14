@@ -13,12 +13,12 @@ export function getEventEndMoment(ev: EventItem): Date {
 
     if (ev.endTime) {
         const [h, m] = ev.endTime.split(":").map(Number);
-        d.setUTCHours(h, m, 0, 0);
+        d.setHours(h, m, 0, 0);
         return d;
     }
 
     // Inclusive all-day end
-    d.setUTCHours(23, 59, 59, 999);
+    d.setHours(23, 59, 59, 999);
     return d;
 }
 
@@ -27,11 +27,11 @@ export function getEventStartMoment(ev: EventItem): Date {
 
     if (ev.startTime) {
         const [h, m] = ev.startTime.split(":").map(Number);
-        d.setUTCHours(h, m, 0, 0);
+        d.setHours(h, m, 0, 0);
         return d;
     }
 
-    d.setUTCHours(0, 0, 0, 0);
+    d.setHours(0, 0, 0, 0);
     return d;
 }
 
