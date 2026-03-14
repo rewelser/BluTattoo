@@ -270,6 +270,14 @@ collections:
         time_format: "HH:mm"
         picker_utc: false  # optional
 
+      - name: funDate2
+        label: Fun Date (inclusive, optional)
+        widget: datetime
+        required: false
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        picker_utc: true  # optional
+
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
         label: Start Time (optional)
