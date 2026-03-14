@@ -38,6 +38,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
     };
 
     function fmtTime(time: string): string {
+        if (!time) return "";
         const [rawHour, rawMinute] = time.split(":");
         const hour = Number(rawHour);
         const minute = Number(rawMinute);
