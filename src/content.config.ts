@@ -84,6 +84,7 @@ const events = defineCollection({
     funDate2: z.coerce.date().optional(),
     funDate3: z.coerce.date().optional(),
     funDate4: z.coerce.date().optional(),
+    funDate5: z.coerce.date().optional(),
 
     // optional time-only window
     startTime: z.preprocess(toHm, timeHM.optional()).optional(),

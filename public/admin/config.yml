@@ -296,6 +296,14 @@ collections:
         format: "YYYY-MM-DDTHH:mm:ssZ"
         picker_utc: false
 
+      - name: funDate5
+        label: Fun Date5 (inclusive, optional)
+        widget: "datetime"
+        default: ""
+        date_format: "DD.MM.YYYY"
+        time_format: "HH:mm"
+        picker_utc: false
+
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
         label: Start Time (optional)

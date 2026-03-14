@@ -234,6 +234,13 @@ export const buildEventsByYearMonthDay = (evItems: EventItem[]) => {
             }
         }
         eventsByYearMonthDay[year][month][date].push(ev);
+        if (ev.funDate) {
+            console.log("ev.title", ev.title);
+            console.log("ev.funDate", ev.funDate);
+            console.log("ev.funDate2", ev.funDate2);
+            console.log("ev.funDate3", ev.funDate3);
+            console.log("ev.funDate4", ev.funDate4);
+        }
 
         failCount && console.log("failCount", failCount);
     }
