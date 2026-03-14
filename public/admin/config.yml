@@ -288,12 +288,12 @@ collections:
         picker_utc: false
 
       - name: funDate4
-        label: Fun Date3 (inclusive, optional)
+        label: Fun Date4 (inclusive, optional)
         widget: "datetime"
         default: "{{now}}"
-        date_format: "DD.MM.YYYY.Z" # e.g. 24.12.2021
-        time_format: "HH:mm" # e.g. 21:07
-        format: "LLL"
+        date_format: "DD.MM.YYYY"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
         picker_utc: false
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
