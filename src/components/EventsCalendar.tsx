@@ -165,9 +165,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ eventsByYearMont
 
             <div ref={calendarRef} className="calendar-grid grid h-full w-full grid-cols-7 items-center gap-1">
                 {traversedMonthDates.map((date) => {
-                    const year = date.getUTCFullYear();
-                    const month = date.getUTCMonth();
-                    const day = date.getUTCDate();
+                    const year = date.getFullYear();
+                    const month = date.getMonth();
+                    const day = date.getDate();
                     const dayKey = `${year}-${month}-${day}`;
 
                     const isToday =
