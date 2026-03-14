@@ -287,6 +287,15 @@ collections:
         format: "LLL"
         picker_utc: false
 
+      - name: funDate4
+        label: Fun Date3 (inclusive, optional)
+        widget: "datetime"
+        default: "{{now}}"
+        date_format: "DD.MM.YYYY.Z" # e.g. 24.12.2021
+        time_format: "HH:mm" # e.g. 21:07
+        format: "LLL"
+        picker_utc: false
+
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
         label: Start Time (optional)
