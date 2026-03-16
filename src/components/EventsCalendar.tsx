@@ -29,6 +29,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
     const traversedMonthDates = useMemo(() => {
         const year = traversedDate.getFullYear();
         const month = traversedDate.getMonth();
+        
         const cur = new Date(year, month, 1);
         const dates: string[] = [];
 

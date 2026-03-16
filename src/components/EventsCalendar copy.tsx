@@ -40,21 +40,24 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
         const nextLeadingPlaceholders = 7 - lastDayOfWeek;
 
         const monthDates = Array.from({ length: daysInMonth }, (_, i) => {
-            const current = new Date(year, month, i + 1);
-            const y = current.getFullYear();
-            const m = String(current.getMonth() + 1).padStart(2, "0");
-            const d = String(current.getDate()).padStart(2, "0");
-            const day = current.getDay() + 1;
+            const y = year;
+            const m = month;
+            const d = i + 1; // + 1 to increment
+            const rawY = String(y);
+            const rawM = String(m + 1).padStart(2, "0"); // + 1 because js Date was designed by an idiot
+            const rawD = String(d).padStart(2, "0");
 
+            const current = new Date(y, m, d);
+            const day = current.getDay() + 1; // + 1 because js Date was designed by an idiot
             return {
-                rawYear: String(y),
-                rawMonth: m,
-                rawDate: d,
+                rawYear: rawY,
+                rawMonth: rawM,
+                rawDate: rawD,
                 year: y,
-                month: current.getMonth() + 1,
-                dateNum: current.getDate(),
+                month: m,
+                dateNum: d,
                 day,
-                dateKey: `${y}-${current.getMonth() + 1}-${current.getDate()}`,
+                dateKey: `${y}-${m}-${d}`,
                 isoLike: `${y}-${m}-${d}-${String(day).padStart(2, "0")}`,
             };
         });
