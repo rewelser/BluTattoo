@@ -4,19 +4,18 @@
 
 // src/pages/events.astro
 import Layout from "../layouts/Layout.astro";
-import { EventsCalendar } from "../components/EventsCalendar";
+import { EventsCalendar } from "../components/EventsCalendar copy";
 import UpcomingEvents from "../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../components/UpcomingEventsFallback.astro";
-import { buildEventsByYearMonthDay } from "../scripts/events";
-import type { EventItem, EventsByYearMonthDay } from "../scripts/events";
+import { buildEventsByYearMonthDate } from "../scripts/eventsClient";
+import type { EventItem } from "../scripts/events";
+import type { EventsByYearMonthDate } from "../scripts/eventsClient";
 
 import { loadEventsPublishedCached } from "../scripts/events";
 
 const now = new Date();
 
 const events: EventItem[] = await loadEventsPublishedCached();
-const eventsByYearMonthDay: EventsByYearMonthDay =
-    buildEventsByYearMonthDay(events);
 ---
 
 <Layout title="BluTattoo Studio — Events">
@@ -31,8 +30,7 @@ const eventsByYearMonthDay: EventsByYearMonthDay =
 
         <EventsCalendar
             client:load
-            eventsByYearMonthDay={eventsByYearMonthDay}
-            currentDate={now}
+            events={events}
         />
     </article>
 </Layout>

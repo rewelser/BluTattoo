@@ -4,7 +4,7 @@ detailsShort: "Hands-on introduction to wheel throwing."
 published: true
 featured: false
 archived: false
-startDate: 2026-03-22
+startDate: "2026-03-22"
 startTime: 14:00
 endTime: 16:30
 location: "ClayWorks Studio"

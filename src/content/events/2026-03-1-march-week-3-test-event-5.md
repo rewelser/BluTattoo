@@ -4,7 +4,7 @@ detailsShort: "Help us prepare the community garden beds for the spring growing 
 published: true
 featured: true
 archived: false
-startDate: 2026-03-19
+startDate: "2026-03-19"
 startTime: 10:00
 endTime: 13:00
 location: "Riverside Community Garden"

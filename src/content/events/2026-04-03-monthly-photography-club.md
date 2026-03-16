@@ -4,8 +4,8 @@ detailsShort: "Monthly meetup for photography enthusiasts."
 published: true
 featured: false
 archived: false
-startDate: 2026-04-03
-endDate: 2026-12-04
+startDate: "2026-04-03"
+endDate: "2026-12-04"
 startTime: 18:00
 endTime: 19:30
 location: "Community Arts Center"

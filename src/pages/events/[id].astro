@@ -3,7 +3,7 @@
 import Layout from "../../layouts/Layout.astro";
 import PromoHero from "../../components/PromoHero.astro";
 import { getCollection, getEntry, render } from "astro:content";
-import { fmtDateRange, fmtTimeWindow } from "../../scripts/events";
+import { fmtDateRange, fmtTimeWindow } from "../../scripts/eventsClient";
 
 export async function getStaticPaths() {
   const entries = await getCollection("events", (e) => e.data.published !== false);

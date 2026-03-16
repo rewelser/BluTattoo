@@ -252,7 +252,7 @@ collections:
         widget: datetime
         date_format: "YYYY-MM-DD"
         time_format: false
-        # picker_utc: true  # optional
+        # picker_utc: false  # optional
 
       - name: endDate
         label: End Date (inclusive, optional)
@@ -260,49 +260,7 @@ collections:
         required: false
         date_format: "YYYY-MM-DD"
         time_format: false
-        # picker_utc: true  # optional
-
-      - name: funDate
-        label: Fun Date (inclusive, optional)
-        widget: datetime
-        required: false
-        date_format: "YYYY-MM-DD"
-        time_format: "HH:mm"
-        picker_utc: false
-
-      - name: funDate2
-        label: Fun Date2 (inclusive, optional)
-        widget: datetime
-        required: false
-        date_format: "YYYY-MM-DD"
-        time_format: "HH:mm"
-        picker_utc: true
-
-      - name: funDate3
-        label: Fun Date3 (inclusive, optional)
-        widget: "datetime"
-        default: "{{now}}"
-        date_format: "DD.MM.YYYY" # e.g. 24.12.2021
-        time_format: "HH:mm" # e.g. 21:07
-        format: "LLL"
-        picker_utc: false
-
-      - name: funDate4
-        label: Fun Date4 (inclusive, optional)
-        widget: "datetime"
-        default: "{{now}}"
-        date_format: "DD.MM.YYYY"
-        time_format: "HH:mm"
-        format: "YYYY-MM-DDTHH:mm:ssZ"
-        picker_utc: false
-
-      - name: funDate5
-        label: Fun Date5 (inclusive, optional)
-        widget: "datetime"
-        default: ""
-        date_format: "DD.MM.YYYY"
-        time_format: "HH:mm"
-        picker_utc: false
+        # picker_utc: false  # optional
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
@@ -470,7 +428,7 @@ collections:
         widget: datetime
         date_format: "YYYY-MM-DD"
         time_format: false
-        # picker_utc: true  # optional
+        # picker_utc: false  # optional
 
       - name: endDate
         label: End Date (inclusive, optional)
@@ -478,7 +436,7 @@ collections:
         required: false
         date_format: "YYYY-MM-DD"
         time_format: false
-        # picker_utc: true  # optional
+        # picker_utc: false  # optional
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime

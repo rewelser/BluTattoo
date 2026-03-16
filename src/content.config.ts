@@ -63,6 +63,7 @@ const toHm = (v: unknown): unknown => {
 };
 
 const weekdayEnum = z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"]);
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
 
 const events = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/events" }),
@@ -78,13 +79,8 @@ const events = defineCollection({
     archived: z.boolean().default(false),
 
     // date-only values will parse fine; you'll treat endDate as inclusive in your logic
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date().optional(),
-    funDate: z.coerce.date().optional(),
-    funDate2: z.coerce.date().optional(),
-    funDate3: z.coerce.date().optional(),
-    funDate4: z.coerce.date().optional(),
-    funDate5: z.coerce.date().optional(),
+    startDate: isoDate,
+    endDate: z.preprocess(emptyStrToUndef, isoDate.optional()),
 
     // optional time-only window
     startTime: z.preprocess(toHm, timeHM.optional()).optional(),
