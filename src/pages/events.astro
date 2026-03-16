@@ -4,16 +4,11 @@
 
 // src/pages/events.astro
 import Layout from "../layouts/Layout.astro";
-import { EventsCalendar } from "../components/EventsCalendar copy";
+import { EventsCalendar } from "../components/EventsCalendar";
 import UpcomingEvents from "../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../components/UpcomingEventsFallback.astro";
-import { buildEventsByYearMonthDate } from "../scripts/eventsClient";
 import type { EventItem } from "../scripts/events";
-import type { EventsByYearMonthDate } from "../scripts/eventsClient";
-
 import { loadEventsPublishedCached } from "../scripts/events";
-
-const now = new Date();
 
 const events: EventItem[] = await loadEventsPublishedCached();
 ---

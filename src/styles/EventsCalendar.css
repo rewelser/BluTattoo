@@ -20,10 +20,6 @@
     background-image: url("/assets/closed.png");
 }
 
-.calendar-day.placeholder {
-    background-color: rgba(255, 0, 0, 0.5);
-}
-
 .daily-events {
     position: relative;
     /* flex: 1 1 auto; */
@@ -91,6 +87,10 @@
         justify-content: center;
     }
 
+    .calendar-day.bg-img {
+        background-image: none !important;
+    }
+
     .daily-events {
         display: none;
     }
@@ -106,6 +106,10 @@
         width: calc(var(--spacing) * 7);
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .calendar-day.placeholder .date-num {
+        color: rgba(0, 0, 0, 0.25);
     }
 
     .calendar-day:not(:has(.overlay)) .date-num {
@@ -203,13 +207,25 @@
 
 
 @media (width >=40rem) {
+    .calendar-day.placeholder {
+        background-color: rgba(0, 0, 0, 0.025);
+    }
+
     .date-num {
         height: calc(var(--spacing) * 6);
         width: calc(var(--spacing) * 6);
+        padding: calc(var(--spacing) * 4);
+    }
+
+    .calendar-day.placeholder .date-num {
+        color: rgba(0, 0, 0, 0.25);
     }
 
     .calendar-day.bg-img .date-num {
-        background-color: rgba(0, 0, 0, 0.1);
+        background-color: whitesmoke;
+        background-color: gainsboro;
+        background-color: #f2f2f2;
+        outline: 3px solid white;
     }
 
     /*** overlay ***/

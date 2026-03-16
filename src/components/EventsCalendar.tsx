@@ -24,26 +24,53 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
 
     const [openDateKey, setOpenDateKey] = useState<string | null>(null);
     const calendarRef = useRef<HTMLDivElement>(null);
-    let leadingDayStart = 0;
 
-    const traversedMonthDates = useMemo(() => {
+    const calendarData = useMemo(() => {
         const year = traversedDate.getFullYear();
         const month = traversedDate.getMonth();
-        
-        const cur = new Date(year, month, 1);
-        const dates: string[] = [];
 
-        while (cur.getMonth() === month) {
-            const y = cur.getFullYear();
-            const m = String(cur.getMonth() + 1).padStart(2, "0");
-            const dt = String(cur.getDate()).padStart(2, "0");
-            const day = (String(cur.getDay() + 1)).padStart(2, "0");
+        const firstOfMonth = new Date(year, month, 1);
+        const lastOfMonth = new Date(year, month + 1, 0);
 
-            dates.push(`${y}-${m}-${dt}-${day}`);
-            cur.setDate(cur.getDate() + 1);
-        }
+        const firstDayOfWeek = firstOfMonth.getDay() + 1;
+        const lastDayOfWeek = lastOfMonth.getDay() + 1;
 
-        return dates;
+        const daysInMonth = lastOfMonth.getDate();
+        const prevTrailingPlaceholders = firstDayOfWeek - 1;
+        const nextLeadingPlaceholders = 7 - lastDayOfWeek;
+
+        const monthDates = Array.from({ length: daysInMonth }, (_, i) => {
+            const y = year;
+            const m = month;
+            const d = i + 1; // + 1 to increment
+            const rawY = String(y);
+            const rawM = String(m + 1).padStart(2, "0"); // + 1 because js Date was designed by an idiot
+            const rawD = String(d).padStart(2, "0");
+
+            const current = new Date(y, m, d);
+            const day = current.getDay() + 1; // + 1 because js Date was designed by an idiot
+            return {
+                rawYear: rawY,
+                rawMonth: rawM,
+                rawDate: rawD,
+                year: y,
+                month: m,
+                dateNum: d,
+                day,
+                dateKey: `${y}-${m}-${d}`,
+                isoLike: `${y}-${m}-${d}-${String(day).padStart(2, "0")}`,
+            };
+        });
+
+        const prevTrailingDates = Array.from({ length: prevTrailingPlaceholders }, (_, i) => (new Date(year, month, -(prevTrailingPlaceholders - 1) + i).getDate()));
+
+        const nextLeadingDates = Array.from({ length: nextLeadingPlaceholders }, (_, i) => (new Date(year, month + 1, i + 1).getDate()));
+
+        return {
+            monthDates,
+            prevTrailingDates: prevTrailingDates,
+            nextLeadingDates: nextLeadingDates,
+        };
     }, [traversedDate]);
 
     const monthYearLabel = new Intl.DateTimeFormat("en-US", {
@@ -146,114 +173,118 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                 ref={calendarRef}
                 className="calendar-grid grid h-full w-full grid-cols-7 items-center gap-1"
             >
-                {Array.from({ length: Number(traversedMonthDates[0].split("-")[traversedMonthDates[0].split("-").length - 1]) - 1 }).map((_, i, prevMonthTrailingArr) => {
-                    const trailCount = prevMonthTrailingArr.length - 1;
-                    return (
-                        <div
-                            key={i}
-                            className="calendar-day placeholder"
-                        >
-                            <div className="date-num">{new Date(traversedDate.getFullYear(), traversedDate.getMonth(), 0 - (trailCount - i)).getDate()}</div>
-                        </div>
-                    )
-                })
-                }
-                {traversedMonthDates.map((date) => {
-                    const [rawYear, rawMonth, rawDate, rawDay] = date.split("-");
-                    const year = Number(rawYear); // todo: it's because you're rendering them as numbers, dumb fuck
-                    const month = Number(rawMonth);
-                    const dateNum = Number(rawDate);
-                    const day = Number(rawDay);
-                    leadingDayStart = day;
-                    const dateKey = `${year}-${month}-${dateNum}`;
-                    const now = new Date();
+                {calendarData.prevTrailingDates.map((dateNum, i) => (
+                    <div key={`prev-trailing-${i}`} className="calendar-day placeholder">
+                        <div className="date-num">{dateNum}</div>
+                    </div>
+                ))}
 
-                    const isToday =
-                        year === now.getFullYear() &&
-                        month === now.getMonth() + 1 &&
-                        dateNum === now.getDate();
+                {calendarData.monthDates.map(
+                    ({
+                        rawYear,
+                        rawMonth,
+                        rawDate,
+                        year,
+                        month,
+                        dateNum,
+                        day,
+                        dateKey,
+                        isoLike,
+                    }) => {
+                        const now = new Date();
 
-                    const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
-                    const dailyEvents = Array.from(dailyEventsObj ?? {});
-                    const hasEvents = dailyEvents.length > 0;
-                    const isOpen = openDateKey === dateKey;
-                    return (
-                        <div
-                            key={dateKey}
-                            className={`calendar-day ${isToday ? "today" : ""}`}
-                            onClick={() => {
-                                if (!canHover) {
-                                    setOpenDateKey((prev) =>
-                                        prev === dateKey ? null : dateKey
-                                    );
-                                }
-                            }}
-                            style={{ gridColumnStart: day }}
-                        >
-                            <div className="date-num">{dateNum}</div>
-                            <div className="daily-events text-sm leading-none">
-                                {dailyEvents.map((ev, index) => (
+                        const isToday =
+                            year === now.getFullYear() &&
+                            month === now.getMonth() &&
+                            dateNum === now.getDate();
+
+                        const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
+                        const dailyEvents = Array.from(dailyEventsObj ?? {});
+                        const hasEvents = dailyEvents.length > 0;
+                        const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
+                        const isOpen = openDateKey === dateKey;
+                        return (
+                            <div
+                                key={dateKey}
+                                className={`calendar-day ${isToday ? "today" : ""}${needsSingleEventImageVariant ? "bg-img bg-cover bg-center" : ""}`}
+                                onClick={() => {
+                                    if (!canHover) {
+                                        setOpenDateKey((prev) =>
+                                            prev === dateKey ? null : dateKey
+                                        );
+                                    }
+                                }}
+                                style={{
+                                    gridColumnStart: day,
+                                    ...(needsSingleEventImageVariant && {
+                                        backgroundImage: `url(${dailyEvents[0].image})`
+                                    })
+                                }}
+                            >
+                                <div className="date-num">{dateNum}</div>
+                                <div className="daily-events text-sm leading-none">
+                                    {!needsSingleEventImageVariant && dailyEvents.map((ev, index) => (
+                                        <div
+                                            className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
+                                            key={`${ev.id}-${dateKey}`}
+                                        >
+                                            <a href={`/events/${ev.id}`}>
+                                                {ev.startTime && (
+                                                    <>
+                                                        <span className="italic font-bold">
+                                                            {fmtTime(ev.startTime)}
+                                                        </span>
+                                                        <br />
+                                                    </>
+                                                )}
+                                                {ev.title}
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {hasEvents && (
                                     <div
-                                        className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
-                                        key={`${ev.id}-${dateKey}`}
+                                        className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
+                                        aria-label={`Events for ${fmtDate(isoLike)}`}
                                     >
-                                        <a href={`/events/${ev.id}`}>
-                                            {ev.startTime && (
-                                                <>
-                                                    <span className="italic font-bold">
-                                                        {fmtTime(ev.startTime)}
-                                                    </span>
-                                                    <br />
-                                                </>
-                                            )}
-                                            {ev.title}
-                                        </a>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {hasEvents && (
-                                <div
-                                    className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
-                                    aria-label={`Events for ${fmtDate(date)}`}
-                                >
-                                    <div className="overlay-events">
-                                        {dailyEvents.map((ev, index) => (
-                                            <div key={ev.id}>
-                                                <section
-                                                    className={`overlay-event p-5 leading-none
+                                        <div className="overlay-events">
+                                            {dailyEvents.map((ev, index) => (
+                                                <div key={ev.id}>
+                                                    <section
+                                                        className={`overlay-event p-5 leading-none
                                                         ${index > 0 ? "scalloped-border-top" : ""}
                                                         ${!ev.detailsShort ? "no-short-details" : ""}`}
-                                                >
-                                                    <a href={`/events/${ev.id}`}>
-                                                        <h2 className="text-xl leading-none">{ev.title} →</h2>
-                                                    </a>
-                                                    <div className="text-xs leading-none py-2">
-                                                        {fmtTimeWindow(ev)}
-                                                        {ev.location && ` • ${ev.location}`}
-                                                    </div>
-                                                    {ev.detailsShort && (
-                                                        <>
-                                                            <hr className="border-0 border-t-6 border-dotted border-black/40 my-2"></hr>
-                                                            <p className="leading-none">{ev.detailsShort}</p>
-                                                        </>
-                                                    )}
-                                                </section>
-                                            </div>
-                                        ))}
+                                                    >
+                                                        <a href={`/events/${ev.id}`}>
+                                                            <h2 className="text-xl leading-none">{ev.title} →</h2>
+                                                        </a>
+                                                        <div className="text-xs leading-none py-2">
+                                                            {fmtTimeWindow(ev)}
+                                                            {ev.location && ` • ${ev.location}`}
+                                                        </div>
+                                                        {ev.detailsShort && (
+                                                            <>
+                                                                <hr className="border-0 border-t-6 border-dotted border-black/40 my-2"></hr>
+                                                                <p className="leading-none">{ev.detailsShort}</p>
+                                                            </>
+                                                        )}
+                                                    </section>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
+                                )}
+                            </div>
+                        );
+                    })}
 
-                {Array.from({ length: 7 - leadingDayStart }).map((_, i) => (
+                {calendarData.nextLeadingDates.map((dateNum, i) => (
                     <div
-                        key={i}
+                        key={`next-leading-${i}`}
                         className="calendar-day placeholder"
                     >
-                        <div className="date-num">{new Date(traversedDate.getFullYear(), traversedDate.getMonth() + 1, 1 + i).getDate()}</div>
+                        <div className="date-num">{dateNum}</div>
                     </div>
                 ))}
             </div>

@@ -1,7 +1,7 @@
 ---
 title: "March week 4 test event 4"
 detailsShort: "Help us prepare the community garden beds for the spring growing season."
-published: true
+published: false
 featured: true
 archived: false
 startDate: "2026-03-25"

@@ -78,11 +78,9 @@ const events = defineCollection({
     featured: z.boolean().default(false),
     archived: z.boolean().default(false),
 
-    // date-only values will parse fine; you'll treat endDate as inclusive in your logic
     startDate: isoDate,
     endDate: z.preprocess(emptyStrToUndef, isoDate.optional()),
 
-    // optional time-only window
     startTime: z.preprocess(toHm, timeHM.optional()).optional(),
     endTime: z.preprocess(toHm, timeHM.optional()).optional(),
 

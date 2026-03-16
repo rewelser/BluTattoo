@@ -13,6 +13,8 @@ export function getEventEndKey(ev: EventItem): string {
     return `${endDate}T${ev.endTime ?? "23:59"}`;
 }
 
+// export function getRecurrentEventEndKey(ev)
+
 export function getNowKey(now = new Date()): string {
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -85,6 +87,8 @@ export function fmtDate(dateStr: string): string {
     return dateFormatter.format(new Date(year, month - 1, date));
 }
 
+
+// todo: expand this for recurrences
 export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
 }
@@ -168,44 +172,43 @@ export const buildEventsByYearMonthDate = (evItems: EventItem[]) => {
         eventsByYearMonthDate[startYear][startMonth] ||= {};
         eventsByYearMonthDate[startYear][startMonth][startDate] ||= [];
 
-        // console.log("ev.endDate", ev.endDate);
+        if (!!ev.endDate && !ev.recurrenceRule) {
 
-        let failCount = 0;
+            const dateRange = getDatesBetweenInclusive(ev.startDate, ev.endDate);
 
-        if (!!ev.endDate) {
-            // console.log("!!ev.endDate", !!ev.endDate);
-            // console.log("ev.title", ev.title);
-            // console.log("ev.endDate", ev.endDate);
-            // console.log("----------");
-            // console.log("ev.startDate", ev.startDate);
-            // console.log("----------");
+            dateRange.forEach((date: string) => {
+                const [curYear, curMonth, curDate] = date.split("-");
 
-            if (!ev.recurrenceRule) {
-                const dateRange = getDatesBetweenInclusive(ev.startDate, ev.endDate);
-                // console.log("dateRange.length", dateRange.length);
+                eventsByYearMonthDate[curYear] ||= {};
+                eventsByYearMonthDate[curYear][curMonth] ||= {};
+                eventsByYearMonthDate[curYear][curMonth][curDate] ||= [];
 
-                dateRange.forEach((date: string) => {
-                    const [curYear, curMonth, curDate] = date.split("-");
+                eventsByYearMonthDate[curYear][curMonth][curDate].push(ev);
+            });
 
-                    eventsByYearMonthDate[curYear] ||= {};
-                    eventsByYearMonthDate[curYear][curMonth] ||= {};
-                    eventsByYearMonthDate[curYear][curMonth][curDate] ||= [];
-
-                    eventsByYearMonthDate[curYear][curMonth][curDate].push(ev);
-                });
-            }
-
-        } else {
+        } else if (!ev.recurrenceRule) {
             eventsByYearMonthDate[startYear][startMonth][startDate].push(ev);
         }
-
-        // failCount && console.log("failCount", failCount);
     }
-    // console.log(eventsByYearMonthDay["2026"]["2"]["13"]);
-    // console.log("-------------------");
-    // console.log(eventsByYearMonthDay["2026"]["2"]["14"]);
-
     return eventsByYearMonthDate;
+};
+
+export const buildRecurringEventsByYearMonthDate = (evItems: EventItem[]) => {
+    const recurringEventsByYearMonthDate: EventsByYearMonthDate = {};
+
+    for (const ev of evItems) {
+        const [startYear, startMonth, startDate] = ev.startDate.split("-");
+
+        recurringEventsByYearMonthDate[startYear] ||= {};
+        recurringEventsByYearMonthDate[startYear][startMonth] ||= {};
+        recurringEventsByYearMonthDate[startYear][startMonth][startDate] ||= [];
+
+        if (!!ev.recurrenceRule) {
+            recurringEventsByYearMonthDate[startYear][startMonth][startDate].push(ev);
+        }
+    }
+
+    return recurringEventsByYearMonthDate;
 };
 
 // ----- Picks -----
