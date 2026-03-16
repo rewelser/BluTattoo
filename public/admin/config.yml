@@ -426,7 +426,7 @@ collections:
       - name: startDate
         label: Start Date
         widget: datetime
-        date_format: "YYYY-MM-DD"
+        date_format: YYYY-MM-DD
         time_format: false
         # picker_utc: false  # optional
 
@@ -434,7 +434,7 @@ collections:
         label: End Date (inclusive, optional)
         widget: datetime
         required: false
-        date_format: "YYYY-MM-DD"
+        date_format: YYYY-MM-DD
         time_format: false
         # picker_utc: false  # optional
 
