@@ -63,7 +63,13 @@ const toHm = (v: unknown): unknown => {
 };
 
 const weekdayEnum = z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"]);
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+// const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+const isoDate = z.preprocess((val) => {
+  if (val instanceof Date) {
+    return val.toISOString().slice(0, 10); // YYYY-MM-DD
+  }
+  return val;
+}, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD"));
 
 const events = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/events" }),
