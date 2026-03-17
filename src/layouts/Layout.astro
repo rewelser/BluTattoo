@@ -10,7 +10,7 @@ import Footer from "../components/Footer.astro";
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;
 
-const { title = siteName, isHome = false } = Astro.props;
+const { title = siteName, isHome = false, preloadImage } = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/spectral";
 import "@fontsource/fleur-de-leah";
@@ -66,6 +66,7 @@ import "@fontsource/fleur-de-leah/400.css";
       type="font/woff2"
       crossorigin
     />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
   </head>
   <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
   <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->

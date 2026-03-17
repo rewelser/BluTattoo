@@ -41,38 +41,24 @@ const thumb = (src: string, w: number) =>
   //js-fade-up
 </script>
 
-<Layout title={`BluTattoo Studio — ${entry.data.title}`}>
+<Layout
+  title={`BluTattoo Studio — ${entry.data.title}`}
+  preloadImage={entry.data.photo as string}
+>
   <article class="space-y-6">
-    <!-- mx-auto max-w-3xl -->
-    <!-- <header class="space-y-2 flex flex-wrap sm:flex-nowrap items-center gap-4"> -->
     <header class="text-orange-100">
       <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
         <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around"> -->
           {
             entry.data.photo && (
-              // <div class="portrait-anim portrait-glow">
-              //   <div class="portrait-glow">
-              //     <img
-              //       src={entry.data.photo as string}
-              //       alt={`Portrait of ${entry.data.title}`}
-              //       width="400"
-              //       height="400"
-              //       decoding="sync"
-              //       loading="eager"
-              //       fetchpriority="high"
-              //       class="portrait-img mask-b-from-60% mask-b-to-100%"
-              //     />
-              //   </div>
-              // </div>
-              <div class="portrait js-fade-up">
+              <div class="portrait fade-in-left-and-glow-anim">
                 <div>
                   <img
                     src={entry.data.photo as string}
                     alt={`Portrait of ${entry.data.title}`}
                     width="400"
                     height="400"
-                    decoding="sync"
+                    decoding="async"
                     loading="eager"
                     fetchpriority="high"
                     class="mask-b-from-60% mask-b-to-100%"
@@ -82,10 +68,13 @@ const thumb = (src: string, w: number) =>
             )
           }
           <style>
-            .portrait {
-              filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+            @media (width <40rem) {
+              .portrait {
+                filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
+                  drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+              }
             }
+
             @media (width >=40rem) {
               .fade-in-left-and-glow-anim {
                 --portrait-in: 6000ms;
@@ -116,7 +105,7 @@ const thumb = (src: string, w: number) =>
               }
 
               @media (prefers-reduced-motion: reduce) {
-                .portrait-fadein-and-glow-anim {
+                .fade-in-left-and-glow-anim {
                   opacity: 1;
                   transform: none;
                   animation: none;
@@ -171,66 +160,43 @@ const thumb = (src: string, w: number) =>
       </div>
     </header>
 
-    <div class="responsive-shape"></div>
-    <div class="hero"></div>
+    <!-- <div class="hero-container">
+      <div class="hero mb-40"></div>
+    </div> -->
     <style>
+      .hero-container {
+        /* 10px_12px_14px_rgba(4,4,4,0.90) */
+        filter: drop-shadow(1px 2px 14px rgba(4, 4, 4, 0.9));
+      }
       .hero {
-        height: 50vh;
-        width: 1500vw;
         background: red;
-        /* background: black; */
-        /* clip-path: path("M0,0 H100% V70% C25% 40%, 75% 100%, 100% 80% V0 Z"); */
-        /* clip-path: path("M0 0 H1000 V350 C250 200, 750 500, 1000 400 V0 Z"); */
-        /* clip-path: path("M 0 0 C 50 200, 50 100, 100 50 S 150 100, 200 0 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 150, 100 250, 0 200 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 100, 100 300, 0 200 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 0 200, 100 300, 200 100 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 250, 100 150, 0 200 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 275, 100 125, 0 200 Z"); */
         /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 350, 100 50, 0 200 Z"); */
+
+        filter: drop-shadow(30px 10px 4px #4444dd);
         clip-path: shape(
           from 0 0,
           hline to 100%,
-          vline to 100%,
-          curve to 0 100% with 66.67% 150%,
-          33.33% 50%,
+          vline to 85%,
+          curve to 0 85% with 70% 120% / 30% 50%,
           close
         );
-        width: 50vw;
-        height: 50vh;
-        background: #2bc4a2;
-        /* position: absolute; */
-        text-align: center;
-        line-height: 50px;
-        clip-path: shape(
-          from 20px 70px,
-          arc to 100px 70px of 1% cw,
-          arc to 180px 70px of 1% cw,
-          curve to 100px 190px with 180px 130px,
-          curve to 20px 70px with 20px 130px,
-          close,
-          move to 150px 150px,
-          hline by 40px,
-          vline by 40px,
-          hline by -40px,
+        /* clip-path: shape(
+          from 0 0,
+          hline to 100%,
+          vline to 100%,
+          curve to 0 100% with 66.67% 150% / 33.33% 50%,
           close
-        );clip-path: shape(from 0% 0%, line to 100% 0%, line to 50% 100%, close);
-        /* clip-path: shape(from 0% 0%, line to 100% 0%, line to 50% 100%, close); */
-      }
+        ); */
+        aspect-ratio: 1.311;
+        /* aspect-ratio: 1; */
 
-      .responsive-shape {
-        clip-path: polygon(
-          0% 0%,
-          100% 0%,
-          100% 100%,
-          C 200 250,
-          100 150,
-          0 200
-        ); /* A pentagon shape */
-        width: 100%; /* Ensures the element itself is responsive */
-        height: 50vh;
-        background-color: aquamarine;
+        /* clip-path: shape(
+          from 0% 0%,
+          hline to 100%,
+          vline to 87.39%,
+          curve to 0% 87.39% with 66.67% 131.08%/33.33% 43.69%,
+          close
+        ); */
       }
     </style>
 

@@ -25,7 +25,7 @@ export function initFadeUp(root: ParentNode = document, options: FadeUpOptions =
   const { threshold, rootMargin } = { ...DEFAULTS, ...options };
 
   const els = Array.from(
-    root.querySelectorAll<HTMLElement>(".js-fade-up:not([data-fade-bound])")
+    root.querySelectorAll<HTMLElement>(".js-fade-up:not([data-fade-bound]):not(.no-fade)")
   );
 
   if (!els.length) return () => {};
