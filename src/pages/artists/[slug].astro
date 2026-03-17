@@ -35,6 +35,12 @@ const thumb = (src: string, w: number) =>
   src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
 ---
 
+<script>
+  import { bootFadeUp } from "../../scripts/fade-up";
+  bootFadeUp({ observeMutations: true });
+  //js-fade-up
+</script>
+
 <Layout title={`BluTattoo Studio — ${entry.data.title}`}>
   <article class="space-y-6">
     <!-- mx-auto max-w-3xl -->
@@ -45,8 +51,22 @@ const thumb = (src: string, w: number) =>
           <!-- <div class="mx-auto max-w-6xl flex flex-wrap sm:flex-nowrap items-center justify-around"> -->
           {
             entry.data.photo && (
-              <div class="portrait-anim portrait-glow">
-                <div class="portrait-glow">
+              // <div class="portrait-anim portrait-glow">
+              //   <div class="portrait-glow">
+              //     <img
+              //       src={entry.data.photo as string}
+              //       alt={`Portrait of ${entry.data.title}`}
+              //       width="400"
+              //       height="400"
+              //       decoding="sync"
+              //       loading="eager"
+              //       fetchpriority="high"
+              //       class="portrait-img mask-b-from-60% mask-b-to-100%"
+              //     />
+              //   </div>
+              // </div>
+              <div class="portrait js-fade-up">
+                <div>
                   <img
                     src={entry.data.photo as string}
                     alt={`Portrait of ${entry.data.title}`}
@@ -55,86 +75,72 @@ const thumb = (src: string, w: number) =>
                     decoding="sync"
                     loading="eager"
                     fetchpriority="high"
-                    class="portrait-img mask-b-from-60% mask-b-to-100%"
+                    class="mask-b-from-60% mask-b-to-100%"
                   />
                 </div>
               </div>
             )
           }
           <style>
-            .portrait-anim.portrait-glow {
-              --portrait-in: 6000ms;
-              opacity: 0;
-              transform: translate3d(-200px, 0, 0);
-              filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
-                drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
-              animation:
-                portraitIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
-                  forwards,
-                glowIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
-                  forwards;
-              will-change: transform, opacity;
+            .portrait {
+              filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
+                drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
             }
-
-            @media (max-width: 640px) {
-              .portrait-anim.portrait-glow {
-                --portrait-in: 2000ms;
+            @media (width >=40rem) {
+              .fade-in-left-and-glow-anim {
+                --portrait-in: 6000ms;
+                opacity: 0;
+                transform: translate3d(-200px, 0, 0);
+                filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
+                  drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
+                animation:
+                  portraitIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
+                    forwards,
+                  glowIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
+                    forwards;
+                will-change: transform, opacity;
               }
-            }
 
-            @keyframes portraitIn {
-              to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
+              @keyframes portraitIn {
+                to {
+                  opacity: 1;
+                  transform: translate3d(0, 0, 0);
+                }
               }
-            }
 
-            @keyframes glowIn {
-              to {
-                /* filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                        drop-shadow(-1px -10px 32px rgba(99, 102, 241, 0.18)); */
-                filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                  drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
-                /* filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.35))
-                        drop-shadow(0 0 22px rgba(99, 102, 241, 0.18)); */
+              @keyframes glowIn {
+                to {
+                  filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
+                    drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+                }
               }
-            }
 
-            @media (prefers-reduced-motion: reduce) {
-              .portrait-anim {
-                opacity: 1;
-                transform: none;
-                animation: none;
+              @media (prefers-reduced-motion: reduce) {
+                .portrait-fadein-and-glow-anim {
+                  opacity: 1;
+                  transform: none;
+                  animation: none;
+                }
               }
-            }
-
-            .portrait-fade::after {
-              content: "";
-              position: absolute;
-              inset: 0;
-              pointer-events: none;
-
-              /* This is the fade-to-black from the bottom */
-              background: linear-gradient(
-                to top,
-                rgba(0, 0, 0, 1) 0%,
-                rgba(0, 0, 0, 0) 10%
-              );
             }
           </style>
-          <div id="artist-bio" class="flex items-center p-5">
+          <div id="artist-bio" class="flex items-center p-5 js-fade-up">
             <div>
               <h1 class="text-3xl font-bold">{entry.data.title}</h1>
 
               {
                 entry.data.socials && (
                   <p>
-                    <SocialRow links={entry.data.socials} class="my-3" anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200" />
+                    <SocialRow
+                      links={entry.data.socials}
+                      class="my-3"
+                      anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                    />
                   </p>
                 )
               }
 
-              <section>
+              <section class="js-fade-up">
                 <h2 class="sr-only">Bio</h2>
                 <p class="whitespace-pre-line">
                   <Content />
@@ -165,17 +171,80 @@ const thumb = (src: string, w: number) =>
       </div>
     </header>
 
+    <div class="responsive-shape"></div>
+    <div class="hero"></div>
+    <style>
+      .hero {
+        height: 50vh;
+        width: 1500vw;
+        background: red;
+        /* background: black; */
+        /* clip-path: path("M0,0 H100% V70% C25% 40%, 75% 100%, 100% 80% V0 Z"); */
+        /* clip-path: path("M0 0 H1000 V350 C250 200, 750 500, 1000 400 V0 Z"); */
+        /* clip-path: path("M 0 0 C 50 200, 50 100, 100 50 S 150 100, 200 0 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 150, 100 250, 0 200 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 100, 100 300, 0 200 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 0 200, 100 300, 200 100 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 250, 100 150, 0 200 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 275, 100 125, 0 200 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
+        /* clip-path: path("M 0 0 H 300 V 200 C 200 350, 100 50, 0 200 Z"); */
+        clip-path: shape(
+          from 0 0,
+          hline to 100%,
+          vline to 100%,
+          curve to 0 100% with 66.67% 150%,
+          33.33% 50%,
+          close
+        );
+        width: 50vw;
+        height: 50vh;
+        background: #2bc4a2;
+        /* position: absolute; */
+        text-align: center;
+        line-height: 50px;
+        clip-path: shape(
+          from 20px 70px,
+          arc to 100px 70px of 1% cw,
+          arc to 180px 70px of 1% cw,
+          curve to 100px 190px with 180px 130px,
+          curve to 20px 70px with 20px 130px,
+          close,
+          move to 150px 150px,
+          hline by 40px,
+          vline by 40px,
+          hline by -40px,
+          close
+        );clip-path: shape(from 0% 0%, line to 100% 0%, line to 50% 100%, close);
+        /* clip-path: shape(from 0% 0%, line to 100% 0%, line to 50% 100%, close); */
+      }
+
+      .responsive-shape {
+        clip-path: polygon(
+          0% 0%,
+          100% 0%,
+          100% 100%,
+          C 200 250,
+          100 150,
+          0 200
+        ); /* A pentagon shape */
+        width: 100%; /* Ensures the element itself is responsive */
+        height: 50vh;
+        background-color: aquamarine;
+      }
+    </style>
+
     <!-- Artist Gallery -->
     {
       entry.data.images?.length && (
-        <section>
+        <section class="js-fade-up">
           <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
             <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
               <div>
                 <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
                   Gallery
                 </h2>
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-gray-600 js-fade-up">
                   Tap/click to view full size.
                 </p>
               </div>
