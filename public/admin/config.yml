@@ -1,5 +1,5 @@
 # Uncomment for local editing without GitHub:
-# local_backend: true
+local_backend: true
 
 backend:
   name: github
@@ -574,3 +574,17 @@ collections:
             hint: "If two colors are set, bar uses a left→right gradient."
 
       - { name: body, label: Details (long - event page), widget: markdown, required: false }
+
+  - name: "imagetest"
+    label: "Image Test"
+    folder: "src/content/imagetest"
+    create: true
+    slug: "{{slug}}"
+    media_folder: "/public/uploads/misc_images/imagetest"
+    public_folder: "/uploads/misc_images/imagetest"
+    fields:
+      - { name: "title", label: "Title", widget: "string" }
+
+      - name: "image"
+        label: "Test Image"
+        widget: "image"

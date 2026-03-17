@@ -1,4 +1,5 @@
 ---
+import { getCollection, getEntry } from "astro:content";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 const starSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
@@ -14,6 +15,11 @@ const sickleSvg = `
 
 const starDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(starSvg)}`;
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
+
+const entries = await getCollection("imagetest");
+
+// just grab the first one for testing
+const entry = entries[0];
 ---
 
 <html lang="en">
@@ -35,6 +41,24 @@ const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sic
             <section class="content">
                 <h1>Star Drift Test</h1>
                 <p>Testing background-position animation.</p>
+                <div style="padding: 40px">
+                    <h1>Image Test</h1>
+
+                    {
+                        entry?.data.image && (
+                            <div style="border: 2px solid red; padding: 20px;">
+                                <img
+                                    src={entry.data.image}
+                                    alt={entry.data.title}
+                                    width="400"
+                                    height="400"
+                                    loading="eager"
+                                    decoding="async"
+                                />
+                            </div>
+                        )
+                    }
+                </div>
             </section>
         </main>
     </body>

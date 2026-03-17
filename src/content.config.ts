@@ -190,5 +190,12 @@ const siteInfo = defineCollection({
   }),
 });
 
+const imagetest = defineCollection({
+  loader: glob({ pattern: "**/*", base: "./src/content/imagetest" }),
+  schema: z.object({
+    title: z.string(),
+    image: z.string(), // important: this will be a path string
+  }),
+});
 
-export const collections = { artists, faqs, siteInfo, aftercare, events }; // & home
+export const collections = { artists, faqs, siteInfo, aftercare, events, imagetest }; // & home
