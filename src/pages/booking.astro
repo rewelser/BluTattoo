@@ -1,0 +1,1019 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+import "../styles/global.css";
+
+const starSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
+  <polygon fill="white" stroke="#fffff" points="328.73 623.96 1.54 386.25 405.96 386.25 530.94 1.62 655.91 386.25 1060.34 386.25 733.15 623.96 858.12 1008.6 530.94 770.88 203.75 1008.6 328.73 623.96"/>
+</svg>
+`;
+
+const sickleSvg = `
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
+  <path fill="black" stroke="black" d="M286.59,485.79c-5.81-47.19-14.94-90.92-32.47-134.05-13.96-34.35-34.35-62.9-62.86-86.51l-54.76-45.33c-29.05-24.05-53.78-53.35-68.59-88.08-4.25-9.96-7.14-17.13-17.17-22.83-24.28-13.81-41.52-8.65-49.72-13.7-8.78-5.4,41.87-40.56,51.07-42.03,1.07-6.22,1.6-14.36,3.95-19.28,4.92-10.31,18.61-13.09,28.61-11.57l5.7,10.76c78.57-43.44,191.24-46.57,266.96,4.68,18.31,12.39,36.55,26.5,44.62,49.03-92.31-58.53-208.47-34.52-293.69,20.3,12.79,29.12,33.18,51.83,57.39,71.49,49.87,40.49,94.87,77.53,125.72,135.35,19.71,36.94,33.43,75.49,42.78,116.27,8.77,38.25-24.35,49.59-34.42,88.43-7.95-8.37-11.56-20.15-13.13-32.95ZM332.67,45.01c14.6,4.98,24.74,13.34,40.23,15.25-21.44-20.79-47.32-32.71-75.19-41.08C227.93-1.77,156.52,10.45,89.66,40.03c1.23,9.62,2.57,17.59,5.16,26.03,73.49-40.4,158.93-47.98,237.85-21.05ZM83.83,66.01l-4.04-35.2c-5.41.86-13.04,2.97-17.06,5.69-1.9,1.28-3.44,8.64-1.54,9.91l6.45,4.31c6.03,4.03,10.9,9.71,16.19,15.29ZM163.56,228.46c2.69,9.83,16.3,14.41,24.5,21.17,13.36-16.54-22.32-57.67-31.76-65.88-25.79-22.41-46.75-46.73-59.48-78.91-5.06-12.78-21.03-46.44-35.45-51.28-.25,7.55,0,15.75.99,21.29,18.72,4.5,29.03,38.71,34.46,55.53,13.57,41.99,55.25,55.99,59.94,73.18l6.8,24.89ZM57.32,102.77l-5.56-40.35c-14.87,8.23-26.9,16.32-38.62,27.16,17.58,1.94,30.05,5.53,44.18,13.19ZM130.92,183.47c-20.58-13.61-33.28-31.57-40.37-54.1-3.1-9.84-14.95-47.42-27.38-47.46,7.41,57.8,47.67,109.55,92.36,140.35.44-19.05-14.08-27.16-24.61-38.79ZM187.67,210.41c6.29,16.53,14.06,28.71,4.3,43.07,18.23,14.96,34.04,31.27,48.88,51.77,26.13-21.79-32.08-83.59-53.18-94.84ZM323.28,422.66l-5.35-19.36c-4.66,8.45-10.2,14.11-18.05,13.25-5.92-.65-12.69-8.08-13.75-15.2-3.87-25.95-9.57-49.93-18.69-74.56-4.25-11.49-3.84-22.04.82-33.37l-18.46-23.05c1.06,16.43,9.3,26.74-5.94,39.73,26.59,46.16,40.71,97.04,48.75,151.24,6.86-15.06,7.79-34.71,30.65-38.68ZM304.58,409.42c10.58-6,9.28-19.08,5.99-28-10.51-28.44-21.27-55.47-38.82-81.86-3.89,10.1-.98,20.1,2.57,29.47,8.74,23.1,13.78,45.66,17.3,69.94.82,5.68,6.55,14.08,12.97,10.45ZM322.37,460.86c5.95-8.85,6.56-19.71,1.83-28.29-20.61-8.47-30.06,48.17-25.33,63.27l23.5-34.97Z"/>
+</svg>
+`;
+
+const starDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(starSvg)}`;
+const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
+
+const entries = await getCollection("imagetest");
+
+// just grab the first one for testing
+const entry = entries[0];
+
+const artists = [
+    {
+        slug: "maya-vale1",
+        name: "Maya Vale1",
+        specialty: "Blackwork / Ornamental",
+        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
+        bookingOptions: [
+            {
+                type: "link",
+                label: "Instagram",
+                href: "https://instagram.com/",
+                description:
+                    "Browse healed work, flash drops, and recent projects.",
+            },
+            {
+                type: "link",
+                label: "Booking Form",
+                href: "https://example.com/",
+                description:
+                    "Submit your concept, placement ideas, and size details.",
+            },
+            {
+                type: "expandable",
+                label: "Square Booking Widget",
+                summary: "Open embedded booking details",
+                content:
+                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
+            },
+        ],
+    },
+    {
+        slug: "maya-vale2",
+        name: "Maya Vale2",
+        specialty: "Blackwork / Ornamental",
+        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
+        bookingOptions: [
+            {
+                type: "link",
+                label: "Instagram",
+                href: "https://instagram.com/",
+                description:
+                    "Browse healed work, flash drops, and recent projects.",
+            },
+            {
+                type: "link",
+                label: "Booking Form",
+                href: "https://example.com/",
+                description:
+                    "Submit your concept, placement ideas, and size details.",
+            },
+            {
+                type: "expandable",
+                label: "Square Booking Widget",
+                summary: "Open embedded booking details",
+                content:
+                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
+            },
+        ],
+    },
+    {
+        slug: "maya-vale3",
+        name: "Maya Vale3",
+        specialty: "Blackwork / Ornamental",
+        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
+        bookingOptions: [
+            {
+                type: "link",
+                label: "Instagram",
+                href: "https://instagram.com/",
+                description:
+                    "Browse healed work, flash drops, and recent projects.",
+            },
+            {
+                type: "link",
+                label: "Booking Form",
+                href: "https://example.com/",
+                description:
+                    "Submit your concept, placement ideas, and size details.",
+            },
+            {
+                type: "expandable",
+                label: "Square Booking Widget",
+                summary: "Open embedded booking details",
+                content:
+                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
+            },
+        ],
+    },
+    {
+        slug: "nico-ash",
+        name: "Nico Ash",
+        specialty: "Illustrative / Neo-traditional",
+        bio: "Nico specializes in bold illustrative designs, flora, fauna, and large-format neo-traditional compositions.",
+        bookingOptions: [
+            {
+                type: "link",
+                label: "Portfolio",
+                href: "https://example.com/",
+                description:
+                    "Selected projects, sleeve progressions, and large-scale work.",
+            },
+            {
+                type: "expandable",
+                label: "Booking Policies",
+                summary: "Open deposit and prep information",
+                content:
+                    "Dummy policy text: deposits are non-refundable, design discussions happen after approval, and large projects may require consultations.",
+            },
+            {
+                type: "expandable",
+                label: "Guest Spot Dates",
+                summary: "Open available date ranges",
+                content:
+                    "Dummy guest-spot availability goes here. You could later replace this with CMS-driven availability or an embedded widget.",
+            },
+        ],
+    },
+    {
+        slug: "iris-crow",
+        name: "Iris Crow",
+        specialty: "Fine line / Lettering",
+        bio: "Iris handles fine line work, subtle ornamental details, script, and minimalist placement-driven designs.",
+        bookingOptions: [
+            {
+                type: "link",
+                label: "Instagram",
+                href: "https://instagram.com/",
+                description:
+                    "Recent healed tattoos, lettering studies, and flash announcements.",
+            },
+            {
+                type: "expandable",
+                label: "FAQ",
+                summary: "Open common questions",
+                content:
+                    "Dummy FAQ content: preferred placements, aftercare expectations, lead times, and consultation notes.",
+            },
+        ],
+    },
+];
+---
+
+<style>
+    body {
+        background: black;
+    }
+    .artist-tree {
+        width: min(100%, 48rem);
+        margin-inline: auto;
+        padding: 2rem 1rem 4rem;
+        /* background: linear-gradient(
+            to bottom,
+            rgba(136, 182, 255, 0.15),
+            rgba(136, 199, 255, 0.75)
+        ); */
+        /* background: linear-gradient(
+            to bottom,
+            thistle,
+            cadetblue, red
+        ); */
+    }
+
+    .artist-tree__list,
+    .artist-tree__sublist {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .artist-tree__item,
+    .artist-tree__subitem {
+        position: relative;
+        border: 1px solid rgb(255 255 255 / 0.14);
+        border: 2px solid antiquewhite;
+        box-shadow: 6px 4px 0px antiquewhite;
+        border: 2px solid black;
+        box-shadow: 3px 4px 0px black;
+        background: rgb(255 255 255 / 0.04);
+        background: thistle;
+        background: whitesmoke;
+        background: floralwhite;
+        border-radius: 50px;
+    }
+
+    .profile-image {
+        height: 4rem;
+        width: 4rem;
+        box-shadow: 7px 4px 0px aqua;
+        border: 2px solid aqua;
+        box-shadow: 6px 4px 0px aqua;
+        /* box-shadow: (1px 1px 1px); */
+        border-radius: 50px;
+        overflow: hidden;
+    }
+
+    .artist-tree__item + .artist-tree__item {
+        margin-top: 0.75rem;
+    }
+
+    .artist-tree__subitem + .artist-tree__subitem {
+        margin-top: 0.5rem;
+    }
+
+    .artist-tree__toggle,
+    .artist-tree__subtoggle {
+        min-height: 3rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        text-align: left;
+        background: transparent;
+        border: 0;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .artist-tree__toggle {
+        /* padding: 1rem 1rem 1rem 1.125rem; */
+        padding: 0.5rem;
+    }
+
+    .artist-tree__subtoggle {
+        padding: 0.875rem 1rem;
+    }
+
+    .artist-tree__headline {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .artist-tree__name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .artist-tree__meta {
+        font-size: 0.9rem;
+        opacity: 0.75;
+    }
+
+    .artist-tree__chevron {
+        width: 1rem;
+        height: 1rem;
+        flex: 0 0 auto;
+        transition: transform 220ms ease;
+    }
+
+    .artist-tree__toggle[aria-expanded="true"] .artist-tree__chevron,
+    .artist-tree__subtoggle[aria-expanded="true"] .artist-tree__chevron {
+        transform: rotate(180deg);
+    }
+
+    .artist-tree__panel,
+    .artist-tree__subpanel {
+        overflow: hidden;
+        height: 0;
+        transition: height 260ms ease;
+        will-change: height;
+    }
+
+    .artist-tree__panel-inner {
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    .artist-tree__bio {
+        margin: 0 0 1rem;
+        opacity: 0.88;
+        line-height: 1.55;
+    }
+
+    .artist-tree__sublist {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .artist-tree__linkblock {
+        padding: 0.875rem 1rem;
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .artist-tree__link {
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 0.14em;
+    }
+
+    .artist-tree__subdesc,
+    .artist-tree__subcontent {
+        opacity: 0.8;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .artist-tree__widget-shell {
+        padding: 0.875rem 1rem 1rem;
+        border-top: 1px solid rgb(255 255 255 / 0.1);
+    }
+
+    .artist-tree__widget-placeholder {
+        border: 1px dashed rgb(255 255 255 / 0.2);
+        min-height: 8rem;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        text-align: center;
+        opacity: 0.75;
+    }
+
+    .artist-tree a:focus-visible,
+    .artist-tree button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .artist-tree__panel,
+        .artist-tree__subpanel,
+        .artist-tree__chevron {
+            transition: none;
+        }
+    }
+</style>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Star Drift Test</title>
+    </head>
+    <body>
+        <main class="page">
+            <!-- <div class="fixed"> -->
+            <div
+                id="wallpaper-gradient"
+                class="wallpaper h-screen"
+                aria-hidden="true"
+            >
+            </div>
+            <div
+                id="wallpaper-flash"
+                class="wallpaper"
+                aria-hidden="true"
+                style={`background-image: url("${sickleDataUrl}")`}
+            >
+            </div>
+            <!-- </div> -->
+
+            <section class="artist-tree" aria-labelledby="artist-tree-title">
+                <h1 id="artist-tree-title" class="sr-only">Artists</h1>
+
+                <ul class="artist-tree__list" data-accordion-root>
+                    {
+                        artists.map((artist, artistIndex) => {
+                            const artistBtnId = `artist-${artistIndex}-toggle`;
+                            const artistPanelId = `artist-${artistIndex}-panel`;
+
+                            return (
+                                <li class="artist-tree__item">
+                                    <button
+                                        id={artistBtnId}
+                                        class="artist-tree__toggle"
+                                        type="button"
+                                        aria-expanded="false"
+                                        aria-controls={artistPanelId}
+                                        data-accordion-toggle
+                                        data-accordion-level="root"
+                                    >
+                                        <div class="profile-image">
+                                            {/* <Image src={entry.data.src} alt={entry.data.alt} /> */}
+                                            {/* <img
+                                            source={entry.data.src}
+                                            ></img> */}
+                                            <img
+                                                src={
+                                                    "/uploads/misc_images/hero-poster-red.jpg"
+                                                }
+                                                alt={`Portrait of ${entry.data.title}`}
+                                                decoding="async"
+                                                loading="eager"
+                                                fetchpriority="high"
+                                                class="h-full w-full object-cover"
+                                            />
+                                        </div>
+                                        <span class="artist-tree__headline">
+                                            <span class="artist-tree__name">
+                                                {artist.name}
+                                            </span>
+                                            <span class="artist-tree__meta">
+                                                {artist.specialty}
+                                            </span>
+                                        </span>
+
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                            class="artist-tree__chevron"
+                                        >
+                                            <path
+                                                fill="currentColor"
+                                                d="M7 10l5 5 5-5H7z"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    <div
+                                        id={artistPanelId}
+                                        class="artist-tree__panel"
+                                        aria-labelledby={artistBtnId}
+                                        data-accordion-panel
+                                        inert
+                                    >
+                                        <div class="artist-tree__panel-inner">
+                                            <p class="artist-tree__bio">
+                                                {artist.bio}
+                                            </p>
+
+                                            <ul class="artist-tree__sublist">
+                                                {artist.bookingOptions.map(
+                                                    (option, optionIndex) => {
+                                                        if (
+                                                            option.type ===
+                                                            "link"
+                                                        ) {
+                                                            return (
+                                                                <li class="artist-tree__subitem">
+                                                                    <div class="artist-tree__linkblock">
+                                                                        <a
+                                                                            class="artist-tree__link"
+                                                                            href={
+                                                                                option.href
+                                                                            }
+                                                                            target="_blank"
+                                                                            rel="noreferrer noopener"
+                                                                        >
+                                                                            {
+                                                                                option.label
+                                                                            }
+                                                                        </a>
+                                                                        <div class="artist-tree__subdesc">
+                                                                            {
+                                                                                option.description
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            );
+                                                        }
+
+                                                        const subBtnId = `artist-${artistIndex}-sub-${optionIndex}-toggle`;
+                                                        const subPanelId = `artist-${artistIndex}-sub-${optionIndex}-panel`;
+
+                                                        return (
+                                                            <li class="artist-tree__subitem">
+                                                                <button
+                                                                    id={
+                                                                        subBtnId
+                                                                    }
+                                                                    class="artist-tree__subtoggle"
+                                                                    type="button"
+                                                                    aria-expanded="false"
+                                                                    aria-controls={
+                                                                        subPanelId
+                                                                    }
+                                                                    data-accordion-toggle
+                                                                    data-accordion-level="nested"
+                                                                >
+                                                                    <span>
+                                                                        <strong>
+                                                                            {
+                                                                                option.label
+                                                                            }
+                                                                        </strong>
+                                                                        <span class="sr-only">
+                                                                            {" "}
+                                                                            —{" "}
+                                                                            {
+                                                                                option.summary
+                                                                            }
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <svg
+                                                                        viewBox="0 0 24 24"
+                                                                        aria-hidden="true"
+                                                                        class="artist-tree__chevron"
+                                                                    >
+                                                                        <path
+                                                                            fill="currentColor"
+                                                                            d="M7 10l5 5 5-5H7z"
+                                                                        />
+                                                                    </svg>
+                                                                </button>
+
+                                                                <div
+                                                                    id={
+                                                                        subPanelId
+                                                                    }
+                                                                    class="artist-tree__subpanel"
+                                                                    aria-labelledby={
+                                                                        subBtnId
+                                                                    }
+                                                                    data-accordion-panel
+                                                                    inert
+                                                                >
+                                                                    <div class="artist-tree__widget-shell">
+                                                                        <div class="artist-tree__subcontent">
+                                                                            {
+                                                                                option.content
+                                                                            }
+                                                                        </div>
+
+                                                                        <div class="artist-tree__widget-placeholder">
+                                                                            Future
+                                                                            embed
+                                                                            /
+                                                                            widget
+                                                                            /
+                                                                            module
+                                                                            placeholder
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        );
+                                                    },
+                                                )}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                            );
+                        })
+                    }
+                </ul>
+            </section>
+
+            <!-- <section class="content">
+                <h1>Star Drift Test</h1>
+
+                <section id="listings">
+                    <details class="list-item">
+                        <summary> whoa </summary>
+                        <p>details</p>
+                    </details>
+                    <details>
+                        <summary> whoa </summary>
+                        <p>details</p>
+                    </details>
+                    <details>
+                        <summary> whoa </summary>
+                        <p>details</p>
+                    </details>
+                    <details>
+                        <summary> whoa </summary>
+                        <p>details</p>
+                    </details>
+                </section>
+                <p>Testing background-position animation.</p>
+                <div style="padding: 40px">
+                    <h1>Image Test</h1>
+                    <Image src={entry.data.src} alt={entry.data.alt} />
+                </div>
+            </section> -->
+        </main>
+    </body>
+</html>
+
+<style>
+    :global(html, body) {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+    }
+
+    :global(body) {
+        /* background: #111; */
+        background: whitesmoke;
+        /* color: white; */
+        font-family: sans-serif;
+    }
+
+    .page {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        /* isolation: isolate; */
+    }
+
+    #wallpaper-flash {
+        position: absolute;
+        background-repeat: repeat;
+        background-size: 72px 72px;
+        background-position: 0 0;
+        animation:
+            driftX 24s ease-in-out infinite,
+            driftY 12s linear infinite;
+        /* animation: driftWeave2 10s linear infinite; */
+        opacity: 0.9;
+        transform: translateY(0);
+    }
+
+    #wallpaper-gradient {
+        position: fixed;
+
+        background: linear-gradient(to bottom, thistle, cadetblue, red);
+        background: #3a81b4;
+        background: linear-gradient(
+            to bottom,
+            rgba(58, 129, 180, 0.9) 0%,
+            rgba(58, 80, 180, 0.7) 50%,
+            rgba(72, 69, 252, 0.5) 100%
+        );
+        background: #9ed7ff;
+        background: linear-gradient(
+            to bottom,
+            rgba(158, 215, 255, 1) 0%,
+            rgba(173, 207, 255, 1) 50%,
+            rgba(201, 210, 255, 1) 100%
+        );
+        background: #9ed7ff;
+        background: linear-gradient(
+            0deg,
+            rgba(158, 215, 255, 1) 0%,
+            rgba(204, 255, 235, 1) 50%,
+            rgba(201, 210, 255, 1) 100%
+        );
+        background: #020024;
+        background: linear-gradient(
+            0deg,
+            rgba(2, 0, 36, 1) 0%,
+            rgba(9, 9, 121, 1) 35%,
+            rgba(0, 212, 255, 0.9) 100%
+        );
+        background: #eeaeca;
+        background: radial-gradient(
+            circle,
+            rgba(238, 174, 202, 1) 0%,
+            rgba(148, 187, 233, 1) 100%
+        );
+    }
+
+    .wallpaper {
+        inset: 0;
+        z-index: 0;
+    }
+
+    .content {
+        position: relative;
+        z-index: 1;
+        min-height: 400vh;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(
+            to bottom,
+            rgb(0 0 0 / 0.15),
+            rgb(0 0 0 / 0.35)
+        );
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 30, 255, 0.15),
+            rgba(136, 166, 255, 0.55)
+        );
+        background: linear-gradient(
+            to bottom,
+            rgba(136, 182, 255, 0.15),
+            rgba(136, 199, 255, 0.75)
+        );
+    }
+
+    .list-item summary {
+        size: 36px;
+    }
+
+    @keyframes driftY {
+        from {
+            background-position-y: 0;
+        }
+        to {
+            /* background-position: 0 72px; */
+            /* background-position: 36px 72px; */
+            background-position-y: 72px;
+        }
+    }
+
+    @keyframes driftX {
+        0% {
+            background-position-x: 0;
+            animation-timing-function: ease-out;
+        }
+        25% {
+            background-position-x: 72px;
+            animation-timing-function: ease-in;
+        }
+        50% {
+            background-position-x: 0px;
+            animation-timing-function: ease-out;
+        }
+        75% {
+            background-position: -72px;
+            animation-timing-function: ease-in;
+        }
+        100% {
+            background-position-x: 0px;
+            animation-timing-function: ease-out;
+        }
+    }
+</style>
+
+<script is:inline>
+    window.addEventListener("scroll", function () {
+        const scrollPosition = window.scrollY;
+        const background = document.getElementById("wallpaper-flash");
+
+        // Adjust the multiplier (0.5 in this case) to control the speed.
+        // A value between 0 and 1 makes it move slower than the foreground.
+        background.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+    });
+</script>
+
+<script is:inline>
+    (() => {
+        const root = document.querySelector("[data-accordion-root]");
+        if (!root) return;
+
+        const isExpanded = (btn) =>
+            btn.getAttribute("aria-expanded") === "true";
+
+        const getPanel = (btn) => {
+            const id = btn.getAttribute("aria-controls");
+            return id ? document.getElementById(id) : null;
+        };
+
+        const setPanelInteractive = (panel, interactive) => {
+            if (!panel) return;
+            panel.inert = !interactive;
+        };
+
+        const isFocusInside = (el) =>
+            !!el &&
+            !!document.activeElement &&
+            el.contains(document.activeElement);
+
+        const ensureFocusNotIn = (panel, fallbackEl) => {
+            if (isFocusInside(panel)) fallbackEl?.focus?.();
+        };
+
+        const getTransitionMs = (el) => {
+            const styles = getComputedStyle(el);
+
+            const parseList = (value) =>
+                value
+                    .split(",")
+                    .map((part) => part.trim())
+                    .map((part) =>
+                        part.endsWith("ms")
+                            ? parseFloat(part)
+                            : parseFloat(part) * 1000,
+                    )
+                    .filter((n) => !Number.isNaN(n));
+
+            const durations = parseList(styles.transitionDuration);
+            const delays = parseList(styles.transitionDelay);
+
+            const maxDuration = Math.max(0, ...durations, 0);
+            const maxDelay = Math.max(0, ...delays, 0);
+
+            return maxDuration + maxDelay + 50;
+        };
+
+        const ensurePixelHeight = (panel) => {
+            const computed = getComputedStyle(panel).height;
+            if (computed === "auto" || panel.style.height === "auto") {
+                panel.style.height = panel.scrollHeight + "px";
+                void panel.offsetHeight;
+            }
+        };
+
+        const getAncestorPanels = (panel) => {
+            const ancestors = [];
+            let node =
+                panel.parentElement?.closest?.("[data-accordion-panel]") ??
+                null;
+
+            while (node) {
+                ancestors.push(node);
+                node =
+                    node.parentElement?.closest?.("[data-accordion-panel]") ??
+                    null;
+            }
+
+            return ancestors;
+        };
+
+        const prepareAncestorHeights = (panel) => {
+            const ancestors = getAncestorPanels(panel);
+            ancestors.forEach((ancestor) => ensurePixelHeight(ancestor));
+            return ancestors;
+        };
+
+        const syncAncestorTargets = (ancestors) => {
+            ancestors.forEach((ancestor) => {
+                ancestor.style.height = ancestor.scrollHeight + "px";
+            });
+        };
+
+        const finalizeAncestorHeights = (ancestors) => {
+            ancestors.forEach((ancestor) => {
+                if (ancestor.getAttribute("data-state") === "open") {
+                    ancestor.style.height = "auto";
+                }
+            });
+        };
+
+        const animatePanel = (btn, panel, expand) =>
+            new Promise((resolve) => {
+                if (!btn || !panel) {
+                    resolve();
+                    return;
+                }
+
+                if (panel.dataset.animating === "1") {
+                    resolve();
+                    return;
+                }
+
+                const ancestors = prepareAncestorHeights(panel);
+
+                if (!expand) ensureFocusNotIn(panel, btn);
+
+                if (expand) {
+                    setPanelInteractive(panel, true);
+                }
+
+                btn.disabled = true;
+                panel.dataset.animating = "1";
+                panel.style.pointerEvents = "none";
+
+                btn.setAttribute("aria-expanded", expand ? "true" : "false");
+                panel.setAttribute("data-state", expand ? "open" : "closed");
+
+                ensurePixelHeight(panel);
+
+                const finish = () => {
+                    delete panel.dataset.animating;
+                    panel.style.pointerEvents = "";
+                    btn.disabled = false;
+
+                    if (expand) {
+                        panel.style.height = "auto";
+                    } else {
+                        setPanelInteractive(panel, false);
+                    }
+
+                    finalizeAncestorHeights(ancestors);
+                    resolve();
+                };
+
+                let done = false;
+                const complete = () => {
+                    if (done) return;
+                    done = true;
+                    panel.removeEventListener("transitionend", onEnd);
+                    clearTimeout(fallback);
+                    finish();
+                };
+
+                const onEnd = (e) => {
+                    if (e.target !== panel || e.propertyName !== "height")
+                        return;
+                    complete();
+                };
+
+                const fallback = setTimeout(complete, getTransitionMs(panel));
+
+                panel.addEventListener("transitionend", onEnd);
+
+                requestAnimationFrame(() => {
+                    panel.style.height = expand
+                        ? panel.scrollHeight + "px"
+                        : "0px";
+                    syncAncestorTargets(ancestors);
+                });
+            });
+
+        const getOpenDescendantButtonsDeepestFirst = (panel) => {
+            const openButtons = Array.from(
+                panel.querySelectorAll(
+                    '[data-accordion-toggle][aria-expanded="true"]',
+                ),
+            );
+
+            return openButtons.sort((a, b) => {
+                const depthA =
+                    a.closest("[data-accordion-panel]")?.parentsLength ?? 0;
+                const depthB =
+                    b.closest("[data-accordion-panel]")?.parentsLength ?? 0;
+                return depthB - depthA;
+            });
+        };
+
+        // Slightly more reliable depth calculation than the placeholder above.
+        const getDepth = (el) => {
+            let depth = 0;
+            let current = el.closest("[data-accordion-panel]");
+            while (current) {
+                depth += 1;
+                current =
+                    current.parentElement?.closest?.(
+                        "[data-accordion-panel]",
+                    ) ?? null;
+            }
+            return depth;
+        };
+
+        const closeDescendantsFirst = async (panel) => {
+            const openButtons = Array.from(
+                panel.querySelectorAll(
+                    '[data-accordion-toggle][aria-expanded="true"]',
+                ),
+            ).sort((a, b) => getDepth(b) - getDepth(a));
+
+            for (const openBtn of openButtons) {
+                const openPanel = getPanel(openBtn);
+                if (!openPanel) continue;
+                await animatePanel(openBtn, openPanel, false);
+            }
+        };
+
+        const closeBranch = async (btn) => {
+            const panel = getPanel(btn);
+            if (!panel || !isExpanded(btn)) return;
+
+            await closeDescendantsFirst(panel);
+            await animatePanel(btn, panel, false);
+        };
+
+        const getRootButtons = () =>
+            Array.from(
+                root.querySelectorAll(
+                    '[data-accordion-toggle][data-accordion-level="root"]',
+                ),
+            );
+
+        root.addEventListener("click", async (event) => {
+            const btn = event.target.closest?.("[data-accordion-toggle]");
+            if (!btn || !root.contains(btn)) return;
+
+            const panel = getPanel(btn);
+            if (!panel) return;
+
+            if (panel.dataset.animating === "1") return;
+
+            const level = btn.getAttribute("data-accordion-level");
+            const nextExpanded = !isExpanded(btn);
+
+            if (level === "root") {
+                if (nextExpanded) {
+                    for (const openRootBtn of getRootButtons()) {
+                        if (openRootBtn === btn) continue;
+                        if (!isExpanded(openRootBtn)) continue;
+                        await closeBranch(openRootBtn);
+                    }
+                    await animatePanel(btn, panel, true);
+                } else {
+                    await closeBranch(btn);
+                }
+
+                return;
+            }
+
+            // Nested toggles:
+            // they can open/close independently,
+            // but when their parent artist closes, they will be closed first.
+            await animatePanel(btn, panel, nextExpanded);
+        });
+
+        document.addEventListener("keydown", async (event) => {
+            if (event.key !== "Escape") return;
+
+            const openRootBtn = getRootButtons().find((btn) => isExpanded(btn));
+            if (!openRootBtn) return;
+
+            await closeBranch(openRootBtn);
+            openRootBtn.focus();
+        });
+    })();
+</script>

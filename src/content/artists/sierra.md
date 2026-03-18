@@ -1,7 +1,7 @@
 ---
 title: Sierra
 order: 3
-photo: /uploads/artists/sierra_headshot.jpg
+artistPagePhoto: /uploads/artists/sierra_headshot.jpg
 images:
   - src: /uploads/artists/sierra_headshot.jpg
     alt: sierra_headshot

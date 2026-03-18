@@ -138,7 +138,8 @@ const artists = defineCollection({
   schema: ({ image }) => z.object({
     title: z.string(),
     order: z.number().default(999),    // ← add this
-    photo: z.preprocess(emptyStrToUndef, z.string().optional()),
+    artistPagePhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
+    runwayPhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
     socials: socialsSchema,
     images: z
       .array(
@@ -192,10 +193,12 @@ const siteInfo = defineCollection({
 
 const imagetest = defineCollection({
   loader: glob({ pattern: "**/*", base: "./src/content/imagetest" }),
-  schema: z.object({
-    title: z.string(),
-    image: z.string(), // important: this will be a path string
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      src: image(),
+      alt: z.string()
+    }),
 });
 
 export const collections = { artists, faqs, siteInfo, aftercare, events, imagetest }; // & home

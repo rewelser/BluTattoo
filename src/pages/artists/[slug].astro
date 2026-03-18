@@ -43,18 +43,18 @@ const thumb = (src: string, w: number) =>
 
 <Layout
   title={`BluTattoo Studio — ${entry.data.title}`}
-  preloadImage={entry.data.photo as string}
+  preloadImage={entry.data.artistPagePhoto as string}
 >
   <article class="space-y-6">
     <header class="text-orange-100">
       <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
         <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
           {
-            entry.data.photo && (
+            entry.data.artistPagePhoto && (
               <div class="portrait fade-in-left-and-glow-anim">
                 <div>
                   <img
-                    src={entry.data.photo as string}
+                    src={entry.data.artistPagePhoto as string}
                     alt={`Portrait of ${entry.data.title}`}
                     width="400"
                     height="400"

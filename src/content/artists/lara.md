@@ -1,7 +1,7 @@
 ---
 title: Lara
 order: 1
-photo: /uploads/artists/lara_headshot.jpg
+artistPagePhoto: /uploads/artists/lara_headshot.jpg
 images:
   - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
     alt: Blackwork snake on forearm

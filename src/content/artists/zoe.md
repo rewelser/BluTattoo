@@ -1,7 +1,7 @@
 ---
 title: Zoe
 order: 5
-photo: /uploads/artists/zoester_transparent_cropped.png
+artistPagePhoto: /uploads/artists/zoester_transparent_cropped.png
 socials:
   instagram: "https://www.instagram.com/example/"
   facebook: "https://www.facebook.com/example/"
