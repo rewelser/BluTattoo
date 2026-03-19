@@ -528,13 +528,11 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
   const endProgrammaticScroll = () => {
     programmaticScrollingRef.current = false;
     setSnapDisabled(false);
-    console.log("programmaticScrollingRef.current", programmaticScrollingRef.current);
   };
 
   const beginProgrammaticScroll = () => {
     programmaticScrollingRef.current = true;
     setSnapDisabled(true);
-    console.log("programmaticScrollingRef.current", programmaticScrollingRef.current);
   };
 
   const scrollToIndex = (index: number, behavior: ScrollBehavior = "smooth") => {
@@ -640,7 +638,6 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
         // todo: determine if this is meaningful... Does this actually work?
         // re:todo: it does something that looks negligible, and does not stop our side effect where an incomplete zoom will finish on another image following an arrow swipe. smdh my dang head
         if (scrollingRef.current) {
-          // console.log("scrollking");
           return;
         }
 

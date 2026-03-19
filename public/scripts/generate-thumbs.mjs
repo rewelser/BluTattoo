@@ -17,9 +17,9 @@ const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 // More targets can be added later
 const TARGETS = [
   {
-    name: "artists",
-    inputDir: path.join(PUBLIC_DIR, "uploads", "artists"),
-    outputDir: path.join(PUBLIC_DIR, "uploads", "_thumbs", "artists"),
+    name: "people",
+    inputDir: path.join(PUBLIC_DIR, "uploads", "people"),
+    outputDir: path.join(PUBLIC_DIR, "uploads", "_thumbs", "people"),
   },
 ];
 
@@ -49,8 +49,8 @@ function ensureDir(p) {
 /**
  * Computes a relative path; preserves structure
  * Example:
- * baseDir: .../public/uploads/artists
- * absFile: .../public/uploads/artists/portfolio/zirk1.jpeg
+ * baseDir: .../public/uploads/people
+ * absFile: .../public/uploads/people/portfolio/zirk1.jpeg
  * relPath becomes: portfolio/zirk1.jpeg
  * 
  */

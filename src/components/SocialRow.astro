@@ -14,9 +14,12 @@ const {
 };
 
 const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
+// console.log("socialDefs",socialDefs);
+console.log("links",links);
 ---
 
 <div class={`flex items-center gap-3 ${className}`}>
+    
     {
         socialDefs.map(({ key, label, Icon }) => {
             const href = links[key];

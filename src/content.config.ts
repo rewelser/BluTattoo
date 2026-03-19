@@ -3,6 +3,9 @@ import { glob } from 'astro/loaders';
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
+// ----------------------
+//  Formatters
+// ----------------------
 
 const emptyStrToUndef = (v: unknown) =>
   typeof v === "string" && v.trim() === "" ? undefined : v;
@@ -10,32 +13,14 @@ const emptyStrToUndef = (v: unknown) =>
 const emptyArrToUndef = (v: unknown) =>
   Array.isArray(v) && v.length === 0 ? undefined : v;
 
-const urlOpt = z.preprocess(emptyStrToUndef, z
-  .string()
-  .trim()
-  .url()
-  .optional());
 
-const socialKeys = [
-  "instagram",
-  "tiktok",
-  "youtube",
-  "facebook",
-  "x",
-  "threads",
-  "tumblr",
-  "pinterest",
-] as const;
+const optionalString = z.preprocess(emptyStrToUndef, z.string().optional());
+const optionalText = z.preprocess(emptyStrToUndef, z.string().optional());
+const optUrl = z.preprocess(emptyStrToUndef, z.string().trim().url().optional());
 
-const socialsSchema = z
-  .object(
-    Object.fromEntries(socialKeys.map((k) => [k, urlOpt])) as Record<
-      (typeof socialKeys)[number],
-      typeof urlOpt
-    >
-  )
-  .partial()
-  .default({});
+
+
+
 
 // Commented out for now; home will ultimately be used for modifying splash content and that's it 
 // const home = defineCollection({
@@ -48,6 +33,10 @@ const socialsSchema = z
 //     }).optional(),
 //   }),
 // });
+
+// ----------------------
+//  Events
+// ----------------------
 
 const timeHM = z.string().regex(/^\d{2}:\d{2}$/, "Use HH:mm");
 
@@ -63,7 +52,7 @@ const toHm = (v: unknown): unknown => {
 };
 
 const weekdayEnum = z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"]);
-// const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+
 const isoDate = z.preprocess((val) => {
   if (val instanceof Date) {
     return val.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -133,32 +122,162 @@ const events = defineCollection({
   }),
 });
 
-const artists = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
-  schema: ({ image }) => z.object({
-    title: z.string(),
-    order: z.number().default(999),    // ← add this
-    artistPagePhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
-    runwayPhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
-    socials: socialsSchema,
-    images: z
-      .array(
+// ----------------------
+//  People
+// ----------------------
+
+const primaryRoleSchema = z.enum(['tattoo_artist', 'piercer']);
+
+const usPhoneSchema = z
+  .string()
+  .transform((val) => val.replace(/\D/g, ""))
+  .refine(
+    (digits) => digits.length === 10 || (digits.length === 11 && digits.startsWith("1")),
+    "Must be a valid US phone number"
+  )
+  .transform((digits) => {
+    if (digits.length === 11) {
+      return digits.replace(/1(\d{3})(\d{3})(\d{4})/, "+1 ($1) $2-$3");
+    }
+    return digits.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+  });
+
+const withCommonFlags = (shape: z.ZodRawShape) =>
+  z.object({
+    ...shape,
+    enabled: z.boolean().default(true),
+    preferred: z.boolean().optional()
+  });
+
+// todo: look up how .extend works
+const contactBuilder = (type: string, shape: z.ZodRawShape) =>
+  withCommonFlags(shape).extend({
+    type: z.literal(type),
+    notes: optionalText
+  });
+
+const contactSchema = z.array(
+  z.discriminatedUnion('type', [
+    contactBuilder('phone', { number: usPhoneSchema }),
+    contactBuilder('email', { email_address: z.string().email() }),
+    contactBuilder('website', { link: z.string().url() })
+  ])
+).optional();
+
+const socialTypes = [
+  'instagram',
+  'facebook',
+  'tiktok',
+  'x',
+  'threads',
+  'tumblr',
+  'youtube',
+  'pinterest'
+] as const;
+
+const socialsSchema = z.array(
+  z.object({
+    type: z.enum(socialTypes),
+    link: z.string().url(),
+    enabled: z.boolean().default(true),
+    bookable: z.boolean().default(false),
+    preferred: z.boolean().optional()
+  })
+).optional();
+
+const squareLinkSchema = z.object({
+  type: z.literal('square_link'),
+  enabled: z.boolean().default(true),
+  url: z.string().url()
+});
+
+const squareModuleSchema = z.object({
+  type: z.literal('module_info'),
+  enabled: z.boolean().default(true),
+  merchantId: z.string().regex(/^[A-Za-z0-9-]+$/),
+  locationId: z.string().regex(/^[A-Za-z0-9-]+$/),
+  label: optionalString
+});
+
+const platformsSchema = z.array(
+  z.discriminatedUnion('type', [
+    z.object({
+      type: z.literal('square'),
+      enabled: z.boolean().default(true),
+      link_or_module_info: z.array(
+        z.discriminatedUnion('type', [
+          squareLinkSchema,
+          squareModuleSchema
+        ])
+      ).min(1)
+    })
+  ])
+).optional();
+
+const people = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/people' }),
+  schema: () =>
+    z.object({
+      name: z.string(),
+      active: z.boolean().default(true),
+      guest: z.boolean().default(false),
+      order: z.number().default(999),
+
+      page_photo: optionalString,
+      runway_photo: optionalString,
+
+      primary_role: primaryRoleSchema,
+
+      contact_socials_booking: z.object({
+        booking_profile_picture: optionalString,
+        contact: contactSchema,
+        socials: socialsSchema,
+        platforms: platformsSchema,
+        booking_note: optionalText
+      }).optional(),
+
+      images: z.array(
         z.object({
           src: z.string(),
-          alt: z.string().optional()
+          alt: optionalString
         })
-      )
-      .optional(),
-    // NEW: Square Appointments embed
-    square: z.object({
-      enabled: z.boolean().optional(),
-      merchantSlug: z.string().optional(),
-      locationSlug: z.string().optional(),
-      label: z.string().optional()
-    }).optional(),
-    booking_link: z.preprocess(emptyStrToUndef, z.string().url().optional())
-  })
+      ).optional(),
+
+      body: optionalText
+    })
 });
+
+
+// const artists = defineCollection({
+//   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
+//   schema: ({ image }) => z.object({
+//     title: z.string(),
+//     order: z.number().default(999),    // ← add this
+//     artistPagePhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
+//     runwayPhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
+//     socials: socialsSchema,
+//     images: z
+//       .array(
+//         z.object({
+//           src: z.string(),
+//           alt: z.string().optional()
+//         })
+//       )
+//       .optional(),
+//     // NEW: Square Appointments embed
+//     square: z.object({
+//       enabled: z.boolean().optional(),
+//       merchantSlug: z.string().optional(),
+//       locationSlug: z.string().optional(),
+//       label: z.string().optional()
+//     }).optional(),
+//     booking_link: z.preprocess(emptyStrToUndef, z.string().url().optional())
+//   })
+// });
+
+// ----------------------
+//  Aftercare
+// ----------------------
 
 const aftercare = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/aftercare" }),
@@ -167,6 +286,10 @@ const aftercare = defineCollection({
     // Body is the markdown content; no schema needed for it.
   }),
 });
+
+// ----------------------
+//  FAQ
+// ----------------------
 
 // Data collection for 1-file-per-FAQ item
 const faqs = defineCollection({
@@ -178,6 +301,20 @@ const faqs = defineCollection({
   }),
 });
 
+// ----------------------
+//  Site Info
+// ----------------------
+
+const siteInfoSocialsSchema = z
+  .object(
+    Object.fromEntries(socialTypes.map((k) => [k, optUrl])) as Record<
+      (typeof socialTypes)[number],
+      typeof optUrl
+    >
+  )
+  .partial()
+  .default({});
+
 // src/content.config.ts
 const siteInfo = defineCollection({
   loader: glob({ pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo" }),
@@ -187,7 +324,7 @@ const siteInfo = defineCollection({
     phone: z.preprocess(emptyStrToUndef, z.string().optional()),
     email: z.preprocess(emptyStrToUndef, z.string().optional()),
     hours: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-    socials: socialsSchema,
+    socials: siteInfoSocialsSchema,
   }),
 });
 
@@ -201,4 +338,4 @@ const imagetest = defineCollection({
     }),
 });
 
-export const collections = { artists, faqs, siteInfo, aftercare, events, imagetest }; // & home
+export const collections = { people, faqs, siteInfo, aftercare, events, imagetest }; // & home

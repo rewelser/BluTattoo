@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
+import { loadArtistsActiveNonguest } from "../../scripts/people.ts";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
@@ -13,13 +14,9 @@ const isAsset = (v: unknown) =>
 
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
-  let artists = (await getCollection(
-    "artists",
-  )) as CollectionEntry<"artists">[];
-  artists = artists.sort(
-    (a, b) =>
-      a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
-  );
+  let artists = await loadArtistsActiveNonguest();
+  // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
+
   return artists.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
@@ -32,7 +29,17 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const thumb = (src: string, w: number) =>
-  src.replace("/uploads/artists/", `/uploads/_thumbs/artists/${w}/`);
+  src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
+
+const square = entry.data.contact_socials_booking?.platforms?.find(
+  (p) => p.type === "square",
+);
+
+const socials = entry.data.contact_socials_booking?.socials;
+
+const moduleInfo = square?.link_or_module_info.find(
+  (item) => item.type === "module_info",
+);
 ---
 
 <script>
@@ -42,20 +49,20 @@ const thumb = (src: string, w: number) =>
 </script>
 
 <Layout
-  title={`BluTattoo Studio — ${entry.data.title}`}
-  preloadImage={entry.data.artistPagePhoto as string}
+  title={`BluTattoo Studio — ${entry.data.name}`}
+  preloadImage={entry.data.page_photo as string}
 >
   <article class="space-y-6">
     <header class="text-orange-100">
       <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
         <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
           {
-            entry.data.artistPagePhoto && (
+            entry.data.page_photo && (
               <div class="portrait fade-in-left-and-glow-anim">
                 <div>
                   <img
-                    src={entry.data.artistPagePhoto as string}
-                    alt={`Portrait of ${entry.data.title}`}
+                    src={entry.data.page_photo as string}
+                    alt={`Portrait of ${entry.data.name}`}
                     width="400"
                     height="400"
                     decoding="async"
@@ -115,13 +122,26 @@ const thumb = (src: string, w: number) =>
           </style>
           <div id="artist-bio" class="flex items-center p-5 js-fade-up">
             <div>
-              <h1 class="text-3xl font-bold">{entry.data.title}</h1>
+              <h1 class="text-3xl font-bold">{entry.data.name}</h1>
 
-              {
-                entry.data.socials && (
+              <!-- {
+                entry.data.contact_socials_booking?.socials && (
                   <p>
                     <SocialRow
-                      links={entry.data.socials}
+                      links={entry.data.contact_socials_booking.socials}
+                      class="my-3"
+                      anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                    />
+                  </p>
+                )
+              } -->
+
+              {
+                entry.data.contact_socials_booking?.socials && (
+                  <p>
+                    fish
+                    <SocialRow
+                      links={entry.data.contact_socials_booking.socials}
                       class="my-3"
                       anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
                     />
@@ -251,33 +271,15 @@ const thumb = (src: string, w: number) =>
 
     {/* Preferred: Square embed if present */}
     {
-      entry.data.square?.enabled &&
-        entry.data.square?.merchantSlug &&
-        entry.data.square?.locationSlug && (
-          <div class="p-5 mx-auto max-w-6xl">
-            <SquareAppointments
-              merchantSlug={entry.data.square.merchantSlug}
-              locationSlug={entry.data.square.locationSlug}
-              label={entry.data.square.label}
-              className="mt-2"
-            />
-          </div>
-        )
-    }
-
-    {/* Fallback: a plain external booking link */}
-    {
-      !entry.data.square && entry.data.booking_link && (
-        <p>
-          <a
-            href={entry.data.booking_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-          >
-            Book with {entry.data.title}
-          </a>
-        </p>
+      square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (
+        <div class="p-5 mx-auto max-w-6xl">
+          <SquareAppointments
+            merchantSlug={moduleInfo.merchantId}
+            locationSlug={moduleInfo.locationId}
+            label={moduleInfo.label}
+            className="mt-2"
+          />
+        </div>
       )
     }
   </article>
