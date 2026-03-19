@@ -35,7 +35,9 @@ const square = entry.data.contact_socials_booking?.platforms?.find(
   (p) => p.type === "square",
 );
 
-const socials = entry.data.contact_socials_booking?.socials;
+const socials = entry.data.contact_socials_booking?.socials?.find(
+  (item) => item.type === "instagram",
+);
 
 const moduleInfo = square?.link_or_module_info.find(
   (item) => item.type === "module_info",
@@ -121,7 +123,7 @@ const moduleInfo = square?.link_or_module_info.find(
             }
           </style>
           <div id="artist-bio" class="flex items-center p-5 js-fade-up">
-            <div>
+            <div class="poopy">
               <h1 class="text-3xl font-bold">{entry.data.name}</h1>
 
               <!-- {
@@ -139,7 +141,6 @@ const moduleInfo = square?.link_or_module_info.find(
               {
                 entry.data.contact_socials_booking?.socials && (
                   <p>
-                    fish
                     <SocialRow
                       links={entry.data.contact_socials_booking.socials}
                       class="my-3"

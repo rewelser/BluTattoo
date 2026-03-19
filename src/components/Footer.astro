@@ -1,9 +1,11 @@
 ---
 import SocialRow from "../components/SocialRow.astro";
+import { siteInfoSocialsToItems } from "../scripts/socials";
 
 const { defaults, site } = Astro.props;
 const year = new Date().getFullYear();
 const siteName = site?.data?.siteName ?? defaults.siteName;
+const links = siteInfoSocialsToItems(site.data.socials);
 ---
 
 <footer class="bg-black">
@@ -13,7 +15,7 @@ const siteName = site?.data?.siteName ?? defaults.siteName;
     {
       site?.data?.socials && (
         <SocialRow
-          links={site.data.socials}
+          links={links}
           class="justify-center"
           anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
         />
@@ -22,7 +24,8 @@ const siteName = site?.data?.siteName ?? defaults.siteName;
 
     <div class="text-sm text-orange-100/70 text-center">
       <span class="font-semibold text-orange-100">{siteName}</span>
-      <span class="block sm:inline sm:ml-2">© {year}. All rights reserved.</span>
+      <span class="block sm:inline sm:ml-2">© {year}. All rights reserved.</span
+      >
     </div>
 
     <!-- <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/70">

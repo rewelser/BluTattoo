@@ -1,5 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
+// import {socialTypes, socialsSchema} from 
+import { socialTypes, socialsSchema, siteInfoSocialsSchema } from "./scripts/socials";
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
@@ -16,11 +18,6 @@ const emptyArrToUndef = (v: unknown) =>
 
 const optionalString = z.preprocess(emptyStrToUndef, z.string().optional());
 const optionalText = z.preprocess(emptyStrToUndef, z.string().optional());
-const optUrl = z.preprocess(emptyStrToUndef, z.string().trim().url().optional());
-
-
-
-
 
 // Commented out for now; home will ultimately be used for modifying splash content and that's it 
 // const home = defineCollection({
@@ -164,27 +161,6 @@ const contactSchema = z.array(
   ])
 ).optional();
 
-const socialTypes = [
-  'instagram',
-  'facebook',
-  'tiktok',
-  'x',
-  'threads',
-  'tumblr',
-  'youtube',
-  'pinterest'
-] as const;
-
-const socialsSchema = z.array(
-  z.object({
-    type: z.enum(socialTypes),
-    link: z.string().url(),
-    enabled: z.boolean().default(true),
-    bookable: z.boolean().default(false),
-    preferred: z.boolean().optional()
-  })
-).optional();
-
 const squareLinkSchema = z.object({
   type: z.literal('square_link'),
   enabled: z.boolean().default(true),
@@ -247,34 +223,6 @@ const people = defineCollection({
     })
 });
 
-
-// const artists = defineCollection({
-//   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: "./src/content/artists" }),
-//   schema: ({ image }) => z.object({
-//     title: z.string(),
-//     order: z.number().default(999),    // ← add this
-//     artistPagePhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
-//     runwayPhoto: z.preprocess(emptyStrToUndef, z.string().optional()),
-//     socials: socialsSchema,
-//     images: z
-//       .array(
-//         z.object({
-//           src: z.string(),
-//           alt: z.string().optional()
-//         })
-//       )
-//       .optional(),
-//     // NEW: Square Appointments embed
-//     square: z.object({
-//       enabled: z.boolean().optional(),
-//       merchantSlug: z.string().optional(),
-//       locationSlug: z.string().optional(),
-//       label: z.string().optional()
-//     }).optional(),
-//     booking_link: z.preprocess(emptyStrToUndef, z.string().url().optional())
-//   })
-// });
-
 // ----------------------
 //  Aftercare
 // ----------------------
@@ -304,16 +252,6 @@ const faqs = defineCollection({
 // ----------------------
 //  Site Info
 // ----------------------
-
-const siteInfoSocialsSchema = z
-  .object(
-    Object.fromEntries(socialTypes.map((k) => [k, optUrl])) as Record<
-      (typeof socialTypes)[number],
-      typeof optUrl
-    >
-  )
-  .partial()
-  .default({});
 
 // src/content.config.ts
 const siteInfo = defineCollection({

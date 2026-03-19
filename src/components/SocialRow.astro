@@ -1,38 +1,47 @@
 ---
-import { socialDefs, type SocialLinks } from "./graphics/socialmedia/registry";
+import { socialIcons } from "./graphics/socialmedia/registry";
+import type { SocialItems } from "../scripts/socials";
+import { socialTypes } from "../scripts/socials";
 
 const {
-    links = {},
+    links = [],
     class: className = "",
     anchorClass = "",
     iconClass = "w-6 h-6 fill-current",
 } = Astro.props as {
-    links?: SocialLinks;
+    links?: SocialItems;
     class?: string;
     anchorClass?: string;
     iconClass?: string;
 };
 
 const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
-// console.log("socialDefs",socialDefs);
-console.log("links",links);
 ---
 
 <div class={`flex items-center gap-3 ${className}`}>
-    
     {
-        socialDefs.map(({ key, label, Icon }) => {
-            const href = links[key];
-            return href ? (
-                <a
-                    href={href}
-                    aria-label={label}
-                    {...aAttrs}
-                    class={`flex items-center ${anchorClass}`}
-                >
-                    <Icon class={iconClass} />
-                </a>
-            ) : null;
+        socialTypes.map((key) => {
+            const item = links.find(
+                (item) => item.type === key && item.enabled,
+            );
+            const href = item?.link;
+
+            const entry = socialIcons[key];
+            if (!entry) return null;
+
+            const { label, Icon } = entry;
+            return (
+                item && (
+                    <a
+                        href={href}
+                        aria-label={label}
+                        {...aAttrs}
+                        class={`flex items-center ${anchorClass}`}
+                    >
+                        <Icon class={iconClass} />
+                    </a>
+                )
+            );
         })
     }
 </div>
