@@ -3,12 +3,27 @@ import { getCollection, getEntry } from "astro:content";
 import { Image } from "astro:assets";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 import "../styles/global.css";
+import {
+    loadArtistsActiveNonguest,
+    loadArtistsActiveNonguestNormalized,
+} from "../scripts/people";
 
-const starSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
-  <polygon fill="white" stroke="#fffff" points="328.73 623.96 1.54 386.25 405.96 386.25 530.94 1.62 655.91 386.25 1060.34 386.25 733.15 623.96 858.12 1008.6 530.94 770.88 203.75 1008.6 328.73 623.96"/>
-</svg>
-`;
+/**
+ * ARTISTS
+ */
+const default_profile_image = "/uploads/defaults/default-booking-profile.jpg";
+
+// Load & order artists todo: see if we can't refactor this into types.ts somehow
+let people_unnormalized = await loadArtistsActiveNonguest();
+// let people = await loadArtistsActiveNonguestNormalized();
+let people = await loadArtistsActiveNonguest();
+// const bookingOptions = artists2.map;
+// const boof = artists2.map((entry) => {
+//     label: entry.data.contact_socials_booking?.booking_note;
+// });
+// const moduleInfo = square?.link_or_module_info.find(
+//   (item) => item.type === "module_info",
+// );
 
 const sickleSvg = `
 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
@@ -16,340 +31,121 @@ const sickleSvg = `
 </svg>
 `;
 
-const starDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(starSvg)}`;
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
 
-const entries = await getCollection("imagetest");
-
-// just grab the first one for testing
-const entry = entries[0];
-
-const artists = [
-    {
-        slug: "maya-vale1",
-        name: "Maya Vale1",
-        specialty: "Blackwork / Ornamental",
-        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
-        bookingOptions: [
-            {
-                type: "link",
-                label: "Instagram",
-                href: "https://instagram.com/",
-                description:
-                    "Browse healed work, flash drops, and recent projects.",
-            },
-            {
-                type: "link",
-                label: "Booking Form",
-                href: "https://example.com/",
-                description:
-                    "Submit your concept, placement ideas, and size details.",
-            },
-            {
-                type: "expandable",
-                label: "Square Booking Widget",
-                summary: "Open embedded booking details",
-                content:
-                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
-            },
-        ],
-    },
-    {
-        slug: "maya-vale2",
-        name: "Maya Vale2",
-        specialty: "Blackwork / Ornamental",
-        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
-        bookingOptions: [
-            {
-                type: "link",
-                label: "Instagram",
-                href: "https://instagram.com/",
-                description:
-                    "Browse healed work, flash drops, and recent projects.",
-            },
-            {
-                type: "link",
-                label: "Booking Form",
-                href: "https://example.com/",
-                description:
-                    "Submit your concept, placement ideas, and size details.",
-            },
-            {
-                type: "expandable",
-                label: "Square Booking Widget",
-                summary: "Open embedded booking details",
-                content:
-                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
-            },
-        ],
-    },
-    {
-        slug: "maya-vale3",
-        name: "Maya Vale3",
-        specialty: "Blackwork / Ornamental",
-        bio: "Maya focuses on high-contrast blackwork, ornamental compositions, and delicate filigree-inspired pieces.",
-        bookingOptions: [
-            {
-                type: "link",
-                label: "Instagram",
-                href: "https://instagram.com/",
-                description:
-                    "Browse healed work, flash drops, and recent projects.",
-            },
-            {
-                type: "link",
-                label: "Booking Form",
-                href: "https://example.com/",
-                description:
-                    "Submit your concept, placement ideas, and size details.",
-            },
-            {
-                type: "expandable",
-                label: "Square Booking Widget",
-                summary: "Open embedded booking details",
-                content:
-                    "This is placeholder content for a future Square booking module or other embedded scheduling tool.",
-            },
-        ],
-    },
-    {
-        slug: "nico-ash",
-        name: "Nico Ash",
-        specialty: "Illustrative / Neo-traditional",
-        bio: "Nico specializes in bold illustrative designs, flora, fauna, and large-format neo-traditional compositions.",
-        bookingOptions: [
-            {
-                type: "link",
-                label: "Portfolio",
-                href: "https://example.com/",
-                description:
-                    "Selected projects, sleeve progressions, and large-scale work.",
-            },
-            {
-                type: "expandable",
-                label: "Booking Policies",
-                summary: "Open deposit and prep information",
-                content:
-                    "Dummy policy text: deposits are non-refundable, design discussions happen after approval, and large projects may require consultations.",
-            },
-            {
-                type: "expandable",
-                label: "Guest Spot Dates",
-                summary: "Open available date ranges",
-                content:
-                    "Dummy guest-spot availability goes here. You could later replace this with CMS-driven availability or an embedded widget.",
-            },
-        ],
-    },
-    {
-        slug: "iris-crow",
-        name: "Iris Crow",
-        specialty: "Fine line / Lettering",
-        bio: "Iris handles fine line work, subtle ornamental details, script, and minimalist placement-driven designs.",
-        bookingOptions: [
-            {
-                type: "link",
-                label: "Instagram",
-                href: "https://instagram.com/",
-                description:
-                    "Recent healed tattoos, lettering studies, and flash announcements.",
-            },
-            {
-                type: "expandable",
-                label: "FAQ",
-                summary: "Open common questions",
-                content:
-                    "Dummy FAQ content: preferred placements, aftercare expectations, lead times, and consultation notes.",
-            },
-        ],
-    },
-];
+// {
+const SOCIAL_LABELS = {
+    instagram: "Instagram",
+    facebook: "Facebook",
+    tiktok: "TikTok",
+    x: "X",
+    threads: "Threads",
+    tumblr: "Tumblr",
+    youtube: "YouTube",
+    pinterest: "Pinterest",
+};
+function getContactHref(item) {
+    switch (item.type) {
+        case "phone":
+            return `tel:${item.number.replace(/\D/g, "")}`;
+        case "email":
+            return `mailto:${item.email_address}`;
+        case "website":
+            return item.link;
+        default:
+            return "#";
+    }
+}
+function getContactLabel(item) {
+    switch (item.type) {
+        case "phone":
+            return item.number;
+        case "email":
+            return item.email_address;
+        case "website":
+            return item.link;
+        default:
+            return "";
+    }
+}
+function getContactIconName(item) {
+    switch (item.type) {
+        case "phone":
+            return "phone";
+        case "email":
+            return "email";
+        case "website":
+            return "website";
+        default:
+            return "link";
+    }
+}
+function getSocialLabel(type) {
+    return SOCIAL_LABELS[type] ?? type;
+}
+function buildBookingItems(person) {
+    const csb = person.data.contact_socials_booking;
+    if (!csb) return [];
+    const items = [];
+    const contactItems = (csb.contact ?? [])
+        .filter((item) => item.enabled !== false)
+        .map((item) => ({
+            kind: "link",
+            group: "contact",
+            icon: getContactIconName(item),
+            label: getContactLabel(item),
+            href: getContactHref(item),
+            notes: item.notes,
+            preferred: item.preferred ?? false,
+        }));
+    const socialItems = (csb.socials ?? [])
+        .filter((item) => item.enabled !== false)
+        .map((item) => ({
+            kind: "link",
+            group: "social",
+            icon: item.type,
+            label: getSocialLabel(item.type),
+            href: item.link,
+            notes: undefined,
+            preferred: item.preferred ?? false,
+            bookable: item.bookable ?? false,
+        }));
+    const platformItems = (csb.platforms ?? [])
+        .filter((platform) => platform.enabled !== false)
+        .flatMap((platform) => {
+            if (platform.type !== "square") return [];
+            return platform.link_or_module_info
+                .filter((entry) => entry.enabled !== false)
+                .map((entry) => {
+                    if (entry.type === "square_link") {
+                        return {
+                            kind: "link",
+                            group: "platform",
+                            icon: "square",
+                            label: "Book on Square",
+                            href: entry.url,
+                            notes: undefined,
+                            preferred: false,
+                        };
+                    }
+                    return {
+                        kind: "panel",
+                        group: "platform",
+                        icon: "square",
+                        label: entry.label || "Square booking module",
+                        merchantId: entry.merchantId,
+                        locationId: entry.locationId,
+                    };
+                });
+        });
+    items.push(...contactItems, ...socialItems, ...platformItems);
+    // Optional: preferred items first, while preserving relative order otherwise
+    return items.sort(
+        (a, b) => Number(b.preferred ?? false) - Number(a.preferred ?? false),
+    );
+}
+// }
 ---
-
-<style>
-    body {
-        background: black;
-    }
-    .artist-tree {
-        width: min(100%, 48rem);
-        margin-inline: auto;
-        padding: 2rem 1rem 4rem;
-        /* background: linear-gradient(
-            to bottom,
-            rgba(136, 182, 255, 0.15),
-            rgba(136, 199, 255, 0.75)
-        ); */
-        /* background: linear-gradient(
-            to bottom,
-            thistle,
-            cadetblue, red
-        ); */
-    }
-
-    .artist-tree__list,
-    .artist-tree__sublist {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .artist-tree__item,
-    .artist-tree__subitem {
-        position: relative;
-        border: 1px solid rgb(255 255 255 / 0.14);
-        border: 2px solid antiquewhite;
-        box-shadow: 6px 4px 0px antiquewhite;
-        border: 2px solid black;
-        box-shadow: 3px 4px 0px black;
-        background: rgb(255 255 255 / 0.04);
-        background: thistle;
-        background: whitesmoke;
-        background: floralwhite;
-        border-radius: 50px;
-    }
-
-    .profile-image {
-        height: 4rem;
-        width: 4rem;
-        box-shadow: 7px 4px 0px aqua;
-        border: 2px solid aqua;
-        box-shadow: 6px 4px 0px aqua;
-        /* box-shadow: (1px 1px 1px); */
-        border-radius: 50px;
-        overflow: hidden;
-    }
-
-    .artist-tree__item + .artist-tree__item {
-        margin-top: 0.75rem;
-    }
-
-    .artist-tree__subitem + .artist-tree__subitem {
-        margin-top: 0.5rem;
-    }
-
-    .artist-tree__toggle,
-    .artist-tree__subtoggle {
-        min-height: 3rem;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        text-align: left;
-        background: transparent;
-        border: 0;
-        color: inherit;
-        cursor: pointer;
-    }
-
-    .artist-tree__toggle {
-        /* padding: 1rem 1rem 1rem 1.125rem; */
-        padding: 0.5rem;
-    }
-
-    .artist-tree__subtoggle {
-        padding: 0.875rem 1rem;
-    }
-
-    .artist-tree__headline {
-        display: grid;
-        gap: 0.2rem;
-    }
-
-    .artist-tree__name {
-        font-size: 1.05rem;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-
-    .artist-tree__meta {
-        font-size: 0.9rem;
-        opacity: 0.75;
-    }
-
-    .artist-tree__chevron {
-        width: 1rem;
-        height: 1rem;
-        flex: 0 0 auto;
-        transition: transform 220ms ease;
-    }
-
-    .artist-tree__toggle[aria-expanded="true"] .artist-tree__chevron,
-    .artist-tree__subtoggle[aria-expanded="true"] .artist-tree__chevron {
-        transform: rotate(180deg);
-    }
-
-    .artist-tree__panel,
-    .artist-tree__subpanel {
-        overflow: hidden;
-        height: 0;
-        transition: height 260ms ease;
-        will-change: height;
-    }
-
-    .artist-tree__panel-inner {
-        padding: 0 1rem 1rem 1rem;
-    }
-
-    .artist-tree__bio {
-        margin: 0 0 1rem;
-        opacity: 0.88;
-        line-height: 1.55;
-    }
-
-    .artist-tree__sublist {
-        display: grid;
-        gap: 0.5rem;
-    }
-
-    .artist-tree__linkblock {
-        padding: 0.875rem 1rem;
-        display: grid;
-        gap: 0.35rem;
-    }
-
-    .artist-tree__link {
-        font-weight: 600;
-        text-decoration: underline;
-        text-underline-offset: 0.14em;
-    }
-
-    .artist-tree__subdesc,
-    .artist-tree__subcontent {
-        opacity: 0.8;
-        line-height: 1.5;
-        font-size: 0.95rem;
-    }
-
-    .artist-tree__widget-shell {
-        padding: 0.875rem 1rem 1rem;
-        border-top: 1px solid rgb(255 255 255 / 0.1);
-    }
-
-    .artist-tree__widget-placeholder {
-        border: 1px dashed rgb(255 255 255 / 0.2);
-        min-height: 8rem;
-        display: grid;
-        place-items: center;
-        padding: 1rem;
-        text-align: center;
-        opacity: 0.75;
-    }
-
-    .artist-tree a:focus-visible,
-    .artist-tree button:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .artist-tree__panel,
-        .artist-tree__subpanel,
-        .artist-tree__chevron {
-            transition: none;
-        }
-    }
-</style>
 
 <html lang="en">
     <head>
@@ -374,246 +170,495 @@ const artists = [
             >
             </div>
             <!-- </div> -->
+            <!-- <ul class="relative">
+                {
+                    artists2.map((artist) => (
+                        <li>
+                            <h2>{artist.data.name}</h2>
+                            <p>ID: {artist.id}</p>
+                            <p>Role: {artist.data.primary_role}</p>
+                            <p>Active: {artist.data.active ? "yes" : "no"}</p>
+                            <p>Guest: {artist.data.guest ? "yes" : "no"}</p>
+                            <p>Order: {artist.data.order}</p>
+                        </li>
+                    ))
+                }
+            </ul> -->
+            <header>
+                <img src=""/>
+            </header>
 
-            <section class="artist-tree" aria-labelledby="artist-tree-title">
-                <h1 id="artist-tree-title" class="sr-only">Artists</h1>
-
-                <ul class="artist-tree__list" data-accordion-root>
+            <section
+                class="mx-auto w-full max-w-3xl px-4 pt-8 pb-16"
+                aria-labelledby="people-tree-title"
+            >
+                <h1 id="people-tree-title" class="sr-only">People</h1>
+                <ul class="m-0 list-none p-0" data-accordion-root>
                     {
-                        artists.map((artist, artistIndex) => {
-                            const artistBtnId = `artist-${artistIndex}-toggle`;
-                            const artistPanelId = `artist-${artistIndex}-panel`;
+                        people.map((person, personIndex) => {
+                            const personBtnId = `person-${personIndex}-toggle`;
+                            const personPanelId = `person-${personIndex}-panel`;
+
+                            const csb = person.data.contact_socials_booking;
+                            const bookingItems = buildBookingItems(person);
+                            const profilePicture =
+                                csb?.booking_profile_picture ??
+                                default_profile_image;
+                            const contacts = csb?.contact?.filter(
+                                (item) => item.enabled,
+                            );
+                            const socials = csb?.socials?.filter(
+                                (item) => item.enabled && item.bookable,
+                            );
+                            const platforms = csb?.platforms?.filter(
+                                (item) => item.enabled,
+                            );
+                            const hasBookingItems =
+                                (contacts?.length ?? 0) +
+                                    (socials?.length ?? 0) +
+                                    (platforms?.length ?? 0) >
+                                0;
+                            if (person.data.name === "Greg") {
+                                console.log("hasBookingItems", hasBookingItems);
+                                console.log("socials", socials);
+                            }
 
                             return (
-                                <li class="artist-tree__item">
+                                csb && (
+                                    <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] not-first:mt-3">
+                                        <button
+                                            id={personBtnId}
+                                            class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
+                                            type="button"
+                                            aria-expanded="false"
+                                            aria-controls={personPanelId}
+                                            data-accordion-toggle
+                                            data-accordion-level="root"
+                                        >
+                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-aqua shadow-[6px_4px_0px_aqua]">
+                                                <img
+                                                    src={profilePicture}
+                                                    alt={`Booking profile image for ${person.data.name}`}
+                                                    decoding="async"
+                                                    loading="lazy"
+                                                    class="h-full w-full object-cover"
+                                                />
+                                            </div>
+
+                                            <span class="grid gap-[0.2rem]">
+                                                <span class="text-[1.05rem] font-bold leading-[1.2]">
+                                                    {person.data.name}
+                                                </span>
+                                                <span class="text-[0.9rem] leading-[1.2] opacity-75">
+                                                    {person.data
+                                                        .primary_role ===
+                                                    "tattoo_artist"
+                                                        ? "Tattoo Artist"
+                                                        : "Piercer"}
+                                                </span>
+                                            </span>
+
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                                class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                            >
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M7 10l5 5 5-5H7z"
+                                                />
+                                            </svg>
+                                        </button>
+
+                                        <div
+                                            id={personPanelId}
+                                            class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                            aria-labelledby={personBtnId}
+                                            data-accordion-panel
+                                            inert
+                                        >
+                                            <div class="p-4">
+                                                {csb.booking_note && (
+                                                    <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
+                                                        {csb.booking_note}
+                                                    </p>
+                                                )}
+
+                                                {hasBookingItems && (
+                                                    <ul class="m-0 grid list-none gap-2 p-0">
+                                                        {/* todo: this is chat code that relies on buildBookingItems -- replace */}
+                                                        {bookingItems.map(
+                                                            (
+                                                                item,
+                                                                itemIndex,
+                                                            ) => {
+                                                                if (
+                                                                    item.kind ===
+                                                                    "link"
+                                                                ) {
+                                                                    return (
+                                                                        <div class="shimmer-bookable relative">
+                                                                            <li class="relative z-10 rounded-[50px] border-3 border-transparent bg-[floralwhite] not-first:mt-2">
+                                                                                {/* <div class="absolute inset-0 -z-10 rounded-[100px] border-1 border-amber-300 first:animate-ping-faint"/> */}
+                                                                                <div class="grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1 px-4 py-[0.875rem]">
+                                                                                    <div class="mt-1">
+                                                                                        <span
+                                                                                            aria-hidden="true"
+                                                                                            class="block h-5 w-5"
+                                                                                        >
+                                                                                            {false
+                                                                                                ? "𝕏"
+                                                                                                : "•"}
+                                                                                        </span>
+                                                                                    </div>
+
+                                                                                    <div class="grid gap-[0.35rem]">
+                                                                                        <a
+                                                                                            class="font-semibold underline underline-offset-[0.14em] break-words"
+                                                                                            href={
+                                                                                                item.href
+                                                                                            }
+                                                                                            target={
+                                                                                                item.href.startsWith(
+                                                                                                    "http",
+                                                                                                )
+                                                                                                    ? "_blank"
+                                                                                                    : undefined
+                                                                                            }
+                                                                                            rel={
+                                                                                                item.href.startsWith(
+                                                                                                    "http",
+                                                                                                )
+                                                                                                    ? "noreferrer noopener"
+                                                                                                    : undefined
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                item.label
+                                                                                            }
+                                                                                        </a>
+
+                                                                                        {item.notes && (
+                                                                                            <div class="text-[0.95rem] leading-[1.5] opacity-80">
+                                                                                                {
+                                                                                                    item.notes
+                                                                                                }
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                            <div class="absolute top-[1.5px] left-[2px] h-full w-full bg-[#c6e2ff] rounded-full animate-ping-faint" />
+                                                                            <div class="shimmer-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]" />
+                                                                        </div>
+                                                                    );
+                                                                }
+
+                                                                const subBtnId = `person-${personIndex}-sub-${itemIndex}-toggle`;
+                                                                const subPanelId = `person-${personIndex}-sub-${itemIndex}-panel`;
+
+                                                                return (
+                                                                    <li class="relative rounded-[50px] bg-[floralwhite] shadow-[3px_4px_0px_black] not-first:mt-2">
+                                                                        <button
+                                                                            id={
+                                                                                subBtnId
+                                                                            }
+                                                                            class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
+                                                                            type="button"
+                                                                            aria-expanded="false"
+                                                                            aria-controls={
+                                                                                subPanelId
+                                                                            }
+                                                                            data-accordion-toggle
+                                                                            data-accordion-level="nested"
+                                                                        >
+                                                                            <span
+                                                                                aria-hidden="true"
+                                                                                class="block h-5 w-5"
+                                                                            >
+                                                                                ⬛
+                                                                            </span>
+
+                                                                            <span>
+                                                                                <strong>
+                                                                                    {
+                                                                                        item.label
+                                                                                    }
+                                                                                </strong>
+                                                                            </span>
+
+                                                                            <svg
+                                                                                viewBox="0 0 24 24"
+                                                                                aria-hidden="true"
+                                                                                class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                                            >
+                                                                                <path
+                                                                                    fill="currentColor"
+                                                                                    d="M7 10l5 5 5-5H7z"
+                                                                                />
+                                                                            </svg>
+                                                                        </button>
+
+                                                                        <div
+                                                                            id={
+                                                                                subPanelId
+                                                                            }
+                                                                            class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                                                            aria-labelledby={
+                                                                                subBtnId
+                                                                            }
+                                                                            data-accordion-panel
+                                                                            inert
+                                                                        >
+                                                                            <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
+                                                                                <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
+                                                                                    Square
+                                                                                    module
+                                                                                    placeholder
+                                                                                    <br />
+                                                                                    merchantId:{" "}
+                                                                                    {
+                                                                                        item.merchantId
+                                                                                    }
+                                                                                    <br />
+                                                                                    locationId:{" "}
+                                                                                    {
+                                                                                        item.locationId
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                );
+                                                            },
+                                                        )}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            );
+                        })
+                    }
+                    <!-- {
+                        people.map(({ entry, booking }, personIndex) => {
+                            const personBtnId = `person-${personIndex}-toggle`;
+                            const personPanelId = `person-${personIndex}-panel`;
+                            console.log("entry", entry);
+
+                            return (
+                                <li>
                                     <button
-                                        id={artistBtnId}
-                                        class="artist-tree__toggle"
-                                        type="button"
+                                        id={personBtnId}
+                                        aria-controls={personPanelId}
                                         aria-expanded="false"
-                                        aria-controls={artistPanelId}
                                         data-accordion-toggle
                                         data-accordion-level="root"
                                     >
-                                        <div class="profile-image">
-                                            {/* <Image src={entry.data.src} alt={entry.data.alt} /> */}
-                                            {/* <img
-                                            source={entry.data.src}
-                                            ></img> */}
-                                            <img
-                                                src={
-                                                    "/uploads/misc_images/hero-poster-red.jpg"
-                                                }
-                                                alt={`Portrait of ${entry.data.title}`}
-                                                decoding="async"
-                                                loading="eager"
-                                                fetchpriority="high"
-                                                class="h-full w-full object-cover"
-                                            />
-                                        </div>
-                                        <span class="artist-tree__headline">
-                                            <span class="artist-tree__name">
-                                                {artist.name}
-                                            </span>
-                                            <span class="artist-tree__meta">
-                                                {artist.specialty}
-                                            </span>
-                                        </span>
+                                        <img
+                                            src={booking.profileImage}
+                                            alt={`Booking profile image for ${booking.name}`}
+                                        />
 
-                                        <svg
-                                            viewBox="0 0 24 24"
-                                            aria-hidden="true"
-                                            class="artist-tree__chevron"
-                                        >
-                                            <path
-                                                fill="currentColor"
-                                                d="M7 10l5 5 5-5H7z"
-                                            />
-                                        </svg>
+                                        <span>{booking.name}</span>
                                     </button>
 
                                     <div
-                                        id={artistPanelId}
-                                        class="artist-tree__panel"
-                                        aria-labelledby={artistBtnId}
+                                        id={personPanelId}
+                                        aria-labelledby={personBtnId}
                                         data-accordion-panel
                                         inert
                                     >
-                                        <div class="artist-tree__panel-inner">
-                                            <p class="artist-tree__bio">
-                                                {artist.bio}
-                                            </p>
+                                        {booking.bookingNote && (
+                                            <p>{booking.bookingNote}</p>
+                                        )}
 
-                                            <ul class="artist-tree__sublist">
-                                                {artist.bookingOptions.map(
-                                                    (option, optionIndex) => {
-                                                        if (
-                                                            option.type ===
-                                                            "link"
-                                                        ) {
-                                                            return (
-                                                                <li class="artist-tree__subitem">
-                                                                    <div class="artist-tree__linkblock">
-                                                                        <a
-                                                                            class="artist-tree__link"
-                                                                            href={
-                                                                                option.href
-                                                                            }
-                                                                            target="_blank"
-                                                                            rel="noreferrer noopener"
-                                                                        >
-                                                                            {
-                                                                                option.label
-                                                                            }
-                                                                        </a>
-                                                                        <div class="artist-tree__subdesc">
-                                                                            {
-                                                                                option.description
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            );
-                                                        }
-
-                                                        const subBtnId = `artist-${artistIndex}-sub-${optionIndex}-toggle`;
-                                                        const subPanelId = `artist-${artistIndex}-sub-${optionIndex}-panel`;
-
+                                        <ul>
+                                            {booking.items.map(
+                                                (item, itemIndex) => {
+                                                    if (item.kind === "link") {
                                                         return (
-                                                            <li class="artist-tree__subitem">
-                                                                <button
-                                                                    id={
-                                                                        subBtnId
+                                                            <li>
+                                                                <a
+                                                                    href={
+                                                                        item.href
                                                                     }
-                                                                    class="artist-tree__subtoggle"
-                                                                    type="button"
-                                                                    aria-expanded="false"
-                                                                    aria-controls={
-                                                                        subPanelId
-                                                                    }
-                                                                    data-accordion-toggle
-                                                                    data-accordion-level="nested"
                                                                 >
-                                                                    <span>
-                                                                        <strong>
-                                                                            {
-                                                                                option.label
-                                                                            }
-                                                                        </strong>
-                                                                        <span class="sr-only">
-                                                                            {" "}
-                                                                            —{" "}
-                                                                            {
-                                                                                option.summary
-                                                                            }
-                                                                        </span>
-                                                                    </span>
-
-                                                                    <svg
-                                                                        viewBox="0 0 24 24"
-                                                                        aria-hidden="true"
-                                                                        class="artist-tree__chevron"
-                                                                    >
-                                                                        <path
-                                                                            fill="currentColor"
-                                                                            d="M7 10l5 5 5-5H7z"
-                                                                        />
-                                                                    </svg>
-                                                                </button>
-
-                                                                <div
-                                                                    id={
-                                                                        subPanelId
-                                                                    }
-                                                                    class="artist-tree__subpanel"
-                                                                    aria-labelledby={
-                                                                        subBtnId
-                                                                    }
-                                                                    data-accordion-panel
-                                                                    inert
-                                                                >
-                                                                    <div class="artist-tree__widget-shell">
-                                                                        <div class="artist-tree__subcontent">
-                                                                            {
-                                                                                option.content
-                                                                            }
-                                                                        </div>
-
-                                                                        <div class="artist-tree__widget-placeholder">
-                                                                            Future
-                                                                            embed
-                                                                            /
-                                                                            widget
-                                                                            /
-                                                                            module
-                                                                            placeholder
-                                                                        </div>
+                                                                    {item.label}
+                                                                </a>
+                                                                {item.notes && (
+                                                                    <div>
+                                                                        {
+                                                                            item.notes
+                                                                        }
                                                                     </div>
-                                                                </div>
+                                                                )}
                                                             </li>
                                                         );
-                                                    },
-                                                )}
-                                            </ul>
-                                        </div>
+                                                    }
+
+                                                    const subBtnId = `person-${personIndex}-sub-${itemIndex}-toggle`;
+                                                    const subPanelId = `person-${personIndex}-sub-${itemIndex}-panel`;
+
+                                                    return (
+                                                        <li>
+                                                            <button
+                                                                id={subBtnId}
+                                                                aria-controls={
+                                                                    subPanelId
+                                                                }
+                                                                aria-expanded="false"
+                                                                data-accordion-toggle
+                                                                data-accordion-level="nested"
+                                                            >
+                                                                {item.label}
+                                                            </button>
+
+                                                            <div
+                                                                id={subPanelId}
+                                                                aria-labelledby={
+                                                                    subBtnId
+                                                                }
+                                                                data-accordion-panel
+                                                                inert
+                                                            >
+                                                                merchantId:{" "}
+                                                                {
+                                                                    item.merchantId
+                                                                }
+                                                                <br />
+                                                                locationId:{" "}
+                                                                {
+                                                                    item.locationId
+                                                                }
+                                                            </div>
+                                                        </li>
+                                                    );
+                                                },
+                                            )}
+                                        </ul>
                                     </div>
                                 </li>
                             );
                         })
-                    }
+                    } -->
                 </ul>
             </section>
-
-            <!-- <section class="content">
-                <h1>Star Drift Test</h1>
-
-                <section id="listings">
-                    <details class="list-item">
-                        <summary> whoa </summary>
-                        <p>details</p>
-                    </details>
-                    <details>
-                        <summary> whoa </summary>
-                        <p>details</p>
-                    </details>
-                    <details>
-                        <summary> whoa </summary>
-                        <p>details</p>
-                    </details>
-                    <details>
-                        <summary> whoa </summary>
-                        <p>details</p>
-                    </details>
-                </section>
-                <p>Testing background-position animation.</p>
-                <div style="padding: 40px">
-                    <h1>Image Test</h1>
-                    <Image src={entry.data.src} alt={entry.data.alt} />
-                </div>
-            </section> -->
+            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-saturate-3000 bg-gradient-to-b from-transparent to-indigo-600"> -->
+            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-saturate-300 bg-gradient-to-b from-transparent to-indigo-600"> -->
+            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-hue-rotate-180 backdrop-brightness-50"> -->
+             <!-- <div class="footer-divider relative h-[30vh] w-full mt-9 z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"/>
+            <footer class="footer relative h-[30vh] w-full z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"> -->
+            <div class="footer-divider relative h-[30vh] w-full mt-9 z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"/>
+            <footer class="footer relative h-[30vh] w-full z-1 bg-white/90 backdrop-saturate-500">
+            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 bg-black"> -->
+            </footer>
+            <style>
+                .footer-divider {
+                    /* mask: linear-gradient(to bottom, black, transparent); */
+                    mask: linear-gradient(
+                        to bottom,
+                        transparent 0%,
+                        black 100%
+                    );
+                }
+            </style>
         </main>
     </body>
 </html>
 
 <style>
-    :global(html, body) {
-        margin: 0;
-        width: 100%;
-        min-height: 100%;
+    [data-accordion-toggle][aria-expanded="true"] > svg {
+        transform: rotate(180deg);
     }
 
-    :global(body) {
-        /* background: #111; */
-        background: whitesmoke;
-        /* color: white; */
-        font-family: sans-serif;
+    @media (prefers-reduced-motion: reduce) {
+        [data-accordion-panel],
+        [data-accordion-toggle] > svg {
+            transition: none;
+        }
     }
+
+    /*** ----------------------- ***/
+    /*** pill shimmers & pulses  ***/
+    /*** ----------------------- ***/
+
+    @property --glow-deg {
+        syntax: "<angle>";
+        inherits: true;
+        initial-value: 0deg;
+    }
+
+    @keyframes glow {
+        100% {
+            --glow-deg: 360deg;
+        }
+    }
+
+    :root {
+        --bookable-gradient:
+            #c6e2ff, #4da3ff, #4da3ff, #416af1, #416af1, #4da3ff, #4da3ff,
+            #c6e2ff;
+    }
+
+    .shimmer-bookable li {
+        background:
+            linear-gradient(floralwhite 0 0) padding-box,
+            conic-gradient(from var(--glow-deg), var(--bookable-gradient))
+                border-box;
+        animation: glow 10s linear infinite;
+    }
+
+    .shimmer-bookable .shimmer-shadow {
+        background: conic-gradient(
+            from var(--glow-deg),
+            var(--bookable-gradient)
+        );
+        animation: glow 10s linear infinite;
+    }
+
+    .shimmer-border-box {
+        position: relative;
+        width: 300px;
+        height: 150px;
+        padding: 20px;
+        z-index: 1;
+        background-color: #1a1a1a;
+        color: white;
+        border-radius: 10px;
+        border: 3px solid transparent;
+        background:
+            linear-gradient(white 0 0) padding-box,
+            conic-gradient(
+                    from var(--glow-deg),
+                    white,
+                    #4da3ff,
+                    #4da3ff,
+                    #416af1,
+                    #416af1,
+                    #4da3ff,
+                    #4da3ff,
+                    white
+                )
+                border-box;
+        animation: glow 10s linear infinite;
+    }
+
+    /*** ----------------------- ***/
+    /*** wallpaper animations    ***/
+    /*** ----------------------- ***/
 
     .page {
         position: relative;
         min-height: 100vh;
         overflow: hidden;
         /* isolation: isolate; */
+    }
+
+    .wallpaper {
+        inset: 0;
+        z-index: 0;
     }
 
     #wallpaper-flash {
@@ -667,40 +712,11 @@ const artists = [
             rgba(238, 174, 202, 1) 0%,
             rgba(148, 187, 233, 1) 100%
         );
-    }
-
-    .wallpaper {
-        inset: 0;
-        z-index: 0;
-    }
-
-    .content {
-        position: relative;
-        z-index: 1;
-        min-height: 400vh;
-        display: grid;
-        place-items: center;
-        text-align: center;
-        padding: 2rem;
-        background: linear-gradient(
-            to bottom,
-            rgb(0 0 0 / 0.15),
-            rgb(0 0 0 / 0.35)
+        background: radial-gradient(
+            circle,
+            #D4D4D4 0%,
+            #A6A09B 100%
         );
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 30, 255, 0.15),
-            rgba(136, 166, 255, 0.55)
-        );
-        background: linear-gradient(
-            to bottom,
-            rgba(136, 182, 255, 0.15),
-            rgba(136, 199, 255, 0.75)
-        );
-    }
-
-    .list-item summary {
-        size: 36px;
     }
 
     @keyframes driftY {
@@ -708,8 +724,6 @@ const artists = [
             background-position-y: 0;
         }
         to {
-            /* background-position: 0 72px; */
-            /* background-position: 36px 72px; */
             background-position-y: 72px;
         }
     }
@@ -1002,7 +1016,7 @@ const artists = [
 
             // Nested toggles:
             // they can open/close independently,
-            // but when their parent artist closes, they will be closed first.
+            // but when their parent person closes, they will be closed first.
             await animatePanel(btn, panel, nextExpanded);
         });
 

@@ -1,7 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
-// import {socialTypes, socialsSchema} from 
-import { socialTypes, socialsSchema, siteInfoSocialsSchema } from "./scripts/socials";
+import { socialTypes } from "./scripts/socials-defs";
+import type { SocialType } from "./scripts/socials-defs";
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
@@ -18,6 +18,8 @@ const emptyArrToUndef = (v: unknown) =>
 
 const optionalString = z.preprocess(emptyStrToUndef, z.string().optional());
 const optionalText = z.preprocess(emptyStrToUndef, z.string().optional());
+const optUrl = z.string().url().optional();
+
 
 // Commented out for now; home will ultimately be used for modifying splash content and that's it 
 // const home = defineCollection({
@@ -161,6 +163,16 @@ const contactSchema = z.array(
   ])
 ).optional();
 
+export const socialItemSchema = z.object({
+  type: z.enum(socialTypes),
+  link: z.string().url(),
+  enabled: z.boolean().default(true),
+  bookable: z.boolean().default(false),
+  preferred: z.boolean().optional(),
+});
+
+export const socialsSchema = z.array(socialItemSchema).optional();
+
 const squareLinkSchema = z.object({
   type: z.literal('square_link'),
   enabled: z.boolean().default(true),
@@ -252,6 +264,39 @@ const faqs = defineCollection({
 // ----------------------
 //  Site Info
 // ----------------------
+
+// console.log("socialTypes:", socialTypes);
+
+export const siteInfoSocialsSchema = z
+  .object(
+    Object.fromEntries(socialTypes.map((k) => [k, optUrl])) as Record<
+      SocialType,
+      typeof optUrl
+    >
+  )
+  .partial()
+  .default({});
+
+//   const socialKeys = [
+//   "instagram",
+//   "tiktok",
+//   "youtube",
+//   "facebook",
+//   "x",
+//   "threads",
+//   "tumblr",
+//   "pinterest",
+// ] as const;
+
+//   const siteInfoSocialsSchema2 = z
+//   .object(
+//     Object.fromEntries(socialKeys.map((k) => [k, optUrl])) as Record<
+//       (typeof socialKeys)[number],
+//       typeof optUrl
+//     >
+//   )
+//   .partial()
+//   .default({});
 
 // src/content.config.ts
 const siteInfo = defineCollection({

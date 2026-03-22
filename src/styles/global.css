@@ -49,3 +49,28 @@
 .skeleton-promo-hero-image {
   @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
 }
+
+@theme {
+  --animate-ping-faint: ping-faint 2s infinite;
+  @keyframes ping-faint {
+    99%, 100% {
+      transform: scale(1.025, 1.4);
+      /* transform: scale(1.4, 2); */
+      /* transform: scale(1.05, 1.75); */
+      opacity: 0;
+      /* border-width: 20px; */
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  --animate-ping-faint-normal: ping-faint-new 2s infinite;
+  @keyframes ping-faint-new {
+    99%, 100% {
+      transform: scale(1.1, 1.2);
+      /* transform: scale(1.05, 1.75); */
+      opacity: 0;
+      /* border-width: 20px; */
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+}

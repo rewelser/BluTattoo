@@ -1,5 +1,5 @@
 
-import type { SocialType } from "../../../scripts/socials";
+import type { SocialType } from "../../../scripts/socials-defs";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 
 type SocialIconModule = {
