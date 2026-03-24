@@ -6,6 +6,9 @@ guest: false
 primary_role: tattoo_artist
 
 page_photo: /uploads/people/sierra_headshot.jpg
+contact_socials_booking:
+  books_open: true
+  books_closed_note: "Books are currently closed."
 
 images:
   - src: /uploads/people/sierra_headshot.jpg

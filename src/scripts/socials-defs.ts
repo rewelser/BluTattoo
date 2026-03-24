@@ -7,6 +7,9 @@ export const socialTypes = [
     "tumblr",
     "youtube",
     "pinterest",
+    "phone",
+    "email",
+    "website",
 ] as const;
 
 export type SocialType = (typeof socialTypes)[number];

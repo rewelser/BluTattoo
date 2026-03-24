@@ -8,11 +8,13 @@ primary_role: tattoo_artist
 page_photo: /uploads/people/lara_headshot.jpg
 
 contact_socials_booking:
+  books_open: true
+  books_closed_note: "Books are currently closed."
   platforms:
     - type: square
       enabled: true
       link_or_module_info:
-        - type: module_info
+        - mode: module_info
           enabled: true
           merchantId: qwerty
           locationId: QWERTY

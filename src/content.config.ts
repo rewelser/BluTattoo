@@ -157,15 +157,15 @@ const contactBuilder = (type: string, shape: z.ZodRawShape) =>
 
 const contactSchema = z.array(
   z.discriminatedUnion('type', [
-    contactBuilder('phone', { number: usPhoneSchema }),
-    contactBuilder('email', { email_address: z.string().email() }),
-    contactBuilder('website', { link: z.string().url() })
+    contactBuilder('phone', { href: usPhoneSchema }),
+    contactBuilder('email', { href: z.string().email() }),
+    contactBuilder('website', { href: z.string().url() })
   ])
 ).optional();
 
 export const socialItemSchema = z.object({
   type: z.enum(socialTypes),
-  link: z.string().url(),
+  href: z.string().url(),
   enabled: z.boolean().default(true),
   bookable: z.boolean().default(false),
   preferred: z.boolean().optional(),
@@ -174,13 +174,13 @@ export const socialItemSchema = z.object({
 export const socialsSchema = z.array(socialItemSchema).optional();
 
 const squareLinkSchema = z.object({
-  type: z.literal('square_link'),
+  mode: z.literal('platform_url'),
   enabled: z.boolean().default(true),
-  url: z.string().url()
+  href: z.string().url()
 });
 
 const squareModuleSchema = z.object({
-  type: z.literal('module_info'),
+  mode: z.literal('module_info'),
   enabled: z.boolean().default(true),
   merchantId: z.string().regex(/^[A-Za-z0-9-]+$/),
   locationId: z.string().regex(/^[A-Za-z0-9-]+$/),
@@ -192,8 +192,9 @@ const platformsSchema = z.array(
     z.object({
       type: z.literal('square'),
       enabled: z.boolean().default(true),
+      preferred: z.boolean().optional(),
       link_or_module_info: z.array(
-        z.discriminatedUnion('type', [
+        z.discriminatedUnion('mode', [
           squareLinkSchema,
           squareModuleSchema
         ])
@@ -218,6 +219,8 @@ const people = defineCollection({
 
       contact_socials_booking: z.object({
         booking_profile_picture: optionalString,
+        books_open: z.boolean().default(true),
+        books_closed_note: z.string(),
         contact: contactSchema,
         socials: socialsSchema,
         platforms: platformsSchema,

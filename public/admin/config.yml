@@ -53,6 +53,8 @@ collections:
         collapsed: false
         fields:
         - { name: booking_profile_picture, label: "Profile Picture (Booking Page)", widget: image, required: false }
+        - {name: books_open, label: "Are books open?", widget: boolean, default: true, required: true}
+        - {name: books_closed_note, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'"}
         - name: contact
           label: Contact
           widget: list
@@ -64,7 +66,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - {name: number, label: Phone Number, widget: string, required: true}
+                - {name: href, label: Phone Number, widget: string, required: true}
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - {name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc"}
@@ -75,7 +77,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - {name: email_address, label: Email Address, widget: string, required: true}
+                - {name: href, label: Email Address, widget: string, required: true}
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - {name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc"}
@@ -86,10 +88,10 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                - {name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc"}
+                - {name: notes, label: Notes, widget: text, required: false, hint: "external website"}
 
         - name: 'socials'
           label: 'Social Media Links'
@@ -102,7 +104,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -113,7 +115,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -124,7 +126,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -135,7 +137,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -146,7 +148,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -157,7 +159,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -168,7 +170,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -179,7 +181,7 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: link, label: Link, widget: string, required: true }
+                - { name: href, label: URL, widget: string, required: true }
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
@@ -196,18 +198,19 @@ collections:
             collapsed: false
             fields:
               - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+              - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
               - name: 'link_or_module_info'
                 label: 'Simple link or Square module info'
                 widget: 'list'
                 min: 1
                 types:
-                - name: square_link
+                - name: platform_url
                   label: "Square Link"
                   widget: object
                   required: true
                   fields:
                   - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
-                  - {name: url, label: URL, widget: string, required: true}
+                  - {name: href, label: URL, widget: string, required: true}
 
                 - name: module_info
                   label: Module Info

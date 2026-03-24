@@ -33,13 +33,13 @@ export function siteInfoSocialsToItems(
     if (!socials) return [];
 
     return socialTypes.flatMap((type) => {
-        const link = socials[type];
-        if (!link) return [];
+        const href = socials[type];
+        if (!href) return [];
 
         return [
             {
                 type,
-                link,
+                href,
                 enabled: true,
                 bookable: false,
             },

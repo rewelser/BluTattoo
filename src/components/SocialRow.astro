@@ -24,7 +24,7 @@ const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
             const item = links.find(
                 (item) => item.type === key && item.enabled,
             );
-            const href = item?.link;
+            const href = item?.href;
 
             const entry = socialIcons[key];
             if (!entry) return null;

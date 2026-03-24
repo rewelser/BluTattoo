@@ -15,6 +15,7 @@ const isAsset = (v: unknown) =>
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
   let artists = await loadArtistsActiveNonguest();
+  console.log(artists);
   // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 
   return artists.map((entry) => ({
@@ -40,7 +41,7 @@ const socials = entry.data.contact_socials_booking?.socials?.find(
 );
 
 const moduleInfo = square?.link_or_module_info.find(
-  (item) => item.type === "module_info",
+  (item) => item.mode === "module_info",
 );
 ---
 
