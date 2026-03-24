@@ -6,7 +6,10 @@ import { getCollection, getEntry, render } from "astro:content";
 import { fmtDateRange, fmtTimeWindow } from "../../scripts/eventsClient";
 
 export async function getStaticPaths() {
-  const entries = await getCollection("events", (e) => e.data.published !== false);
+  const entries = await getCollection(
+    "events",
+    (e) => e.data.published !== false,
+  );
   return entries.map((e) => ({ params: { id: e.id } }));
 }
 
@@ -24,9 +27,11 @@ const ev = entry.data;
   <article class="page-article page-article--stack space-y-6">
     <h1 class="page-title">{ev.title}</h1>
 
-    {ev.image && (
-      <PromoHero image={ev.image} alt={ev.alt ?? ev.title} className="p-8" />
-    )}
+    {
+      ev.image && (
+        <PromoHero image={ev.image} alt={ev.alt ?? ev.title} className="p-8" />
+      )
+    }
 
     <div class="border border-black/10 p-5 md:p-6">
       <div class="text-sm opacity-80">
@@ -42,7 +47,8 @@ const ev = entry.data;
     </div>
 
     <p class="text-sm">
-      <a class="underline hover:no-underline" href="/events">← Back to Events</a>
+      <a class="underline hover:no-underline" href="/events">← Back to Events</a
+      >
     </p>
   </article>
 </Layout>

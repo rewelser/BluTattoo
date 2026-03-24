@@ -170,6 +170,7 @@ export const socialItemSchema = z.object({
   enabled: z.boolean().default(true),
   bookable: z.boolean().default(false),
   preferred: z.boolean().optional(),
+  handle: optionalString
 });
 
 export const socialsSchema = z.array(socialItemSchema).optional();

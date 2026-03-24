@@ -108,6 +108,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "facebook"
               label: "Facebook"
@@ -119,6 +120,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "tiktok"
               label: "TikTok"
@@ -130,6 +132,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "x"
               label: "X (Twitter)"
@@ -141,6 +144,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "threads"
               label: "Threads"
@@ -152,6 +156,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "tumblr"
               label: "Tumblr"
@@ -163,6 +168,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "youtube"
               label: "YouTube"
@@ -174,6 +180,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
             - name: "pinterest"
               label: "Pinterest"
@@ -185,6 +192,7 @@ collections:
                 - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                - { name: handle, label: "Username/Handle", widget: text, required: false }
 
         - name: 'platforms'
           label: 'Platforms'

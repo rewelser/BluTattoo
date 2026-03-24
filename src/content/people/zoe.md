@@ -14,10 +14,12 @@ contact_socials_booking:
       enabled: true
       bookable: true
       preferred: true
+      handle: "ztheghost"
     - type: facebook
       href: https://www.facebook.com/example/
       enabled: true
       bookable: true
+      handle: "ztheghost"
     - type: threads
       href: https://www.threads.net/@example
       enabled: true

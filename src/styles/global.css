@@ -54,7 +54,8 @@
   --animate-ping-faint: ping-faint 2s infinite;
   @keyframes ping-faint {
     99%, 100% {
-      transform: scale(1.025, 1.4);
+      /* transform: scale(1.025, 1.4); */
+      transform: scale(1.1, 1.4);
       /* transform: scale(1.4, 2); */
       /* transform: scale(1.05, 1.75); */
       opacity: 0;

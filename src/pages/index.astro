@@ -18,7 +18,6 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 </script>
 
 <Layout isHome title=" — Home">
-
   <section class="relative w-full py-32 px-6 overflow-hidden">
     <!-- subtle background glow / depth -->
     <!-- <div class="pointer-events-none absolute inset-0">
@@ -78,7 +77,12 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 
   <!-- /////////////////////////////////////////// -->
   <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
-  <ParallaxWindow src="/uploads/misc_images/bigroom.webp" kind="image" windowHeight="35vh" strength={.55}>
+  <ParallaxWindow
+    src="/uploads/misc_images/bigroom.webp"
+    kind="image"
+    windowHeight="35vh"
+    strength={0.55}
+  >
     <!-- optional overlay -->
     <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
       A window into the scene

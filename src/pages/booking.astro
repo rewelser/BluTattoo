@@ -9,7 +9,7 @@ import type { IconType } from "../scripts/contact-socials-platforms-defs";
 
 import { loadArtistsActiveNonguest } from "../scripts/people";
 
-const default_profile_image = "/uploads/defaults/default-booking-profile.jpg";
+const default_profile_image = "/default_media/default-booking-profile.jpg";
 
 let people = await loadArtistsActiveNonguest();
 
@@ -155,7 +155,7 @@ const title = "Booking";
                                             data-accordion-toggle
                                             data-accordion-level="root"
                                         >
-                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-aqua shadow-[6px_4px_0px_aqua]">
+                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]">
                                                 <img
                                                     src={profilePicture}
                                                     alt={`Booking profile image for ${person.data.name}`}
@@ -165,7 +165,7 @@ const title = "Booking";
                                                 />
                                             </div>
 
-                                            <span class="grid gap-[0.2rem]">
+                                            <span class="grid gap-[0.2rem] text-center">
                                                 <span class="text-[1.05rem] font-bold leading-[1.2]">
                                                     {person.data.name}
                                                 </span>
@@ -264,6 +264,27 @@ const title = "Booking";
                                                             const isPreferred =
                                                                 item.preferred;
 
+                                                            const formatItem = (
+                                                                item: any,
+                                                            ) => {
+                                                                if (
+                                                                    item.category ===
+                                                                    "contact"
+                                                                )
+                                                                    return item.href;
+
+                                                                if (
+                                                                    item.category ===
+                                                                    "social"
+                                                                ) {
+                                                                    return item.handle
+                                                                        ? `${item.handle} | ${item.type}`
+                                                                        : item.type;
+                                                                }
+
+                                                                return item.type;
+                                                            };
+
                                                             const subBtnId = `person-${personIndex}-sub-${index}-toggle`;
                                                             const subPanelId = `person-${personIndex}-sub-${index}-panel`;
 
@@ -272,47 +293,46 @@ const title = "Booking";
                                                                     class={`${isPreferred ? "preferred" : "bookable"} relative`}
                                                                 >
                                                                     <li
-                                                                        class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-[floralwhite] not-first:mt-2`}
+                                                                        class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}
                                                                     >
-                                                                        {resolvedHref ? (
+                                                                        {hasHref(
+                                                                            item,
+                                                                        ) &&
+                                                                        resolvedHref ? (
                                                                             <a
-                                                                                class="font-semibold "
+                                                                                class="font-semibold break-all"
                                                                                 href={
                                                                                     resolvedHref
                                                                                 }
                                                                                 target={
-                                                                                    resolvedHref.startsWith(
+                                                                                    item.href.startsWith(
                                                                                         "http",
                                                                                     )
                                                                                         ? "_blank"
                                                                                         : undefined
                                                                                 }
                                                                                 rel={
-                                                                                    resolvedHref.startsWith(
+                                                                                    item.href.startsWith(
                                                                                         "http",
                                                                                     )
                                                                                         ? "noreferrer noopener"
                                                                                         : undefined
                                                                                 }
                                                                             >
-                                                                                <div class="grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1 px-4 py-[0.875rem]">
-                                                                                    <div class="mt-1">
-                                                                                        <span
+                                                                                <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
+                                                                                    <div class="h-full content-center">
+                                                                                        <div
                                                                                             aria-hidden="true"
-                                                                                            class="block h-5 w-5"
+                                                                                            class="flex h-10 w-10"
                                                                                         >
-                                                                                            <Icon />
-                                                                                        </span>
+                                                                                            <Icon class="h-full w-full" />
+                                                                                        </div>
                                                                                     </div>
 
-                                                                                    <div class="grid gap-[0.35rem]">
-                                                                                        {
-                                                                                            resolvedHref
-                                                                                        }{" "}
-                                                                                        |{" "}
-                                                                                        {
-                                                                                            item.type
-                                                                                        }
+                                                                                    <div class="grid gap-[0.35rem] text-center content-center pr-10">
+                                                                                        {formatItem(
+                                                                                            item,
+                                                                                        )}
                                                                                         {hasNotes(
                                                                                             item,
                                                                                         ) && (
@@ -340,20 +360,20 @@ const title = "Booking";
                                                                                     data-accordion-toggle
                                                                                     data-accordion-level="nested"
                                                                                 >
-                                                                                    <span
-                                                                                        aria-hidden="true"
-                                                                                        class="block h-5 w-5"
-                                                                                    >
-                                                                                        <Icon />
-                                                                                    </span>
+                                                                                    <div class="h-full content-center">
+                                                                                        <div
+                                                                                            aria-hidden="true"
+                                                                                            class="flex h-10 w-10"
+                                                                                        >
+                                                                                            <Icon class="h-full w-full" />
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                                    <span>
-                                                                                        <strong>
-                                                                                            {
-                                                                                                item.type
-                                                                                            }
-                                                                                        </strong>
-                                                                                    </span>
+                                                                                    <div class="grid gap-[0.35rem] text-center content-center font-semibold break-all">
+                                                                                        {
+                                                                                            item.type
+                                                                                        }
+                                                                                    </div>
 
                                                                                     <svg
                                                                                         viewBox="0 0 24 24"
@@ -491,11 +511,28 @@ const title = "Booking";
             --bookable-gradient-blue:
                 #c6e2ff, #4da3ff, #4da3ff, #416af1, #416af1, #4da3ff, #4da3ff,
                 #c6e2ff;
+            --subitem-bg-color: #f5fff0;
+            --subitem-bookable-bg-color: #f0f5ff;
+            --subitem-preferred-bg-color: #fdfff0;
+            /* --profile-frame-border-color: #c2abc2; */
+            --profile-frame-border-color: #584d58;
+            --profile-frame-shadow-color: thistle;
+        }
+
+        .fake {
+            background-color: blanchedalmond;
+            background-color: bisque;
+            background-color: wheat;
+            background-color: gainsboro;
+            background-color: honeydew;
+            background-color: antiquewhite;
+            background-color: #f0fdff;
         }
 
         .preferred li {
             background:
-                linear-gradient(floralwhite 0 0) padding-box,
+                linear-gradient(var(--subitem-preferred-bg-color) 0 0)
+                    padding-box,
                 conic-gradient(from var(--glow-deg), var(--preferred-gradient))
                     border-box;
             animation: glow 10s linear infinite;
