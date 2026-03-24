@@ -13,6 +13,7 @@ contact_socials_booking:
       href: https://www.instagram.com/example/
       enabled: true
       bookable: true
+      preferred: true
     - type: facebook
       href: https://www.facebook.com/example/
       enabled: true

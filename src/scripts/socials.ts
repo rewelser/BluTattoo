@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { socialTypes } from "./socials-defs";
+import { socialTypes } from "./contact-socials-platforms-defs";
 import { socialsSchema, socialItemSchema, siteInfoSocialsSchema } from "../content.config";
 
 // export const socialTypes = [

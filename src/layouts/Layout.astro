@@ -1,4 +1,5 @@
 ---
+import BaseLayout from "./BaseLayout.astro";
 import { ClientRouter } from "astro:transitions";
 import { getEntry } from "astro:content";
 import "../styles/global.css";
@@ -8,9 +9,8 @@ import Footer from "../components/Footer.astro";
 
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
-const siteName = site?.data?.siteName ?? defaults.siteName;
 
-const { title = siteName, isHome = false, preloadImage } = Astro.props;
+const { title, isHome = false, preloadImage } = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/spectral";
 import "@fontsource/fleur-de-leah";
@@ -34,17 +34,19 @@ import "@fontsource/diplomata-sc/400.css";
 import "@fontsource/fleur-de-leah/400.css";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
+<BaseLayout
+  title={title}
+  preloadImage={preloadImage}
+  bodyClass="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
+  bodyStyle={`${!isHome ? "top: var(--announcement-h);" : ""}`}
+>
+  <Fragment slot="head">
+    <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
+
     <!-- <style>
       /* Paint black immediately to avoid white flash between navigations */
       html, body { background:#000; }
     </style> -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
-    <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
     <link
       rel="preload"
       href={spectral400Url}
@@ -66,16 +68,15 @@ import "@fontsource/fleur-de-leah/400.css";
       type="font/woff2"
       crossorigin
     />
-    {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
-  </head>
+  </Fragment>
   <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
   <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
-  <body
-    class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
-    style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
-  >
-    <!-- fixed background image -->
-    <!-- <img
+  <!-- <body
+      class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
+      style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
+    > -->
+  <!-- fixed background image -->
+  <!-- <img
         src={bg}
         alt=""
         aria-hidden="true"
@@ -85,29 +86,29 @@ import "@fontsource/fleur-de-leah/400.css";
         transition:persist
         class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
       /> -->
-    <!-- <Header /> -->
-    <!-- <main class="mx-auto max-w-6xl px-4 py-8">
+  <!-- <Header /> -->
+  <!-- <main class="mx-auto max-w-6xl px-4 py-8">
       <slot />
     </main> -->
-    <main class="mx-auto">
-      <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
-      <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
-        <div>
-          <Header
-            variant={isHome ? "home" : "default"}
-            defaults={defaults}
-            site={site}
-            class="site-header"
-          />
-          <!-- todo: what is this doing? vvv -->
-          <div id="pagecontent-wrap" class="relative z-40 bg-white">
-            <slot />
-            {/* page content goes here */}
-          </div>
+  <main class="mx-auto">
+    <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
+    <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
+      <div>
+        <Header
+          variant={isHome ? "home" : "default"}
+          defaults={defaults}
+          site={site}
+          class="site-header"
+        />
+        <!-- todo: what is this doing? vvv -->
+        <div id="pagecontent-wrap" class="relative z-40 bg-white">
+          <slot />
+          {/* page content goes here */}
         </div>
       </div>
-    </main>
-    <!-- <slot name="footer" /> -->
-    <Footer defaults={defaults} site={site} />
-  </body>
-</html>
+    </div>
+  </main>
+  <!-- <slot name="footer" /> -->
+  <Footer defaults={defaults} site={site} />
+  <!-- </body> -->
+</BaseLayout>

@@ -11,11 +11,12 @@ import type { EventItem } from "../scripts/events";
 import { loadEventsPublishedCached } from "../scripts/events";
 
 const events: EventItem[] = await loadEventsPublishedCached();
+const title = "Events";
 ---
 
-<Layout title="BluTattoo Studio — Events">
+<Layout title={` — ${title}`}>
     <article class="page-article page-article--stack space-y-6">
-        <h1 class="page-title">Events</h1>
+        <h1 class="page-title">{title}</h1>
 
         <UpcomingEvents events={events} server:defer >
             <UpcomingEventsFallback slot="fallback" />

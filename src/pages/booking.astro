@@ -2,31 +2,16 @@
 import { getCollection, getEntry } from "astro:content";
 import { Image } from "astro:assets";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
-import "../styles/global.css";
-import { socialIcons } from "../components/graphics/socialmedia/registry";
-import { socialTypes } from "../scripts/socials-defs";
-import type { SocialType } from "../scripts/socials-defs";
+import BaseLayout from "../layouts/BaseLayout.astro";
+// import "../styles/global.css";
+import { iconRegistry } from "../components/graphics/icons/registry";
+import type { IconType } from "../scripts/contact-socials-platforms-defs";
 
-import {
-    loadArtistsActiveNonguest,
-} from "../scripts/people";
+import { loadArtistsActiveNonguest } from "../scripts/people";
 
-/**
- * ARTISTS
- */
 const default_profile_image = "/uploads/defaults/default-booking-profile.jpg";
 
-// Load & order artists todo: see if we can't refactor this into types.ts somehow
-let people_unnormalized = await loadArtistsActiveNonguest();
 let people = await loadArtistsActiveNonguest();
-// console.log("people", people);
-// const bookingOptions = artists2.map;
-// const boof = artists2.map((entry) => {
-//     label: entry.data.contact_socials_booking?.booking_note;
-// });
-// const moduleInfo = square?.link_or_module_info.find(
-//   (item) => item.type === "module_info",
-// );
 
 const sickleSvg = `
 <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1061.88 1009.9">
@@ -35,204 +20,101 @@ const sickleSvg = `
 `;
 
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
-
-// {
-const SOCIAL_LABELS = {
-    instagram: "Instagram",
-    facebook: "Facebook",
-    tiktok: "TikTok",
-    x: "X",
-    threads: "Threads",
-    tumblr: "Tumblr",
-    youtube: "YouTube",
-    pinterest: "Pinterest",
-};
-function getContactHref(item) {
-    switch (item.type) {
-        case "phone":
-            return `tel:${item.href.replace(/\D/g, "")}`;
-        case "email":
-            return `mailto:${item.href}`;
-        case "website":
-            return item.href;
-        default:
-            return "#";
-    }
-}
-function getContactLabel(item) {
-    switch (item.type) {
-        case "phone":
-            return item.href;
-        case "email":
-            return item.href;
-        case "website":
-            return item.href;
-        default:
-            return "";
-    }
-}
-function getContactIconName(item) {
-    switch (item.type) {
-        case "phone":
-            return "phone";
-        case "email":
-            return "email";
-        case "website":
-            return "website";
-        default:
-            return "url";
-    }
-}
-function getSocialLabel(type) {
-    return SOCIAL_LABELS[type] ?? type;
-}
-function buildBookingItems(person) {
-    const csb = person.data.contact_socials_booking;
-    if (!csb) return [];
-    const items = [];
-    const contactItems = (csb.contact ?? [])
-        .filter((item) => item.enabled !== false)
-        .map((item) => ({
-            kind: "url",
-            group: "contact",
-            icon: getContactIconName(item),
-            label: getContactLabel(item),
-            href: getContactHref(item),
-            notes: item.notes,
-            preferred: item.preferred ?? false,
-        }));
-    const socialItems = (csb.socials ?? [])
-        .filter((item) => item.enabled !== false)
-        .map((item) => ({
-            kind: "url",
-            group: "social",
-            icon: item.type,
-            label: getSocialLabel(item.type),
-            href: item.url,
-            notes: undefined,
-            preferred: item.preferred ?? false,
-            bookable: item.bookable ?? false,
-        }));
-    const platformItems = (csb.platforms ?? [])
-        .filter((platform) => platform.enabled !== false)
-        .flatMap((platform) => {
-            if (platform.type !== "square") return [];
-            return platform.link_or_module_info
-                .filter((entry) => entry.enabled !== false)
-                .map((entry) => {
-                    if (entry.type === "url") {
-                        return {
-                            kind: "url",
-                            group: "platform",
-                            icon: "square",
-                            label: "Book on Square",
-                            href: entry.url,
-                            notes: undefined,
-                            preferred: false,
-                        };
-                    }
-                    return {
-                        kind: "panel",
-                        group: "platform",
-                        icon: "square",
-                        label: entry.label || "Square booking module",
-                        merchantId: entry.merchantId,
-                        locationId: entry.locationId,
-                    };
-                });
-        });
-    items.push(...contactItems, ...socialItems, ...platformItems);
-    // Optional: preferred items first, while preserving relative order otherwise
-    return items.sort(
-        (a, b) => Number(b.preferred ?? false) - Number(a.preferred ?? false),
-    );
-}
-// }
+const title = "Booking";
 ---
 
-<html lang="en">
+<!-- <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Star Drift Test</title>
-    </head>
-    <body>
-        <main class="page">
-            <div
-                id="wallpaper-gradient"
-                class="wallpaper h-screen"
-                aria-hidden="true"
+    </head> -->
+<BaseLayout title={` — ${title}`}>
+    <main class="page">
+        <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
+        <div
+            id="wallpaper-gradient"
+            class="wallpaper h-screen bg-gradient-to-b from-neutral-300 to-stone-600"
+            aria-hidden="true"
+        >
+        </div>
+        <div
+            id="wallpaper-flash"
+            class="wallpaper"
+            aria-hidden="true"
+            style={`background-image: url("${sickleDataUrl}")`}
+        >
+        </div>
+        <!-- <div id="booking-content" class="relative bg-amber-400 bg-gradient-to-b from-stone-500 to-stone-700 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-pink-200 to-violet-200 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-sky-500 to-indigo-900 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-rose-500 to-stone-700 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-indigo-700 to-cyan-900 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-r from-teal-200 to-indigo-200 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-amber-200 to-amber-500 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <div
+            id="booking-content"
+            class="relative bg-gradient-to-b from-teal-200 to-teal-600 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"
+        >
+            <header
+                id="booking-header"
+                class="relative flex flex-col justify-center"
             >
-            </div>
-            <div
-                id="wallpaper-flash"
-                class="wallpaper"
-                aria-hidden="true"
-                style={`background-image: url("${sickleDataUrl}")`}
-            >
-            </div>
-            <div
-                id="booking-content"
-                class="relative bg-amber-400 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"
-            >
-                <header
-                    id="booking-header"
-                    class="relative flex justify-center"
+                <div
+                    id="header-img-container"
+                    class="relative rounded-4xl overflow-hidden"
                 >
-                    <div
-                        id="header-img-container"
-                        class="relative rounded-4xl overflow-hidden"
-                    >
-                        <img
-                            class="backdrop-opacity-10"
-                            src="/uploads/misc_images/teamstock.jpg"
-                        />
-                    </div>
+                    <img
+                        class="backdrop-opacity-10"
+                        src="/uploads/misc_images/teamstock.jpg"
+                    />
+                </div>
 
-                    <style>
-                        #header-img-container {
-                            /* mask: linear-gradient(to bottom, black, transparent); */
-                            mask: linear-gradient(
-                                to bottom,
-                                black 0%,
-                                black 85%,
-                                transparent 100%
+                <style>
+                    #header-img-container {
+                        /* mask: linear-gradient(to bottom, black, transparent); */
+                        mask: linear-gradient(
+                            to bottom,
+                            black 0%,
+                            black 85%,
+                            transparent 100%
+                        );
+                        clip-path: shape(
+                            from 0 0,
+                            hline to 100%,
+                            vline to 85%,
+                            curve to 0 85% with 50% 100%,
+                            close
+                        );
+                    }
+                </style>
+                <div class="h-[300px] w-[300px]"></div>
+            </header>
+            <section
+                class="px-4 pt-8 pb-16"
+                aria-labelledby="people-tree-title"
+            >
+                <h1 id="people-tree-title" class="sr-only">People</h1>
+                <ul class="m-0 list-none p-0" data-accordion-root>
+                    {
+                        people.map((person, personIndex) => {
+                            const personBtnId = `person-${personIndex}-toggle`;
+                            const personPanelId = `person-${personIndex}-panel`;
+                            const csb = person.data.contact_socials_booking;
+                            const profilePicture =
+                                csb?.booking_profile_picture ??
+                                default_profile_image;
+                            const contacts = csb?.contact?.filter(
+                                (item) => item.enabled,
                             );
-                            clip-path: shape(
-                                from 0 0,
-                                hline to 100%,
-                                vline to 85%,
-                                curve to 0 85% with 50% 100%,
-                                close
+                            const socials = csb?.socials?.filter(
+                                (item) => item.enabled && item.bookable,
                             );
-                        }
-                    </style>
-                </header>
-                <section
-                    class="px-4 pt-8 pb-16"
-                    aria-labelledby="people-tree-title"
-                >
-                    <h1 id="people-tree-title" class="sr-only">People</h1>
-                    <ul class="m-0 list-none p-0" data-accordion-root>
-                        {
-                            people.map((person, personIndex) => {
-                                const personBtnId = `person-${personIndex}-toggle`;
-                                const personPanelId = `person-${personIndex}-panel`;
-                                const csb = person.data.contact_socials_booking;
-                                const profilePicture =
-                                    csb?.booking_profile_picture ??
-                                    default_profile_image;
-                                const contacts = csb?.contact?.filter(
-                                    (item) => item.enabled,
-                                );
-                                const socials = csb?.socials?.filter(
-                                    (item) => item.enabled && item.bookable,
-                                );
-                                const platforms = csb?.platforms?.filter(
-                                    (item) => item.enabled,
-                                );
+                            const platforms = csb?.platforms?.filter(
+                                (item) => item.enabled,
+                            );
 
-                                const bookables = [
+                            const bookables = [
                                 ...(contacts ?? []).map((item) => ({
                                     ...item,
                                     category: "contact" as const,
@@ -242,715 +124,778 @@ function buildBookingItems(person) {
                                     category: "social" as const,
                                 })),
                                 ...(platforms ?? []).flatMap((platform) =>
-                                    (platform.link_or_module_info ?? []).map((entry) => ({
-                                    ...entry,
-                                    category: "platform" as const,
-                                    preferred: platform.preferred,
-                                    type: platform.type,
-                                    platformEnabled: platform.enabled,
-                                    }))
+                                    (platform.link_or_module_info ?? []).map(
+                                        (entry) => ({
+                                            ...entry,
+                                            category: "platform" as const,
+                                            preferred: platform.preferred,
+                                            type: platform.type,
+                                            platformEnabled: platform.enabled,
+                                        }),
+                                    ),
                                 ),
-                                ];
+                            ].sort(
+                                (a, b) =>
+                                    Number(b.preferred ?? false) -
+                                    Number(a.preferred ?? false),
+                            );
 
-                                const hasBookables = (bookables?.length ?? 0) > 0;
+                            const hasBookables = (bookables?.length ?? 0) > 0;
 
-                                // const preferredBookingItems
+                            return (
+                                csb &&
+                                hasBookables && (
+                                    <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] not-first:mt-3">
+                                        <button
+                                            id={personBtnId}
+                                            class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
+                                            type="button"
+                                            aria-expanded="false"
+                                            aria-controls={personPanelId}
+                                            data-accordion-toggle
+                                            data-accordion-level="root"
+                                        >
+                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-aqua shadow-[6px_4px_0px_aqua]">
+                                                <img
+                                                    src={profilePicture}
+                                                    alt={`Booking profile image for ${person.data.name}`}
+                                                    decoding="async"
+                                                    loading="lazy"
+                                                    class="h-full w-full object-cover"
+                                                />
+                                            </div>
 
-                                return (
-                                    csb &&
-                                    hasBookables && (
-                                        <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] not-first:mt-3">
-                                            <button
-                                                id={personBtnId}
-                                                class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
-                                                type="button"
-                                                aria-expanded="false"
-                                                aria-controls={personPanelId}
-                                                data-accordion-toggle
-                                                data-accordion-level="root"
-                                            >
-                                                <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-aqua shadow-[6px_4px_0px_aqua]">
-                                                    <img
-                                                        src={profilePicture}
-                                                        alt={`Booking profile image for ${person.data.name}`}
-                                                        decoding="async"
-                                                        loading="lazy"
-                                                        class="h-full w-full object-cover"
-                                                    />
-                                                </div>
-
-                                                <span class="grid gap-[0.2rem]">
-                                                    <span class="text-[1.05rem] font-bold leading-[1.2]">
-                                                        {person.data.name}
-                                                    </span>
-                                                    <span class="text-[0.9rem] leading-[1.2] opacity-75">
-                                                        {person.data
-                                                            .primary_role ===
-                                                        "tattoo_artist"
-                                                            ? "Tattoo Artist"
-                                                            : "Piercer"}
-                                                    </span>
+                                            <span class="grid gap-[0.2rem]">
+                                                <span class="text-[1.05rem] font-bold leading-[1.2]">
+                                                    {person.data.name}
                                                 </span>
+                                                <span class="text-[0.9rem] leading-[1.2] opacity-75">
+                                                    {person.data
+                                                        .primary_role ===
+                                                    "tattoo_artist"
+                                                        ? "Tattoo Artist"
+                                                        : "Piercer"}
+                                                </span>
+                                            </span>
 
-                                                <svg
-                                                    viewBox="0 0 24 24"
-                                                    aria-hidden="true"
-                                                    class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
-                                                >
-                                                    <path
-                                                        fill="currentColor"
-                                                        d="M7 10l5 5 5-5H7z"
-                                                    />
-                                                </svg>
-                                            </button>
-
-                                            <div
-                                                id={personPanelId}
-                                                class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
-                                                aria-labelledby={personBtnId}
-                                                data-accordion-panel
-                                                inert
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                                class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
                                             >
-                                                <div class="p-4">
-                                                    {csb.booking_note && (
-                                                        <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
-                                                            {csb.booking_note}
-                                                        </p>
-                                                    )}
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M7 10l5 5 5-5H7z"
+                                                />
+                                            </svg>
+                                        </button>
 
-                                                    <ul class="m-0 grid list-none gap-2 p-0">
-                                                            {bookables.map(( item, index ) => {
-                                                                const typeKey = item.type as SocialType;
-                                                                const entry = socialIcons[typeKey];
-                                                                // console.log("typeKey", typeKey);
-                                                                // console.log("entry", entry);
-                                                                const { Icon } = entry;
-                                                                
+                                        <div
+                                            id={personPanelId}
+                                            class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                            aria-labelledby={personBtnId}
+                                            data-accordion-panel
+                                            inert
+                                        >
+                                            <div class="p-4">
+                                                {csb.booking_note && (
+                                                    <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
+                                                        {csb.booking_note}
+                                                    </p>
+                                                )}
 
-                                                                const hasNotes = (item: any): item is { notes: string } => {
-                                                                    return "notes" in item && typeof item.notes === "string";
-                                                                }
-                                                                const hasHref = (item: any): item is { href: string } => {
-                                                                    return "href" in item && typeof item.href === "string";
-                                                                }
+                                                <ul class="m-0 grid list-none gap-2 p-0">
+                                                    {bookables.map(
+                                                        (item, index) => {
+                                                            const typeKey =
+                                                                item.type as IconType;
+                                                            const entry =
+                                                                iconRegistry[
+                                                                    typeKey
+                                                                ];
+                                                            const { Icon } =
+                                                                entry;
 
-                                                                const merchantId = "merchantId" in item && item.merchantId;
-                                                                const locationId = "locationId" in item && item.locationId;
+                                                            const hasNotes = (
+                                                                item: any,
+                                                            ): item is {
+                                                                notes: string;
+                                                            } => {
+                                                                return (
+                                                                    "notes" in
+                                                                        item &&
+                                                                    typeof item.notes ===
+                                                                        "string"
+                                                                );
+                                                            };
+                                                            const hasHref = (
+                                                                item: any,
+                                                            ): item is {
+                                                                href: string;
+                                                            } => {
+                                                                return (
+                                                                    "href" in
+                                                                        item &&
+                                                                    typeof item.href ===
+                                                                        "string"
+                                                                );
+                                                            };
 
-                                                                const isPreferred = item.preferred;
-                                                                
+                                                            const resolvedHref =
+                                                                hasHref(item)
+                                                                    ? item.type ===
+                                                                      "phone"
+                                                                        ? `tel:${item.href}`
+                                                                        : item.type ===
+                                                                            "email"
+                                                                          ? `mailto:${item.href}`
+                                                                          : item.href
+                                                                    : null;
 
-                                                                const subBtnId = `person-${personIndex}-sub-${index}-toggle`;
-                                                                const subPanelId = `person-${personIndex}-sub-${index}-panel`;
+                                                            const merchantId =
+                                                                "merchantId" in
+                                                                    item &&
+                                                                item.merchantId;
+                                                            const locationId =
+                                                                "locationId" in
+                                                                    item &&
+                                                                item.locationId;
 
-                                                                return(
-                                                        <div class={`${isPreferred ? "preferred" : "bookable"} relative`}>
+                                                            const isPreferred =
+                                                                item.preferred;
 
-                                                                    <li class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-[floralwhite] not-first:mt-2`}>
-                                                                        {hasHref(item) ? (
-                                                                                <a
-                                                                                    class="font-semibold "
-                                                                                    href={` ${item.type === "phone" ? "tel:" : item.type === "email" ? "mailto:" : ""} ${item.href}`}
-                                                                                    target={
-                                                                                        item.href.startsWith(
-                                                                                            "http",
-                                                                                        )
-                                                                                            ? "_blank"
-                                                                                            : undefined
-                                                                                    }
-                                                                                    rel={
-                                                                                        item.href.startsWith(
-                                                                                            "http",
-                                                                                        )
-                                                                                            ? "noreferrer noopener"
-                                                                                            : undefined
-                                                                                    }
-                                                                                >
-                                                                        <div class="grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1 px-4 py-[0.875rem]">
-                                                                            <div class="mt-1">
-                                                                                <span
-                                                                                    aria-hidden="true"
-                                                                                    class="block h-5 w-5"
-                                                                                >
-                                                                                    <Icon/>
-                                                                                </span>
-                                                                            </div>
+                                                            const subBtnId = `person-${personIndex}-sub-${index}-toggle`;
+                                                            const subPanelId = `person-${personIndex}-sub-${index}-panel`;
 
-                                                                            <div class="grid gap-[0.35rem]">
-
-                                                                                    {item.href} | {item.type}
-
-                                                                                {hasNotes(item) && (
-                                                                                    <div class="text-[0.95rem] leading-[1.5] opacity-80">
-                                                                                        { item.notes }
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                            </a>
-
-                                                                        ) : (
-                                                                            <button
-                                                                                id={
-                                                                                    subBtnId
+                                                            return (
+                                                                <div
+                                                                    class={`${isPreferred ? "preferred" : "bookable"} relative`}
+                                                                >
+                                                                    <li
+                                                                        class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-[floralwhite] not-first:mt-2`}
+                                                                    >
+                                                                        {resolvedHref ? (
+                                                                            <a
+                                                                                class="font-semibold "
+                                                                                href={
+                                                                                    resolvedHref
                                                                                 }
-                                                                                class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
-                                                                                type="button"
-                                                                                aria-expanded="false"
-                                                                                aria-controls={
-                                                                                    subPanelId
+                                                                                target={
+                                                                                    resolvedHref.startsWith(
+                                                                                        "http",
+                                                                                    )
+                                                                                        ? "_blank"
+                                                                                        : undefined
                                                                                 }
-                                                                                data-accordion-toggle
-                                                                                data-accordion-level="nested"
+                                                                                rel={
+                                                                                    resolvedHref.startsWith(
+                                                                                        "http",
+                                                                                    )
+                                                                                        ? "noreferrer noopener"
+                                                                                        : undefined
+                                                                                }
                                                                             >
-                                                                                <span
-                                                                                    aria-hidden="true"
-                                                                                    class="block h-5 w-5"
-                                                                                >
-                                                                                    <Icon/>
-                                                                                </span>
+                                                                                <div class="grid grid-cols-[auto_1fr] items-start gap-x-3 gap-y-1 px-4 py-[0.875rem]">
+                                                                                    <div class="mt-1">
+                                                                                        <span
+                                                                                            aria-hidden="true"
+                                                                                            class="block h-5 w-5"
+                                                                                        >
+                                                                                            <Icon />
+                                                                                        </span>
+                                                                                    </div>
 
-                                                                                <span>
-                                                                                    <strong>
+                                                                                    <div class="grid gap-[0.35rem]">
+                                                                                        {
+                                                                                            resolvedHref
+                                                                                        }{" "}
+                                                                                        |{" "}
                                                                                         {
                                                                                             item.type
                                                                                         }
-                                                                                    </strong>
-                                                                                </span>
-
-                                                                                <svg
-                                                                                    viewBox="0 0 24 24"
-                                                                                    aria-hidden="true"
-                                                                                    class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
-                                                                                >
-                                                                                    <path
-                                                                                        fill="currentColor"
-                                                                                        d="M7 10l5 5 5-5H7z"
-                                                                                    />
-                                                                                </svg>
-                                                                            </button>
-
-                                                                            <div
-                                                                                id={
-                                                                                    subPanelId
-                                                                                }
-                                                                                class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
-                                                                                aria-labelledby={
-                                                                                    subBtnId
-                                                                                }
-                                                                                data-accordion-panel
-                                                                                inert
-                                                                            >
-                                                                                <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
-                                                                                    <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
-                                                                                        Square
-                                                                                        module
-                                                                                        placeholder
-                                                                                        <br />
-                                                                                        merchantId:{" "}
-                                                                                        {merchantId}
-                                                                                        <br />
-                                                                                        locationId:{" "}
-                                                                                        {locationId}
+                                                                                        {hasNotes(
+                                                                                            item,
+                                                                                        ) && (
+                                                                                            <div class="text-[0.95rem] leading-[1.5] opacity-80">
+                                                                                                {
+                                                                                                    item.notes
+                                                                                                }
+                                                                                            </div>
+                                                                                        )}
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        )}
+                                                                            </a>
+                                                                        ) : (
+                                                                            <>
+                                                                                <button
+                                                                                    id={
+                                                                                        subBtnId
+                                                                                    }
+                                                                                    class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
+                                                                                    type="button"
+                                                                                    aria-expanded="false"
+                                                                                    aria-controls={
+                                                                                        subPanelId
+                                                                                    }
+                                                                                    data-accordion-toggle
+                                                                                    data-accordion-level="nested"
+                                                                                >
+                                                                                    <span
+                                                                                        aria-hidden="true"
+                                                                                        class="block h-5 w-5"
+                                                                                    >
+                                                                                        <Icon />
+                                                                                    </span>
 
+                                                                                    <span>
+                                                                                        <strong>
+                                                                                            {
+                                                                                                item.type
+                                                                                            }
+                                                                                        </strong>
+                                                                                    </span>
+
+                                                                                    <svg
+                                                                                        viewBox="0 0 24 24"
+                                                                                        aria-hidden="true"
+                                                                                        class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                                                    >
+                                                                                        <path
+                                                                                            fill="currentColor"
+                                                                                            d="M7 10l5 5 5-5H7z"
+                                                                                        />
+                                                                                    </svg>
+                                                                                </button>
+
+                                                                                <div
+                                                                                    id={
+                                                                                        subPanelId
+                                                                                    }
+                                                                                    class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                                                                    aria-labelledby={
+                                                                                        subBtnId
+                                                                                    }
+                                                                                    data-accordion-panel
+                                                                                    inert
+                                                                                >
+                                                                                    <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
+                                                                                        <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
+                                                                                            Square
+                                                                                            module
+                                                                                            placeholder
+                                                                                            <br />
+                                                                                            merchantId:{" "}
+                                                                                            {
+                                                                                                merchantId
+                                                                                            }
+                                                                                            <br />
+                                                                                            locationId:{" "}
+                                                                                            {
+                                                                                                locationId
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </>
+                                                                        )}
                                                                     </li>
                                                                     {isPreferred && (
-                                                                        <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#c6e2ff] rounded-full animate-ping-faint" />
-                                                                        <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]" />
+                                                                        <>
+                                                                            <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint" />
+                                                                            <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]" />
+                                                                        </>
                                                                     )}
-
-                                                        </div>
-
-                                                                );
-
-                                                            })}
-                                                    </ul>
-                                                </div>
+                                                                </div>
+                                                            );
+                                                        },
+                                                    )}
+                                                </ul>
                                             </div>
-                                        </li>
-                                    )
-                                );
-                            })
-                        }
-                    </ul>
-                </section>
-            </div>
+                                        </div>
+                                    </li>
+                                )
+                            );
+                        })
+                    }
+                </ul>
+            </section>
+        </div>
+    </main>
+    <!-- </html> -->
+    <script is:inline>
+        window.addEventListener("scroll", function () {
+            const scrollPosition = window.scrollY;
+            // const scrollHeight = document.body.offsetHeight - document.documentElement.clientHeight;
+            const scrollHeightHeaderImg =
+                document.getElementById("booking-content").clientHeight;
+            const background = document.getElementById("wallpaper-flash");
+            const headerImgContainer = document.querySelector(
+                "#header-img-container",
+            );
+            const headerImg = document.querySelector(
+                "#header-img-container img",
+            );
 
-            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-saturate-3000 bg-gradient-to-b from-transparent to-indigo-600"> -->
-            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-saturate-300 bg-gradient-to-b from-transparent to-indigo-600"> -->
-            <!-- <footer class="footer relative h-[30vh] w-full mt-9 z-1 backdrop-hue-rotate-180 backdrop-brightness-50"> -->
-            <!-- <div class="footer-divider relative h-[30vh] w-full mt-9 z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"/>
-            <footer class="footer relative h-[30vh] w-full z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"> -->
-            <div
-                class="footer-divider relative h-[30vh] w-full mt-9 z-1 bg-white/30 backdrop-grayscale backdrop-invert backdrop-opacity-55"
-            >
-            </div>
-            <!-- <footer class="footer relative h-[30vh] w-full z-1 bg-white/90 backdrop-saturate-500">
-            <footer class="footer relative h-[30vh] w-full mt-9 z-1 bg-black">
-            </footer> -->
-            <style>
-                .footer-divider {
-                    /* mask: linear-gradient(to bottom, black, transparent); */
-                    mask: linear-gradient(
-                        to bottom,
-                        transparent 0%,
-                        black 100%
-                    );
-                }
-            </style>
-        </main>
-    </body>
-</html>
-<script is:inline>
-    window.addEventListener("scroll", function () {
-        const scrollPosition = window.scrollY;
-        // const scrollHeight = document.body.offsetHeight - document.documentElement.clientHeight;
-        const scrollHeightHeaderImg =
-            document.getElementById("booking-content").clientHeight;
-        const background = document.getElementById("wallpaper-flash");
-        const headerImgContainer = document.querySelector(
-            "#header-img-container",
-        );
-        const headerImg = document.querySelector("#header-img-container img");
+            const bookingContentRectTop = document
+                .getElementById("booking-content")
+                .getBoundingClientRect().top;
+            const scrollPositionHeaderImg = Math.abs(
+                Math.min(0, bookingContentRectTop),
+            );
+            const headerImgProgress =
+                scrollPositionHeaderImg / scrollHeightHeaderImg;
 
-        const bookingContentRectTop = document
-            .getElementById("booking-content")
-            .getBoundingClientRect().top;
-        const scrollPositionHeaderImg = Math.abs(
-            Math.min(0, bookingContentRectTop),
-        );
-        const headerImgProgress = scrollPositionHeaderImg / scrollHeightHeaderImg;
+            background.style.transform = `translateY(${scrollPosition * 0.5}px)`;
 
-        background.style.transform = `translateY(${scrollPosition * 0.5}px)`;
-
-        headerImgContainer.style.transform = `translateY(${scrollPositionHeaderImg * 0.5}px)`;
-        headerImg.style.transform = `scale(${1 + headerImgProgress * 0.1})`;
-        headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
-    });
-</script>
-<style>
-    [data-accordion-toggle][aria-expanded="true"] > svg {
-        transform: rotate(180deg);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        [data-accordion-panel],
-        [data-accordion-toggle] > svg {
-            transition: none;
+            headerImgContainer.style.transform = `translateY(${scrollPositionHeaderImg * 0.5}px)`;
+            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.1})`;
+            headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
+        });
+    </script>
+    <style>
+        [data-accordion-toggle][aria-expanded="true"] > svg {
+            transform: rotate(180deg);
         }
-    }
 
-    /*** ----------------------- ***/
-    /*** pill shimmers & pulses  ***/
-    /*** ----------------------- ***/
-
-    @property --glow-deg {
-        syntax: "<angle>";
-        inherits: true;
-        initial-value: 0deg;
-    }
-
-    @keyframes glow {
-        100% {
-            --glow-deg: 360deg;
+        @media (prefers-reduced-motion: reduce) {
+            [data-accordion-panel],
+            [data-accordion-toggle] > svg {
+                transition: none;
+            }
         }
-    }
 
-    /* border-amber-300 */
-    :root {
-        --bookable-gradient:
-            #c6e2ff, #4da3ff, #4da3ff, #416af1, #416af1, #4da3ff, #4da3ff,
-            #c6e2ff;
-    }
+        /*** ----------------------- ***/
+        /*** pill shimmers & pulses  ***/
+        /*** ----------------------- ***/
 
-    .preferred li {
-        background:
-            linear-gradient(floralwhite 0 0) padding-box,
-            conic-gradient(from var(--glow-deg), var(--bookable-gradient))
-                border-box;
-        animation: glow 10s linear infinite;
-    }
+        @property --glow-deg {
+            syntax: "<angle>";
+            inherits: true;
+            initial-value: 0deg;
+        }
 
-    .preferred .preferred-shadow {
-        background: conic-gradient(
-            from var(--glow-deg),
-            var(--bookable-gradient)
-        );
-        animation: glow 10s linear infinite;
-    }
+        @keyframes glow {
+            100% {
+                --glow-deg: 360deg;
+            }
+        }
 
-    /*** ----------------------- ***/
-    /*** wallpaper animations    ***/
-    /*** ----------------------- ***/
+        :root {
+            /* --preferred-gradient: #ffea9f, #ffd230, #ffd230, #ffc800, #ffc800, #ffd230, #ffd230, #ffea9f; */
+            --preferred-gradient:
+                #fff4ce, #ffd230, #ffd230, #ffc800, #ffc800, #ffd230, #ffd230,
+                #fff4ce;
+            --preferred-gradient:
+                #ffffff, #ffd230, #ffd230, #ffc800, #ffc800, #ffd230, #ffd230,
+                #ffffff;
+            --bookable-gradient-blue:
+                #c6e2ff, #4da3ff, #4da3ff, #416af1, #416af1, #4da3ff, #4da3ff,
+                #c6e2ff;
+        }
 
-    .page {
-        position: relative;
-        min-height: 100vh;
-        overflow: hidden;
-        /* isolation: isolate; */
-    }
+        .preferred li {
+            background:
+                linear-gradient(floralwhite 0 0) padding-box,
+                conic-gradient(from var(--glow-deg), var(--preferred-gradient))
+                    border-box;
+            animation: glow 10s linear infinite;
+        }
 
-    .wallpaper {
-        inset: 0;
-        z-index: 0;
-    }
+        .preferred .preferred-shadow {
+            background: conic-gradient(
+                from var(--glow-deg),
+                var(--preferred-gradient)
+            );
+            animation: glow 10s linear infinite;
+        }
 
-    #wallpaper-flash {
-        position: absolute;
-        background-repeat: repeat;
-        background-size: 72px 72px;
-        background-position: 0 0;
-        animation:
-            driftX 24s ease-in-out infinite,
-            driftY 12s linear infinite;
-        /* animation: driftWeave2 10s linear infinite; */
-        opacity: 0.9;
-        transform: translateY(0);
-    }
+        /*** ----------------------- ***/
+        /*** wallpaper animations    ***/
+        /*** ----------------------- ***/
 
-    #wallpaper-gradient {
-        position: fixed;
+        .page {
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+            /* isolation: isolate; */
+        }
 
-        background: linear-gradient(to bottom, thistle, cadetblue, red);
-        background: #3a81b4;
+        .wallpaper {
+            inset: 0;
+            z-index: 0;
+        }
+
+        #wallpaper-flash {
+            position: absolute;
+            background-repeat: repeat;
+            background-size: 72px 72px;
+            background-position: 0 0;
+            animation:
+                driftX 24s ease-in-out infinite,
+                driftY 12s linear infinite;
+            /* animation: driftWeave2 10s linear infinite; */
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+
+        #wallpaper-gradient {
+            position: fixed;
+
+            /* background: linear-gradient(to bottom, thistle, cadetblue, red); */
+            /* background: #3a81b4;
         background: linear-gradient(
             to bottom,
             rgba(58, 129, 180, 0.9) 0%,
             rgba(58, 80, 180, 0.7) 50%,
             rgba(72, 69, 252, 0.5) 100%
-        );
-        background: #9ed7ff;
+        ); */
+            /* background: #9ed7ff;
         background: linear-gradient(
             to bottom,
             rgba(158, 215, 255, 1) 0%,
             rgba(173, 207, 255, 1) 50%,
             rgba(201, 210, 255, 1) 100%
-        );
-        background: #9ed7ff;
+        ); */
+            /* background: #9ed7ff;
         background: linear-gradient(
             0deg,
             rgba(158, 215, 255, 1) 0%,
             rgba(204, 255, 235, 1) 50%,
             rgba(201, 210, 255, 1) 100%
-        );
-        background: #020024;
+        ); */
+            /* background: #020024;
         background: linear-gradient(
             0deg,
             rgba(2, 0, 36, 1) 0%,
             rgba(9, 9, 121, 1) 35%,
             rgba(0, 212, 255, 0.9) 100%
-        );
-        background: #eeaeca;
+        ); */
+            /* background: #eeaeca;
         background: radial-gradient(
             circle,
             rgba(238, 174, 202, 1) 0%,
             rgba(148, 187, 233, 1) 100%
-        );
-        background: radial-gradient(circle, #d4d4d4 0%, #a6a09b 100%);
-    }
-
-    @keyframes driftY {
-        from {
-            background-position-y: 0;
+        ); */
+            /* background: radial-gradient(circle, #d4d4d4 0%, #a6a09b 100%); */
+            /* background: #020024;
+        background: linear-gradient(
+            to bottom,
+            #8c95bc 0%,
+            oklch(51.667% 0.03953 257.893) 100%
+        ); */
         }
-        to {
-            background-position-y: 72px;
-        }
-    }
 
-    @keyframes driftX {
-        0% {
-            background-position-x: 0;
-            animation-timing-function: ease-out;
-        }
-        25% {
-            background-position-x: 72px;
-            animation-timing-function: ease-in;
-        }
-        50% {
-            background-position-x: 0px;
-            animation-timing-function: ease-out;
-        }
-        75% {
-            background-position: -72px;
-            animation-timing-function: ease-in;
-        }
-        100% {
-            background-position-x: 0px;
-            animation-timing-function: ease-out;
-        }
-    }
-</style>
-
-<script is:inline>
-    (() => {
-        const root = document.querySelector("[data-accordion-root]");
-        if (!root) return;
-
-        const isExpanded = (btn) =>
-            btn.getAttribute("aria-expanded") === "true";
-
-        const getPanel = (btn) => {
-            const id = btn.getAttribute("aria-controls");
-            return id ? document.getElementById(id) : null;
-        };
-
-        const setPanelInteractive = (panel, interactive) => {
-            if (!panel) return;
-            panel.inert = !interactive;
-        };
-
-        const isFocusInside = (el) =>
-            !!el &&
-            !!document.activeElement &&
-            el.contains(document.activeElement);
-
-        const ensureFocusNotIn = (panel, fallbackEl) => {
-            if (isFocusInside(panel)) fallbackEl?.focus?.();
-        };
-
-        const getTransitionMs = (el) => {
-            const styles = getComputedStyle(el);
-
-            const parseList = (value) =>
-                value
-                    .split(",")
-                    .map((part) => part.trim())
-                    .map((part) =>
-                        part.endsWith("ms")
-                            ? parseFloat(part)
-                            : parseFloat(part) * 1000,
-                    )
-                    .filter((n) => !Number.isNaN(n));
-
-            const durations = parseList(styles.transitionDuration);
-            const delays = parseList(styles.transitionDelay);
-
-            const maxDuration = Math.max(0, ...durations, 0);
-            const maxDelay = Math.max(0, ...delays, 0);
-
-            return maxDuration + maxDelay + 50;
-        };
-
-        const ensurePixelHeight = (panel) => {
-            const computed = getComputedStyle(panel).height;
-            if (computed === "auto" || panel.style.height === "auto") {
-                panel.style.height = panel.scrollHeight + "px";
-                void panel.offsetHeight;
+        @keyframes driftY {
+            from {
+                background-position-y: 0;
             }
-        };
+            to {
+                background-position-y: 72px;
+            }
+        }
 
-        const getAncestorPanels = (panel) => {
-            const ancestors = [];
-            let node =
-                panel.parentElement?.closest?.("[data-accordion-panel]") ??
-                null;
+        @keyframes driftX {
+            0% {
+                background-position-x: 0;
+                animation-timing-function: ease-out;
+            }
+            25% {
+                background-position-x: 72px;
+                animation-timing-function: ease-in;
+            }
+            50% {
+                background-position-x: 0px;
+                animation-timing-function: ease-out;
+            }
+            75% {
+                background-position: -72px;
+                animation-timing-function: ease-in;
+            }
+            100% {
+                background-position-x: 0px;
+                animation-timing-function: ease-out;
+            }
+        }
+    </style>
 
-            while (node) {
-                ancestors.push(node);
-                node =
-                    node.parentElement?.closest?.("[data-accordion-panel]") ??
+    <script is:inline>
+        (() => {
+            const root = document.querySelector("[data-accordion-root]");
+            if (!root) return;
+
+            const isExpanded = (btn) =>
+                btn.getAttribute("aria-expanded") === "true";
+
+            const getPanel = (btn) => {
+                const id = btn.getAttribute("aria-controls");
+                return id ? document.getElementById(id) : null;
+            };
+
+            const setPanelInteractive = (panel, interactive) => {
+                if (!panel) return;
+                panel.inert = !interactive;
+            };
+
+            const isFocusInside = (el) =>
+                !!el &&
+                !!document.activeElement &&
+                el.contains(document.activeElement);
+
+            const ensureFocusNotIn = (panel, fallbackEl) => {
+                if (isFocusInside(panel)) fallbackEl?.focus?.();
+            };
+
+            const getTransitionMs = (el) => {
+                const styles = getComputedStyle(el);
+
+                const parseList = (value) =>
+                    value
+                        .split(",")
+                        .map((part) => part.trim())
+                        .map((part) =>
+                            part.endsWith("ms")
+                                ? parseFloat(part)
+                                : parseFloat(part) * 1000,
+                        )
+                        .filter((n) => !Number.isNaN(n));
+
+                const durations = parseList(styles.transitionDuration);
+                const delays = parseList(styles.transitionDelay);
+
+                const maxDuration = Math.max(0, ...durations, 0);
+                const maxDelay = Math.max(0, ...delays, 0);
+
+                return maxDuration + maxDelay + 50;
+            };
+
+            const ensurePixelHeight = (panel) => {
+                const computed = getComputedStyle(panel).height;
+                if (computed === "auto" || panel.style.height === "auto") {
+                    panel.style.height = panel.scrollHeight + "px";
+                    void panel.offsetHeight;
+                }
+            };
+
+            const getAncestorPanels = (panel) => {
+                const ancestors = [];
+                let node =
+                    panel.parentElement?.closest?.("[data-accordion-panel]") ??
                     null;
-            }
 
-            return ancestors;
-        };
-
-        const prepareAncestorHeights = (panel) => {
-            const ancestors = getAncestorPanels(panel);
-            ancestors.forEach((ancestor) => ensurePixelHeight(ancestor));
-            return ancestors;
-        };
-
-        const syncAncestorTargets = (ancestors) => {
-            ancestors.forEach((ancestor) => {
-                ancestor.style.height = ancestor.scrollHeight + "px";
-            });
-        };
-
-        const finalizeAncestorHeights = (ancestors) => {
-            ancestors.forEach((ancestor) => {
-                if (ancestor.getAttribute("data-state") === "open") {
-                    ancestor.style.height = "auto";
-                }
-            });
-        };
-
-        const animatePanel = (btn, panel, expand) =>
-            new Promise((resolve) => {
-                if (!btn || !panel) {
-                    resolve();
-                    return;
+                while (node) {
+                    ancestors.push(node);
+                    node =
+                        node.parentElement?.closest?.(
+                            "[data-accordion-panel]",
+                        ) ?? null;
                 }
 
-                if (panel.dataset.animating === "1") {
-                    resolve();
-                    return;
-                }
+                return ancestors;
+            };
 
-                const ancestors = prepareAncestorHeights(panel);
+            const prepareAncestorHeights = (panel) => {
+                const ancestors = getAncestorPanels(panel);
+                ancestors.forEach((ancestor) => ensurePixelHeight(ancestor));
+                return ancestors;
+            };
 
-                if (!expand) ensureFocusNotIn(panel, btn);
+            const syncAncestorTargets = (ancestors) => {
+                ancestors.forEach((ancestor) => {
+                    ancestor.style.height = ancestor.scrollHeight + "px";
+                });
+            };
 
-                if (expand) {
-                    setPanelInteractive(panel, true);
-                }
+            const finalizeAncestorHeights = (ancestors) => {
+                ancestors.forEach((ancestor) => {
+                    if (ancestor.getAttribute("data-state") === "open") {
+                        ancestor.style.height = "auto";
+                    }
+                });
+            };
 
-                btn.disabled = true;
-                panel.dataset.animating = "1";
-                panel.style.pointerEvents = "none";
+            const animatePanel = (btn, panel, expand) =>
+                new Promise((resolve) => {
+                    if (!btn || !panel) {
+                        resolve();
+                        return;
+                    }
 
-                btn.setAttribute("aria-expanded", expand ? "true" : "false");
-                panel.setAttribute("data-state", expand ? "open" : "closed");
+                    if (panel.dataset.animating === "1") {
+                        resolve();
+                        return;
+                    }
 
-                ensurePixelHeight(panel);
+                    const ancestors = prepareAncestorHeights(panel);
 
-                const finish = () => {
-                    delete panel.dataset.animating;
-                    panel.style.pointerEvents = "";
-                    btn.disabled = false;
+                    if (!expand) ensureFocusNotIn(panel, btn);
 
                     if (expand) {
-                        panel.style.height = "auto";
-                    } else {
-                        setPanelInteractive(panel, false);
+                        setPanelInteractive(panel, true);
                     }
 
-                    finalizeAncestorHeights(ancestors);
-                    resolve();
-                };
+                    btn.disabled = true;
+                    panel.dataset.animating = "1";
+                    panel.style.pointerEvents = "none";
 
-                let done = false;
-                const complete = () => {
-                    if (done) return;
-                    done = true;
-                    panel.removeEventListener("transitionend", onEnd);
-                    clearTimeout(fallback);
-                    finish();
-                };
+                    btn.setAttribute(
+                        "aria-expanded",
+                        expand ? "true" : "false",
+                    );
+                    panel.setAttribute(
+                        "data-state",
+                        expand ? "open" : "closed",
+                    );
 
-                const onEnd = (e) => {
-                    if (e.target !== panel || e.propertyName !== "height")
-                        return;
-                    complete();
-                };
+                    ensurePixelHeight(panel);
 
-                const fallback = setTimeout(complete, getTransitionMs(panel));
+                    const finish = () => {
+                        delete panel.dataset.animating;
+                        panel.style.pointerEvents = "";
+                        btn.disabled = false;
 
-                panel.addEventListener("transitionend", onEnd);
+                        if (expand) {
+                            panel.style.height = "auto";
+                        } else {
+                            setPanelInteractive(panel, false);
+                        }
 
-                requestAnimationFrame(() => {
-                    panel.style.height = expand
-                        ? panel.scrollHeight + "px"
-                        : "0px";
-                    syncAncestorTargets(ancestors);
+                        finalizeAncestorHeights(ancestors);
+                        resolve();
+                    };
+
+                    let done = false;
+                    const complete = () => {
+                        if (done) return;
+                        done = true;
+                        panel.removeEventListener("transitionend", onEnd);
+                        clearTimeout(fallback);
+                        finish();
+                    };
+
+                    const onEnd = (e) => {
+                        if (e.target !== panel || e.propertyName !== "height")
+                            return;
+                        complete();
+                    };
+
+                    const fallback = setTimeout(
+                        complete,
+                        getTransitionMs(panel),
+                    );
+
+                    panel.addEventListener("transitionend", onEnd);
+
+                    requestAnimationFrame(() => {
+                        panel.style.height = expand
+                            ? panel.scrollHeight + "px"
+                            : "0px";
+                        syncAncestorTargets(ancestors);
+                    });
                 });
-            });
 
-        const getOpenDescendantButtonsDeepestFirst = (panel) => {
-            const openButtons = Array.from(
-                panel.querySelectorAll(
-                    '[data-accordion-toggle][aria-expanded="true"]',
-                ),
-            );
+            const getOpenDescendantButtonsDeepestFirst = (panel) => {
+                const openButtons = Array.from(
+                    panel.querySelectorAll(
+                        '[data-accordion-toggle][aria-expanded="true"]',
+                    ),
+                );
 
-            return openButtons.sort((a, b) => {
-                const depthA =
-                    a.closest("[data-accordion-panel]")?.parentsLength ?? 0;
-                const depthB =
-                    b.closest("[data-accordion-panel]")?.parentsLength ?? 0;
-                return depthB - depthA;
-            });
-        };
+                return openButtons.sort((a, b) => {
+                    const depthA =
+                        a.closest("[data-accordion-panel]")?.parentsLength ?? 0;
+                    const depthB =
+                        b.closest("[data-accordion-panel]")?.parentsLength ?? 0;
+                    return depthB - depthA;
+                });
+            };
 
-        // Slightly more reliable depth calculation than the placeholder above.
-        const getDepth = (el) => {
-            let depth = 0;
-            let current = el.closest("[data-accordion-panel]");
-            while (current) {
-                depth += 1;
-                current =
-                    current.parentElement?.closest?.(
-                        "[data-accordion-panel]",
-                    ) ?? null;
-            }
-            return depth;
-        };
+            // Slightly more reliable depth calculation than the placeholder above.
+            const getDepth = (el) => {
+                let depth = 0;
+                let current = el.closest("[data-accordion-panel]");
+                while (current) {
+                    depth += 1;
+                    current =
+                        current.parentElement?.closest?.(
+                            "[data-accordion-panel]",
+                        ) ?? null;
+                }
+                return depth;
+            };
 
-        const closeDescendantsFirst = async (panel) => {
-            const openButtons = Array.from(
-                panel.querySelectorAll(
-                    '[data-accordion-toggle][aria-expanded="true"]',
-                ),
-            ).sort((a, b) => getDepth(b) - getDepth(a));
+            const closeDescendantsFirst = async (panel) => {
+                const openButtons = Array.from(
+                    panel.querySelectorAll(
+                        '[data-accordion-toggle][aria-expanded="true"]',
+                    ),
+                ).sort((a, b) => getDepth(b) - getDepth(a));
 
-            for (const openBtn of openButtons) {
-                const openPanel = getPanel(openBtn);
-                if (!openPanel) continue;
-                await animatePanel(openBtn, openPanel, false);
-            }
-        };
+                for (const openBtn of openButtons) {
+                    const openPanel = getPanel(openBtn);
+                    if (!openPanel) continue;
+                    await animatePanel(openBtn, openPanel, false);
+                }
+            };
 
-        const closeBranch = async (btn) => {
-            const panel = getPanel(btn);
-            if (!panel || !isExpanded(btn)) return;
+            const closeBranch = async (btn) => {
+                const panel = getPanel(btn);
+                if (!panel || !isExpanded(btn)) return;
 
-            await closeDescendantsFirst(panel);
-            await animatePanel(btn, panel, false);
-        };
+                await closeDescendantsFirst(panel);
+                await animatePanel(btn, panel, false);
+            };
 
-        const getRootButtons = () =>
-            Array.from(
-                root.querySelectorAll(
-                    '[data-accordion-toggle][data-accordion-level="root"]',
-                ),
-            );
+            const getRootButtons = () =>
+                Array.from(
+                    root.querySelectorAll(
+                        '[data-accordion-toggle][data-accordion-level="root"]',
+                    ),
+                );
 
-        root.addEventListener("click", async (event) => {
-            const btn = event.target.closest?.("[data-accordion-toggle]");
-            if (!btn || !root.contains(btn)) return;
+            root.addEventListener("click", async (event) => {
+                const btn = event.target.closest?.("[data-accordion-toggle]");
+                if (!btn || !root.contains(btn)) return;
 
-            const panel = getPanel(btn);
-            if (!panel) return;
+                const panel = getPanel(btn);
+                if (!panel) return;
 
-            if (panel.dataset.animating === "1") return;
+                if (panel.dataset.animating === "1") return;
 
-            const level = btn.getAttribute("data-accordion-level");
-            const nextExpanded = !isExpanded(btn);
+                const level = btn.getAttribute("data-accordion-level");
+                const nextExpanded = !isExpanded(btn);
 
-            if (level === "root") {
-                if (nextExpanded) {
-                    for (const openRootBtn of getRootButtons()) {
-                        if (openRootBtn === btn) continue;
-                        if (!isExpanded(openRootBtn)) continue;
-                        await closeBranch(openRootBtn);
+                if (level === "root") {
+                    if (nextExpanded) {
+                        for (const openRootBtn of getRootButtons()) {
+                            if (openRootBtn === btn) continue;
+                            if (!isExpanded(openRootBtn)) continue;
+                            await closeBranch(openRootBtn);
+                        }
+                        await animatePanel(btn, panel, true);
+                    } else {
+                        await closeBranch(btn);
                     }
-                    await animatePanel(btn, panel, true);
-                } else {
-                    await closeBranch(btn);
+
+                    return;
                 }
 
-                return;
-            }
+                // Nested toggles:
+                // they can open/close independently,
+                // but when their parent person closes, they will be closed first.
+                await animatePanel(btn, panel, nextExpanded);
+            });
 
-            // Nested toggles:
-            // they can open/close independently,
-            // but when their parent person closes, they will be closed first.
-            await animatePanel(btn, panel, nextExpanded);
-        });
+            document.addEventListener("keydown", async (event) => {
+                if (event.key !== "Escape") return;
 
-        document.addEventListener("keydown", async (event) => {
-            if (event.key !== "Escape") return;
+                const openRootBtn = getRootButtons().find((btn) =>
+                    isExpanded(btn),
+                );
+                if (!openRootBtn) return;
 
-            const openRootBtn = getRootButtons().find((btn) => isExpanded(btn));
-            if (!openRootBtn) return;
-
-            await closeBranch(openRootBtn);
-            openRootBtn.focus();
-        });
-    })();
-</script>
+                await closeBranch(openRootBtn);
+                openRootBtn.focus();
+            });
+        })();
+    </script>
+</BaseLayout>

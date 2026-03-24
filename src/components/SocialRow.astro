@@ -1,7 +1,7 @@
 ---
-import { socialIcons } from "./graphics/socialmedia/registry";
+import { iconRegistry } from "./graphics/icons/registry";
 import type { SocialItems } from "../scripts/socials";
-import { socialTypes } from "../scripts/socials-defs";
+import { socialTypes } from "../scripts/contact-socials-platforms-defs";
 
 const {
     links = [],
@@ -26,7 +26,7 @@ const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
             );
             const href = item?.href;
 
-            const entry = socialIcons[key];
+            const entry = iconRegistry[key];
             if (!entry) return null;
 
             const { label, Icon } = entry;

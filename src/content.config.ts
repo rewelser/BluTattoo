@@ -1,7 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from 'astro/loaders';
-import { socialTypes } from "./scripts/socials-defs";
-import type { SocialType } from "./scripts/socials-defs";
+import { socialTypes } from "./scripts/contact-socials-platforms-defs";
+import type { SocialType } from "./scripts/contact-socials-platforms-defs";
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
@@ -141,15 +141,15 @@ const usPhoneSchema = z
     return digits.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
   });
 
-const withCommonFlags = (shape: z.ZodRawShape) =>
+const withCommonFlags = <S extends z.ZodRawShape>(shape: S) =>
   z.object({
     ...shape,
     enabled: z.boolean().default(true),
     preferred: z.boolean().optional()
   });
 
-// todo: look up how .extend works
-const contactBuilder = (type: string, shape: z.ZodRawShape) =>
+
+const contactBuilder = <T extends string, S extends z.ZodRawShape>(type: T, shape: S) =>
   withCommonFlags(shape).extend({
     type: z.literal(type),
     notes: optionalText
@@ -163,6 +163,7 @@ const contactSchema = z.array(
   ])
 ).optional();
 
+// can simply use socialTypes, because we don't need string literals for different shapes a la discriminated union (as in contacts)
 export const socialItemSchema = z.object({
   type: z.enum(socialTypes),
   href: z.string().url(),
