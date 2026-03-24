@@ -713,43 +713,6 @@ const title = "Booking";
                 }
             };
 
-            const getAncestorPanels = (panel) => {
-                const ancestors = [];
-                let node =
-                    panel.parentElement?.closest?.("[data-accordion-panel]") ??
-                    null;
-
-                while (node) {
-                    ancestors.push(node);
-                    node =
-                        node.parentElement?.closest?.(
-                            "[data-accordion-panel]",
-                        ) ?? null;
-                }
-
-                return ancestors;
-            };
-
-            const prepareAncestorHeights = (panel) => {
-                const ancestors = getAncestorPanels(panel);
-                ancestors.forEach((ancestor) => ensurePixelHeight(ancestor));
-                return ancestors;
-            };
-
-            const syncAncestorTargets = (ancestors) => {
-                ancestors.forEach((ancestor) => {
-                    ancestor.style.height = ancestor.scrollHeight + "px";
-                });
-            };
-
-            const finalizeAncestorHeights = (ancestors) => {
-                ancestors.forEach((ancestor) => {
-                    if (ancestor.getAttribute("data-state") === "open") {
-                        ancestor.style.height = "auto";
-                    }
-                });
-            };
-
             const animatePanel = (btn, panel, expand) =>
                 new Promise((resolve) => {
                     if (!btn || !panel) {
@@ -762,7 +725,6 @@ const title = "Booking";
                         return;
                     }
 
-                    const ancestors = prepareAncestorHeights(panel);
 
                     if (!expand) ensureFocusNotIn(panel, btn);
 
@@ -796,7 +758,6 @@ const title = "Booking";
                             setPanelInteractive(panel, false);
                         }
 
-                        finalizeAncestorHeights(ancestors);
                         resolve();
                     };
 
@@ -826,7 +787,6 @@ const title = "Booking";
                         panel.style.height = expand
                             ? panel.scrollHeight + "px"
                             : "0px";
-                        syncAncestorTargets(ancestors);
                     });
                 });
 
