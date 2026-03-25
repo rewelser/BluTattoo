@@ -37,7 +37,7 @@ import "@fontsource/fleur-de-leah/400.css";
 <BaseLayout
   title={title}
   preloadImage={preloadImage}
-  bodyClass="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
+  bodyClass="min-h-screen text-emerald-950 font-[Spectral] bg-black bg-white relative"
   bodyStyle={`${!isHome ? "top: var(--announcement-h);" : ""}`}
 >
   <Fragment slot="head">
@@ -96,7 +96,7 @@ import "@fontsource/fleur-de-leah/400.css";
     site={site}
     class="site-header"
   />
-  <main class="mx-auto">
+  <main class="mx-auto border-3 border-red-500 overflow-visible">
     <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
     <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
       <div>
