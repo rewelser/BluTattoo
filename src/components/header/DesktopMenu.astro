@@ -26,10 +26,9 @@ const isItemActive = (item: MenuItem) => {
   class="hidden md:block sticky top-0 border-b z-50 bg-black/60 bg-white backdrop-blur-sm"
   style="top: var(--announcement-h);"
 > -->
-<header
+<div
   id="desktop-menu"
-  class="hidden md:block sticky top-0 border-b z-50 bg-black/10 bg-white backdrop-blur-sm"
-  style="top: var(--announcement-h);"
+  class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm"
 >
   <nav aria-label="Primary" class="mx-auto max-w-6xl px-4">
     <ul class="flex items-center justify-center gap-8 py-3">
@@ -85,7 +84,7 @@ const isItemActive = (item: MenuItem) => {
       }
     </ul>
   </nav>
-</header>
+</div>
 
 <script is:inline>
   (() => {
@@ -97,7 +96,10 @@ const isItemActive = (item: MenuItem) => {
       root.offsetHeight + "px",
     );
 
-    console.log("--desktop-menu-h", document.documentElement.style.getPropertyValue("--desktop-menu-h"));
+    console.log(
+      "--desktop-menu-h",
+      document.documentElement.style.getPropertyValue("--desktop-menu-h"),
+    );
     console.log("root.style.height", root.clientHeight);
     console.log("root.style.height", root.offsetHeight);
 

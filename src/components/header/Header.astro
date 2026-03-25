@@ -67,14 +67,15 @@ const heroVideo = branding?.hero?.video;
     <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} />
   )
 }
+<header class="sticky top-0 z-50" style="top: var(--announcement-h);">
+  <!-- desktop nav -->
+  <DesktopMenu menuItems={menuItems} currentPath={Astro.url.pathname} />
 
-<!-- desktop nav -->
-<DesktopMenu menuItems={menuItems} currentPath={Astro.url.pathname} />
-
-<!-- mobile nav + logo -->
-<MobileMenu
-  menuItems={menuItems}
-  logo_light={logo_light}
-  variant={variant}
-  siteName={siteName}
-/>
+  <!-- mobile nav + logo -->
+  <MobileMenu
+    menuItems={menuItems}
+    logo_light={logo_light}
+    variant={variant}
+    siteName={siteName}
+  />
+</header>

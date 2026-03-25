@@ -40,12 +40,11 @@ const {
 </style>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<header
+<div
   id="mobile-menu"
-  class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
+  class={`md:hidden border-b text-orange-100 relative ${
     variant !== "home" ? "bg-black/80 backdrop-blur" : ""
   }`}
-  style="top: var(--announcement-h);"
 >
   <!-- top row: logo + button -->
   <div
@@ -162,7 +161,7 @@ const {
       </nav>
     </div>
   </div>
-</header>
+</div>
 
 
 <script is:inline>
