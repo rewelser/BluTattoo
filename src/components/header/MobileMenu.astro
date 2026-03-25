@@ -22,7 +22,7 @@ const {
 
   #mobile-logo-container {
     will-change: transform;
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
 
   html.scroll-locked,
@@ -40,39 +40,23 @@ const {
 </style>
 
 <!-- Mobile: single sticky bar (logo + menu button) -->
-<div
+<header
   id="mobile-menu"
   class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
     variant !== "home" ? "bg-black/80 backdrop-blur" : ""
   }`}
   style="top: var(--announcement-h);"
 >
-<!-- <div
-  id="mobile-menu"
-  class={`md:hidden sticky top-0 z-50 border-b text-orange-100 relative ${
-    variant !== "home" ? "bg-black/20" : ""
-  }`}
-  style="top: var(--announcement-h);"
-> -->
   <!-- top row: logo + button -->
   <div
-  id="mobile-menu-top-bar"
+    id="mobile-menu-top-bar"
     class="flex items-center flex-col justify-center flex-end mx-auto max-w-6xl min-h-[10vh]"
   >
-    <!-- <div
-      id="mobile-logo-container"
-      class="absolute"
-      style={`${variant === "home" ? "transform: translateY(-55vh)" : ""}`}
-    > -->
-        <div
+    <div
       id="mobile-logo-container"
       class="absolute left-1/2 w-screen"
       style={`${variant === "home" ? "transform: translate3d(-50%, -55vh, 0) scale(1)" : "transform: translate3d(-50%, 0, 0)"}`}
     >
-        <!-- <div
-      id="mobile-logo-container"
-      class="absolute"
-    > -->
       <a href="/">
         <img
           id="mobile-logo"
@@ -178,7 +162,8 @@ const {
       </nav>
     </div>
   </div>
-</div>
+</header>
+
 
 <script is:inline>
   (() => {

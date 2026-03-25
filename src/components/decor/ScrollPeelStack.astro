@@ -288,11 +288,16 @@ const sides: SideImages = sideImages ?? {
                         bottom: Math.max(0, bottom),
                     };
 
+                    console.log("exitFinal", exitFinal);
+
                     // NEW: responsive minimum scale so scaled content still covers final clipped window
                     const shellW = shell.width || 1;
                     const shellH = shell.height || 1;
+                    // const shellH = shell.height + 30 || 1;
                     const stageW = s.width || 1;
                     const stageH = s.height || 1;
+                    console.log("shellH", shellH);
+                    console.log("stageH", stageH);
 
                     minCoverScale = Math.max(shellW / stageW, shellH / stageH);
                     console.log("shellW / stageW,  shellH / stageH", shellW, stageW, shellH, stageH);
