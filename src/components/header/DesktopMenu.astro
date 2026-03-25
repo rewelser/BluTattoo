@@ -20,6 +20,7 @@ const isItemActive = (item: MenuItem) => {
   return item.items.some((sub) => isActive(sub.href));
 };
 ---
+
 <!-- <div
   id="desktop-menu"
   class="hidden md:block sticky top-0 border-b z-50 bg-black/60 bg-white backdrop-blur-sm"
@@ -90,6 +91,15 @@ const isItemActive = (item: MenuItem) => {
   (() => {
     const root = document.getElementById("desktop-menu");
     if (!root) return;
+
+    document.documentElement.style.setProperty(
+      "--desktop-menu-h",
+      root.offsetHeight + "px",
+    );
+
+    console.log("--desktop-menu-h", document.documentElement.style.getPropertyValue("--desktop-menu-h"));
+    console.log("root.style.height", root.clientHeight);
+    console.log("root.style.height", root.offsetHeight);
 
     const getOpenDetails = () =>
       Array.from(root.querySelectorAll("details[open]"));

@@ -93,6 +93,7 @@ const background =
             banner.style.height,
           );
           console.log("promobar else");
+          console.log("banner.style.height", banner.style.height);
         }
       } catch {
         // document.documentElement.style.setProperty(
@@ -105,7 +106,7 @@ const background =
         );
         console.log("catch");
       }
-      // console.log("--announcement-h", --announcement-h);
+      // console.log("--announcement-h", document.documentElement.style.get);
 
       banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
         try {

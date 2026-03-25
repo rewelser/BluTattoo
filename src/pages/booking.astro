@@ -6,6 +6,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 // import "../styles/global.css";
 import { iconRegistry } from "../components/graphics/icons/registry";
 import type { IconType } from "../scripts/contact-socials-platforms-defs";
+import DesktopTopLogo from "../components/header/DesktopTopLogo.astro";
+import branding from "../content/branding.json";
+const site = await getEntry("siteInfo", "main");
+import { defaults } from "../config/site";
 
 import { loadArtistsActiveNonguest } from "../scripts/people";
 
@@ -20,6 +24,8 @@ const sickleSvg = `
 `;
 
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
+const siteName = site?.data?.siteName ?? defaults.siteName;
+const logo_dark = branding?.logo_dark ?? defaults.siteLogo;
 const title = "Booking";
 ---
 
@@ -29,7 +35,7 @@ const title = "Booking";
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Star Drift Test</title>
     </head> -->
-<BaseLayout title={` — ${title}`}>
+<BaseLayout title={title}>
     <main class="page">
         <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
         <div
@@ -88,7 +94,20 @@ const title = "Booking";
                         );
                     }
                 </style>
-                <div class="h-[300px] w-[300px]"></div>
+                <div class="relative w-full">
+                    <!-- <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} /> -->
+                    <div class="mx-auto px-4 py-6 md:py-8 flex items-center justify-center">
+                        <a
+                            href="/"
+                            class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-amber-300 overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-[#dfac04] shadow-[6px_4px_0px_#c8a01b]"
+                        >
+                            <img
+                                src={logo_dark}
+                                alt={`${siteName} Homepage`}
+                            />
+                        </a>
+                    </div>
+                </div>
             </header>
             <section
                 class="px-4 pt-8 pb-16"
@@ -145,7 +164,7 @@ const title = "Booking";
                             return (
                                 csb &&
                                 hasBookables && (
-                                    <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] not-first:mt-3">
+                                    <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] overflow-hidden not-first:mt-3">
                                         <button
                                             id={personBtnId}
                                             class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
@@ -724,7 +743,6 @@ const title = "Booking";
                         resolve();
                         return;
                     }
-
 
                     if (!expand) ensureFocusNotIn(panel, btn);
 

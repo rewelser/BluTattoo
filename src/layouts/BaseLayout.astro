@@ -13,8 +13,6 @@ const {
     bodyStyle = "",
     htmlLang = "en",
 } = Astro.props;
-
-const title = pageTitle ?? siteName;
 ---
 
 <!doctype html>
@@ -22,7 +20,7 @@ const title = pageTitle ?? siteName;
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
-        <title>{siteName}{title}</title>
+        <title>{pageTitle ? `${pageTitle} | ${siteName}` : siteName}</title>
         {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
         <slot name="head" />
     </head>

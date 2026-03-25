@@ -10,6 +10,7 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
+const title = "Home";
 ---
 
 <script>
@@ -17,7 +18,7 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
   bootFadeUp({ observeMutations: true });
 </script>
 
-<Layout isHome title=" — Home">
+<Layout isHome title={title}>
   <section class="relative w-full py-32 px-6 overflow-hidden">
     <!-- subtle background glow / depth -->
     <!-- <div class="pointer-events-none absolute inset-0">

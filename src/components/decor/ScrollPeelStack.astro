@@ -61,7 +61,13 @@ const sides: SideImages = sideImages ?? {
 ---
 
 <section id={id} class="relative" style={`height:${heightVh}vh;`}>
-    <div class="sticky top-0 overflow-hidden h-screen">
+    <!-- <div class="sticky top-0 overflow-hidden h-screen"> -->
+    <!-- <div class="sticky top-(--menu-h) overflow-hidden h-screen"> -->
+    <!-- <div class="sticky top-(--mobile-menu-h) overflow-hidden h-screen"> -->
+    <!-- <div class="sticky top-(--desktop-menu-h) overflow-hidden h-screen"> -->
+    <!-- <div class="sticky top-(--announcement-h) overflow-hidden h-screen"> -->
+    <!-- <div class="sticky top-(--menu-announcement-h) overflow-hidden h-screen"> -->
+    <div class="sticky top-(--menu-announcement-h) overflow-hidden h-[calc(100vh_-_var(--menu-announcement-h))]">
         <div
             id="content-frame"
             class="absolute inset-2 overflow-hidden rounded-xl"
