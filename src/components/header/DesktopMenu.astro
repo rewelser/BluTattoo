@@ -91,11 +91,6 @@ const isItemActive = (item: MenuItem) => {
     const root = document.getElementById("desktop-menu");
     if (!root) return;
 
-    document.documentElement.style.setProperty(
-      "--desktop-menu-h",
-      root.offsetHeight + "px",
-    );
-
     console.log(
       "--desktop-menu-h",
       document.documentElement.style.getPropertyValue("--desktop-menu-h"),
@@ -108,6 +103,13 @@ const isItemActive = (item: MenuItem) => {
 
     const closeAll = () => {
       getOpenDetails().forEach((d) => d.removeAttribute("open"));
+    };
+
+    const updateDesktopMenuHeight = () => {
+      document.documentElement.style.setProperty(
+        "--desktop-menu-h",
+        root.offsetHeight + "px",
+      );
     };
 
     // Only allow one <details> open at a time
@@ -147,5 +149,10 @@ const isItemActive = (item: MenuItem) => {
       if (!link) return;
       closeAll();
     });
+
+    updateDesktopMenuHeight();
+
+    window.addEventListener("resize", updateDesktopMenuHeight);
+    window.addEventListener("orientationchange", updateDesktopMenuHeight);
   })();
 </script>

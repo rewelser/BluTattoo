@@ -176,10 +176,19 @@ const {
 
     const isExpanded = (btn) => btn.getAttribute("aria-expanded") === "true";
 
-    document.documentElement.style.setProperty(
-      "--mobile-menu-h",
-      mobileMenuTopBar.offsetHeight + "px",
-    );
+
+    // --- menu height property setters (similar to those in DesktopMenu) ---------------------------------------------
+    const updateMobileMenuHeight = () => {
+      document.documentElement.style.setProperty(
+        "--mobile-menu-h",
+        mobileMenuTopBar.offsetHeight + "px",
+      );
+    };
+
+    updateMobileMenuHeight();
+
+    window.addEventListener("resize", updateMobileMenuHeight);
+    window.addEventListener("orientationchange", updateMobileMenuHeight);
 
     // --- accessibility helpers ---------------------------------------------
 
