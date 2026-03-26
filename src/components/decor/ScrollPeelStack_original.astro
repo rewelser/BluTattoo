@@ -61,16 +61,7 @@ const sides: SideImages = sideImages ?? {
 ---
 
 <section id={id} class="relative" style={`height:${heightVh}vh;`}>
-    <!-- <div data-sticky-shell class="sticky top-0 overflow-hidden h-screen"> -->
-    <!-- <div data-sticky-shell class="sticky top-(--menu-h) overflow-hidden h-screen"> -->
-    <!-- <div data-sticky-shell class="sticky top-(--mobile-menu-h) overflow-hidden h-screen"> -->
-    <!-- <div data-sticky-shell class="sticky top-(--desktop-menu-h) overflow-hidden h-screen"> -->
-    <!-- <div data-sticky-shell class="sticky top-(--announcement-h) overflow-hidden h-screen"> -->
-    <!-- <div data-sticky-shell class="sticky top-(--menu-announcement-h) overflow-hidden h-screen"> -->
-    <div
-        data-sticky-shell
-        class="sticky top-(--menu-announcement-h) overflow-hidden h-[calc(100vh_-_var(--menu-announcement-h))]"
-    >
+    <div class="sticky top-0 overflow-hidden h-screen">
         <div
             id="content-frame"
             class="absolute inset-2 overflow-hidden rounded-xl"
@@ -87,7 +78,7 @@ const sides: SideImages = sideImages ?? {
                 >
                     <div
                         data-peel-scale
-                        class="absolute inset-0 will-change-transform outline-3 outline-green-500"
+                        class="absolute inset-0 will-change-transform"
                         style="transform: scale(1); transform-origin: 50% 50%;"
                     >
                         <!-- Bottom (always visible) -->
@@ -124,7 +115,7 @@ const sides: SideImages = sideImages ?? {
 
         <!-- Grid exists the whole time (like the reference site) -->
         <div
-            class="grid h-full w-full grid-cols-3 items-center gap-x-1 sm:gap-x-2 py-50 sm:py-40 md:py-30 lg:py-10 landscape:py-10 sm:px-10 md:px-20 lg:px-50 min-w-[500px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border-3 border-amber-600"
+            class="grid h-full w-full grid-cols-3 items-center gap-x-1 sm:gap-x-2 py-50 sm:py-40 md:py-30 lg:py-10 landscape:py-10 sm:px-10 md:px-20 lg:px-50 min-w-[500px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         >
             <!-- LEFT COLUMN (real layout; stacks naturally) -->
             <div class="flex h-full flex-col justify-start gap-1 sm:gap-2">
@@ -206,9 +197,6 @@ const sides: SideImages = sideImages ?? {
                 const section = document.getElementById(id);
                 if (!section) return;
 
-                const stickyShell = section.querySelector(
-                    "[data-sticky-shell]",
-                );
                 const stage = section.querySelector("[data-peel-stage]");
                 const centerShell = section.querySelector(
                     "[data-center-shell]",
@@ -221,16 +209,7 @@ const sides: SideImages = sideImages ?? {
                 );
 
                 const scaleWrap = section.querySelector("[data-peel-scale]");
-                if (!stickyShell || !stage || !centerShell || !scaleWrap)
-                    return;
-
-                const getStickyMetrics = () => {
-                    const stickyStyles = getComputedStyle(stickyShell);
-                    const stickyTop = parseFloat(stickyStyles.top) || 0;
-                    const stickyH =
-                        stickyShell.getBoundingClientRect().height || 1;
-                    return { stickyTop, stickyH };
-                };
+                if (!stage || !centerShell || !scaleWrap) return;
 
                 const clamp01 = (n) => Math.max(0, Math.min(1, n));
                 const lerp = (a, b, t) => a + (b - a) * t;
@@ -303,23 +282,14 @@ const sides: SideImages = sideImages ?? {
                         bottom: Math.max(0, bottom),
                     };
 
-                    console.log("exitFinal", exitFinal);
-
                     // NEW: responsive minimum scale so scaled content still covers final clipped window
                     const shellW = shell.width || 1;
                     const shellH = shell.height || 1;
-                    // const shellH = shell.height + 30 || 1;
                     const stageW = s.width || 1;
                     const stageH = s.height || 1;
 
                     minCoverScale = Math.max(shellW / stageW, shellH / stageH);
-                    console.log(
-                        "shellW / stageW,  shellH / stageH",
-                        shellW,
-                        stageW,
-                        shellH,
-                        stageH,
-                    );
+                    console.log("shellW / stageW,  shellH / stageH", shellW, stageW, shellH, stageH);
                     console.log("minCoverScale", minCoverScale);
 
                     // optional tiny safety margin against subpixel rounding
@@ -337,14 +307,12 @@ const sides: SideImages = sideImages ?? {
                     const r = section.getBoundingClientRect();
                     // const vh = window.innerHeight || 1;
                     const vh = document.documentElement.clientHeight || 1;
-                    const { stickyTop, stickyH } = getStickyMetrics();
-                    // console.log("vh, stickyH", vh, stickyH);
+                    
 
                     // ---------------------------
                     // OPENING (approach phase)
                     // ---------------------------
-                    // const startPx = vh * openStartVh;
-                    const startPx = stickyTop + stickyH * openStartVh;
+                    const startPx = vh * openStartVh;
                     const openT = clamp01((startPx - r.top) / (startPx || 1));
                     const openTEased = ease.smoothstep(openT);
 
@@ -355,12 +323,8 @@ const sides: SideImages = sideImages ?? {
                     // ---------------------------
                     // STICKY SCENE timeline (0..1)
                     // ---------------------------
-                    const scrollable_orig = r.height - vh;
-                    const scrollable = Math.max(1, r.height - stickyH);
-                    const traveled_orig = Math.max(0, -r.top);
-                    const traveled = Math.max(0, stickyTop - r.top);
-                    // console.log("scrollable_orig, scrollable", scrollable_orig, scrollable);
-                    // console.log("traveled_orig, traveled", traveled_orig, traveled);
+                    const scrollable = r.height - vh;
+                    const traveled = Math.max(0, -r.top);
                     const tScene = clamp01(traveled / (scrollable || 1));
 
                     const peelT = clamp01(tScene / peelFrac);
