@@ -1,6 +1,5 @@
 ---
 title: "March week 1 test event 1"
-detailsShort: "Help us prepare the community garden beds for the spring growing season."
 published: true
 featured: true
 archived: false

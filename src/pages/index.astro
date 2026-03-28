@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getEntry } from "astro:content";
 import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
+import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
@@ -119,5 +120,42 @@ const title = "Home";
       ],
     }}
   />
-  <div class=" relative top-200px bg-transparent h-[500px] w-full"> test</div>
+  <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
+  <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
+  <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-700">
+    <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
+    <div
+      class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-[seashell]"
+    >
+      <h2
+        class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah] text-[seashell]"
+      >
+        Our Story
+      </h2>
+
+      <p>
+        Establishing and running a professional tattoo studio in the heart of
+        Uptown Martinsville, VA would be daunting for any new business owner. At
+        five months pregnant, local native Lara Blair did not at first feel up
+        to the task. “No one can be a mother and run a tattoo shop.” But with
+        family nearby and more on the way, she couldn’t move. With the
+        encouragement of Laurna, a veteran shop owner and tattoo artist who
+        joined BluTattoo early on, it became clear that there was no use living
+        a life ruled by fear of the unknown.
+      </p>
+      <p>
+        Making waves against the tide of male-dominated industry, Lara has built
+        BluTattoo into a thriving studio serving not only Martinsville, but
+        people across the region who are seeking hand-crafted art.
+      </p>
+      <p>
+        Not long after, the shop would welcome Sierra Davis, and later bring Zoe
+        Kirk under its wing as its first apprentice (now a licensed artist).
+        BluTattoo is proud to serve its community, and change the tide along the
+        way.
+      </p>
+
+      <HrDivider text="wawawaaw" color="seashell"/>
+    </div>
+  </section>
 </Layout>

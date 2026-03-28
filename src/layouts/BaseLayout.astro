@@ -20,11 +20,12 @@ const {
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
+        <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
         <title>{pageTitle ? `${pageTitle} | ${siteName}` : siteName}</title>
         {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
         <slot name="head" />
     </head>
-    <body class={bodyClass} style={bodyStyle}>
+    <body class={`${bodyClass} margin-0`} style={bodyStyle}>
         <slot />
     </body>
 </html>

@@ -1,6 +1,7 @@
 ---
 title: "March week 5 test event 1"
 detailsShort: "Help us prepare the community garden beds for the spring growing season."
+image: "/uploads/events/womenswednesday.jpg"
 published: true
 featured: true
 archived: false

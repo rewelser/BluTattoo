@@ -114,14 +114,14 @@ const sides: SideImages = sideImages ?? {
             </div>
         </div>
 
-        <div class="spstack-grid-container absolute inset-2 flex items-center justify-center sm:px-10 md:px-20 lg:px-50">
+        <div
+            class="spstack-grid-container absolute inset-2 flex items-center justify-center sm:px-10 md:px-20 lg:px-50"
+        >
             <div
                 class="spstack-grid aspect-[14/9] max-h-full grid grid-cols-3 gap-x-1 sm:gap-x-2"
             >
                 <!-- LEFT COLUMN -->
-                <div
-                    class="flex flex-col justify-start gap-1 sm:gap-2"
-                >
+                <div class="flex flex-col justify-start gap-1 sm:gap-2">
                     <div
                         data-side="l1"
                         class="opacity-0 pointer-events-none"
@@ -161,9 +161,7 @@ const sides: SideImages = sideImages ?? {
                 </div>
 
                 <!-- RIGHT COLUMN -->
-                <div
-                    class="flex flex-col justify-end gap-1 sm:gap-2"
-                >
+                <div class="flex flex-col justify-end gap-1 sm:gap-2">
                     <div
                         data-side="r1"
                         class="opacity-0 pointer-events-none pr-10"
@@ -299,7 +297,7 @@ const sides: SideImages = sideImages ?? {
                         bottom: Math.max(0, bottom),
                     };
 
-                    console.log("exitFinal", exitFinal);
+                    // console.log("exitFinal", exitFinal);
 
                     // NEW: responsive minimum scale so scaled content still covers final clipped window
                     const centerShellW = centerShellRect.width || 1;
@@ -312,14 +310,14 @@ const sides: SideImages = sideImages ?? {
                         centerShellW / peelStageW,
                         centerShellH / peelStageH,
                     );
-                    console.log(
-                        "centerShellW / peelStageW, centerShellH / peelStageH",
-                        centerShellW,
-                        peelStageW,
-                        centerShellH,
-                        peelStageH,
-                    );
-                    console.log("minCoverScale", minCoverScale);
+                    // console.log(
+                    //     "centerShellW / peelStageW, centerShellH / peelStageH",
+                    //     centerShellW,
+                    //     peelStageW,
+                    //     centerShellH,
+                    //     peelStageH,
+                    // );
+                    // console.log("minCoverScale", minCoverScale);
 
                     // optional tiny safety margin against subpixel rounding
                     minCoverScale = Math.min(1, minCoverScale + 0.01);
@@ -337,7 +335,7 @@ const sides: SideImages = sideImages ?? {
                     // const vh = window.innerHeight || 1;
                     const vh = document.documentElement.clientHeight || 1;
                     const { stickyTop, stickyH } = getStickyMetrics();
-                    console.log("vh, stickyH", vh, stickyH);
+                    // console.log("vh, stickyH", vh, stickyH);
 
                     // ---------------------------
                     // OPENING (approach phase)
@@ -445,6 +443,15 @@ const sides: SideImages = sideImages ?? {
                         el.style.opacity = String(o);
                     }
                 };
+
+                // On actual device browsers, these may load in incompletely, so we have to observe when they resize
+                const ro = new ResizeObserver(() => {
+                    computeExitInsetsPx();
+                    onScroll();
+                });
+
+                ro.observe(centerShell);
+                ro.observe(peelStage);
 
                 const onScroll = () => {
                     if (rafId) return;

@@ -101,7 +101,9 @@ import "@fontsource/fleur-de-leah/400.css";
     <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
       <div>
         <!-- todo: what is this doing? vvv -->
-        <div id="pagecontent-wrap" class="relative z-40 bg-white">
+        <!-- todo2: I dupepd it and got rid of z-40 to test that out. I think I added z-40 for an obsolete reason -->
+        <!-- <div id="pagecontent-wrap" class="relative z-40 bg-white"> -->
+        <div id="pagecontent-wrap" class="relative bg-white">
           <slot />
           {/* page content goes here */}
         </div>

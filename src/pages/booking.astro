@@ -35,40 +35,46 @@ const title = "Booking";
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Star Drift Test</title>
     </head> -->
-<BaseLayout title={title}>
+<BaseLayout title={title} bodyClass="bg-black">
     <main class="page">
         <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
+        <!-- <div class="wallpaper wallpaper-gradient h-screen bg-gradient-to-b from-neutral-300 to-stone-600 hidden md:block" aria-hidden="true"> -->
         <div
-            id="wallpaper-gradient"
-            class="wallpaper h-screen bg-gradient-to-b from-neutral-300 to-stone-600"
+            class="wallpaper wallpaper-gradient h-screen hidden md:block"
             aria-hidden="true"
         >
         </div>
         <div
-            id="wallpaper-flash"
-            class="wallpaper"
+            class="wallpaper wallpaper-flash-animated hidden md:block"
             aria-hidden="true"
-            style={`background-image: url("${sickleDataUrl}")`}
+            style={`background-image: url(${sickleDataUrl})`}
         >
         </div>
-        <!-- <div id="booking-content" class="relative bg-amber-400 bg-gradient-to-b from-stone-500 to-stone-700 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-pink-200 to-violet-200 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-sky-500 to-indigo-900 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-rose-500 to-stone-700 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-indigo-700 to-cyan-900 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-r from-teal-200 to-indigo-200 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
-        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-amber-200 to-amber-500 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-amber-400 bg-gradient-to-b from-stone-500 to-stone-700 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-pink-200 to-violet-200 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-sky-500 to-indigo-900 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-rose-500 to-stone-700 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-indigo-700 to-cyan-900 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-r from-teal-200 to-indigo-200 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-amber-200 to-amber-500 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
+        <!-- <div id="booking-content" class="relative bg-gradient-to-b from-teal-200 to-teal-600 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"> -->
         <div
             id="booking-content"
-            class="relative bg-gradient-to-b from-teal-200 to-teal-600 rounded-4xl overflow-hidden mx-3 sm:mx-auto my-10 max-w-3xl"
+            class="relative bg-gradient-to-b from-[#04005c] to-[#193cb8] md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl"
         >
+            <div
+                class="wallpaper wallpaper-flash-animated block md:hidden"
+                aria-hidden="true"
+                style={`background-image: url(${sickleDataUrl})`}
+            >
+            </div>
             <header
                 id="booking-header"
                 class="relative flex flex-col justify-center"
             >
                 <div
                     id="header-img-container"
-                    class="relative rounded-4xl overflow-hidden"
+                    class="relative md:rounded-4xl overflow-hidden opacity-0"
                 >
                     <img
                         class="backdrop-opacity-10"
@@ -96,15 +102,16 @@ const title = "Booking";
                 </style>
                 <div class="relative w-full">
                     <!-- <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} /> -->
-                    <div class="mx-auto px-4 py-6 md:py-8 flex items-center justify-center">
+                    <div
+                        class="mx-auto px-4 py-6 md:py-8 flex items-center justify-center"
+                    >
+                        <!-- <a href="/" class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-(--brand-profile-border-color) shadow-[6px_4px_0px_var(--brand-profile-shadow-color)]"> -->
                         <a
+                            id="brand-profile-pic"
                             href="/"
-                            class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-amber-300 overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-[#dfac04] shadow-[6px_4px_0px_#c8a01b]"
+                            class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
                         >
-                            <img
-                                src={logo_dark}
-                                alt={`${siteName} Homepage`}
-                            />
+                            <img src={logo_dark} alt={`${siteName} Homepage`} />
                         </a>
                     </div>
                 </div>
@@ -174,7 +181,8 @@ const title = "Booking";
                                             data-accordion-toggle
                                             data-accordion-level="root"
                                         >
-                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]">
+                                            {/* <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]"> */}
+                                            <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[3px_3px_0px_1px_var(--profile-frame-shadow-color)]">
                                                 <img
                                                     src={profilePicture}
                                                     alt={`Booking profile image for ${person.data.name}`}
@@ -465,9 +473,11 @@ const title = "Booking";
         window.addEventListener("scroll", function () {
             const scrollPosition = window.scrollY;
             // const scrollHeight = document.body.offsetHeight - document.documentElement.clientHeight;
-            const scrollHeightHeaderImg =
-                document.getElementById("booking-content").clientHeight;
-            const background = document.getElementById("wallpaper-flash");
+            const bookingContent = document.getElementById("booking-content");
+            const scrollHeightHeaderImg = bookingContent.clientHeight;
+            const wallaperFlashAnimated = document.querySelector(
+                ".wallpaper-flash-animated",
+            );
             const headerImgContainer = document.querySelector(
                 "#header-img-container",
             );
@@ -475,20 +485,21 @@ const title = "Booking";
                 "#header-img-container img",
             );
 
-            const bookingContentRectTop = document
-                .getElementById("booking-content")
-                .getBoundingClientRect().top;
+            const bookingContentRectTop =
+                bookingContent.getBoundingClientRect().top;
             const scrollPositionHeaderImg = Math.abs(
                 Math.min(0, bookingContentRectTop),
             );
             const headerImgProgress =
                 scrollPositionHeaderImg / scrollHeightHeaderImg;
 
-            background.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+            wallaperFlashAnimated.style.transform = `translateY(${scrollPosition * 0.5}px)`;
 
             headerImgContainer.style.transform = `translateY(${scrollPositionHeaderImg * 0.5}px)`;
-            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.1})`;
+            // headerImg.style.transform = `scale(${1 + headerImgProgress * 0.1})`;
+            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.9})`; // why did I originally go with .1?? .9 is so much better, desktop & mobile
             headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
+            // headerImg.style.opacity = `${1 - headerImgProgress * }`;
         });
     </script>
     <style>
@@ -521,6 +532,22 @@ const title = "Booking";
 
         :root {
             /* --preferred-gradient: #ffea9f, #ffd230, #ffd230, #ffc800, #ffc800, #ffd230, #ffd230, #ffea9f; */
+            background-color: antiquewhite;
+            background-color: bisque;
+            background-color: blanchedalmond;
+            background-color: tan;
+            background-color: seashell;
+            background-color: snow;
+            background-color: whitesmoke;
+            background-color: ivory;
+            background-color: ghostwhite;
+            background-color: oldlace;
+            --test-brand-profile-bg-color: #ffd230;
+            --test-brand-profile-border-color: #dfac04;
+            --test-brand-profile-shadow-color: #c8a01b;
+            --brand-profile-bg-color: floralwhite;
+            --brand-profile-border-color: lightgray;
+            --brand-profile-shadow-color: gainsboro;
             --preferred-gradient:
                 #fff4ce, #ffd230, #ffd230, #ffc800, #ffc800, #ffd230, #ffd230,
                 #fff4ce;
@@ -533,8 +560,8 @@ const title = "Booking";
             --subitem-bg-color: #f5fff0;
             --subitem-bookable-bg-color: #f0f5ff;
             --subitem-preferred-bg-color: #fdfff0;
-            /* --profile-frame-border-color: #c2abc2; */
-            --profile-frame-border-color: #584d58;
+            --profile-frame-border-color: #c2abc2;
+            /* --profile-frame-border-color: #584d58; */
             --profile-frame-shadow-color: thistle;
         }
 
@@ -581,8 +608,10 @@ const title = "Booking";
             z-index: 0;
         }
 
-        #wallpaper-flash {
+        .wallpaper-flash-animated {
             position: absolute;
+            /* background-image: var(--sickleDataUrl); */
+            background-color: transparent;
             background-repeat: repeat;
             background-size: 72px 72px;
             background-position: 0 0;
@@ -594,8 +623,38 @@ const title = "Booking";
             transform: translateY(0);
         }
 
-        #wallpaper-gradient {
+        #booking-content .wallpaper-flash-animated {
+            mask: linear-gradient(
+                to bottom,
+                transparent 0%,
+                transparent 20%,
+                black 100%
+            );
+        }
+
+        #booking-content {
+            /* opacity: 0.3; */
+            box-shadow: 10px 10px 12px rgba(0,0,0,0.5);
+        }
+        /* body {background-color: white;} */
+
+        .wallpaper-gradient {
             position: fixed;
+            background-color: transparent;
+
+            background-color: antiquewhite;
+            background-color: bisque;
+            background-color: blanchedalmond;
+            background-color: tan;
+            background-color: seashell;
+            background-color: snow;
+            background-color: whitesmoke;
+            background-color: ivory;
+            background-color: ghostwhite;
+            background-color: oldlace;
+
+            /* background: linear-gradient(to bottom, blanchedalmond 0%, tan 100%); */
+            /* background: linear-gradient(to bottom, oldlace 0%, oldlace 100%); */
 
             /* background: linear-gradient(to bottom, thistle, cadetblue, red); */
             /* background: #3a81b4;
@@ -639,6 +698,11 @@ const title = "Booking";
             #8c95bc 0%,
             oklch(51.667% 0.03953 257.893) 100%
         ); */
+        /* background: linear-gradient(to bottom, seashell 0%, gainsboro 100%); */
+        /* background: radial-gradient(circle, transparent 0%, black 100%); */
+        /* background: radial-gradient(circle, #8c95bc 0%, oklch(51.667% 0.03953 257.893) 100%); */
+        /* background: radial-gradient(circle, #818cc1 0%, oklch(33.797% 0.08208 257.825) 100%); */
+        /* background: linear-gradient(to right, black 0%, transparent 50%, black 100%), linear-gradient(to bottom, black 0%, transparent 50%, black 100%); */
         }
 
         @keyframes driftY {

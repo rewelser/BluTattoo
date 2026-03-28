@@ -229,14 +229,19 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                                             key={`${ev.id}-${dateKey}`}
                                         >
                                             <a href={`/events/${ev.id}`}>
-                                                {ev.startTime && (
-                                                    <>
-                                                        <span className="italic font-bold">
+                                                <span className="italic font-bold">
+                                                    {ev.startTime ? (
+                                                        <>
                                                             {fmtTime(ev.startTime)}
-                                                        </span>
-                                                        <br />
-                                                    </>
-                                                )}
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {fmtTimeWindow(ev)}
+                                                        </>
+                                                    )}
+                                                </span>
+                                                <br />
+
                                                 {ev.title}
                                             </a>
                                         </div>
@@ -245,7 +250,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
 
                                 {hasEvents && (
                                     <div
-                                        className={`overlay ${dailyEvents.length === 1 ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
+                                        className={`overlay ${dailyEvents.length === 1 && !dailyEvents[0].detailsShort ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
                                         aria-label={`Events for ${fmtDate(isoLike)}`}
                                     >
                                         <div className="overlay-events">
