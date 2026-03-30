@@ -1,10 +1,10 @@
 ---
-import type { EventItem } from "../scripts/events";
+import type { EventItem } from "../domain/events/events";
 import {
     getUpcomingCandidates,
     pickFeaturedHero,
     fmtDateRange,
-} from "../scripts/eventsClient";
+} from "../domain/events/eventsClient";
 import PromoHero from "../components/PromoHero.astro";
 
 export interface Props {
@@ -13,7 +13,9 @@ export interface Props {
 
 const { events = [] } = Astro.props;
 
+// If confused why not simply using loadUpcomingCanidates like in PromoBarLoader, or vice versa, it's because events.astro already has events list
 const upcoming = getUpcomingCandidates(events, new Date());
+console.log("cheese", new Date());
 const featured = pickFeaturedHero(upcoming);
 ---
 

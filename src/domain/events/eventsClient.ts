@@ -1,6 +1,6 @@
-import type { EventItem } from "../scripts/events";
-
-export type EventsByYearMonthDate = Record<string, Record<string, Record<string, EventItem[]>>>;
+import type { EventItem } from "./events";
+import type { CollectionEntry } from "astro:content";
+import type { EventsByYearMonthDate } from "./types";
 
 // ----- Date helpers (inclusive endDate, day-level comparisons) -----
 

@@ -125,7 +125,7 @@ const events = defineCollection({
 //  People
 // ----------------------
 
-const primaryRoleSchema = z.enum(['tattoo_artist', 'piercer']);
+const primaryRoleSchema = z.enum(['Tattoo Artist', 'Piercer']);
 
 const usPhoneSchema = z
   .string()
@@ -176,13 +176,13 @@ export const socialItemSchema = z.object({
 export const socialsSchema = z.array(socialItemSchema).optional();
 
 const squareLinkSchema = z.object({
-  mode: z.literal('platform_url'),
+  mode: z.literal('platformUrl'),
   enabled: z.boolean().default(true),
   href: z.string().url()
 });
 
 const squareModuleSchema = z.object({
-  mode: z.literal('module_info'),
+  mode: z.literal('moduleInfo'),
   enabled: z.boolean().default(true),
   merchantId: z.string().regex(/^[A-Za-z0-9-]+$/),
   locationId: z.string().regex(/^[A-Za-z0-9-]+$/),
@@ -195,7 +195,7 @@ const platformsSchema = z.array(
       type: z.literal('square'),
       enabled: z.boolean().default(true),
       preferred: z.boolean().optional(),
-      link_or_module_info: z.array(
+      linkOrModuleInfo: z.array(
         z.discriminatedUnion('mode', [
           squareLinkSchema,
           squareModuleSchema
@@ -214,19 +214,19 @@ const people = defineCollection({
       guest: z.boolean().default(false),
       order: z.number().default(999),
 
-      page_photo: optionalString,
-      runway_photo: optionalString,
+      pagePhoto: optionalString,
+      runwayPhoto: optionalString,
 
-      primary_role: primaryRoleSchema,
+      primaryRole: primaryRoleSchema,
 
-      contact_socials_booking: z.object({
-        booking_profile_picture: optionalString,
-        books_open: z.boolean().default(true),
-        books_closed_note: z.string(),
+      contactSocialsBooking: z.object({
+        bookingProfilePicture: optionalString,
+        booksOpen: z.boolean().default(true),
+        booksClosedNote: z.string(),
         contact: contactSchema,
         socials: socialsSchema,
         platforms: platformsSchema,
-        booking_note: optionalText
+        bookingNote: optionalText
       }).optional(),
 
       images: z.array(

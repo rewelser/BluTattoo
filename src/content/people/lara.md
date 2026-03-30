@@ -3,18 +3,18 @@ name: Lara
 order: 1
 active: true
 guest: false
-primary_role: tattoo_artist
+primaryRole: Tattoo Artist
 
-page_photo: /uploads/people/lara_headshot.jpg
+pagePhoto: /uploads/people/lara_headshot.jpg
 
-contact_socials_booking:
-  books_open: true
-  books_closed_note: "Books are currently closed."
+contactSocialsBooking:
+  booksOpen: true
+  booksClosedNote: "Books are currently closed."
   platforms:
     - type: square
       enabled: true
-      link_or_module_info:
-        - mode: module_info
+      linkOrModuleInfo:
+        - mode: moduleInfo
           enabled: true
           merchantId: qwerty
           locationId: QWERTY

@@ -123,6 +123,67 @@ const title = "Home";
   <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
   <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
   <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-700">
+    <ParallaxWindow
+      src="/uploads/misc_images/bigroom.webp"
+      kind="image"
+      windowHeight="71vh"
+      strength={0.55}
+      class="applied-mask--heart"
+    >
+      <!-- optional overlay -->
+      <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
+        A window into the scene
+      </h2>
+    </ParallaxWindow>
+    <style>
+      :global(.applied-mask--heart) {
+        mask-image: url("/uploads/misc_images/down-droplet.svg");
+        /* mask-size: 220px 220px; */
+        mask-size: contain;
+        mask-position: center;
+        mask-repeat: no-repeat;
+      }
+    </style>
+
+    <svg
+      class="framed"
+      viewBox="0 0 738.39 738.39"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <clipPath id="frame-opening">
+          <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
+          ></circle>
+        </clipPath>
+      </defs>
+
+      <image
+        id="photo"
+        href="/uploads/people/lara_headshot.jpg"
+        preserveAspectRatio="xMidYMin slice"
+        clip-path="url(#frame-opening)"
+      />
+
+      <image
+        href="/uploads/misc_images/roundframe.png"
+        x="0"
+        y="0"
+        width="738.39"
+        height="738.39"
+        preserveAspectRatio="none"
+      />
+    </svg>
+
+    <script is:inline>
+      const shape = document.getElementById("opening-shape");
+      const photo = document.getElementById("photo");
+      const box = shape.getBBox();
+
+      photo.setAttribute("x", box.x);
+      photo.setAttribute("y", box.y);
+      photo.setAttribute("width", box.width);
+      photo.setAttribute("height", box.height);
+    </script>
     <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
     <div
       class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-[seashell]"
@@ -155,7 +216,7 @@ const title = "Home";
         way.
       </p>
 
-      <HrDivider text="wawawaaw" color="seashell"/>
+      <HrDivider color="seashell" />
     </div>
   </section>
 </Layout>

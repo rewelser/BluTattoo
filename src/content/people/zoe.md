@@ -3,11 +3,11 @@ name: Zoe
 active: true
 guest: false
 order: 5
-page_photo: /uploads/people/zoester_transparent_cropped.png
-primary_role: tattoo_artist
-contact_socials_booking:
-  books_open: true
-  books_closed_note: Books are currently closed.
+pagePhoto: /uploads/people/zoester_transparent_cropped.png
+primaryRole: Tattoo Artist
+contactSocialsBooking:
+  booksOpen: true
+  booksClosedNote: Books are currently closed.
   socials:
     - type: instagram
       href: https://www.instagram.com/example/
@@ -43,8 +43,8 @@ contact_socials_booking:
   platforms:
     - type: square
       enabled: true
-      link_or_module_info:
-        - mode: module_info
+      linkOrModuleInfo:
+        - mode: moduleInfo
           enabled: true
           merchantId: jhvsos6zvct0ls
           locationId: L6GQX5D0KDS8B

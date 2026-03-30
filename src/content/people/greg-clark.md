@@ -3,11 +3,11 @@ name: Greg
 order: 4
 active: true
 guest: false
-primary_role: tattoo_artist
+primaryRole: Tattoo Artist
 
-contact_socials_booking:
-  books_open: true
-  books_closed_note: "Books are currently closed."
+contactSocialsBooking:
+  booksOpen: true
+  booksClosedNote: "Books are currently closed."
   socials:
     - type: instagram
       href: "https://www.instagram.com/madtatter91?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
@@ -17,8 +17,8 @@ contact_socials_booking:
   platforms:
     - type: square
       enabled: false
-      link_or_module_info:
-        - mode: platform_url
+      linkOrModuleInfo:
+        - mode: platformUrl
           enabled: false
           href: "https://example.com"
 ---

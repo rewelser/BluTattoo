@@ -3,12 +3,12 @@ name: test person
 active: true
 guest: false
 order: 999
-page_photo: /uploads/people/zirk1.jpeg
-runway_photo: /uploads/people/boogleech.png
-primary_role: tattoo_artist
-contact_socials_booking:
-  books_open: true
-  books_closed_note: "Books are currently closed."
+pagePhoto: /uploads/people/zirk1.jpeg
+runwayPhoto: /uploads/people/boogleech.png
+primaryRole: Tattoo Artist
+contactSocialsBooking:
+  booksOpen: true
+  booksClosedNote: "Books are currently closed."
   contact:
     - type: phone
       enabled: true
@@ -26,13 +26,13 @@ contact_socials_booking:
       enabled: true
       bookable: false
       href: https://www.tiktok.com/
-  booking_profile_picture: /uploads/people/heimlich.jpg
-  booking_note: note
+  bookingProfilePicture: /uploads/people/heimlich.jpg
+  bookingNote: note
   platforms:
     - type: square
       enabled: true
-      link_or_module_info:
-        - mode: module_info
+      linkOrModuleInfo:
+        - mode: moduleInfo
           enabled: true
           label: Book an appointment
           merchantId: asdasdasdasda

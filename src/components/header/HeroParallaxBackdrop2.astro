@@ -6,13 +6,13 @@ type VideoSources = {
 };
 
 const {
-  logo_dark,
+  logoDark,
   siteName = "",
   video,
   // 1.0 = same speed as scroll, <1 = slower, 0 = locked in place
   parallaxStrength = 0.35,
 } = Astro.props as {
-  logo_dark: string;
+  logoDark: string;
   siteName?: string;
   video?: VideoSources;
   parallaxStrength?: number;
@@ -80,7 +80,7 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
     <div class="mx-auto px-4 h-full">
       <a href="/" class="flex items-center py-6 md:py-8 h-full">
         <img
-          src={logo_dark}
+          src={logoDark}
           alt={`${siteName} Homepage`}
           class="w-fit mx-auto h-20 md:h-100"
         />

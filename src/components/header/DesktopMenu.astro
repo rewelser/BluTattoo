@@ -1,14 +1,14 @@
 ---
-import type { MenuItem } from "./types";
+import type { MenuItem } from "../../domain/navigation/nav-types";
 
 const {
   menuItems,
-  logo_light,
+  logoLight,
   variant = "default",
   currentPath = "/",
 } = Astro.props as {
   menuItems: MenuItem[];
-  logo_light: string;
+  logoLight: string;
   variant?: "home" | "default";
   currentPath: string;
 };

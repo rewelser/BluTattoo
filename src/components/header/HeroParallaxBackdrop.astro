@@ -6,13 +6,13 @@ type VideoSources = {
 };
 
 const {
-  logo_dark,
+  logoDark,
   siteName = "",
   video,
   strength = 0.18, // subtle for hero
   bleed,           // optional override
 } = Astro.props as {
-  logo_dark: string;
+  logoDark: string;
   siteName?: string;
   video?: VideoSources;
   strength?: number;
@@ -67,7 +67,7 @@ const heroVid = {
     <div class="mx-auto px-4 h-full">
       <a href="/" class="flex items-center py-6 md:py-8 h-full">
         <img
-          src={logo_dark}
+          src={logoDark}
           alt={`${siteName} Homepage`}
           class="w-fit mx-auto h-20 md:h-100"
         />

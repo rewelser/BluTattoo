@@ -1,10 +1,10 @@
 ---
 const {
-  logo_dark,
+  logoDark,
   heightClass = "md:h-50",
   siteName = "",
 } = Astro.props as {
-  logo_dark: string;
+  logoDark: string;
   heightClass?: string;
   siteName?: string;
 };
@@ -17,7 +17,7 @@ const {
       class="flex items-center py-6 md:py-8 h-full"
     >
       <img
-        src={logo_dark}
+        src={logoDark}
         alt={`${siteName} Homepage`}
         class={`w-fit mx-auto h-20 ${heightClass}`}
       />

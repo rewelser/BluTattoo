@@ -1,11 +1,10 @@
 ---
-name: test person three
+name: testguest
 active: true
-guest: false
+guest: true
 order: 999
 primaryRole: Tattoo Artist
-
 contactSocialsBooking:
   booksOpen: true
-  booksClosedNote: "Books are currently closed."
+  booksClosedNote: Books are currently closed.
 ---

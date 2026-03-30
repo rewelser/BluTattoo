@@ -3,10 +3,10 @@ name: Laurna
 order: 2
 active: true
 guest: false
-primary_role: tattoo_artist
+primaryRole: Tattoo Artist
 
-contact_socials_booking:
-  books_open: true
-  books_closed_note: "Books are currently closed."
+contactSocialsBooking:
+  booksOpen: true
+  booksClosedNote: "Books are currently closed."
 ---
 Laurna artist bio test

@@ -1,14 +1,14 @@
 ---
-import type { MenuItem } from "./types";
+import type { MenuItem } from "../../domain/navigation/nav-types";
 
 const {
   menuItems,
-  logo_light,
+  logoLight,
   variant = "default",
   siteName = "",
 } = Astro.props as {
   menuItems: MenuItem[];
-  logo_light: string;
+  logoLight: string;
   variant?: "home" | "default";
   siteName?: string;
 };
@@ -59,7 +59,7 @@ const {
       <a href="/">
         <img
           id="mobile-logo"
-          src={logo_light}
+          src={logoLight}
           alt={`${siteName} Homepage`}
           class={`absolute top-1/2 left-1/2 -translate-1/2 p-2 ${variant === "home" ? "h-[35vh] landscape:h-[55vh]" : "h-[10vh]"}`}
         />

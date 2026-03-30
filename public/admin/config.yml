@@ -20,12 +20,13 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { name: q, label: Question, widget: string }
-      - { name: a, label: Answer, widget: text }
-      - { name: sort, label: Sort, widget: number, required: false }
+      - { name: q, label: "Question", widget: string }
+      - { name: a, label: "Answer", widget: text }
+      - { name: sort, label: "Sort", widget: number, required: false }
 
   - name: "people"
-    label: "People"
+    label: "Team Members"
+    description: "Add new resident team members here: tattoo artists, piercers, etc."
     folder: "src/content/people"
     create: true
     identifier_field: name
@@ -33,30 +34,30 @@ collections:
     media_folder: "/public/uploads/people"
     public_folder: "/uploads/people"
     fields:
-      - { name: name, label: Name, widget: string }
-      - {name: active, label: "Active", widget: boolean, default: true, required: true}
-      - {name: guest, label: "Guest", widget: boolean, default: false, required: true}
+      - { name: name, label: "Name", widget: string }
+      - { name: active, label: "Active", widget: boolean, default: true, required: true }
+      - { name: guest, label: "Guest", widget: boolean, default: false, required: true }
       - { name: order, label: "List Order", widget: number, default: 999 }
-      - { name: page_photo, label: Photo (on Artist or Piercing Page), widget: image, required: false }
-      - { name: runway_photo, label: "Runway Photo (Front Page)", widget: image, required: false }
-      - name: primary_role
+      - { name: pagePhoto, label: "Photo (on Artist or Piercing Page)", widget: image, required: false }
+      - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
+      - name: primaryRole
         label: Primary Role
         widget: select
         options:
-          - { label: "Tattoo Artist", value: "tattoo_artist" }
-          - { label: "Piercer", value: "piercer" }
+          - { label: "Tattoo Artist", value: "Tattoo Artist" }
+          - { label: "Piercer", value: "Piercer" }
 
-      - name: "contact_socials_booking"
+      - name: "contactSocialsBooking"
         label: "Contact, Socials, & Booking"
         widget: "object"
         required: false
         collapsed: false
         fields:
-        - { name: booking_profile_picture, label: "Profile Picture (Booking Page)", widget: image, required: false }
-        - {name: books_open, label: "Are books open?", widget: boolean, default: true, required: true}
-        - {name: books_closed_note, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'"}
+        - { name: bookingProfilePicture, label: "Profile Picture (Booking Page)", widget: image, required: false }
+        - { name: booksOpen, label: "Are books open?", widget: boolean, default: true, required: true }
+        - { name: booksClosedNote, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'"}
         - name: contact
-          label: Contact
+          label: "Contact"
           widget: list
           min: 0
           types:
@@ -66,10 +67,10 @@ collections:
               required: true
               collapsed: false
               fields:
-                - {name: href, label: Phone Number, widget: string, required: true}
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "Phone Number", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                - {name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc"}
+                - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc"}
 
             - name: "email"
               label: "email"
@@ -77,25 +78,25 @@ collections:
               required: true
               collapsed: false
               fields:
-                - {name: href, label: Email Address, widget: string, required: true}
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "Email Address", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                - {name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc"}
+                - { name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc"}
 
             - name: "website"
-              label: "Website"
+              label: "website"
               widget: object
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                - {name: notes, label: Notes, widget: text, required: false, hint: "external website"}
+                - { name: notes, label: Notes, widget: text, required: false, hint: "external website"}
 
-        - name: 'socials'
-          label: 'Social Media Links'
-          widget: 'list'
+        - name: socials
+          label: "Social Media Links"
+          widget: list
           min: 0
           types:
             - name: "instagram"
@@ -104,8 +105,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -116,8 +117,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -128,8 +129,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -140,8 +141,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -152,8 +153,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -164,8 +165,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -176,8 +177,8 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
@@ -188,15 +189,15 @@ collections:
               required: true
               collapsed: false
               fields:
-                - { name: href, label: URL, widget: string, required: true }
-                - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+                - { name: href, label: "URL", widget: string, required: true }
+                - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                 - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
                 - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
                 - { name: handle, label: "Username/Handle", widget: text, required: false }
 
-        - name: 'platforms'
-          label: 'Platforms'
-          widget: 'list'
+        - name: platforms
+          label: "Platforms"
+          widget: list
           min: 0
           types:
           - name: square
@@ -205,64 +206,64 @@ collections:
             required: true
             collapsed: false
             fields:
-              - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
+              - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
               - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-              - name: 'link_or_module_info'
-                label: 'Simple link or Square module info'
-                widget: 'list'
+              - name: linkOrModuleInfo
+                label: "Simple link or Square module info"
+                widget: list
                 min: 1
                 types:
-                - name: platform_url
+                - name: platformUrl
                   label: "Square Link"
                   widget: object
                   required: true
                   fields:
-                  - {name: enabled, label: "Enabled?", widget: boolean, default: true, required: true}
-                  - {name: href, label: URL, widget: string, required: true}
+                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                  - { name: href, label: "URL", widget: string, required: true }
 
-                - name: module_info
-                  label: Module Info
+                - name: moduleInfo
+                  label: "Module Info"
                   widget: object
                   fields:
                   - name: enabled
-                    label: Enabled?
+                    label: "Enabled?"
                     widget: boolean
                     required: true
                     default: true
                     hint: "Toggle on to show the Square Appointments embed on this person's page &/ booking section."
                   - name: merchantId
-                    label: Merchant ID
+                    label: "Merchant ID"
                     widget: string
                     required: true
-                    hint: 'From your Square embed snippet (e.g., "DM7VKY8Q63GNP").'
+                    hint: "From your Square embed snippet (e.g., 'DM7VKY8Q63GNP')."
                     pattern: ['^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive."]
                   - name: locationId
-                    label: Location ID
+                    label: "Location ID"
                     widget: string
                     required: true
-                    hint: 'From your Square embed snippet (e.g., "7WQ0KXC8ZSD90").'
+                    hint: "From your Square embed snippet (e.g., '7WQ0KXC8ZSD90')."
                     pattern: ['^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive."]
                   - name: label
-                    label: Button Label
+                    label: "Button Label"
                     widget: string
                     required: false
                     default: "Book an appointment"
 
-        - name: booking_note
+        - name: bookingNote
           label: "General Booking Note"
           widget: "text"
           required: false
-          hint: 'Example: "For tattoo inquiries, Sierra prefers Facebook Messenger."'
+          hint: "Example: 'For tattoo inquiries, Sierra prefers Facebook Messenger.'"
 
-      - label: Portfolio Images
-        name: images
+      - name: images
+        label: "Portfolio Images"
         widget: list
         required: false
         fields:
-          - { name: src, label: Image, widget: image }
-          - { name: alt, label: Alt text, widget: string, required: false }
+          - { name: src, label: "Image", widget: image }
+          - { name: alt, label: "Alt text", widget: string, required: false }
 
-      - { name: body, label: Long Bio (Page Content), widget: markdown, required: false }
+      - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
 
   - name: "aftercare"
     label: "Aftercare"
@@ -283,33 +284,33 @@ collections:
         file: "src/content/siteInfo/main.json"
         format: "json"
         fields:
-          - { name: siteName, label: Site Name, widget: string, default: "BluTattoo Studio" }
-          - { name: address, label: Address (single line), widget: string }
-          - { name: phone, label: Phone, widget: string, required: false }
-          - { name: email, label: Email, widget: string, required: false }
+          - { name: siteName, label: "Site Name", widget: string, default: "BluTattoo Studio" }
+          - { name: address, label: "Address (single line)", widget: string }
+          - { name: phone, label: "Phone", widget: string, required: false }
+          - { name: email, label: "Email", widget: string, required: false }
 
-          - label: Hours
-            name: hours
+          - name: hours
+            label: "Hours"
             widget: list
             required: false
             fields:
-              - { name: label, label: Day, widget: string }
-              - { name: value, label: Hours, widget: string }
+              - { name: label, label: "Day", widget: string }
+              - { name: value, label: "Hours", widget: string }
 
-          - label: "Socials"
-            name: "socials"
+          - name: socials
+            label: "Socials"
             widget: "object"
             required: false
             collapsed: true
             fields:
-              - { label: "Instagram", name: "instagram", widget: "string", required: false }
-              - { label: "TikTok", name: "tiktok", widget: "string", required: false }
-              - { label: "YouTube", name: "youtube", widget: "string", required: false }
-              - { label: "Facebook", name: "facebook", widget: "string", required: false }
-              - { label: "X (Twitter)", name: "x", widget: "string", required: false }
-              - { label: "Threads", name: "threads", widget: "string", required: false }
-              - { label: "Tumblr", name: "tumblr", widget: "string", required: false }
-              - { label: "Pinterest", name: "pinterest", widget: "string", required: false }
+              - { name: instagram, label: "Instagram", widget: "string", required: false }
+              - { name: tiktok, label: "TikTok", widget: "string", required: false }
+              - { name: youtube, label: "YouTube", widget: "string", required: false }
+              - { name: facebook, label: "Facebook", widget: "string", required: false }
+              - { name: x, label: "X (Twitter)", widget: "string", required: false }
+              - { name: threads, label: "Threads", widget: "string", required: false }
+              - { name: tumblr, label: "Tumblr", widget: "string", required: false }
+              - { name: pinterest, label: "Pinterest", widget: "string", required: false }
 
   - name: "branding"
     label: "Branding"
@@ -319,50 +320,50 @@ collections:
         file: "src/content/branding.json"
         format: "json"
         fields:
-          - label: Logo (SVG or PNG, dark version)
-            name: logo_dark
+          - name: logoDark
+            label: "Logo (SVG or PNG, dark version)"
             widget: image
             required: true
             hint: "Header logo (dark-on-light version)."
             media_folder: "public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
 
-          - label: Logo (SVG or PNG, light version)
-            name: logo_light
+          - name: logoLight
+            label: "Logo (SVG or PNG, light version)"
             widget: image
             required: false
             hint: "Header logo (light-on-dark version)."
             media_folder: "public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
 
-          - label: Hero
-            name: hero
+          - name: hero
+            label: "Hero"
             widget: object
             required: false
             fields:
-              - label: Video
-                name: video
+              - name: video
+                label: "Video"
                 widget: object
                 required: false
                 fields:
-                  - label: MP4
-                    name: mp4
+                  - name: mp4
+                    label: "MP4"
                     widget: file
                     required: true
                     hint: "Fallback format for most browsers."
                     media_folder: "public/uploads/misc_videos"
                     public_folder: "/uploads/misc_videos"
 
-                  - label: WebM
-                    name: webm
+                  - name: webm
+                    label: "WebM"
                     widget: file
                     required: false
                     hint: "Smaller/faster in supported browsers."
                     media_folder: "public/uploads/misc_videos"
                     public_folder: "/uploads/misc_videos"
 
-                  - label: Poster image
-                    name: poster
+                  - name: poster
+                    label: "Poster image"
                     widget: image
                     required: false
                     hint: "Shown before video loads / if autoplay fails."
@@ -377,8 +378,8 @@ collections:
         file: "src/content/home/main.json"
         format: "json"
         fields:
-          - label: "Promo (main)"
-            name: promoMain
+          - name: promoMain
+            label: "Promo (main)"
             widget: object
             required: false
             collapsed: true
@@ -386,8 +387,8 @@ collections:
             fields:
               - { name: promoEnabled, label: "Enable Promo", widget: boolean, default: true }
 
-              - label: "Promo Image"
-                name: promoImage
+              - name: promoImage
+                label: "Promo Image"
                 widget: image
                 required: false
                 media_folder: "/public/uploads/promos"
@@ -395,8 +396,8 @@ collections:
                 hint: "Recommended: wide image (e.g. 1600×900+)"
 
               - { name: promoAlt, label: "Image Alt Text", widget: string, required: false }
-              
-  - name: "events_active"
+
+  - name: "eventsActive"
     label: "Events (Active)"
     folder: "src/content/events"
     create: true
@@ -405,30 +406,67 @@ collections:
     filter: { field: "archived", value: false }
     summary: "{{startDate}} — {{title}}"
     sortable_fields: ["startDate", "title", "commit_date"]
+    description: "Create events for guest spots, flash days, and other shop happenings."
     fields:
+      - name: guestSpot
+        label: Is This Event a Guest Spot?
+        summary: "{{guestName}}"
+        hint: "(If not, you can ignore this section.)"
+        label_singular: "guest spot"
+        widget: list
+        min: 1
+        max: 1
+        types:
+          - name: guestInfo
+            label: "Guest Info"
+            widget: object
+            fields:
+              - { name: guestName, label: "Guest Name", widget: string }
+              - name: primaryRole
+                label: "Primary Role"
+                widget: select
+                options:
+                - { label: "Tattoo Artist", value: "Tattoo Artist" }
+                - { label: "Piercer", value: "Piercer" }
+              - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
+              - label: "Socials"
+                name: socials
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - { name: instagram, label: "Instagram", widget: "string", required: false }
+                  - { name: tiktok, label: "TikTok", widget: "string", required: false }
+                  - { name: youtube, label: "YouTube", widget: "string", required: false }
+                  - { name: facebook, label: "Facebook", widget: "string", required: false }
+                  - { name: x, label: "X (Twitter)", widget: "string", required: false }
+                  - { name: threads, label: "Threads", widget: "string", required: false }
+                  - { name: tumblr, label: "Tumblr", widget: "string", required: false }
+                  - { name: pinterest, label: "Pinterest", widget: "string", required: false }
+
       - { name: title, label: Title, widget: string }
       - { name: detailsShort, label: Details (short), widget: string, required: false }
-      - label: "Hero Image"
-        name: image
+      - name: image
+        label: "Event Image"
         widget: image
         required: false
         media_folder: "/public/uploads/events"
         public_folder: "/uploads/events"
-      - { name: alt, label: Hero Image Alt Text, widget: string, required: false }
-      - { name: published, label: Published, widget: boolean, default: true }
-      - { name: featured, label: Featured, widget: boolean, required: false, default: false }
-      - { name: archived, label: Archived, widget: boolean, required: false, default: false }
+      - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
+      - { name: published, label: "Published", widget: boolean, default: true }
+      - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
+      - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
       # DATE RANGE (inclusive endDate)
       - name: startDate
-        label: Start Date
+        label: "Start Date"
         widget: datetime
         date_format: "YYYY-MM-DD"
         time_format: false
         # picker_utc: false  # optional
 
       - name: endDate
-        label: End Date (inclusive, optional)
+        label: "End Date (inclusive, optional)"
         widget: datetime
         required: false
         date_format: "YYYY-MM-DD"
@@ -437,36 +475,36 @@ collections:
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
-        label: Start Time (optional)
+        label: "Start Time (optional)"
         widget: datetime
         required: false
         date_format: false
         time_format: "HH:mm"
 
       - name: endTime
-        label: End Time (optional)
+        label: "End Time (optional)"
         widget: datetime
         required: false
         date_format: false
         time_format: "HH:mm"
 
-      - { name: location, label: Location, widget: string, required: false }
+      - { name: location, label: "Location", widget: string, required: false }
 
-      - label: 'Recurrence (optional - add only one rule)'
-        name: 'recurrenceRule'
-        widget: 'list'
+      - name: recurrenceRule
+        label: "Recurrence (optional - add only one rule)"
+        widget: list
         min: 0
         max: 1
         types:
-          - label: 'Recurrence - Weekly'
-            name: 'recurrenceRuleWeekly'
+          - name: recurrenceRuleWeekly
+            label: "Recurrence - Weekly"
             widget: object
             required: false
             collapsed: true
             hint: "Repeats on selected weekdays between Start Date and End Date."
             fields:
-              - label: Interval
-                name: interval
+              - name: interval
+                label: "Interval"
                 widget: number
                 required: false
                 default: 1
@@ -474,8 +512,8 @@ collections:
                 min: 1
                 hint: "Every 1 week, every 2 weeks, etc."
 
-              - label: Weekdays
-                name: byWeekday
+              - name: byWeekday
+                label: "Weekdays"
                 widget: select
                 multiple: true
                 required: true
@@ -488,15 +526,15 @@ collections:
                   - { label: Sat, value: SA }
                   - { label: Sun, value: SU }
 
-          - label: 'Recurrence - Monthly'
-            name: 'recurrenceRuleMonthly'
+          - name: recurrenceRuleMonthly
+            label: "Recurrence - Monthly"
             widget: object
             required: false
             collapsed: true
             hint: "Repeats monthly between Start Date and End Date."
             fields:
-              - label: Interval
-                name: interval
+              - name: interval
+                label: "Interval"
                 widget: number
                 required: false
                 default: 1
@@ -504,8 +542,8 @@ collections:
                 min: 1
                 hint: "Every 1 month, every 2 months, etc."
 
-              - label: Monthly Mode
-                name: monthlyMode
+              - name: monthlyMode
+                label: "Monthly Mode"
                 widget: select
                 required: true
                 default: monthday
@@ -513,8 +551,8 @@ collections:
                   - { label: "Same day of month", value: monthday }
                   - { label: "Ordinal weekday", value: ordinalWeekday }
 
-              - label: Day of month
-                name: byMonthDay
+              - name: byMonthDay
+                label: "Day of month"
                 widget: number
                 required: false
                 value_type: int
@@ -522,57 +560,57 @@ collections:
                 max: 31
                 hint: "Use for 'Same day of month' mode, e.g. 15"
 
-              - label: Weekday
-                name: byWeekday
+              - name: byWeekday
+                label: "Weekday"
                 widget: select
                 required: false
                 options:
-                  - { label: Mon, value: MO }
-                  - { label: Tue, value: TU }
-                  - { label: Wed, value: WE }
-                  - { label: Thu, value: TH }
-                  - { label: Fri, value: FR }
-                  - { label: Sat, value: SA }
-                  - { label: Sun, value: SU }
+                  - { label: "Mon", value: MO }
+                  - { label: "Tue", value: TU }
+                  - { label: "Wed", value: WE }
+                  - { label: "Thu", value: TH }
+                  - { label: "Fri", value: FR }
+                  - { label: "Sat", value: SA }
+                  - { label: "Sun", value: SU }
                 hint: "Use for 'Ordinal weekday' mode"
 
-              - label: Position in month
-                name: bySetPos
+              - name: bySetPos
+                label: "Position in month"
                 widget: select
                 required: false
                 options:
-                  - { label: First, value: 1 }
-                  - { label: Second, value: 2 }
-                  - { label: Third, value: 3 }
-                  - { label: Fourth, value: 4 }
-                  - { label: Last, value: -1 }
+                  - { label: "First", value: 1 }
+                  - { label: "Second", value: 2 }
+                  - { label: "Third", value: 3 }
+                  - { label: "Fourth", value: 4 }
+                  - { label: "Last", value: -1 }
                 hint: "Use for 'Ordinal weekday' mode"
 
-      - label: "Promo Bar (optional)"
-        name: promoBar
+      - name: promoBar
+        label: "Promo Bar"
         widget: object
         required: false
         collapsed: true
         fields:
-          - { name: enabled, label: Enable Promo Bar, widget: boolean, default: false }
-          - { name: message, label: Message, widget: string, required: false }
-          - { name: href, label: Link URL, widget: string, required: false }
+          - { name: enabled, label: "Enable Promo Bar", widget: boolean, default: false }
+          - { name: message, label: "Message", widget: string, required: false }
+          - { name: href, label: "Link URL", widget: string, required: false }
 
-          - label: "Color 1"
-            name: color1
+          - name: color1
+            label: "Color 1"
             widget: color
             required: false
             hint: "If only one color is set, bar uses a solid background."
 
-          - label: "Color 2"
-            name: color2
+          - name: color2
+            label: "Color 2"
             widget: color
             required: false
             hint: "If two colors are set, bar uses a left→right gradient."
 
-      - { name: body, label: Details (long - event page), widget: markdown, required: false }
+      - { name: body, label: "Details (long - event page)", widget: markdown, required: false }
 
-  - name: "events_archive"
+  - name: "eventsArchive"
     label: "Events (Archive)"
     folder: "src/content/events"
     create: true
@@ -581,68 +619,105 @@ collections:
     filter: { field: "archived", value: true }
     summary: "{{startDate}} — {{title}}"
     sortable_fields: ["startDate", "title", "commit_date"]
+    description: "Create events for guest spots, flash days, and other shop happenings."
     fields:
+      - name: guestSpot
+        label: Is This Event a Guest Spot?
+        summary: "{{guestName}}"
+        hint: "(If not, you can ignore this section.)"
+        label_singular: "guest spot"
+        widget: list
+        min: 1
+        max: 1
+        types:
+          - name: guestInfo
+            label: "Guest Info"
+            widget: object
+            fields:
+              - { name: guestName, label: "Guest Name", widget: string }
+              - name: primaryRole
+                label: "Primary Role"
+                widget: select
+                options:
+                - { label: "Tattoo Artist", value: "Tattoo Artist" }
+                - { label: "Piercer", value: "Piercer" }
+              - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
+              - label: "Socials"
+                name: socials
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - { name: instagram, label: "Instagram", widget: "string", required: false }
+                  - { name: tiktok, label: "TikTok", widget: "string", required: false }
+                  - { name: youtube, label: "YouTube", widget: "string", required: false }
+                  - { name: facebook, label: "Facebook", widget: "string", required: false }
+                  - { name: x, label: "X (Twitter)", widget: "string", required: false }
+                  - { name: threads, label: "Threads", widget: "string", required: false }
+                  - { name: tumblr, label: "Tumblr", widget: "string", required: false }
+                  - { name: pinterest, label: "Pinterest", widget: "string", required: false }
+
       - { name: title, label: Title, widget: string }
       - { name: detailsShort, label: Details (short), widget: string, required: false }
-      - label: "Hero Image"
-        name: image
+      - name: image
+        label: "Event Image"
         widget: image
         required: false
         media_folder: "/public/uploads/events"
         public_folder: "/uploads/events"
-      - { name: alt, label: Hero Image Alt Text, widget: string, required: false }
-      - { name: published, label: Published, widget: boolean, default: true }
-      - { name: featured, label: Featured, widget: boolean, required: false, default: false }
-      - { name: archived, label: Archived, widget: boolean, required: false, default: true }
+      - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
+      - { name: published, label: "Published", widget: boolean, default: true }
+      - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
+      - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
       # DATE RANGE (inclusive endDate)
       - name: startDate
-        label: Start Date
+        label: "Start Date"
         widget: datetime
-        date_format: YYYY-MM-DD
+        date_format: "YYYY-MM-DD"
         time_format: false
         # picker_utc: false  # optional
 
       - name: endDate
-        label: End Date (inclusive, optional)
+        label: "End Date (inclusive, optional)"
         widget: datetime
         required: false
-        date_format: YYYY-MM-DD
+        date_format: "YYYY-MM-DD"
         time_format: false
         # picker_utc: false  # optional
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
       - name: startTime
-        label: Start Time (optional)
+        label: "Start Time (optional)"
         widget: datetime
         required: false
         date_format: false
         time_format: "HH:mm"
 
       - name: endTime
-        label: End Time (optional)
+        label: "End Time (optional)"
         widget: datetime
         required: false
         date_format: false
         time_format: "HH:mm"
 
-      - { name: location, label: Location, widget: string, required: false }
+      - { name: location, label: "Location", widget: string, required: false }
 
-      - label: 'Recurrence (optional - add only one rule)'
-        name: 'recurrenceRule'
-        widget: 'list'
+      - name: recurrenceRule
+        label: "Recurrence (optional - add only one rule)"
+        widget: list
         min: 0
         max: 1
         types:
-          - label: 'Recurrence - Weekly'
-            name: 'recurrenceRuleWeekly'
+          - name: recurrenceRuleWeekly
+            label: "Recurrence - Weekly"
             widget: object
             required: false
             collapsed: true
             hint: "Repeats on selected weekdays between Start Date and End Date."
             fields:
-              - label: Interval
-                name: interval
+              - name: interval
+                label: "Interval"
                 widget: number
                 required: false
                 default: 1
@@ -650,8 +725,8 @@ collections:
                 min: 1
                 hint: "Every 1 week, every 2 weeks, etc."
 
-              - label: Weekdays
-                name: byWeekday
+              - name: byWeekday
+                label: "Weekdays"
                 widget: select
                 multiple: true
                 required: true
@@ -664,15 +739,15 @@ collections:
                   - { label: Sat, value: SA }
                   - { label: Sun, value: SU }
 
-          - label: 'Recurrence - Monthly'
-            name: 'recurrenceRuleMonthly'
+          - name: recurrenceRuleMonthly
+            label: "Recurrence - Monthly"
             widget: object
             required: false
             collapsed: true
             hint: "Repeats monthly between Start Date and End Date."
             fields:
-              - label: Interval
-                name: interval
+              - name: interval
+                label: "Interval"
                 widget: number
                 required: false
                 default: 1
@@ -680,8 +755,8 @@ collections:
                 min: 1
                 hint: "Every 1 month, every 2 months, etc."
 
-              - label: Monthly Mode
-                name: monthlyMode
+              - name: monthlyMode
+                label: "Monthly Mode"
                 widget: select
                 required: true
                 default: monthday
@@ -689,8 +764,8 @@ collections:
                   - { label: "Same day of month", value: monthday }
                   - { label: "Ordinal weekday", value: ordinalWeekday }
 
-              - label: Day of month
-                name: byMonthDay
+              - name: byMonthDay
+                label: "Day of month"
                 widget: number
                 required: false
                 value_type: int
@@ -698,55 +773,56 @@ collections:
                 max: 31
                 hint: "Use for 'Same day of month' mode, e.g. 15"
 
-              - label: Weekday
-                name: byWeekday
+              - name: byWeekday
+                label: "Weekday"
                 widget: select
                 required: false
                 options:
-                  - { label: Mon, value: MO }
-                  - { label: Tue, value: TU }
-                  - { label: Wed, value: WE }
-                  - { label: Thu, value: TH }
-                  - { label: Fri, value: FR }
-                  - { label: Sat, value: SA }
-                  - { label: Sun, value: SU }
+                  - { label: "Mon", value: MO }
+                  - { label: "Tue", value: TU }
+                  - { label: "Wed", value: WE }
+                  - { label: "Thu", value: TH }
+                  - { label: "Fri", value: FR }
+                  - { label: "Sat", value: SA }
+                  - { label: "Sun", value: SU }
                 hint: "Use for 'Ordinal weekday' mode"
 
-              - label: Position in month
-                name: bySetPos
+              - name: bySetPos
+                label: "Position in month"
                 widget: select
                 required: false
                 options:
-                  - { label: First, value: 1 }
-                  - { label: Second, value: 2 }
-                  - { label: Third, value: 3 }
-                  - { label: Fourth, value: 4 }
-                  - { label: Last, value: -1 }
+                  - { label: "First", value: 1 }
+                  - { label: "Second", value: 2 }
+                  - { label: "Third", value: 3 }
+                  - { label: "Fourth", value: 4 }
+                  - { label: "Last", value: -1 }
                 hint: "Use for 'Ordinal weekday' mode"
 
-      - label: "Promo Bar (optional)"
-        name: promoBar
+      - name: promoBar
+        label: "Promo Bar"
         widget: object
         required: false
         collapsed: true
         fields:
-          - { name: enabled, label: Enable Promo Bar, widget: boolean, default: false }
-          - { name: message, label: Message, widget: string, required: false }
-          - { name: href, label: Link URL, widget: string, required: false }
+          - { name: enabled, label: "Enable Promo Bar", widget: boolean, default: false }
+          - { name: message, label: "Message", widget: string, required: false }
+          - { name: href, label: "Link URL", widget: string, required: false }
 
-          - label: "Color 1"
-            name: color1
+          - name: color1
+            label: "Color 1"
             widget: color
             required: false
             hint: "If only one color is set, bar uses a solid background."
 
-          - label: "Color 2"
-            name: color2
+          - name: color2
+            label: "Color 2"
             widget: color
             required: false
             hint: "If two colors are set, bar uses a left→right gradient."
 
-      - { name: body, label: Details (long - event page), widget: markdown, required: false }
+      - { name: body, label: "Details (long - event page)", widget: markdown, required: false }
+
 
   - name: "imagetest"
     label: "Image Test"

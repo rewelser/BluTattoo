@@ -1,7 +1,5 @@
 ---
-import { getCollection, type CollectionEntry, getEntry } from "astro:content";
 import branding from "../../content/branding.json";
-import BlobRow from "../../components/decor/BlobRow copy.astro";
 import PromoBarLoader from "./PromoBarLoader.astro";
 import PromoBarFallback from "./PromoBarFallback.astro";
 import MobileMenu from "./MobileMenu.astro";
@@ -9,38 +7,13 @@ import DesktopMenu from "./DesktopMenu.astro";
 // import HeroBackdrop from "./HeroBackdrop.astro";
 import HeroParallaxBackdrop from "./HeroParallaxBackdrop2.astro";
 import DesktopTopLogo from "./DesktopTopLogo.astro";
-import type { MenuItem } from "./types";
-import { loadArtistsActiveNonguest } from "../../scripts/people";
+import { navItems as menuItems } from "../../domain/navigation/nav-defs";
 
 const { variant = "default", defaults, site } = Astro.props;
 
-/**
- * ARTISTS
- */
-// Load & order artists todo: see if we can't refactor this into types.ts somehow
-let artists = await loadArtistsActiveNonguest();
-
-const artistLinks = artists.map((entry) => ({
-  type: "link" as const,
-  label: entry.data.name,
-  href: `/artists/${entry.id}/`,
-  prefetch: true,
-}));
-
-const menuItems: MenuItem[] = [
-  { type: "link", label: "Home", href: "/" },
-  { type: "submenu", label: "Artists", items: artistLinks },
-  { type: "link", label: "Booking", href: "/booking" },
-  { type: "link", label: "Piercing", href: "/piercing" },
-  { type: "link", label: "Events", href: "/events" },
-  { type: "link", label: "Aftercare", href: "/aftercare" },
-  { type: "link", label: "FAQ", href: "/faq" },
-  { type: "link", label: "Contact Us", href: "/contact" },
-];
-
 const siteName = site?.data?.siteName ?? defaults.siteName;
-const logo_dark = branding?.logo_dark ?? defaults.siteLogo;
-const logo_light = branding?.logo_light ?? defaults.siteLogo;
+const logoDark = branding?.logoDark ?? defaults.siteLogo;
+const logoLight = branding?.logoLight ?? defaults.siteLogo;
 const heroVideo = branding?.hero?.video;
 ---
 
@@ -51,21 +24,21 @@ const heroVideo = branding?.hero?.video;
 
 <!-- {
   variant === "home" ? (
-    <HeroBackdrop logo_dark={logo_dark} siteName={siteName} video={heroVideo} />
+    <HeroBackdrop logoDark={logoDark} siteName={siteName} video={heroVideo} />
   ) : (
-    <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} />
+    <DesktopTopLogo logoDark={logoDark} siteName={siteName} />
   )
 } -->
 {
   variant === "home" ? (
     <HeroParallaxBackdrop
-      logo_dark={logo_dark}
+      logoDark={logoDark}
       siteName={siteName}
       video={heroVideo}
       strength={0.9}
     />
   ) : (
-    <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} />
+    <DesktopTopLogo logoDark={logoDark} siteName={siteName} />
   )
 }
 <header class="sticky top-0 z-50" style="top: var(--announcement-h);">
@@ -75,7 +48,7 @@ const heroVideo = branding?.hero?.video;
   <!-- mobile nav + logo -->
   <MobileMenu
     menuItems={menuItems}
-    logo_light={logo_light}
+    logoLight={logoLight}
     variant={variant}
     siteName={siteName}
   />

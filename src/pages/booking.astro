@@ -13,7 +13,6 @@ import { defaults } from "../config/site";
 
 import { loadArtistsActiveNonguest } from "../scripts/people";
 
-const default_profile_image = "/default_media/default-booking-profile.jpg";
 
 let people = await loadArtistsActiveNonguest();
 
@@ -25,7 +24,8 @@ const sickleSvg = `
 
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
 const siteName = site?.data?.siteName ?? defaults.siteName;
-const logo_dark = branding?.logo_dark ?? defaults.siteLogo;
+const logoDark = branding?.logoDark ?? defaults.siteLogo;
+const defaultPersonProfilePicture = defaults.personProfilePicture;
 const title = "Booking";
 ---
 
@@ -111,7 +111,7 @@ const title = "Booking";
                             href="/"
                             class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
                         >
-                            <img src={logo_dark} alt={`${siteName} Homepage`} />
+                            <img src={logoDark} alt={`${siteName} Homepage`} />
                         </a>
                     </div>
                 </div>
@@ -126,10 +126,10 @@ const title = "Booking";
                         people.map((person, personIndex) => {
                             const personBtnId = `person-${personIndex}-toggle`;
                             const personPanelId = `person-${personIndex}-panel`;
-                            const csb = person.data.contact_socials_booking;
+                            const csb = person.data.contactSocialsBooking;
                             const profilePicture =
-                                csb?.booking_profile_picture ??
-                                default_profile_image;
+                                csb?.bookingProfilePicture ??
+                                defaultPersonProfilePicture;
                             const contacts = csb?.contact?.filter(
                                 (item) => item.enabled,
                             );
@@ -150,7 +150,7 @@ const title = "Booking";
                                     category: "social" as const,
                                 })),
                                 ...(platforms ?? []).flatMap((platform) =>
-                                    (platform.link_or_module_info ?? []).map(
+                                    (platform.linkOrModuleInfo ?? []).map(
                                         (entry) => ({
                                             ...entry,
                                             category: "platform" as const,
@@ -197,11 +197,7 @@ const title = "Booking";
                                                     {person.data.name}
                                                 </span>
                                                 <span class="text-[0.9rem] leading-[1.2] opacity-75">
-                                                    {person.data
-                                                        .primary_role ===
-                                                    "tattoo_artist"
-                                                        ? "Tattoo Artist"
-                                                        : "Piercer"}
+                                                    {person.data.primaryRole}
                                                 </span>
                                             </span>
 
@@ -225,9 +221,9 @@ const title = "Booking";
                                             inert
                                         >
                                             <div class="p-4">
-                                                {csb.booking_note && (
+                                                {csb.bookingNote && (
                                                     <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
-                                                        {csb.booking_note}
+                                                        {csb.bookingNote}
                                                     </p>
                                                 )}
 

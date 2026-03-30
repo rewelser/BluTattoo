@@ -32,16 +32,16 @@ const { Content } = await render(entry);
 const thumb = (src: string, w: number) =>
   src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
 
-const square = entry.data.contact_socials_booking?.platforms?.find(
+const square = entry.data.contactSocialsBooking?.platforms?.find(
   (p) => p.type === "square",
 );
 
-const socials = entry.data.contact_socials_booking?.socials?.find(
+const socials = entry.data.contactSocialsBooking?.socials?.find(
   (item) => item.type === "instagram",
 );
 
-const moduleInfo = square?.link_or_module_info.find(
-  (item) => item.mode === "module_info",
+const moduleInfo = square?.linkOrModuleInfo.find(
+  (item) => item.mode === "moduleInfo",
 );
 ---
 
@@ -53,18 +53,18 @@ const moduleInfo = square?.link_or_module_info.find(
 
 <Layout
   title={entry.data.name}
-  preloadImage={entry.data.page_photo as string}
+  preloadImage={entry.data.pagePhoto as string}
 >
   <article class="space-y-6">
     <header class="text-orange-100">
       <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
         <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
           {
-            entry.data.page_photo && (
+            entry.data.pagePhoto && (
               <div class="portrait fade-in-left-and-glow-anim">
                 <div>
                   <img
-                    src={entry.data.page_photo as string}
+                    src={entry.data.pagePhoto as string}
                     alt={`Portrait of ${entry.data.name}`}
                     width="400"
                     height="400"
@@ -128,10 +128,10 @@ const moduleInfo = square?.link_or_module_info.find(
               <h1 class="text-3xl font-bold">{entry.data.name}</h1>
 
               <!-- {
-                entry.data.contact_socials_booking?.socials && (
+                entry.data.contactSocialsBooking?.socials && (
                   <p>
                     <SocialRow
-                      links={entry.data.contact_socials_booking.socials}
+                      links={entry.data.contactSocialsBooking.socials}
                       class="my-3"
                       anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
                     />
@@ -140,10 +140,10 @@ const moduleInfo = square?.link_or_module_info.find(
               } -->
 
               {
-                entry.data.contact_socials_booking?.socials && (
+                entry.data.contactSocialsBooking?.socials && (
                   <p>
                     <SocialRow
-                      links={entry.data.contact_socials_booking.socials}
+                      links={entry.data.contactSocialsBooking.socials}
                       class="my-3"
                       anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
                     />

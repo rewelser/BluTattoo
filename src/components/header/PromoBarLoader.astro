@@ -1,7 +1,7 @@
 ---
 import PromoBar from "./PromoBar.astro";
-import { loadUpcomingCandidates } from "../../scripts/events";
-import { getPromoCandidates } from "../../scripts/eventsClient";
+import { loadUpcomingCandidates } from "../../domain/events/events";
+import { getPromoCandidates } from "../../domain/events/eventsClient";
 
 const {
   fallbackHref = "/events",
@@ -12,6 +12,7 @@ const {
 };
 if (!enabled) return;
 
+// If confused why not simply using getUpcomingCandidates like in UpcomingEvents, or vice versa, it's because events.astro already has events list, and we don't here
 const events = await loadUpcomingCandidates(new Date());
 const promoCandidates = getPromoCandidates(events);
 const promoEvent = promoCandidates.find((ev) => ev.featured) ?? promoCandidates[0] ?? null;

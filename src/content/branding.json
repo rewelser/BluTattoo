@@ -1,6 +1,6 @@
 {
-  "logo_dark": "/uploads/misc_images/logos/blutattoo-trimmed-black.svg",
-  "logo_light": "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg",
+  "logoDark": "/uploads/misc_images/logos/blutattoo-trimmed-black.svg",
+  "logoLight": "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg",
   "hero": {
     "video": {
       "mp4": "/uploads/misc_videos/hero-720.mp4",

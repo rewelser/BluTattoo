@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import type { EventItem } from "../scripts/events";
-import type { EventsByYearMonthDate } from "../scripts/eventsClient";
+import type { EventItem } from "../domain/events/events";
+import type { EventsByYearMonthDate } from "../domain/events/types";
 import {
     fmtDate,
     fmtTime,
     fmtTimeWindow,
     buildEventsByYearMonthDate,
-} from "../scripts/eventsClient";
+} from "../domain/events/eventsClient";
 import "../styles/EventsCalendar.css";
 
 interface EventsCalendarProps {
