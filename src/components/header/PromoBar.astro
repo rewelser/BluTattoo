@@ -132,6 +132,7 @@ const background =
             dismissed = localStorage.getItem(storageKey) === "1" && false; // remove `&& false` for prod
             seenThisSession = sessionStorage.getItem(seenKey) === "1";
             root.dataset.promoTransition = seenThisSession ? "off" : "on";
+            console.log("document.documentElement.dataset.promoTransition", document.documentElement.dataset.promoTransition);
         } catch {
         }
 
