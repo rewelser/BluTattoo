@@ -64,16 +64,16 @@ const background =
       const hide = () => {
         banner.style.display = "none";
         // spacer.style.display = "none";
-        document.documentElement.style.removeProperty("--announcement-h");
+        document.documentElement.style.removeProperty("--promo-bar-h");
       };
 
       // if dismissed before, hide immediately
       // try {
       //   // if (localStorage.getItem(storageKey) === "1") hide();
-      //   // else document.documentElement.style.setProperty("--announcement-h", spacer.style.height);
+      //   // else document.documentElement.style.setProperty("--promo-bar-h", spacer.style.height);
       //   // always setting it for now to test
       //   document.documentElement.style.setProperty(
-      //     "--announcement-h",
+      //     "--promo-bar-h",
       //     spacer.style.height,
       //   );
       // } catch {}
@@ -83,27 +83,27 @@ const background =
           console.log("if");
         } else {
           // document.documentElement.style.setProperty(
-          //   "--announcement-h",
+          //   "--promo-bar-h",
           //   spacer.style.height,
           // );
           document.documentElement.style.setProperty(
-            "--announcement-h",
+            "--promo-bar-h",
             banner.style.height,
           );
           console.log("promobar else");
         }
       } catch {
         // document.documentElement.style.setProperty(
-        //   "--announcement-h",
+        //   "--promo-bar-h",
         //   spacer.style.height,
         // );
         document.documentElement.style.setProperty(
-          "--announcement-h",
+          "--promo-bar-h",
           banner.style.height,
         );
         console.log("catch");
       }
-      // console.log("--announcement-h", --announcement-h);
+      // console.log("--promo-bar-h", --promo-bar-h);
 
       banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
         try {

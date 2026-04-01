@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "astro:assets";
-import { loadArtistsActiveNonguest } from "../../scripts/people.ts";
+import { loadActiveArtists } from "../../domain/people/server.ts";
 import { render, getCollection, type CollectionEntry } from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
@@ -14,7 +14,7 @@ const isAsset = (v: unknown) =>
 
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
-  let artists = await loadArtistsActiveNonguest();
+  let artists = await loadActiveArtists();
   console.log(artists);
   // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 

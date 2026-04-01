@@ -1,44 +1,41 @@
 ---
-import type { EventItem } from "../domain/events/events";
-import {
-    getUpcomingCandidates,
-    pickFeaturedHero,
-    fmtDateRange,
-} from "../domain/events/eventsClient";
 import PromoHero from "../components/PromoHero.astro";
+import type {EventItem} from "../domain/events/types.ts";
+import {fmtDateRange} from "../domain/events/format.ts";
+import {getUpcomingCandidates, pickFeaturedHero} from "../domain/events/selectors.ts";
 
 export interface Props {
     events: EventItem[];
 }
 
-const { events = [] } = Astro.props;
+const {events = []} = Astro.props;
 
 // If confused why not simply using loadUpcomingCanidates like in PromoBarLoader, or vice versa, it's because events.astro already has events list
 const upcoming = getUpcomingCandidates(events, new Date());
-console.log("cheese", new Date());
 const featured = pickFeaturedHero(upcoming);
 ---
 
 {
     featured?.image && (
-        <PromoHero
+    <PromoHero
+            href={`/events/${featured.id}`}
             image={featured.image}
             alt={featured.alt ?? featured.title}
             className="p-8"
-        />
-    )
-}
+    />
+        )
+    }
 
 {
     upcoming.length > 0 ? (
-        <section class="space-y-3">
-            <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
 
-            <div class="divide-y divide-black/10 border border-black/10">
-                {upcoming.map((ev) => (
+        <div class="divide-y divide-black/10 border border-black/10">
+            {upcoming.map((ev) => (
                     <a
-                        class="block p-4 hover:bg-black/5"
-                        href={`/events/${ev.id}`}
+                            class="block p-4 hover:bg-black/5"
+                            href={`/events/${ev.id}`}
                     >
                         <div class="font-medium">{ev.title}</div>
                         <div class={`w-fit pb-1 text-sm opacity-80 ${ev.detailsShort ? "border-b-2 border-dotted border-black/20" : ""}`}>
@@ -46,19 +43,19 @@ const featured = pickFeaturedHero(upcoming);
                             {ev.location ? ` • ${ev.location}` : ""}
                         </div>
                         {ev.detailsShort && (
-                            <div class="pt-2">{ev.detailsShort}</div>
+                                <div class="pt-2">{ev.detailsShort}</div>
                         )}
                     </a>
-                ))}
-            </div>
-        </section>
-    ) : (
-        <section class="border border-black/10 p-5 md:p-6">
-            <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
-            <p class="mt-2 leading-relaxed">
-                We’re planning events and guest spots. As soon as dates are
-                locked in, they’ll appear here.
-            </p>
-        </section>
-    )
-}
+            ))}
+        </div>
+    </section>
+        ) : (
+    <section class="border border-black/10 p-5 md:p-6">
+        <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
+        <p class="mt-2 leading-relaxed">
+            We’re planning events and guest spots. As soon as dates are
+            locked in, they’ll appear here.
+        </p>
+    </section>
+        )
+    }

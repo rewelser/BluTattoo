@@ -8,7 +8,7 @@ guestSpot:
       contact:
         - type: phone
           enabled: true
-          href: "2222222"
+          href: "3333333333"
         - type: email
           enabled: true
           href: example@mail.com

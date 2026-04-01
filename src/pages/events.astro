@@ -7,8 +7,8 @@ import Layout from "../layouts/Layout.astro";
 import { EventsCalendar } from "../components/EventsCalendar";
 import UpcomingEvents from "../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../components/UpcomingEventsFallback.astro";
-import type { EventItem } from "../domain/events/events";
-import { loadEventsPublishedCached } from "../domain/events/events";
+import { loadEventsPublishedCached } from "../domain/events/server.ts";
+import type {EventItem} from "../domain/events/types.ts";
 
 const events: EventItem[] = await loadEventsPublishedCached();
 const title = "Events";

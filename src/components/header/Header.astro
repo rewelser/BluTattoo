@@ -7,7 +7,7 @@ import DesktopMenu from "./DesktopMenu.astro";
 // import HeroBackdrop from "./HeroBackdrop.astro";
 import HeroParallaxBackdrop from "./HeroParallaxBackdrop2.astro";
 import DesktopTopLogo from "./DesktopTopLogo.astro";
-import { navItems as menuItems } from "../../domain/navigation/nav-defs";
+import { navItems as menuItems } from "../../domain/navigation/defs.ts";
 
 const { variant = "default", defaults, site } = Astro.props;
 
@@ -18,9 +18,9 @@ const heroVideo = branding?.hero?.video;
 ---
 
 <!-- Promo announcement bar -->
-<PromoBarLoader fallbackHref="/events" server:defer>
-  <PromoBarFallback slot="fallback" />
-</PromoBarLoader>
+<PromoBarLoader fallbackHref="/events" currentPath={Astro.url.pathname} server:defer />
+  <!--<PromoBarFallback slot="fallback" />-->
+<!--</PromoBarLoader>-->
 
 <!-- {
   variant === "home" ? (
@@ -41,7 +41,7 @@ const heroVideo = branding?.hero?.video;
     <DesktopTopLogo logoDark={logoDark} siteName={siteName} />
   )
 }
-<header class="sticky top-0 z-50" style="top: var(--announcement-h);">
+<header class="promo-bar-offset promo-bar-transitions sticky top-0 z-50">
   <!-- desktop nav -->
   <DesktopMenu menuItems={menuItems} currentPath={Astro.url.pathname} />
 

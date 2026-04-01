@@ -1,14 +1,16 @@
 ---
 import PromoBar from "./PromoBar.astro";
-import { loadUpcomingCandidates } from "../../domain/events/events";
-import { getPromoCandidates } from "../../domain/events/eventsClient";
+
+import {getPromoCandidates, loadUpcomingCandidates} from "../../domain/events/selectors.ts";
 
 const {
-  fallbackHref = "/events",
-  enabled = true,
+    fallbackHref = "/events",
+    enabled = true,
+    currentPath = "/"
 } = Astro.props as {
-  fallbackHref?: string;
-  enabled?: boolean;
+    fallbackHref?: string;
+    enabled?: boolean;
+    currentPath?: string;
 };
 if (!enabled) return;
 
@@ -18,16 +20,17 @@ const promoCandidates = getPromoCandidates(events);
 const promoEvent = promoCandidates.find((ev) => ev.featured) ?? promoCandidates[0] ?? null;
 
 if (!promoEvent?.promoBar?.message) return;
+if (currentPath.includes(promoEvent.id)) return;
 
 const storageKey = `bt_promo_dismissed_${promoEvent.id}`;
-const href = promoEvent.promoBar.href ?? fallbackHref;
-const { message, color1, color2 } = promoEvent.promoBar;
+const href = promoEvent.promoBar.href ?? `${fallbackHref}/${promoEvent.id}`;
+const {message, color1, color2} = promoEvent.promoBar;
 ---
 
 <PromoBar
-  storageKey={storageKey}
-  message={message}
-  href={href}
-  color1={color1}
-  color2={color2}
+        storageKey={storageKey}
+        message={message}
+        href={href}
+        color1={color1}
+        color2={color2}
 />

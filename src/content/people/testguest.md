@@ -1,7 +1,6 @@
 ---
 name: testguest
 active: true
-guest: true
 order: 999
 primaryRole: Tattoo Artist
 contactSocialsBooking:

@@ -1,16 +1,16 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import { ClientRouter } from "astro:transitions";
-import { getEntry } from "astro:content";
+import {ClientRouter} from "astro:transitions";
+import {getEntry} from "astro:content";
 import "../styles/global.css";
-import { defaults } from "../config/site";
+import {defaults} from "../config/site";
 import Header from "../components/header/Header.astro";
 import Footer from "../components/footer/Footer.astro";
 
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
 
-const { title, isHome = false, preloadImage } = Astro.props;
+const {title, isHome = false, preloadImage} = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/spectral";
 import "@fontsource/fleur-de-leah";
@@ -35,82 +35,80 @@ import "@fontsource/fleur-de-leah/400.css";
 ---
 
 <BaseLayout
-  title={title}
-  preloadImage={preloadImage}
-  bodyClass="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
-  bodyStyle={`${!isHome ? "top: var(--announcement-h);" : ""}`}
+        title={title}
+        preloadImage={preloadImage}
+        bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`}
 >
-  <Fragment slot="head">
-    <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
+    <Fragment slot="head">
+        <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
 
-    <!-- <style>
-      /* Paint black immediately to avoid white flash between navigations */
-      html, body { background:#000; }
-    </style> -->
-    <link
-      rel="preload"
-      href={spectral400Url}
-      as="font"
-      type="font/woff2"
-      crossorigin
+        <!-- <style>
+          /* Paint black immediately to avoid white flash between navigations */
+          html, body { background:#000; }
+        </style> -->
+        <link
+                rel="preload"
+                href={spectral400Url}
+                as="font"
+                type="font/woff2"
+                crossorigin
+        />
+        <link
+                rel="preload"
+                href={diplomataUrl}
+                as="font"
+                type="font/woff2"
+                crossorigin
+        />
+        <link
+                rel="preload"
+                href={fleurdeleahUrl}
+                as="font"
+                type="font/woff2"
+                crossorigin
+        />
+    </Fragment>
+    <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
+    <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
+    <!-- <body
+        class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
+        style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
+      > -->
+    <!-- fixed background image -->
+    <!-- <img
+          src={bg}
+          alt=""
+          aria-hidden="true"
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+          transition:persist
+          class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
+        /> -->
+    <!-- <Header /> -->
+    <!-- <main class="mx-auto max-w-6xl px-4 py-8">
+        <slot />
+      </main> -->
+    <Header
+            variant={isHome ? "home" : "default"}
+            defaults={defaults}
+            site={site}
     />
-    <link
-      rel="preload"
-      href={diplomataUrl}
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href={fleurdeleahUrl}
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-  </Fragment>
-  <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
-  <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
-  <!-- <body
-      class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
-      style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
-    > -->
-  <!-- fixed background image -->
-  <!-- <img
-        src={bg}
-        alt=""
-        aria-hidden="true"
-        fetchpriority="high"
-        loading="eager"
-        decoding="async"
-        transition:persist
-        class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
-      /> -->
-  <!-- <Header /> -->
-  <!-- <main class="mx-auto max-w-6xl px-4 py-8">
-      <slot />
-    </main> -->
-  <Header
-    variant={isHome ? "home" : "default"}
-    defaults={defaults}
-    site={site}
-    class="site-header"
-  />
-  <main class="mx-auto">
-    <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
-    <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
-      <div>
-        <!-- todo: what is this doing? vvv -->
-        <!-- todo2: I dupepd it and got rid of z-40 to test that out. I think I added z-40 for an obsolete reason -->
-        <!-- <div id="pagecontent-wrap" class="relative z-40 bg-white"> -->
-        <div id="pagecontent-wrap" class="relative bg-white">
-          <slot />
-          {/* page content goes here */}
+    <main class="mx-auto">
+        <!-- <div class="md:rounded-2xl bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-sm"> -->
+        <div class="md:bg-white shadow-2xl ring-1 ring-black/5">
+            <div>
+                <!-- todo: what is this doing? vvv -->
+                <!-- todo2: I dupepd it and got rid of z-40 to test that out. I think I added z-40 for an obsolete reason -->
+                <!-- <div id="pagecontent-wrap" class="relative z-40 bg-white"> -->
+                <div id="pagecontent-wrap" class="relative bg-white">
+                    <slot/>
+                    {/* page content goes here */}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </main>
-  <!-- <slot name="footer" /> -->
-  <Footer defaults={defaults} site={site} />
-  <!-- </body> -->
+    </main>
+    <!-- <slot name="footer" /> -->
+    <Footer defaults={defaults} site={site}/>
+    <!-- </body> -->
 </BaseLayout>

@@ -2,11 +2,8 @@
 name: Lara
 order: 1
 active: true
-guest: false
 primaryRole: Tattoo Artist
-
 pagePhoto: /uploads/people/lara_headshot.jpg
-
 contactSocialsBooking:
   booksOpen: true
   booksClosedNote: "Books are currently closed."

@@ -2,9 +2,7 @@
 name: Greg
 order: 4
 active: true
-guest: false
 primaryRole: Tattoo Artist
-
 contactSocialsBooking:
   booksOpen: true
   booksClosedNote: "Books are currently closed."

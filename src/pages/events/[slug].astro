@@ -1,0 +1,85 @@
+---
+// src/pages/events/[slug].astro
+import Layout from "../../layouts/Layout.astro";
+import PromoHero from "../../components/PromoHero.astro";
+import {getCollection, getEntry, render} from "astro:content";
+import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
+import SocialRow from "../../components/SocialRow.astro";
+import HrDivider from "../../components/decor/HrDivider.astro";
+
+export async function getStaticPaths() {
+    const entries = await getCollection(
+        "events",
+        (e) => e.data.published !== false,
+    );
+    return entries.map((e) => ({params: {slug: e.id}}));
+}
+
+const {slug} = Astro.params;
+if (!slug) throw new Error("Missing event id param");
+
+const entry = await getEntry("events", slug);
+if (!entry) throw new Error(`Event not found: ${slug}`);
+
+const {Content} = await render(entry);
+const ev = entry.data;
+---
+
+<Layout title={ev.title}>
+    <article class="page-article page-article--stack space-y-6">
+        <h1 class="page-title">{ev.title}</h1>
+
+        {
+            ev.image && (
+                        <PromoHero isEventPage image={ev.image} alt={ev.alt ?? ev.title} className="p-8"/>
+            )
+        }
+
+        <div class="border border-black/10 p-5 md:p-6">
+            <div class="text-sm opacity-80">
+                {fmtDateRange(ev)}
+                {" • "}
+                {fmtTimeWindow(ev)}
+                {ev.location ? ` • ${ev.location}` : ""}
+            </div>
+
+            <div data-section="event-info" class="prose mt-4 max-w-none">
+                <Content/>
+            </div>
+            {
+                (() => {
+                    const guest = ev.guestSpot?.[0];
+                    const socials = guest?.contactSocialsBooking?.socials;
+                    if (!socials) return null;
+
+                    const guestNamePossessive = guest.guestName.endsWith("s") ? guest.guestName + "'" : guest.guestName + "'s";
+
+                    return (
+                            <>
+                                <HrDivider className="opacity-20"/>
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm font-medium">Check out
+                                        <span
+                                                class="font-semibold">{guestNamePossessive}
+                                        </span>
+                                        work here:
+                                    </p>
+                                    <div class="flex justify-center">
+                                        <SocialRow
+                                                links={socials}
+                                                class="my-3"
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                    )
+                })
+            }
+        </div>
+
+        <p class="text-sm">
+            <a class="underline hover:no-underline" href="/events">← Back to Events</a
+            >
+        </p>
+    </article>
+</Layout>

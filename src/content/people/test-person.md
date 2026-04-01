@@ -1,7 +1,6 @@
 ---
 name: test person
 active: true
-guest: false
 order: 999
 pagePhoto: /uploads/people/zirk1.jpeg
 runwayPhoto: /uploads/people/boogleech.png

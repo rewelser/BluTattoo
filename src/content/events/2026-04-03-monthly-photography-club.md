@@ -9,12 +9,12 @@ endDate: "2026-12-04"
 startTime: 18:00
 endTime: 19:30
 location: "Community Arts Center"
-recurrenceRule:
-  - recurrenceRuleMonthly:
-      interval: 1
-      monthlyMode: ordinalWeekday
-      byWeekday: FR
-      bySetPos: 1
+#recurrenceRule:
+#  type: recurrenceRuleWeekly
+#  interval: 1
+#  monthlyMode: ordinalWeekday
+#  byWeekday: FR
+#  bySetPos: 1
 ---
 
 Each month we'll review photos, discuss techniques, and explore themed challenges.

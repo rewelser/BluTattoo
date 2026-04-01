@@ -2,9 +2,7 @@
 name: Sierra
 order: 3
 active: true
-guest: false
 primaryRole: Tattoo Artist
-
 pagePhoto: /uploads/people/sierra_headshot.jpg
 contactSocialsBooking:
   booksOpen: true

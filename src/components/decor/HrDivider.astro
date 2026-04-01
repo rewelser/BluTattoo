@@ -1,65 +1,65 @@
 ---
 type Props = {
-  text?: string;
-  color?: string;
-  className?: string;
+    text?: string;
+    color?: string;
+    className?: string;
 };
 
-const { text = "", color = "black", className = "my-[2rem]" } = Astro.props;
+const {text = "", color = "black", className = "my-[2rem]"} = Astro.props;
 
 const hasText = typeof text === "string" && text.trim().length > 0;
 ---
 
 <div class={`hr-divider-container ${className}`}>
-  <span class="pt-[2px]">◈</span>
-  {
-    hasText ? (
-      <>
-        <hr />
-        <span>{text}</span>
-        <hr />
-      </>
-    ) : (
-      <hr />
-    )
-  }
-  <span class="pt-[2px]">◈</span>
+    <span class="pt-[2px]">◈</span>
+    {
+        hasText ? (
+                <>
+                    <hr/>
+                    <span>{text}</span>
+                    <hr/>
+                </>
+        ) : (
+                <hr/>
+        )
+    }
+    <span class="pt-[2px]">◈</span>
 </div>
-<style define:vars={{ color }}>
-  .hr-divider-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    color: var(--color);
-    gap: .5rem;
-  }
+<style define:vars={{color}}>
+    .hr-divider-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        color: var(--color);
+        gap: .5rem;
+    }
 
-  .hr-divider-container hr {
-    flex: 1;
-    border: none;
-    border-top: 3px double var(--color);
-    overflow: visible;
-  }
+    .hr-divider-container hr {
+        flex: 1;
+        border: none;
+        border-top: 3px double var(--color);
+        overflow: visible;
+    }
 
-  .hr-divider-container span {
-    white-space: nowrap;
-  }
+    .hr-divider-container span {
+        white-space: nowrap;
+    }
 
-  /* .hr-divider-container hr:first-of-type::before {
-    content: "◈";
-    position: relative;
-    left: 0;
-    transform: translate(-100%, -50%);
-    padding: 0.5rem;
-    background: transparent;
-  }
+    /* .hr-divider-container hr:first-of-type::before {
+      content: "◈";
+      position: relative;
+      left: 0;
+      transform: translate(-100%, -50%);
+      padding: 0.5rem;
+      background: transparent;
+    }
 
-  .hr-divider-container hr:first-of-type::after {
-    content: "◈";
-    position: absolute;
-    right: 0;
-    transform: translate(100%, -50%);
-    padding: 0.5rem;
-    background: transparent;
-  } */
+    .hr-divider-container hr:first-of-type::after {
+      content: "◈";
+      position: absolute;
+      right: 0;
+      transform: translate(100%, -50%);
+      padding: 0.5rem;
+      background: transparent;
+    } */
 </style>

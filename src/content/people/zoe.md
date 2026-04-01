@@ -1,7 +1,6 @@
 ---
 name: Zoe
 active: true
-guest: false
 order: 5
 pagePhoto: /uploads/people/zoester_transparent_cropped.png
 primaryRole: Tattoo Artist

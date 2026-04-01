@@ -1,7 +1,7 @@
-import type { MenuItem } from "../../domain/navigation/nav-types";
-import { loadArtistsActiveNonguest } from "../../scripts/people";
+import type { MenuItem } from "./types.ts";
+import { loadActiveArtists } from "../people/server.ts";
 
-let artists = await loadArtistsActiveNonguest();
+let artists = await loadActiveArtists();
 
 const artistLinks = artists.map((entry) => ({
   type: "link" as const,

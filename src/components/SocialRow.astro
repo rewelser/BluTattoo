@@ -1,7 +1,8 @@
 ---
 import { iconRegistry } from "./graphics/icons/registry";
-import type { SocialItems } from "../scripts/socials";
-import { socialTypes } from "../scripts/contact-socials-platforms-defs";
+import { socialTypes } from "../domain/contact/defs.ts";
+
+import type {SocialItems} from "../domain/contact/types.ts";
 
 const {
     links = [],

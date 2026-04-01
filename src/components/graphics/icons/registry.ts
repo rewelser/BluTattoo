@@ -1,7 +1,6 @@
 
-import type { SocialType } from "../../../scripts/contact-socials-platforms-defs";
-import type { IconType } from "../../../scripts/contact-socials-platforms-defs";
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import type {IconType, SocialType} from "../../../domain/contact/types.ts";
 
 type IconModule = {
   default: AstroComponentFactory;

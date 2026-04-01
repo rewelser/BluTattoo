@@ -4,77 +4,98 @@
 @import "./hamburger-spring.css";
 @import "./hamburger-squeeze.css";
 @import "./js-fade-up.css";
+
 @plugin "@tailwindcss/typography";
 
-:root {
-  --announcement-h: 0px;
-  --desktop-menu-h: 0px;
-  --mobile-menu-h: 0px;
-  --menu-announcement-h: calc(max(var(--desktop-menu-h), var(--mobile-menu-h)) + var(--announcement-h) + 1px);
+@property --promo-bar-h {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
 }
 
-.site-header {
-  top: var(--announcement-h);
+@property --promo-bar-duration {
+    syntax: "<time>";
+    inherits: true;
+    initial-value: 260ms;
+}
+
+:root {
+    --promo-bar-h: 0px;
+    --desktop-menu-h: 0px;
+    --mobile-menu-h: 0px;
+    --menu-announcement-h: calc(max(var(--desktop-menu-h), var(--mobile-menu-h)) + var(--promo-bar-h) + 1px);
+}
+
+.promo-bar-offset {
+    top: var(--promo-bar-h);
+}
+
+:global(:root[data-promo-transition="on"]) .promo-bar-transitions {
+    transition: top var(--promo-bar-duration) ease;
+}
+
+:global(:root[data-promo-transition="off"]) .promo-bar-transitions {
+    transition: none;
 }
 
 @layer base {
-  :focus {
-    outline: none;
-  }
+    :focus {
+        outline: none;
+    }
 
-  :focus-visible {
-    @apply ring-2 ring-indigo-500 ring-offset-2;
-  }
+    :focus-visible {
+        @apply ring-2 ring-indigo-500 ring-offset-2;
+    }
 }
 
 @layer components {
 
-  /* Shared article shell used by FAQ / Contact / Aftercare */
-  .page-article {
-    @apply mx-auto max-w-6xl px-5 py-7 md:px-6 md:py-8;
-  }
+    /* Shared article shell used by FAQ / Contact / Aftercare */
+    .page-article {
+        @apply mx-auto max-w-6xl px-5 py-7 md:px-6 md:py-8;
+    }
 
-  /* If you want the article itself to be a flex column consistently */
-  .page-article--stack {
-    @apply flex flex-col;
-  }
+    /* If you want the article itself to be a flex column consistently */
+    .page-article--stack {
+        @apply flex flex-col;
+    }
 
-  /* Shared h1 */
-  .page-title {
-    @apply mb-6 text-center text-4xl font-semibold! tracking-tight;
-  }
+    /* Shared h1 */
+    .page-title {
+        @apply mb-6 text-center text-4xl font-semibold! tracking-tight;
+    }
 }
 
 .skeleton-text {
-  @apply h-5 m-1 rounded bg-black/10 animate-pulse;
+    @apply h-5 m-1 rounded bg-black/10 animate-pulse;
 }
 
 .skeleton-promo-hero-image {
-  @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
+    @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
 }
 
 @theme {
-  --animate-ping-faint: ping-faint 2s infinite;
-  @keyframes ping-faint {
-    99%, 100% {
-      /* transform: scale(1.025, 1.4); */
-      transform: scale(1.1, 1.4);
-      /* transform: scale(1.4, 2); */
-      /* transform: scale(1.05, 1.75); */
-      opacity: 0;
-      /* border-width: 20px; */
-      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    --animate-ping-faint: ping-faint 2s infinite;
+    @keyframes ping-faint {
+        99%, 100% {
+            /* transform: scale(1.025, 1.4); */
+            transform: scale(1.1, 1.4);
+            /* transform: scale(1.4, 2); */
+            /* transform: scale(1.05, 1.75); */
+            opacity: 0;
+            /* border-width: 20px; */
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
     }
-  }
 
-  --animate-ping-faint-normal: ping-faint-new 2s infinite;
-  @keyframes ping-faint-new {
-    99%, 100% {
-      transform: scale(1.1, 1.2);
-      /* transform: scale(1.05, 1.75); */
-      opacity: 0;
-      /* border-width: 20px; */
-      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    --animate-ping-faint-normal: ping-faint-new 2s infinite;
+    @keyframes ping-faint-new {
+        99%, 100% {
+            transform: scale(1.1, 1.2);
+            /* transform: scale(1.05, 1.75); */
+            opacity: 0;
+            /* border-width: 20px; */
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
     }
-  }
 }

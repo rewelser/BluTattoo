@@ -1,5 +1,5 @@
 ---
-import type { MenuItem } from "../../domain/navigation/nav-types";
+import type { MenuItem } from "../../domain/navigation/types.ts";
 
 const {
   menuItems,
@@ -24,7 +24,7 @@ const isItemActive = (item: MenuItem) => {
 <!-- <div
   id="desktop-menu"
   class="hidden md:block sticky top-0 border-b z-50 bg-black/60 bg-white backdrop-blur-sm"
-  style="top: var(--announcement-h);"
+  style="top: var(--promo-bar-h);"
 > -->
 <div
   id="desktop-menu"
@@ -90,13 +90,6 @@ const isItemActive = (item: MenuItem) => {
   (() => {
     const root = document.getElementById("desktop-menu");
     if (!root) return;
-
-    console.log(
-      "--desktop-menu-h",
-      document.documentElement.style.getPropertyValue("--desktop-menu-h"),
-    );
-    console.log("root.style.height", root.clientHeight);
-    console.log("root.style.height", root.offsetHeight);
 
     const getOpenDetails = () =>
       Array.from(root.querySelectorAll("details[open]"));
