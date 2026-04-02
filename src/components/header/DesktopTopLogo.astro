@@ -8,18 +8,33 @@ const {
   heightClass?: string;
   siteName?: string;
 };
+//
+
+/**
+ * Default heightClass was md:h-50, and the anchor used to not have md:pt-15 on it. I changed that to what it is now
+ * to make the desktop version of the site's body not have to account for the promo bar height (.promo-bar-offset).
+ * There was an annoying flicker every time the promo bar would load in on desktop and I didn't like that.
+ *
+ * The reason I didn't make the change on mobile too has to do with the translucence of the mobile menu--when the body
+ * doesn't adjust for the promo bar, the mobile menu sits half-way over content, with a visible break between content and
+ * black body, which is ugly on page load. so on mobile, we are living with the flicker, and we added view transitions to
+ * the global CSS to make navigation slightly smoother as a compromise.
+ *
+ */
+
+const a = 0;
 ---
 
 <div id="desktop-top-logo" class="hidden md:block top-0 bg-white">
   <div class="mx-auto px-4 h-full">
     <a
       href="/"
-      class="flex items-center py-6 md:py-8 h-full"
+      class="flex items-center py-6 md:py-8 md:pt-15 h-full"
     >
       <img
         src={logoDark}
         alt={`${siteName} Homepage`}
-        class={`w-fit mx-auto h-20 ${heightClass}`}
+        class={`w-fit mx-auto h-20 ${heightClass} md:h-55`}
       />
     </a>
   </div>

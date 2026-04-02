@@ -35,6 +35,13 @@
     top: var(--promo-bar-h);
 }
 
+@media (width >= 48rem) {
+    body.promo-bar-offset {
+        top: 0;
+    }
+}
+
+
 /*:root[data-promo-transition="on"] .promo-bar-transitions,*/
 /*:root[data-promo-transition="off"]:has(.promo-bar[data-state="closing"]) .promo-bar-transitions {*/
 /*    transition: top var(--promo-bar-duration) ease;*/

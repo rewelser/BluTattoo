@@ -97,8 +97,8 @@ const background =
         }
 
         const show = () => {
-            root.dataset.load = "direct";
-            // root.dataset.load = internalNav ? "internal" : "direct";
+            // root.dataset.load = "internal";
+            root.dataset.load = internalNav ? "internal" : "direct";
 
             const measured = `${promoBar.offsetHeight}px`;
             setAnnouncementHeight(measured);
