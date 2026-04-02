@@ -1,0 +1,301 @@
+---
+const {
+    id = "promo-bar",
+    storageKey = "bt_promo_dismissed",
+    message = "Now booking!",
+    href = "/booking",
+    color1,
+    color2,
+} = Astro.props;
+
+const duration = 260;
+
+// const defaultBg = "linear-gradient(90deg, #020024 0%, #005eff 100%)";
+const defaultBg = "linear-gradient(90deg, #020024 0%, #5613ff 100%)";
+
+const c1 = typeof color1 === "string" && color1.trim() ? color1.trim() : "";
+const c2 = typeof color2 === "string" && color2.trim() ? color2.trim() : "";
+
+// Rules:
+// - 0 colors -> default gradient
+// - 1 color  -> solid
+// - 2 colors -> simple 2-stop gradient
+const background =
+    c1 && c2
+        ? `linear-gradient(90deg, ${c1} 0%, ${c2} 100%)`
+        : c1
+            ? c1
+            : defaultBg;
+---
+<!-- text-nowrap -->
+<!--<aside class="shell-panel text-white fixed z-[80] bg-red-500">Full on Friendship</aside>-->
+<aside
+        id={id}
+        class="promo-bar fixed top-0 left-0 w-full z-[80] opacity-30"
+        role="region"
+        aria-label="Announcement"
+        data-state="hidden"
+>
+    <div
+            class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-sm sm:text-base md:text-2xl"
+            style={`background: ${background};`}
+    >
+        <a
+                class="promo-outline flex items-center justify-center w-full h-full text-center"
+                href={href}
+        >
+            {message}
+        </a>
+        <button
+                type="button"
+                class="ml-auto px-2 py-1 leading-none cursor-pointer"
+                aria-label="Dismiss announcement"
+                data-dismiss
+        >
+            ✕
+        </button>
+    </div>
+</aside>
+
+<!--<style>-->
+
+<!--    :root[data-promo-transition="on"] .promo-bar[data-state="hidden"],-->
+<!--    :root[data-promo-transition="on"] .promo-bar[data-state="closing"],-->
+<!--    :root[data-promo-transition="off"] .promo-bar[data-state="hidden"],-->
+<!--    :root[data-promo-transition="off"] .promo-bar[data-state="closing"] {-->
+<!--        transform: translateY(-100%);-->
+<!--        transition: transform var(&#45;&#45;promo-bar-duration) ease;-->
+<!--        will-change: transform;-->
+<!--    }-->
+
+<!--    :root[data-promo-transition="on"] .promo-bar[data-state="visible"] {-->
+<!--        transform: translateY(0);-->
+<!--        transition: transform var(&#45;&#45;promo-bar-duration) ease;-->
+<!--        will-change: transform;-->
+<!--    }-->
+
+<!--    :root[data-promo-transition="off"] .promo-bar {-->
+<!--        transform: translateY(0);-->
+<!--        transition: none;-->
+<!--    }-->
+
+<!--    /*.promo-bar {-->
+<!--        transform: translateY(-100%);-->
+<!--        transition: transform var(&#45;&#45;promo-bar-duration) ease;-->
+<!--        will-change: transform;-->
+<!--    } */-->
+
+<!--    .promo-bar[data-state="visible"] {-->
+<!--        transform: translateY(0);-->
+<!--    }-->
+
+<!--    .promo-bar[data-state="closing"] {-->
+<!--        transform: translateY(-100%);-->
+<!--        transition: transform var(&#45;&#45;promo-bar-duration) ease;-->
+<!--        will-change: transform;-->
+<!--    }-->
+<!--</style>-->
+
+
+<!--<style>-->
+<!--    html[data-load="direct"] .shell-panel {-->
+<!--        animation: slide-in var(&#45;&#45;promo-bar-duration) ease both;-->
+<!--    }-->
+
+<!--    /* Internal nav: no "fresh load" animation */-->
+<!--    html[data-load="internal"] .shell-panel {-->
+<!--        animation: none;-->
+<!--    }-->
+
+<!--    .promo-bar[data-state="visible"] {-->
+<!--        transform: translateY(0);-->
+<!--    }-->
+
+<!--    :root[data-promo-transition="on"] .promo-bar,-->
+<!--    .promo-bar[data-state="closing"] {-->
+<!--        transition: transform var(&#45;&#45;promo-bar-duration) ease;-->
+<!--        will-change: transform;-->
+<!--    }-->
+
+<!--    :root[data-promo-transition="off"] .promo-bar[data-state="hidden"] {-->
+<!--        transition: none;-->
+<!--    }-->
+<!--</style>-->
+<style>
+    .promo-bar {
+        transform: translateY(-100%);
+        transition: transform var(--promo-bar-duration) ease;
+        view-transition-name: promo-bar;
+    }
+
+    /* Only animate on real/direct page loads */
+    html[data-load="direct"] .promo-bar {
+        transform: translateY(-100%);
+
+    }
+
+    /* Internal nav: no "fresh load" animation */
+    html[data-load="internal"] .promo-bar:not([data-promo-state="dismiss"]) {
+        transform: translateY(0);
+    }
+
+    html[data-load="internal"] .promo-bar[data-promo-state="dismiss"] {
+        //animation: promo-bar-slide-down var(--promo-bar-duration) ease both reverse;
+        transform: translateY(-100%);
+    }
+</style>
+
+<script is:inline define:vars={{storageKey, id, duration}}>
+    (() => {
+        const root = document.documentElement;
+        const promoBar = document.getElementById(id);
+
+        const setAnnouncementHeight = (value) => {
+            root.style.setProperty("--promo-bar-h", value);
+        }
+
+        const show = () => {
+            const measured = `${promoBar.offsetHeight}px`;
+            console.log("measured", measured);
+            setAnnouncementHeight(measured);
+        }
+
+        const hide = () => {
+            promoBar.setAttribute("data-promo-state", "dismiss");
+            setAnnouncementHeight("0px");
+
+            // window.setTimeout(() => {
+            //     promoBar.hidden = true;
+            // }, duration);
+        }
+
+        const internalNav =
+            !!navigation.activation?.from &&
+            navigation.activation.from.url &&
+            new URL(navigation.activation.from.url).origin === location.origin;
+        console.log("internalNav", internalNav);
+
+        const dismissed = localStorage.getItem(storageKey) === "1" && false;
+
+        root.dataset.load = internalNav ? "internal" : "direct";
+
+        if (!dismissed) {
+            console.log(root.style.getPropertyValue("--promo-bar-h"));
+            show();
+            console.log(root.style.getPropertyValue("--promo-bar-h"));
+
+        }
+
+        // if (internalNav) {
+        //     console.log("external nav");
+        //
+        //
+        // } else {
+        //     console.log("external nav");
+        //     show();
+        // }
+
+        promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+            try {
+                // localStorage.setItem(storageKey, "1");
+            } catch {
+            }
+            hide();
+        })
+    })();
+</script>
+
+<script is:inline define:vars={{storageKey, id, duration}}>
+    (() => {
+        return;
+        const root = document.documentElement;
+        const banner = document.getElementById(id);
+        const seenKey = `${storageKey}_seen_session`;
+        if (!banner) return;
+
+        const setAnnouncementHeight = (value) => {
+            root.style.setProperty("--promo-bar-h", value);
+        };
+
+        const show = () => {
+            console.log("fffff");
+            banner.hidden = false;
+
+            // ensure starting state is applied before transition
+            banner.setAttribute("data-state", "hidden");
+            setAnnouncementHeight("0px");
+
+            // const measured = `${banner.offsetHeight}px`;
+            // banner.setAttribute("data-state", "visible");
+            // setAnnouncementHeight(measured);
+
+
+            requestAnimationFrame(() => {
+                // banner.style.setProperty("height", measured);
+
+                requestAnimationFrame(() => {
+                    // const measured = `${banner.offsetHeight}px`;
+                    // banner.setAttribute("data-state", "visible");
+                    // setAnnouncementHeight(measured);
+                    requestAnimationFrame(() => {
+                        // const measured = `${banner.offsetHeight}px`;
+                        // banner.setAttribute("data-state", "visible");
+                        // setAnnouncementHeight(measured);
+                        requestAnimationFrame(() => {
+                            const measured = `${banner.offsetHeight}px`;
+                            banner.setAttribute("data-state", "visible");
+                            setAnnouncementHeight(measured);
+                        });
+                    });
+                });
+            });
+        };
+
+        const hide = () => {
+            banner.setAttribute("data-state", "closing");
+            setAnnouncementHeight("0px");
+
+            window.setTimeout(() => {
+                banner.hidden = true;
+            }, duration);
+        };
+
+        let dismissed = false;
+        let seenThisSession = false;
+
+        try {
+            dismissed = localStorage.getItem(storageKey) === "1" && false; // remove `&& false` for prod
+            seenThisSession = sessionStorage.getItem(seenKey) === "1";
+            console.log("seenThisSession try", seenThisSession);
+
+            // root.dataset.promoTransition = seenThisSession ? "off" : "on";
+            // root.dataset.promoTransition = "on";
+            root.dataset.promoTransition = "off";
+            console.log("document.documentElement.dataset.promoTransition", document.documentElement.dataset.promoTransition);
+        } catch {
+        }
+
+        if (!dismissed) {
+            console.log("seenThisSession", seenThisSession);
+            show();
+        } else {
+            banner.hidden = true;
+            setAnnouncementHeight("0px");
+        }
+
+        if (!seenThisSession) {
+            try {
+                sessionStorage.setItem(seenKey, "1");
+            } catch {
+            }
+        }
+
+        banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+            try {
+                localStorage.setItem(storageKey, "1");
+            } catch {
+            }
+            hide();
+        });
+    })();
+</script>

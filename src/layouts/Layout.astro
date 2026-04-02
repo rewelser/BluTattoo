@@ -34,11 +34,8 @@ import "@fontsource/diplomata-sc/400.css";
 import "@fontsource/fleur-de-leah/400.css";
 ---
 
-<BaseLayout
-        title={title}
-        preloadImage={preloadImage}
-        bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`}
->
+ <BaseLayout title={title} preloadImage={preloadImage} bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`}>
+<!--<BaseLayout title={title} preloadImage={preloadImage} bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative`}>-->
     <Fragment slot="head">
         <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
 
@@ -68,27 +65,6 @@ import "@fontsource/fleur-de-leah/400.css";
                 crossorigin
         />
     </Fragment>
-    <!-- todo: we put static on body to make top work; make sure this doesn't break anything (especially lightbox stuff). Also consider if relative would be better, as it makes the absolute stuff in header sit better, but may also break stuff elsewhere -->
-    <!-- todo: actually, putting the style here doesn't fix the mobile menu spacing issue like it did before, need to investigate further. Dang -->
-    <!-- <body
-        class="min-h-screen text-emerald-950 font-[Spectral] bg-black relative"
-        style={`${!isHome ? "top: var(--announcement-h);" : ""}`}
-      > -->
-    <!-- fixed background image -->
-    <!-- <img
-          src={bg}
-          alt=""
-          aria-hidden="true"
-          fetchpriority="high"
-          loading="eager"
-          decoding="async"
-          transition:persist
-          class="fixed inset-0 -z-10 h-full w-full object-cover md:[background-attachment:fixed]"
-        /> -->
-    <!-- <Header /> -->
-    <!-- <main class="mx-auto max-w-6xl px-4 py-8">
-        <slot />
-      </main> -->
     <Header
             variant={isHome ? "home" : "default"}
             defaults={defaults}

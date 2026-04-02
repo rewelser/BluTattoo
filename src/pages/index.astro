@@ -174,15 +174,17 @@ const title = "Home";
       />
     </svg>
 
-    <script is:inline>
-      const shape = document.getElementById("opening-shape");
-      const photo = document.getElementById("photo");
-      const box = shape.getBBox();
+    <script is:inline >
+      (() => {
+        const shape = document.getElementById("opening-shape");
+        const photo = document.getElementById("photo");
+        const box = shape.getBBox();
 
-      photo.setAttribute("x", box.x);
-      photo.setAttribute("y", box.y);
-      photo.setAttribute("width", box.width);
-      photo.setAttribute("height", box.height);
+        photo.setAttribute("x", box.x);
+        photo.setAttribute("y", box.y);
+        photo.setAttribute("width", box.width);
+        photo.setAttribute("height", box.height);
+      })();
     </script>
     <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
     <div

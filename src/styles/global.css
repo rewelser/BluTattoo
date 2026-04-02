@@ -23,19 +23,30 @@
     --promo-bar-h: 0px;
     --desktop-menu-h: 0px;
     --mobile-menu-h: 0px;
+    --promo-bar-duration: 260ms;
     --menu-announcement-h: calc(max(var(--desktop-menu-h), var(--mobile-menu-h)) + var(--promo-bar-h) + 1px);
+}
+
+@view-transition {
+    navigation: auto;
 }
 
 .promo-bar-offset {
     top: var(--promo-bar-h);
 }
 
-:global(:root[data-promo-transition="on"]) .promo-bar-transitions {
-    transition: top var(--promo-bar-duration) ease;
-}
+/*:root[data-promo-transition="on"] .promo-bar-transitions,*/
+/*:root[data-promo-transition="off"]:has(.promo-bar[data-state="closing"]) .promo-bar-transitions {*/
+/*    transition: top var(--promo-bar-duration) ease;*/
+/*}*/
 
-:global(:root[data-promo-transition="off"]) .promo-bar-transitions {
-    transition: none;
+/*:root[data-promo-transition="off"] .promo-bar-transitions {*/
+/*    transition: none;*/
+/*}*/
+
+:root[data-load="direct"] .promo-bar-transitions,
+:root:has(.promo-bar[data-promo-state="dismiss"]) .promo-bar-transitions {
+    transition: top var(--promo-bar-duration) ease;
 }
 
 @layer base {

@@ -1,23 +1,23 @@
 ---
-import type { MenuItem } from "../../domain/navigation/types.ts";
+import type {MenuItem} from "../../domain/navigation/types.ts";
 
 const {
-  menuItems,
-  logoLight,
-  variant = "default",
-  currentPath = "/",
+    menuItems,
+    logoLight,
+    variant = "default",
+    currentPath = "/",
 } = Astro.props as {
-  menuItems: MenuItem[];
-  logoLight: string;
-  variant?: "home" | "default";
-  currentPath: string;
+    menuItems: MenuItem[];
+    logoLight: string;
+    variant?: "home" | "default";
+    currentPath: string;
 };
 
 const isActive = (href: string) =>
-  currentPath === href || (href !== "/" && currentPath.startsWith(href));
+    currentPath === href || (href !== "/" && currentPath.startsWith(href));
 const isItemActive = (item: MenuItem) => {
-  if (item.type === "link") return isActive(item.href);
-  return item.items.some((sub) => isActive(sub.href));
+    if (item.type === "link") return isActive(item.href);
+    return item.items.some((sub) => isActive(sub.href));
 };
 ---
 
@@ -26,126 +26,125 @@ const isItemActive = (item: MenuItem) => {
   class="hidden md:block sticky top-0 border-b z-50 bg-black/60 bg-white backdrop-blur-sm"
   style="top: var(--promo-bar-h);"
 > -->
-<div
-  id="desktop-menu"
-  class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm"
->
-  <nav aria-label="Primary" class="mx-auto max-w-6xl px-4">
-    <ul class="flex items-center justify-center gap-8 py-3">
-      {
-        menuItems.map((item) => (
-          <li class="relative">
-            {item.type === "link" ? (
-              <a
-                href={item.href}
-                data-astro-prefetch="hover"
-                class={`hover:underline ${isActive(item.href) ? "font-semibold underline text-indigo-600" : ""}`}
-              >
-                {item.label.toUpperCase()}
-              </a>
-            ) : (
-              <details class="relative group">
-                <summary
-                  class={`list-none cursor-pointer flex items-center gap-1 hover:underline ${
-                    isItemActive(item)
-                      ? "font-semibold underline text-indigo-600"
-                      : ""
-                  }`}
-                >
-                  {item.label.toUpperCase()}
-                  <svg
-                    class="fill-current"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path d="M7 10l5 5 5-5H7z" />
-                  </svg>
-                </summary>
+<div id="desktop-menu" class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm">
 
-                <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
-                  {item.items.map((sub) => (
-                    <li>
-                      <a
-                        href={sub.href}
-                        data-astro-prefetch={sub.prefetch ? "hover" : undefined}
-                        class="block px-3 py-2 hover:outline-1 hover:outline-orange-100"
-                      >
-                        {sub.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+<!--<div id="desktop-menu" class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm">-->
+    <nav aria-label="Primary" class="mx-auto max-w-6xl px-4">
+        <ul class="flex items-center justify-center gap-8 py-3">
+            {
+                menuItems.map((item) => (
+                        <li class="relative">
+                            {item.type === "link" ? (
+                                    <a
+                                            href={item.href}
+                                            data-astro-prefetch="hover"
+                                            class={`hover:underline ${isActive(item.href) ? "font-semibold underline text-indigo-600" : ""}`}
+                                    >
+                                        {item.label.toUpperCase()}
+                                    </a>
+                            ) : (
+                                    <details class="relative group">
+                                        <summary
+                                                class={`list-none cursor-pointer flex items-center gap-1 hover:underline ${
+                                                    isItemActive(item)
+                                                        ? "font-semibold underline text-indigo-600"
+                                                        : ""
+                                                }`}
+                                        >
+                                            {item.label.toUpperCase()}
+                                            <svg
+                                                    class="fill-current"
+                                                    width="16"
+                                                    height="16"
+                                                    viewBox="0 0 24 24"
+                                                    aria-hidden="true"
+                                            >
+                                                <path d="M7 10l5 5 5-5H7z"/>
+                                            </svg>
+                                        </summary>
+
+                                        <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
+                                            {item.items.map((sub) => (
+                                                    <li>
+                                                        <a
+                                                                href={sub.href}
+                                                                data-astro-prefetch={sub.prefetch ? "hover" : undefined}
+                                                                class="block px-3 py-2 hover:outline-1 hover:outline-orange-100"
+                                                        >
+                                                            {sub.label}
+                                                        </a>
+                                                    </li>
+                                            ))}
+                                        </ul>
+                                    </details>
+                            )}
+                        </li>
+                ))
+            }
+        </ul>
+    </nav>
 </div>
 
 <script is:inline>
-  (() => {
-    const root = document.getElementById("desktop-menu");
-    if (!root) return;
+    (() => {
+        const root = document.getElementById("desktop-menu");
+        if (!root) return;
 
-    const getOpenDetails = () =>
-      Array.from(root.querySelectorAll("details[open]"));
+        const getOpenDetails = () =>
+            Array.from(root.querySelectorAll("details[open]"));
 
-    const closeAll = () => {
-      getOpenDetails().forEach((d) => d.removeAttribute("open"));
-    };
+        const closeAll = () => {
+            getOpenDetails().forEach((d) => d.removeAttribute("open"));
+        };
 
-    const updateDesktopMenuHeight = () => {
-      document.documentElement.style.setProperty(
-        "--desktop-menu-h",
-        root.offsetHeight + "px",
-      );
-    };
+        const updateDesktopMenuHeight = () => {
+            document.documentElement.style.setProperty(
+                "--desktop-menu-h",
+                root.offsetHeight + "px",
+            );
+        };
 
-    // Only allow one <details> open at a time
-    root.addEventListener("toggle", (e) => {
-      const el = e.target;
-      if (!(el instanceof HTMLDetailsElement)) return;
-      if (!el.open) return;
+        // Only allow one <details> open at a time
+        root.addEventListener("toggle", (e) => {
+            const el = e.target;
+            if (!(el instanceof HTMLDetailsElement)) return;
+            if (!el.open) return;
 
-      root.querySelectorAll("details[open]").forEach((d) => {
-        if (d !== el) d.removeAttribute("open");
-      });
-    });
+            root.querySelectorAll("details[open]").forEach((d) => {
+                if (d !== el) d.removeAttribute("open");
+            });
+        });
 
-    // Close on outside click/tap
-    document.addEventListener(
-      "pointerdown",
-      (e) => {
-        if (root.contains(e.target)) return;
-        closeAll();
-      },
-      { passive: true },
-    );
+        // Close on outside click/tap
+        document.addEventListener(
+            "pointerdown",
+            (e) => {
+                if (root.contains(e.target)) return;
+                closeAll();
+            },
+            {passive: true},
+        );
 
-    // Close on Escape
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      const open = getOpenDetails();
-      if (open.length === 0) return;
+        // Close on Escape
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            const open = getOpenDetails();
+            if (open.length === 0) return;
 
-      closeAll();
-      open[0].querySelector("summary")?.focus?.();
-    });
+            closeAll();
+            open[0].querySelector("summary")?.focus?.();
+        });
 
-    // Optional: close when selecting a link inside a dropdown
-    root.addEventListener("click", (e) => {
-      const link = e.target.closest?.("details a");
-      if (!link) return;
-      closeAll();
-    });
+        // Optional: close when selecting a link inside a dropdown
+        root.addEventListener("click", (e) => {
+            const link = e.target.closest?.("details a");
+            if (!link) return;
+            closeAll();
+        });
 
-    updateDesktopMenuHeight();
+        updateDesktopMenuHeight();
 
-    window.addEventListener("resize", updateDesktopMenuHeight);
-    window.addEventListener("orientationchange", updateDesktopMenuHeight);
-  })();
+        window.addEventListener("resize", updateDesktopMenuHeight);
+        window.addEventListener("orientationchange", updateDesktopMenuHeight);
+    })();
 </script>

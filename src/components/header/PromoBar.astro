@@ -27,14 +27,12 @@ const background =
             ? c1
             : defaultBg;
 ---
-
+<!-- text-nowrap -->
 <aside
         id={id}
-        class="promo-bar fixed top-0 left-0 w-full z-[80]"
+        class="promo-bar fixed top-0 left-0 w-full z-[80] opacity-30"
         role="region"
         aria-label="Announcement"
-        data-state="hidden"
-        hidden
 >
     <div
             class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-sm sm:text-base md:text-2xl"
@@ -59,107 +57,95 @@ const background =
 
 <style>
     .promo-bar {
+        transform: translateY(0);
+        view-transition-name: promo-bar;
+    }
+
+    html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
+        transition: transform var(--promo-bar-duration) ease;
+    }
+
+    @starting-style {
+        html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
+            transform: translateY(-100%);
+        }
+    }
+
+    html[data-load="internal"] .promo-bar:not([data-promo-state="dismiss"]) {
+        transform: translateY(0);
+        transition: none;
+    }
+
+    .promo-bar[data-promo-state="dismiss"] {
         transform: translateY(-100%);
         transition: transform var(--promo-bar-duration) ease;
-        will-change: transform;
-    }
-
-    .promo-bar[data-state="visible"] {
-        transform: translateY(0);
-    }
-
-    .promo-bar[data-state="closing"] {
-        transform: translateY(-100%);
     }
 </style>
 
 <script is:inline define:vars={{storageKey, id, duration}}>
     (() => {
         const root = document.documentElement;
-        const banner = document.getElementById(id);
-        const seenKey = `${storageKey}_seen_session`;
-        if (!banner) return;
+        const promoBar = document.getElementById(id);
+
+        const internalNav =
+            !!navigation.activation?.from &&
+            navigation.activation.from.url &&
+            new URL(navigation.activation.from.url).origin === location.origin;
 
         const setAnnouncementHeight = (value) => {
             root.style.setProperty("--promo-bar-h", value);
-        };
+        }
 
         const show = () => {
-            banner.hidden = false;
+            root.dataset.load = "internal";
+            // root.dataset.load = internalNav ? "internal" : "direct";
 
-            // ensure starting state is applied before transition
-            banner.setAttribute("data-state", "hidden");
-            setAnnouncementHeight("0px");
-
-            requestAnimationFrame(() => {
-                const measured = `${banner.offsetHeight}px`;
-                banner.style.setProperty("height", measured);
-
-                requestAnimationFrame(() => {
-                    banner.setAttribute("data-state", "visible");
-                    setAnnouncementHeight(measured);
-                });
-            });
-        };
-
-        const showInstant = () => {
-            banner.hidden = false;
-            banner.style.transition = "none";
-
-            const measured = `${banner.offsetHeight}px`;
-            banner.style.setProperty("height", measured);
-            banner.setAttribute("data-state", "visible");
+            const measured = `${promoBar.offsetHeight}px`;
             setAnnouncementHeight(measured);
-
-            requestAnimationFrame(() => {
-                banner.style.transition = "";
-            });
-        };
+        }
 
         const hide = () => {
-            banner.setAttribute("data-state", "closing");
+            promoBar.setAttribute("data-promo-state", "dismiss");
             setAnnouncementHeight("0px");
 
-            window.setTimeout(() => {
-                banner.hidden = true;
-            }, duration);
-        };
-
-        let dismissed = false;
-        let seenThisSession = false;
-
-        try {
-            dismissed = localStorage.getItem(storageKey) === "1" && false; // remove `&& false` for prod
-            seenThisSession = sessionStorage.getItem(seenKey) === "1";
-            root.dataset.promoTransition = seenThisSession ? "off" : "on";
-            console.log("document.documentElement.dataset.promoTransition", document.documentElement.dataset.promoTransition);
-        } catch {
+            // window.setTimeout(() => {
+            //     promoBar.hidden = true;
+            // }, duration);
         }
+
+
+        console.log("internalNav", internalNav);
+
+        const dismissed = localStorage.getItem(storageKey) === "1" && false;
+
+        // root.dataset.load = internalNav ? "internal" : "direct";
+
+
+        // root.dataset.load = "direct";
 
         if (!dismissed) {
-            if (seenThisSession) {
-                root.dataset.promoTransition = "off";
-                showInstant();
-            } else {
-                root.dataset.promoTransition = "on";
-                show();
-                try {
-                    sessionStorage.setItem(seenKey, "1");
-                } catch {
-                }
-            }
-        } else {
-            root.dataset.promoTransition = "off";
-            banner.hidden = true;
-            setAnnouncementHeight("0px");
+            // console.log(root.style.getPropertyValue("--promo-bar-h"));
+            show();
+
+            // console.log(root.style.getPropertyValue("--promo-bar-h"));
+
         }
 
-        banner.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+        // if (internalNav) {
+        //     console.log("external nav");
+        //
+        //
+        // } else {
+        //     console.log("external nav");
+        //     show();
+        // }
+
+        promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
             try {
-                localStorage.setItem(storageKey, "1");
+                // localStorage.setItem(storageKey, "1");
             } catch {
             }
             hide();
-        });
+        })
     })();
 </script>
