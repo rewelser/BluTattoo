@@ -30,7 +30,7 @@ const background =
 <!-- text-nowrap -->
 <aside
         id={id}
-        class="promo-bar fixed top-0 left-0 w-full z-[80] opacity-30"
+        class="promo-bar fixed top-0 left-0 w-full z-[80]"
         role="region"
         aria-label="Announcement"
 >
@@ -113,32 +113,13 @@ const background =
             // }, duration);
         }
 
-
         console.log("internalNav", internalNav);
 
         const dismissed = localStorage.getItem(storageKey) === "1" && false;
 
-        // root.dataset.load = internalNav ? "internal" : "direct";
-
-
-        // root.dataset.load = "direct";
-
         if (!dismissed) {
-            // console.log(root.style.getPropertyValue("--promo-bar-h"));
             show();
-
-            // console.log(root.style.getPropertyValue("--promo-bar-h"));
-
         }
-
-        // if (internalNav) {
-        //     console.log("external nav");
-        //
-        //
-        // } else {
-        //     console.log("external nav");
-        //     show();
-        // }
 
         promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
             try {
