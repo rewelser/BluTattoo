@@ -1,0 +1,47 @@
+---
+import PromoBar from "./PromoBar.astro";
+
+import {loadUpcomingGuestSpotCandidates, hasEventStarted, getNowKey} from "../../domain/events/selectors.ts";
+import {renderGuestLinks} from "../../domain/navigation/grouping.ts";
+
+const {
+    roleLabel = "Artists",
+    items = []
+} = Astro.props as {
+    roleLabel?: string;
+    items?: string[]
+};
+const primaryRole = roleLabel === "Artists" ? "Tattoo Artist" : "Piercer";
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
+const seen = new Set<string>();
+const guests = renderGuestLinks(
+    guestSpotEvents
+        .filter(ev => ev.guestSpot[0].primaryRole === primaryRole)
+        .filter((ev) => {
+            if (seen.has(ev.guestSpot[0].guestName)) {
+                return false;
+            }
+            seen.add(ev.guestSpot[0].guestName);
+            return true;
+        })
+);
+---
+
+{
+    guests.map((guest) => {
+        const prefaceString = hasEventStarted(guest.event, getNowKey(new Date())) ? "guest:" : "upcoming guest:";
+        return (
+        <li>
+            <a
+                    href={guest.href}
+                    class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                    {...(guest.prefetch
+                        ? { "data-astro-prefetch": "hover" }
+                        : {})}
+            >
+                <span class="opacity-30 px-2">{prefaceString}</span>{guest.label}
+            </a>
+        </li>
+            );
+        })
+    }

@@ -1,5 +1,6 @@
 ---
 import type {MenuItem} from "../../domain/navigation/types.ts";
+import MobileMenuGuestSpotItems from "./MobileMenuGuestSpotItems.astro";
 
 const {
     menuItems,
@@ -135,6 +136,8 @@ const {
                                             inert
                                     >
                                         <ul class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10">
+
+                                            <MobileMenuGuestSpotItems roleLabel={item.label} server:defer/>
                                             {item.items.map((sub) => (
                                                     <li>
                                                         <a

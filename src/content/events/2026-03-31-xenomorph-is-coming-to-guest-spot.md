@@ -35,8 +35,8 @@ alt: Xeno
 published: true
 featured: true
 archived: false
-startDate: 2026-04-02
-endDate: 2026-04-04
+startDate: 2026-04-12
+endDate: 2026-04-16
 promoBar:
   enabled: true
   message: The Xenomporph is coming to guest spot! April 2-4

@@ -1,4 +1,4 @@
-import type {EventItem} from "./types.ts";
+import type {EventItem, GuestItem} from "./types.ts";
 import {loadEventsPublishedCached} from "./server.ts";
 
 export function getEventStartKey(ev: EventItem): string {
@@ -27,10 +27,36 @@ export function hasEventEnded(
     return getEventEndKey(ev) < nowKey;
 }
 
+export const hasEventStarted = (ev: EventItem, nowKey = getNowKey()): boolean => {
+    console.log("getEventStartKey(ev)", getEventStartKey(ev));
+    console.log("nowKey", nowKey);
+    console.log("getEventStartKey(ev) <= nowKey", getEventStartKey(ev) <= nowKey);
+
+    return getEventStartKey(ev) <= nowKey;
+}
+
+export function compareEventsByStartDate(a: EventItem, b: EventItem): number {
+    return getEventStartKey(a).localeCompare(getEventStartKey(b));
+}
+
+/**
+ * "ev is GuestItem" is important; otherwise if we just returned boolean, TypeScript will not narrow the type
+ * after .filter(isGuestSpot).
+ */
+export const isGuestSpot = (ev: EventItem): ev is GuestItem => {
+    return Array.isArray(ev.guestSpot) && ev.guestSpot.length > 0;
+}
+
 export function isEventArchived(ev: EventItem): boolean {
     return ev.archived === true;
 }
 
+export async function loadUpcomingGuestSpotCandidates(now = new Date()): Promise<GuestItem[]> {
+    const events = await loadUpcomingCandidates(now);
+    return events.filter(
+        (ev) => isGuestSpot(ev)
+    );
+}
 
 export async function loadUpcomingCandidates(now = new Date()): Promise<EventItem[]> {
     const events = await loadEventsPublishedCached();
@@ -42,7 +68,7 @@ export function getUpcomingCandidates(events: EventItem[], now = new Date()) {
         (ev) =>
             !hasEventEnded(ev, getNowKey(now)) &&
             !isEventArchived(ev)
-    );
+    ).sort((a, b) => getEventStartKey(a).localeCompare(getEventStartKey(b)));
 }
 
 export function getPromoCandidates(events: EventItem[]) {
