@@ -1,24 +1,21 @@
 ---
-// src/pages/events/[slug].astro
 import Layout from "../../layouts/Layout.astro";
 import PromoHero from "../../components/PromoHero.astro";
 import {getCollection, getEntry, render} from "astro:content";
 import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
 import SocialRow from "../../components/SocialRow.astro";
 import HrDivider from "../../components/decor/HrDivider.astro";
+import {getTransformedEventBySlug, loadTransformedEvents} from "../../domain/events/server.ts";
 
 export async function getStaticPaths() {
-    const entries = await getCollection(
-        "events",
-        (e) => e.data.published !== false,
-    );
+    const entries = await loadTransformedEvents();
     return entries.map((e) => ({params: {slug: e.id}}));
 }
 
 const {slug} = Astro.params;
 if (!slug) throw new Error("Missing event id param");
 
-const entry = await getEntry("events", slug);
+const entry = await getTransformedEventBySlug(slug);
 if (!entry) throw new Error(`Event not found: ${slug}`);
 
 const {Content} = await render(entry);
