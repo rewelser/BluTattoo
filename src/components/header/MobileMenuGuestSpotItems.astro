@@ -31,10 +31,10 @@ const guests = renderGuestLinks(
     guests.map((guest) => {
         const prefaceString = hasEventStarted(guest.event, getNowKey(new Date())) ? "guest:" : "upcoming guest:";
         return (
-        <li>
+        <li class="guest-shine rounded-sm">
             <a
                     href={guest.href}
-                    class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10"
+                    class="block px-3 py-3 text-base hover:bg-white/10 focus:bg-white/10 rounded-sm"
                     {...(guest.prefetch
                         ? { "data-astro-prefetch": "hover" }
                         : {})}
@@ -45,3 +45,58 @@ const guests = renderGuestLinks(
             );
         })
     }
+<style>
+    .guest-shine {
+        background: linear-gradient(
+                45deg,
+                #1a0040 0%,
+                #2b1a8a 30%,
+                #4f6cff 50%,
+                #2b1a8a 70%,
+                #1a0040 100%
+        );
+
+        background: linear-gradient(
+                45deg,
+                #1a0040 0%,
+                #2b1a8a 30%,
+                #3c52be 50%,
+                #2b1a8a 70%,
+                #1a0040 100%
+        );
+
+        background: linear-gradient(
+                45deg,
+                rgba(26, 0, 64, 0.2) 0%,
+                rgba(43, 26, 138, 0.4) 30%,
+                rgba(60, 82, 190, 0.3) 50%,
+                rgba(43, 26, 138, 0.4) 70%,
+                rgba(26, 0, 64, 0.2) 100%
+        );
+
+        background: linear-gradient(
+                //45deg,
+                //rgba(26, 0, 64, 0) 0%,
+                //rgba(43, 26, 138, 0.2) 25%,
+                //rgba(60, 82, 190, 0.1) 50%,
+                //rgba(43, 26, 138, 0.2) 75%,
+                //rgba(26, 0, 64, 0) 100%
+        );
+
+        background-size: 200% 100%;
+        //animation: shinySweep 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+        //animation: shinySweep 5s cubic-bezier(0.68, -0.6, 0.32, 1.6) infinite;
+        //animation: shinySweep 5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+        animation: shinySweep 5s ease-in-out infinite alternate;
+    animation: shinySweep 5s cubic-bezier(0.5, 0.2, 0.5, 0.8) infinite;
+    }
+
+    @keyframes shinySweep {
+        0% {
+            background-position: -100% 0;
+        }
+        100% {
+            background-position: 100% 0;
+        }
+    }
+</style>
