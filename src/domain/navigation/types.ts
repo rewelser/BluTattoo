@@ -13,6 +13,7 @@ export type MenuLink = {
 export type MenuSubmenu = {
   type: "submenu";
   label: string;
+  href?: string;
   items: MenuLink[];
 };
 

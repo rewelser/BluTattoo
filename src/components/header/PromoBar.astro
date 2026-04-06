@@ -35,7 +35,7 @@ const background =
         aria-label="Announcement"
 >
     <div
-            class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-sm sm:text-base md:text-2xl"
+            class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-md sm:text-base md:text-2xl"
             style={`background: ${background};`}
     >
         <a
@@ -128,5 +128,15 @@ const background =
             }
             hide();
         })
+
+        window.addEventListener(
+            "resize",
+            () => {
+                if (!dismissed) {
+                    show();
+                }
+            },
+            {passive: true},
+        );
     })();
 </script>

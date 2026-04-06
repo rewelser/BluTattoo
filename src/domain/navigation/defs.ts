@@ -12,7 +12,7 @@ const artistLinks = artists.map((entry) => ({
 
 export const navItems: MenuItem[] = [
   { type: "link", label: "Home", href: "/" },
-  { type: "submenu", label: "Artists", items: artistLinks },
+  { type: "submenu", label: "Artists", href: "/artists/", items: artistLinks },
   { type: "link", label: "Booking", href: "/booking" },
   { type: "link", label: "Piercing", href: "/piercing" },
   { type: "link", label: "Events", href: "/events" },

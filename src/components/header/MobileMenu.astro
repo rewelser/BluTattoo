@@ -1,6 +1,6 @@
 ---
 import type {MenuItem} from "../../domain/navigation/types.ts";
-import MobileMenuGuestSpotItems from "./MobileMenuGuestSpotItems.astro";
+import MenuGuestSpotItems from "./MenuGuestSpotItems.astro";
 
 const {
     menuItems,
@@ -117,7 +117,13 @@ const {
                                             aria-controls={panelId}
                                             id={btnId}
                                     >
-                                        <span>{item.label}</span>
+                                        <a
+                                                href={item.href}
+                                                class="block px-2 py-3 hover:bg-white/10"
+                                                {...(item.prefetch ? { "data-astro-prefetch": "hover" } : {})}
+                                        >
+                                            <span>{item.label}</span>
+                                        </a>
                                         <svg
                                                 viewBox="0 0 24 24"
                                                 class="ml-2 h-4 w-4 transition-transform fill-orange-100"
@@ -137,7 +143,7 @@ const {
                                     >
                                         <ul class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10">
 
-                                            <MobileMenuGuestSpotItems roleLabel={item.label} server:defer/>
+                                            <MenuGuestSpotItems roleLabel={item.label} server:defer/>
                                             {item.items.map((sub) => (
                                                     <li>
                                                         <a
@@ -181,8 +187,8 @@ const {
             document.documentElement.style.setProperty(
                 "--mobile-menu-h",
                 mobileMenuTopBar.offsetHeight + "px",
-                );
-            };
+            );
+        };
 
         updateMobileMenuHeight();
 
@@ -202,7 +208,7 @@ const {
             // If you want *also* hidden:
             // panel.hidden = !interactive;
             // If you use hidden, you must set hidden=false before measuring scrollHeight.
-            };
+        };
 
         // Ensure focus ends up somewhere sensible if we're about to collapse something
         const ensureFocusNotIn = (panel, fallbackEl) => {
@@ -210,8 +216,8 @@ const {
             if (isFocusInside(panel)) {
                 // If focus is currently in the collapsing panel, move it back to the toggle (or other fallback)
                 fallbackEl?.focus?.();
-                }
-            };
+            }
+        };
 
         // --- animation helpers --------------------------------------------------
 
@@ -226,29 +232,29 @@ const {
             const maxDur = Math.max(0, ...(toMs(cs.transitionDuration) || [0]));
             const maxDel = Math.max(0, ...(toMs(cs.transitionDelay) || [0]));
             return maxDur + maxDel + 50;
-            };
+        };
 
         const lock = (btn, panel) => {
             btn.disabled = true;
             panel.style.pointerEvents = "none";
             panel.dataset.animating = "1";
-            };
+        };
 
         const unlock = (btn, panel) => {
             delete panel.dataset.animating;
             btn.disabled = false;
             panel.style.pointerEvents = "";
-            };
+        };
 
         const ensurePixelHeight = (panel) => {
             if (
                 getComputedStyle(panel).height === "auto" ||
-                    panel.style.height === "auto"
-                ) {
+                panel.style.height === "auto"
+            ) {
                 panel.style.height = panel.scrollHeight + "px";
                 void panel.offsetHeight;
-                }
-            };
+            }
+        };
 
         const updateMobileMenuViewportBounds = () => {
             const headerRect = header.getBoundingClientRect();
@@ -256,29 +262,29 @@ const {
             const available = window.innerHeight - top;
 
             mobileAnim.style.maxHeight = `${Math.max(0, available)}px`;
-            };
+        };
 
         const expand = (panel) => {
             ensurePixelHeight(panel);
             panel.style.height = panel.scrollHeight + "px";
-            };
+        };
 
         const collapse = (panel) => {
             ensurePixelHeight(panel);
             panel.style.height = "0px";
-            };
+        };
 
         /**
-            * setExpanded:
-            * - updates aria-expanded + chevron
-            * - animates height open/closed
-            * - manages inert:
-            *    - expanded: inert=false immediately (so keyboard can enter after open)
-            *    - collapsed: inert=true after collapse finishes (so we don't "kick" focus mid-transition)
-            * - basic focus management:
-            *    - if collapsing while focus is inside panel, return focus to btn
-            */
-            const setExpanded = (btn, panel, expanded, chevron) => {
+         * setExpanded:
+         * - updates aria-expanded + chevron
+         * - animates height open/closed
+         * - manages inert:
+         *    - expanded: inert=false immediately (so keyboard can enter after open)
+         *    - collapsed: inert=true after collapse finishes (so we don't "kick" focus mid-transition)
+         * - basic focus management:
+         *    - if collapsing while focus is inside panel, return focus to btn
+         */
+        const setExpanded = (btn, panel, expanded, chevron) => {
             // Focus management before collapsing
             if (!expanded) ensureFocusNotIn(panel, btn);
             btn.setAttribute("aria-expanded", expanded ? "true" : "false");
@@ -287,7 +293,7 @@ const {
             // inert rules
             if (expanded) {
                 setPanelInteractive(panel, true);
-                }
+            }
 
             lock(btn, panel);
             const totalMs = getTransitionMs(panel);
@@ -298,24 +304,24 @@ const {
                 ended = true;
                 if (expanded) {
                     panel.style.height = "auto";
-                    } else {
+                } else {
                     setPanelInteractive(panel, false);
-                    }
+                }
                 unlock(btn, panel);
-                };
+            };
 
             const onEnd = (e) => {
                 if (e.propertyName !== "height") return;
                 panel.removeEventListener("transitionend", onEnd);
                 clearTimeout(fallback);
                 finish();
-                };
+            };
             panel.addEventListener("transitionend", onEnd);
 
             const fallback = setTimeout(finish, totalMs);
 
             expanded ? expand(panel) : collapse(panel);
-            };
+        };
 
         const closeAllSubmenus = () => {
             nav.querySelectorAll("[data-submenu-toggle]").forEach((btn) => {
@@ -325,8 +331,8 @@ const {
                 if (!panel) return;
 
                 setExpanded(btn, panel, false, btn.querySelector("[data-chevron]"));
-                });
-            };
+            });
+        };
 
         const openOuter = () => {
             updateMobileMenuViewportBounds();
@@ -335,7 +341,7 @@ const {
             mobileBtn.classList.add("is-active");
             mobileAnim.classList.add("is-open");
             setExpanded(mobileBtn, mobileAnim, true);
-            };
+        };
 
         const closeOuter = () => {
             // If focus is anywhere inside the whole menu region, return it to the hamburger button
@@ -347,17 +353,17 @@ const {
             // document.documentElement.classList.remove("scroll-locked");
             document.body.classList.remove("scroll-locked");
             mobileAnim.style.maxHeight = "";
-            };
+        };
 
         // Outer toggle
         mobileBtn.addEventListener("click", () => {
             const nextExpansionState = !isExpanded(mobileBtn);
             if (nextExpansionState) {
                 openOuter();
-                } else {
+            } else {
                 closeOuter();
-                }
-            });
+            }
+        });
 
         // Delegated submenu clicks
         nav.addEventListener("click", (e) => {
@@ -375,21 +381,21 @@ const {
             nav
                 .querySelectorAll('[data-submenu-toggle][aria-expanded="true"]')
                 .forEach((openBtn) => {
-                if (openBtn === btn) return;
-                const id = openBtn.getAttribute("aria-controls");
-                const p = id && document.getElementById(id);
-                if (!p) return;
-                setExpanded(
-                    openBtn,
-                    p,
-                    false,
-                    openBtn.querySelector("[data-chevron]"),
+                    if (openBtn === btn) return;
+                    const id = openBtn.getAttribute("aria-controls");
+                    const p = id && document.getElementById(id);
+                    if (!p) return;
+                    setExpanded(
+                        openBtn,
+                        p,
+                        false,
+                        openBtn.querySelector("[data-chevron]"),
                     );
                 });
 
             const chevron = btn.querySelector("[data-chevron]");
             setExpanded(btn, panel, !isExpanded(btn), chevron);
-            });
+        });
 
         // Outside click closes all
         document.addEventListener(
@@ -399,15 +405,15 @@ const {
                 if (mobileAnim.dataset.animating === "1") return;
                 if (!isExpanded(mobileBtn)) return;
                 closeOuter();
-                },
-            { passive: true },
-            );
+            },
+            {passive: true},
+        );
 
         document.addEventListener("keydown", (e) => {
             if (!isExpanded(mobileBtn)) return;
             if (e.key === "Escape") closeOuter();
-            });
-        })();
+        });
+    })();
 </script>
 
 {variant === "home" && (

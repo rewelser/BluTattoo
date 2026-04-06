@@ -1,5 +1,6 @@
 ---
 import type {MenuItem} from "../../domain/navigation/types.ts";
+import MenuGuestSpotItems from "./MenuGuestSpotItems.astro";
 
 const {
     menuItems,
@@ -28,7 +29,7 @@ const isItemActive = (item: MenuItem) => {
 > -->
 <div id="desktop-menu" class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm">
 
-<!--<div id="desktop-menu" class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm">-->
+    <!--<div id="desktop-menu" class="hidden md:block border-b bg-black/10 bg-white backdrop-blur-sm">-->
     <nav aria-label="Primary" class="mx-auto max-w-6xl px-4">
         <ul class="flex items-center justify-center gap-8 py-3">
             {
@@ -51,7 +52,13 @@ const isItemActive = (item: MenuItem) => {
                                                         : ""
                                                 }`}
                                         >
-                                            {item.label.toUpperCase()}
+                                            <a
+                                                    href={item.href}
+                                                    data-astro-prefetch="hover"
+                                                    class={`hover:underline ${isActive(item.href) ? "font-semibold underline text-indigo-600" : ""}`}
+                                            >
+                                                {item.label.toUpperCase()}
+                                            </a>
                                             <svg
                                                     class="fill-current"
                                                     width="16"
@@ -63,7 +70,8 @@ const isItemActive = (item: MenuItem) => {
                                             </svg>
                                         </summary>
 
-                                        <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
+                                        <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
+                                            <MenuGuestSpotItems roleLabel={item.label} server:defer/>
                                             {item.items.map((sub) => (
                                                     <li>
                                                         <a
