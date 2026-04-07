@@ -1,0 +1,144 @@
+---
+import SparkleSvg from "./SparkleSvg.astro";
+
+const { color = "black", size = 24 } = Astro.props;
+---
+
+<div class="sparkle-corners">
+    <div class="cluster cluster--top-left">
+        <div class="sparkle sparkle--1">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+        <div class="sparkle sparkle--2">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+        <div class="sparkle sparkle--3">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+    </div>
+
+    <div class="cluster cluster--bottom-right">
+        <div class="sparkle sparkle--4">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+        <div class="sparkle sparkle--5">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+        <div class="sparkle sparkle--6">
+            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        </div>
+    </div>
+</div>
+
+<style>
+    /*
+      Example timeline:
+      - each sparkle animates for 800ms
+      - starts are staggered by 180ms
+      - 450ms pause between clusters
+      - 700ms pause before repeat
+
+      Start times:
+      1:   0ms
+      2: 180ms
+      3: 360ms
+      pause...
+      4: 990ms
+      5: 1170ms
+      6: 1350ms
+      cycle ends at 2850ms
+    */
+
+    @keyframes sparkle-visibility {
+        0%, 100% {
+            transform: scale(0);
+        }
+        14.035% {
+            transform: scale(0);
+        }
+        28.070% {
+            transform: scale(1);
+        }
+        42.105% {
+            transform: scale(0);
+        }
+    }
+
+    @keyframes sparkle-spin {
+        0%, 14.035% {
+            transform: rotate(0deg);
+        }
+        42.105% {
+            transform: rotate(180deg);
+        }
+        100% {
+            transform: rotate(180deg);
+        }
+    }
+
+    .sparkle-corners {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .cluster {
+        position: absolute;
+        width: 72px;
+        height: 48px;
+    }
+
+    .cluster--top-left {
+        top: -56px;
+        left: -80px;
+    }
+
+    .cluster--bottom-right {
+        right: -80px;
+        bottom: -56px;
+    }
+
+    .sparkle {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        transform: scale(0);
+        animation-name: sparkle-visibility;
+        animation-duration: 2850ms;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+    }
+
+    .sparkle--1 { top: 0; left: 24px; animation-delay: 0ms; }
+    .sparkle--2 { top: 24px; left: 0; animation-delay: 180ms; }
+    .sparkle--3 { top: 24px; left: 48px; animation-delay: 360ms; }
+
+    .sparkle--4 { top: 0; left: 24px; animation-delay: 990ms; }
+    .sparkle--5 { top: 24px; left: 0; animation-delay: 1170ms; }
+    .sparkle--6 { top: 24px; left: 48px; animation-delay: 1350ms; }
+
+    :global(.sparkle-wrapper) {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    :global(.sparkle-svg) {
+        width: 100%;
+        height: 100%;
+        display: block;
+        animation-name: sparkle-spin;
+        animation-duration: 2850ms;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+    }
+
+    .sparkle--1 :global(.sparkle-svg) { animation-delay: 0ms; }
+    .sparkle--2 :global(.sparkle-svg) { animation-delay: 180ms; }
+    .sparkle--3 :global(.sparkle-svg) { animation-delay: 360ms; }
+
+    .sparkle--4 :global(.sparkle-svg) { animation-delay: 990ms; }
+    .sparkle--5 :global(.sparkle-svg) { animation-delay: 1170ms; }
+    .sparkle--6 :global(.sparkle-svg) { animation-delay: 1350ms; }
+</style>

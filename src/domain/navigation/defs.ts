@@ -15,7 +15,7 @@ export const navItems: MenuItem[] = [
   { type: "submenu", label: "Artists", href: "/artists/", items: artistLinks },
   { type: "link", label: "Booking", href: "/booking" },
   { type: "link", label: "Piercing", href: "/piercing" },
-  { type: "link", label: "Events", href: "/events" },
+  { type: "link", label: "Events", href: "/events/" },
   { type: "link", label: "Aftercare", href: "/aftercare" },
   { type: "link", label: "FAQ", href: "/faq" },
   { type: "link", label: "Contact Us", href: "/contact" },

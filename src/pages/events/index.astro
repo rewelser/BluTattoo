@@ -2,13 +2,13 @@
 // SSR on this page only. Elsewhere, SSG
 // export const prerender = false;
 
-// src/pages/events.astro
-import Layout from "../layouts/Layout.astro";
-import { EventsCalendar } from "../components/EventsCalendar";
-import UpcomingEvents from "../components/UpcomingEvents.astro";
-import UpcomingEventsFallback from "../components/UpcomingEventsFallback.astro";
-import { getTransformedEventItemsCached } from "../domain/events/server.ts";
-import type {EventItem} from "../domain/events/types.ts";
+// src/pages/index.astro
+import Layout from "../../layouts/Layout.astro";
+import { EventsCalendar } from "../../components/EventsCalendar.tsx";
+import UpcomingEvents from "../../components/UpcomingEvents.astro";
+import UpcomingEventsFallback from "../../components/UpcomingEventsFallback.astro";
+import { getTransformedEventItemsCached } from "../../domain/events/server.ts";
+import type {EventItem} from "../../domain/events/types.ts";
 
 const events: EventItem[] = await getTransformedEventItemsCached();
 const title = "Events";

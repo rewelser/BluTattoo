@@ -10,7 +10,7 @@ export interface Props {
 
 const {events = []} = Astro.props;
 
-// If confused why not simply using loadUpcomingCanidates like in PromoBarLoader, or vice versa, it's because events.astro already has events list
+// If confused why not simply using loadUpcomingCanidates like in PromoBarLoader, or vice versa, it's because index.astro already has events list
 const upcoming = getUpcomingCandidates(events, new Date());
 const featured = pickFeaturedHero(upcoming);
 ---

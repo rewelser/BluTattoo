@@ -15,9 +15,9 @@ const isAsset = (v: unknown) =>
 export async function getStaticPaths() {
   // const artists = await getCollection("artists");
   let artists = await loadActiveArtists();
-  console.log(artists);
   // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 
+  // todo: I did this differently (at a later time) for events. Take a look at that at some point to reconcile.
   return artists.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },

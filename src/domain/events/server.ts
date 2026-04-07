@@ -40,36 +40,6 @@ export async function getTransformedEventItems(): Promise<EventItem[]> {
         .map((e) => ({id: e.id, ...e.data}));
 }
 
-
-// : Promise<CollectionEntry<"events">[]>
-
-// export async function getTransformedEventItems(): Promise<EventItem[]> {
-//     const entries = (await getCollection(
-//         "events",
-//         (e) => e.data.published !== false,
-//     )) as EventEntry[];
-//
-//     return entries
-//         .map((e) => ({id: e.id, ...e.data}))
-//         .map((e) => {
-//             const startKey = getEventStartKey(e);
-//             const endKey = getEventEndKey(e);
-//             const isEndBeforeStart = endKey <= startKey;
-//             // if (e.id.includes("xenomorph")) {
-//             //     console.log("isEndBeforeStart", isEndBeforeStart);
-//             // }
-//             return {
-//                 ...e,
-//                 endDate: isEndBeforeStart ? undefined : e.endDate,
-//                 endTime: isEndBeforeStart ? undefined : e.endTime,
-//             };
-//         })
-//         .sort((a, b) =>
-//             `${a.startDate}T${a.startTime ?? "00:00"}`
-//                 .localeCompare(`${b.startDate}T${b.startTime ?? "00:00"}`)
-//         );
-// }
-
 let transformedEventItemsPromise: Promise<EventItem[]> | undefined;
 
 export function getTransformedEventItemsCached(): Promise<EventItem[]> {

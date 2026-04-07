@@ -18,7 +18,7 @@ const isActive = (href: string) =>
     currentPath === href || (href !== "/" && currentPath.startsWith(href));
 const isItemActive = (item: MenuItem) => {
     if (item.type === "link") return isActive(item.href);
-    return item.items.some((sub) => isActive(sub.href));
+    return item.items.some((sub) => isActive(sub.href)) || isActive(item.href);
 };
 ---
 
@@ -52,13 +52,7 @@ const isItemActive = (item: MenuItem) => {
                                                         : ""
                                                 }`}
                                         >
-                                            <a
-                                                    href={item.href}
-                                                    data-astro-prefetch="hover"
-                                                    class={`hover:underline ${isActive(item.href) ? "font-semibold underline text-indigo-600" : ""}`}
-                                            >
-                                                {item.label.toUpperCase()}
-                                            </a>
+                                            {item.label.toUpperCase()}
                                             <svg
                                                     class="fill-current"
                                                     width="16"
@@ -71,6 +65,14 @@ const isItemActive = (item: MenuItem) => {
                                         </summary>
 
                                         <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
+                                            <li>
+                                                <a
+                                                        href={item.href}
+                                                        class="block px-3 py-2 hover:outline-1 hover:outline-orange-100 font-bold border-b-1 border-dotted"
+                                                >
+                                                    View All {item.label}
+                                                </a>
+                                            </li>
                                             <MenuGuestSpotItems roleLabel={item.label} server:defer/>
                                             {item.items.map((sub) => (
                                                     <li>

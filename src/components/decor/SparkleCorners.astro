@@ -1,0 +1,202 @@
+---
+import SparkleSvg from "./SparkleSvg.astro";
+
+interface Props {
+    color?: string;
+    size?: number;
+    gap?: number;
+    offset?: number;
+    sparkleDurationMs?: number;
+    stepMs?: number;
+    betweenClustersPauseMs?: number;
+    cyclePauseMs?: number;
+    class?: string;
+    style?: string;
+}
+
+const {
+    color = "black",
+    size = 24,
+    gap = 18,
+    offset = 8,
+    sparkleDurationMs = 800,
+    stepMs = 180,
+    betweenClustersPauseMs = 450,
+    cyclePauseMs = 700,
+    class: className = "",
+    style = "",
+} = Astro.props;
+
+const trianglePoints = [
+    {x: gap, y: 0},
+    {x: 0, y: gap},
+    {x: gap * 2, y: gap},
+];
+
+// So it can be parsed by css, since this is the only value passed into css
+const sparkleDurationMsLiteral = `${sparkleDurationMs}ms`;
+
+const clusterWidth = gap * 2 + size;
+const clusterHeight = gap + size;
+
+const sparkleStyle = (x: number, y: number) =>
+    `left:${x}px; top:${y}px; width:${size}px; height:${size}px;`;
+
+const rootClassName = ["sparkle-corners", className].filter(Boolean).join(" ");
+---
+
+<div
+        class={rootClassName}
+        style={style}
+        data-sparkle-corners
+>
+    <div
+            class="sparkle-corners__cluster sparkle-corners__cluster--top-left"
+            style={`width:${clusterWidth}px; height:${clusterHeight}px; left:-${clusterWidth + offset}px; top:-${clusterHeight + offset}px;`}
+    >
+        {
+            trianglePoints.map((point) => (
+                    <div class="sparkle-corners__sparkle" style={sparkleStyle(point.x, point.y)}>
+                        <SparkleSvg
+                                color={color}
+                                size={size}
+                                className="sparkle-corners__sparkle-svg-wrapper"
+                                svgClassName="sparkle-corners__sparkle-svg"
+                        />
+                    </div>
+            ))
+        }
+    </div>
+
+    <div
+            class="sparkle-corners__cluster sparkle-corners__cluster--bottom-right"
+            style={`width:${clusterWidth}px; height:${clusterHeight}px; right:-${clusterWidth + offset}px; bottom:-${clusterHeight + offset}px;`}
+    >
+        {
+            trianglePoints.map((point) => (
+                    <div class="sparkle-corners__sparkle" style={sparkleStyle(point.x, point.y)}>
+                        <SparkleSvg
+                                color={color}
+                                size={size}
+                                className="sparkle-corners__sparkle-svg-wrapper"
+                                svgClassName="sparkle-corners__sparkle-svg"
+                        />
+                    </div>
+            ))
+        }
+    </div>
+</div>
+
+<script define:vars={{sparkleDurationMs, stepMs, betweenClustersPauseMs, cyclePauseMs}}>
+    (() => {
+        const initializedKey = "sparkleCornersInitialized";
+
+        function sleep(ms) {
+            return new Promise((resolve) => window.setTimeout(resolve, ms));
+        }
+
+        function triggerSparkle(el) {
+            el.classList.remove("is-active");
+
+            // Force reflow so the animation can restart reliably.
+            void el.offsetWidth;
+
+            el.classList.add("is-active");
+
+            window.setTimeout(() => {
+                el.classList.remove("is-active");
+            }, sparkleDurationMs);
+        }
+
+        async function runClusterCycle(sparkles) {
+            for (const sparkle of sparkles) {
+                triggerSparkle(sparkle, sparkleDurationMs);
+                await sleep(stepMs);
+            }
+        }
+
+        async function startSparkleCorners(root) {
+            if (root.dataset[initializedKey] === "true") return;
+            root.dataset[initializedKey] = "true";
+
+            const topLeftSparkles = Array.from(
+                root.querySelectorAll(".sparkle-corners__cluster--top-left .sparkle-corners__sparkle")
+            );
+            const bottomRightSparkles = Array.from(
+                root.querySelectorAll(".sparkle-corners__cluster--bottom-right .sparkle-corners__sparkle")
+            );
+
+            while (true) {
+                await runClusterCycle(topLeftSparkles, sparkleDurationMs, stepMs);
+                await sleep(betweenClustersPauseMs);
+                await runClusterCycle(bottomRightSparkles, sparkleDurationMs, stepMs);
+                await sleep(cyclePauseMs);
+            }
+        }
+
+        for (const root of document.querySelectorAll("[data-sparkle-corners]")) {
+            startSparkleCorners(root);
+        }
+    })();
+</script>
+
+<style define:vars={{sparkleDurationMsLiteral}}>
+    @keyframes sparkle-grow-and-shrink {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(0);
+        }
+    }
+
+    @keyframes sparkle-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(180deg);
+        }
+    }
+
+    .sparkle-corners {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .sparkle-corners__cluster {
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .sparkle-corners__sparkle {
+        position: absolute;
+        pointer-events: none;
+        transform: scale(0);
+    }
+
+    :global(.sparkle-corners__sparkle-svg-wrapper) {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    :global(.sparkle-corners__sparkle-svg) {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .sparkle-corners__sparkle.is-active {
+        animation: sparkle-grow-and-shrink var(--sparkleDurationMsLiteral) ease-in-out forwards;
+    }
+
+    .sparkle-corners__sparkle.is-active :global(.sparkle-corners__sparkle-svg) {
+        animation: sparkle-spin var(--sparkleDurationMsLiteral) linear forwards;
+    }
+</style>

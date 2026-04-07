@@ -14,7 +14,7 @@ const {
 };
 if (!enabled) return;
 
-// If confused why not simply using getUpcomingCandidates like in UpcomingEvents, or vice versa, it's because events.astro already has events list, and we don't here
+// If confused why not simply using getUpcomingCandidates like in UpcomingEvents, or vice versa, it's because index.astro already has events list, and we don't here
 const events = await loadUpcomingCandidates(new Date());
 const promoCandidates = getPromoCandidates(events);
 const promoEvent = promoCandidates.find((ev) => ev.featured) ?? promoCandidates[0] ?? null;

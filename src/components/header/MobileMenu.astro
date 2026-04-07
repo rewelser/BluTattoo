@@ -117,13 +117,7 @@ const {
                                             aria-controls={panelId}
                                             id={btnId}
                                     >
-                                        <a
-                                                href={item.href}
-                                                class="block px-2 py-3 hover:bg-white/10"
-                                                {...(item.prefetch ? { "data-astro-prefetch": "hover" } : {})}
-                                        >
-                                            <span>{item.label}</span>
-                                        </a>
+                                        <span>{item.label}</span>
                                         <svg
                                                 viewBox="0 0 24 24"
                                                 class="ml-2 h-4 w-4 transition-transform fill-orange-100"
@@ -142,7 +136,14 @@ const {
                                             inert
                                     >
                                         <ul class="ml-3 mt-2 flex max-h-[60vh] flex-col gap-1 overflow-auto pr-1 divide-y divide-white/10">
-
+                                            <li>
+                                                <a
+                                                        href={item.href}
+                                                        class="block px-3 py-3 text-base text-orange-100/75 italic hover:bg-white/10 focus:bg-white/10 border-b-2 border-dotted border-white/30"
+                                                >
+                                                    View all {item.label.toLowerCase()}
+                                                </a>
+                                            </li>
                                             <MenuGuestSpotItems roleLabel={item.label} server:defer/>
                                             {item.items.map((sub) => (
                                                     <li>
