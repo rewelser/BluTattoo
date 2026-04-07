@@ -41,12 +41,10 @@ const clusterHeight = gap + size;
 
 const sparkleStyle = (x: number, y: number) =>
     `left:${x}px; top:${y}px; width:${size}px; height:${size}px;`;
-
-const rootClassName = ["sparkle-corners", className].filter(Boolean).join(" ");
 ---
 
 <div
-        class={rootClassName}
+        class={`sparkle-corners ${className ?? ""}`}
         style={style}
         data-sparkle-corners
 >
@@ -89,18 +87,11 @@ const rootClassName = ["sparkle-corners", className].filter(Boolean).join(" ");
 
 <script define:vars={{sparkleDurationMs, stepMs, betweenClustersPauseMs, cyclePauseMs}}>
     (() => {
-        const initializedKey = "sparkleCornersInitialized";
-
-        function sleep(ms) {
-            return new Promise((resolve) => window.setTimeout(resolve, ms));
-        }
+        const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
         function triggerSparkle(el) {
             el.classList.remove("is-active");
-
-            // Force reflow so the animation can restart reliably.
             void el.offsetWidth;
-
             el.classList.add("is-active");
 
             window.setTimeout(() => {
@@ -110,26 +101,22 @@ const rootClassName = ["sparkle-corners", className].filter(Boolean).join(" ");
 
         async function runClusterCycle(sparkles) {
             for (const sparkle of sparkles) {
-                triggerSparkle(sparkle, sparkleDurationMs);
+                triggerSparkle(sparkle);
                 await sleep(stepMs);
             }
         }
 
         async function startSparkleCorners(root) {
-            if (root.dataset[initializedKey] === "true") return;
-            root.dataset[initializedKey] = "true";
+            if (root.dataset.sparkleCornersInitialized === "true") return;
+            root.dataset.sparkleCornersInitialized = "true";
 
-            const topLeftSparkles = Array.from(
-                root.querySelectorAll(".sparkle-corners__cluster--top-left .sparkle-corners__sparkle")
-            );
-            const bottomRightSparkles = Array.from(
-                root.querySelectorAll(".sparkle-corners__cluster--bottom-right .sparkle-corners__sparkle")
-            );
+            const topLeftSparkles = [...root.querySelectorAll(".sparkle-corners__cluster--top-left .sparkle-corners__sparkle")];
+            const bottomRightSparkles = [...root.querySelectorAll(".sparkle-corners__cluster--bottom-right .sparkle-corners__sparkle")];
 
             while (true) {
-                await runClusterCycle(topLeftSparkles, sparkleDurationMs, stepMs);
+                await runClusterCycle(topLeftSparkles);
                 await sleep(betweenClustersPauseMs);
-                await runClusterCycle(bottomRightSparkles, sparkleDurationMs, stepMs);
+                await runClusterCycle(bottomRightSparkles);
                 await sleep(cyclePauseMs);
             }
         }
@@ -171,12 +158,10 @@ const rootClassName = ["sparkle-corners", className].filter(Boolean).join(" ");
 
     .sparkle-corners__cluster {
         position: absolute;
-        pointer-events: none;
     }
 
     .sparkle-corners__sparkle {
         position: absolute;
-        pointer-events: none;
         transform: scale(0);
     }
 

@@ -1,5 +1,5 @@
 ---
-const {color = 'black', size = 24, style = '', className='', svgClassName=''} = Astro.props;
+const {color = 'black', fillColor = 'red', size = 24, style = '', className='', svgClassName=''} = Astro.props;
 ---
 <div
         class={className}
@@ -8,7 +8,7 @@ const {color = 'black', size = 24, style = '', className='', svgClassName=''} = 
     <svg class={svgClassName}
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 1151.91 1151.91"
-         fill="none"
+         fill={fillColor}
          stroke="currentColor"
          stroke-width="50"
          aria-hidden="true"

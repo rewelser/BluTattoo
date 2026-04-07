@@ -1,74 +1,127 @@
 ---
 import SparkleSvg from "./SparkleSvg.astro";
 
-const { color = "black", size = 24 } = Astro.props;
+interface Props {
+    color?: string;
+    size?: number;
+    gap?: number;
+    offset?: number;
+    class?: string;
+    style?: string;
+}
+
+const {
+    color = "black",
+    fillColor = "none",
+    size = 24,
+    gap = 16,
+    offset = -40,
+    class: className = "",
+    style = "",
+} = Astro.props;
+
+const trianglePoints = [
+    { x: gap, y: 0 },
+    { x: 0, y: gap },
+    { x: gap * 2, y: gap },
+];
+
+const clusterWidth = gap * 2 + size;
+const clusterHeight = gap + size;
+
+const sparkleStyle = (x: number, y: number) =>
+    `left:${x}px; top:${y}px; width:${size}px; height:${size}px;`;
 ---
 
-<div class="sparkle-corners">
-    <div class="cluster cluster--top-left">
-        <div class="sparkle sparkle--1">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+<div class={`sparkle-corners ${className}`} style={style} aria-hidden="true">
+    <div
+            class="sparkle-corners__cluster sparkle-corners__cluster--top-left"
+            style={`width:${clusterWidth}px; height:${clusterHeight}px; left:-${clusterWidth + offset}px; top:-${clusterHeight + offset}px;`}
+    >
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--tl-1" style={sparkleStyle(trianglePoints[0].x, trianglePoints[0].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
-        <div class="sparkle sparkle--2">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--tl-2" style={sparkleStyle(trianglePoints[1].x, trianglePoints[1].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
-        <div class="sparkle sparkle--3">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--tl-3" style={sparkleStyle(trianglePoints[2].x, trianglePoints[2].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
     </div>
 
-    <div class="cluster cluster--bottom-right">
-        <div class="sparkle sparkle--4">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+    <div
+            class="sparkle-corners__cluster sparkle-corners__cluster--bottom-right"
+            style={`width:${clusterWidth}px; height:${clusterHeight}px; right:-${clusterWidth + offset}px; bottom:-${clusterHeight + offset}px;`}
+    >
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--br-1" style={sparkleStyle(trianglePoints[0].x, trianglePoints[0].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
-        <div class="sparkle sparkle--5">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--br-2" style={sparkleStyle(trianglePoints[1].x, trianglePoints[1].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
-        <div class="sparkle sparkle--6">
-            <SparkleSvg color={color} size={size} className="sparkle-wrapper" svgClassName="sparkle-svg" />
+        <div class="sparkle-corners__sparkle sparkle-corners__sparkle--br-3" style={sparkleStyle(trianglePoints[2].x, trianglePoints[2].y)}>
+            <SparkleSvg
+                    color={color}
+                    fillColor={fillColor}
+                    size={size}
+                    className="sparkle-corners__sparkle-svg-wrapper"
+                    svgClassName="sparkle-corners__sparkle-svg"
+            />
         </div>
     </div>
 </div>
 
 <style>
-    /*
-      Example timeline:
-      - each sparkle animates for 800ms
-      - starts are staggered by 180ms
-      - 450ms pause between clusters
-      - 700ms pause before repeat
-
-      Start times:
-      1:   0ms
-      2: 180ms
-      3: 360ms
-      pause...
-      4: 990ms
-      5: 1170ms
-      6: 1350ms
-      cycle ends at 2850ms
-    */
-
-    @keyframes sparkle-visibility {
-        0%, 100% {
+    @keyframes sparkle-grow-cycle {
+        0% {
             transform: scale(0);
         }
-        14.035% {
-            transform: scale(0);
-        }
-        28.070% {
+        7.4074% {
             transform: scale(1);
         }
-        42.105% {
+        14.8148% {
+            transform: scale(0);
+        }
+        100% {
             transform: scale(0);
         }
     }
 
-    @keyframes sparkle-spin {
-        0%, 14.035% {
+    @keyframes sparkle-spin-cycle {
+        0% {
             transform: rotate(0deg);
         }
-        42.105% {
+        14.8148% {
             transform: rotate(180deg);
         }
         100% {
@@ -83,62 +136,84 @@ const { color = "black", size = 24 } = Astro.props;
         overflow: visible;
     }
 
-    .cluster {
+    .sparkle-corners__cluster {
         position: absolute;
-        width: 72px;
-        height: 48px;
+        pointer-events: none;
     }
 
-    .cluster--top-left {
-        top: -56px;
-        left: -80px;
-    }
-
-    .cluster--bottom-right {
-        right: -80px;
-        bottom: -56px;
-    }
-
-    .sparkle {
+    .sparkle-corners__sparkle {
         position: absolute;
-        width: 24px;
-        height: 24px;
+        pointer-events: none;
         transform: scale(0);
-        animation-name: sparkle-visibility;
-        animation-duration: 2850ms;
+        animation-name: sparkle-grow-cycle;
+        animation-duration: 5400ms;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
+        animation-fill-mode: both;
     }
 
-    .sparkle--1 { top: 0; left: 24px; animation-delay: 0ms; }
-    .sparkle--2 { top: 24px; left: 0; animation-delay: 180ms; }
-    .sparkle--3 { top: 24px; left: 48px; animation-delay: 360ms; }
-
-    .sparkle--4 { top: 0; left: 24px; animation-delay: 990ms; }
-    .sparkle--5 { top: 24px; left: 0; animation-delay: 1170ms; }
-    .sparkle--6 { top: 24px; left: 48px; animation-delay: 1350ms; }
-
-    :global(.sparkle-wrapper) {
+    :global(.sparkle-corners__sparkle-svg-wrapper) {
         width: 100%;
         height: 100%;
         display: block;
     }
 
-    :global(.sparkle-svg) {
+    :global(.sparkle-corners__sparkle-svg) {
         width: 100%;
         height: 100%;
         display: block;
-        animation-name: sparkle-spin;
-        animation-duration: 2850ms;
+        animation-name: sparkle-spin-cycle;
+        animation-duration: 5400ms;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
+        animation-fill-mode: both;
     }
 
-    .sparkle--1 :global(.sparkle-svg) { animation-delay: 0ms; }
-    .sparkle--2 :global(.sparkle-svg) { animation-delay: 180ms; }
-    .sparkle--3 :global(.sparkle-svg) { animation-delay: 360ms; }
+    .sparkle-corners__sparkle--tl-1 {
+        animation-delay: 0ms;
+    }
 
-    .sparkle--4 :global(.sparkle-svg) { animation-delay: 990ms; }
-    .sparkle--5 :global(.sparkle-svg) { animation-delay: 1170ms; }
-    .sparkle--6 :global(.sparkle-svg) { animation-delay: 1350ms; }
+    .sparkle-corners__sparkle--tl-2 {
+        animation-delay: 200ms;
+    }
+
+    .sparkle-corners__sparkle--tl-3 {
+        animation-delay: 400ms;
+    }
+
+    .sparkle-corners__sparkle--br-1 {
+        animation-delay: 2200ms;
+    }
+
+    .sparkle-corners__sparkle--br-2 {
+        animation-delay: 2400ms;
+    }
+
+    .sparkle-corners__sparkle--br-3 {
+        animation-delay: 2600ms;
+    }
+
+    .sparkle-corners__sparkle--tl-1 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 0ms;
+    }
+
+    .sparkle-corners__sparkle--tl-2 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 200ms;
+    }
+
+    .sparkle-corners__sparkle--tl-3 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 400ms;
+    }
+
+    .sparkle-corners__sparkle--br-1 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 2200ms;
+    }
+
+    .sparkle-corners__sparkle--br-2 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 2400ms;
+    }
+
+    .sparkle-corners__sparkle--br-3 :global(.sparkle-corners__sparkle-svg) {
+        animation-delay: 2600ms;
+    }
 </style>

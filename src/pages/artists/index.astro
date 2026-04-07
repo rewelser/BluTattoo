@@ -3,9 +3,8 @@ import Layout from "../../layouts/Layout.astro";
 import {loadActiveArtists, loadActivePeople} from "../../domain/people/server";
 import {defaults} from "../../config/site.ts";
 import {loadUpcomingGuestSpotCandidates} from "../../domain/events/selectors.ts";
-import SparkleCorners from "../../components/decor/SparkleCorners.astro";
-// import SparkleCorners from "../../components/decor/SparkleCornersPureCss.astro";
-// import SparkleCorners from "../../components/decor/SparkleCornersPureCssDefineVars.astro";
+// import SparkleCorners from "../../components/decor/SparkleCorners.astro";
+import SparkleCorners from "../../components/decor/SparkleCornersPureCss.astro";
 
 
 let artists = await loadActiveArtists();
@@ -55,15 +54,22 @@ const title = "Artists";
                                                         />
                                                     </div>
                                                     <SparkleCorners
-                                                            color="gold"
+                                                            color="transparent"
+                                                            fillColor="#2E2EFF"
                                                             size={24}
                                                             gap={16}
-                                                            offset={-10}
-                                                            sparkleDurationMs={800}
-                                                            stepMs={200}
-                                                            betweenClustersPauseMs={1000}
-                                                            cyclePauseMs={2000}
-                                                    ></SparkleCorners>
+                                                            offset={-20}
+                                                    />
+                                                    <!--<SparkleCorners-->
+                                                    <!--        color="gold"-->
+                                                    <!--        size={24}-->
+                                                    <!--        gap={16}-->
+                                                    <!--        offset={-40}-->
+                                                    <!--        sparkleDurationMs={800}-->
+                                                    <!--        stepMs={200}-->
+                                                    <!--        betweenClustersPauseMs={1000}-->
+                                                    <!--        cyclePauseMs={2000}-->
+                                                    <!--/>-->
                                                 </div>
                                                 <p class="mt-3 text-center text-base font-medium tracking-wide">
                                                     {guest.guestSpot[0].guestName}

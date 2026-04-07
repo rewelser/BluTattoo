@@ -1,0 +1,103 @@
+---
+import SparkleSvg from "./SparkleSvg.astro";
+
+interface Props {
+    color?: string;
+    fillColor?: string;
+    size?: number;
+    gap?: number;
+    offset?: number;
+    class?: string;
+    style?: string;
+}
+
+const {
+    color = "black",
+    fillColor = "none",
+    size = 24,
+    gap = 16,
+    offset = -40,
+    class: className = "",
+    style = "",
+} = Astro.props;
+
+const trianglePoints = [
+    { x: gap, y: 0 },
+    { x: 0, y: gap },
+    { x: gap * 2, y: gap },
+];
+
+const clusterWidth = gap * 2 + size;
+const clusterHeight = gap + size;
+
+const clusters = [
+    {
+        clusterClass: "sparkle-corners__cluster--top-left",
+        style: `width:${clusterWidth}px; height:${clusterHeight}px; left:-${clusterWidth + offset}px; top:-${clusterHeight + offset}px;`,
+        prefix: "tl",
+        delays: [0, 200, 400],
+    },
+    {
+        clusterClass: "sparkle-corners__cluster--bottom-right",
+        style: `width:${clusterWidth}px; height:${clusterHeight}px; right:-${clusterWidth + offset}px; bottom:-${clusterHeight + offset}px;`,
+        prefix: "br",
+        delays: [2200, 2400, 2600],
+    },
+];
+
+const sparkleStyle = (x: number, y: number, delay: number) =>
+    `left:${x}px; top:${y}px; width:${size}px; height:${size}px; --sparkle-delay:${delay}ms;`;
+---
+
+<div class={`sparkle-corners ${className}`} style={style} aria-hidden="true">
+    {clusters.map(({ clusterClass, style, prefix, delays }) => (
+            <div class={`sparkle-corners__cluster ${clusterClass}`} style={style}>
+                {trianglePoints.map((point, i) => (
+                        <div
+                                class={`sparkle-corners__sparkle sparkle-corners__sparkle--${prefix}-${i + 1}`}
+                                style={sparkleStyle(point.x, point.y, delays[i])}
+                        >
+                            <SparkleSvg
+                                    color={color}
+                                    fillColor={fillColor}
+                                    size={size}
+                                    className="sparkle-corners__sparkle-svg-wrapper"
+                                    svgClassName="sparkle-corners__sparkle-svg"
+                            />
+                        </div>
+                ))}
+            </div>
+    ))}
+</div>
+
+<style is:inline>
+    @property --sparkle-delay {
+        syntax: "<time>";
+        inherits: true;
+        initial-value: 0ms;
+    }
+
+    .sparkle-corners__sparkle {
+        position: absolute;
+        pointer-events: none;
+        transform: scale(0);
+        animation-name: sparkle-grow-cycle;
+        animation-duration: 5400ms;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-fill-mode: both;
+        animation-delay: var(--sparkle-delay);
+    }
+
+    :global(.sparkle-corners__sparkle-svg) {
+        width: 100%;
+        height: 100%;
+        display: block;
+        animation-name: sparkle-spin-cycle;
+        animation-duration: 5400ms;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        animation-fill-mode: both;
+        animation-delay: var(--sparkle-delay);
+    }
+</style>
