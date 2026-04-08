@@ -8,6 +8,7 @@ import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+import Frame1Svg from "../components/decor/Frame1Svg.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -174,7 +175,7 @@ const title = "Home";
       />
     </svg>
 
-    <script is:inline >
+    <script is:inline>
       (() => {
         const shape = document.getElementById("opening-shape");
         const photo = document.getElementById("photo");
@@ -221,4 +222,18 @@ const title = "Home";
       <HrDivider color="seashell" />
     </div>
   </section>
+
+  <Frame1Svg/>
+  <script is:inline>
+      (() => {
+          const shape = document.getElementById("opening-shape");
+          const photo = document.getElementById("photo");
+          const box = shape.getBBox();
+
+          photo.setAttribute("x", box.x);
+          photo.setAttribute("y", box.y);
+          photo.setAttribute("width", box.width);
+          photo.setAttribute("height", box.height);
+      })();
+  </script>
 </Layout>
