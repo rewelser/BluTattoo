@@ -1,0 +1,153 @@
+---
+import {registry, type FrameKey} from "./frameclips/registry.ts";
+
+interface Props {
+    photoSrc: string;
+    photoAlt: string;
+    frame: FrameKey;
+    class?: string;
+    frameOpacity?: number;
+}
+
+const {
+    photoSrc,
+    photoAlt,
+    frame,
+    class: className = "",
+    frameOpacity = 0.4,
+} = Astro.props;
+
+const config = registry[frame];
+
+if (!config) {
+    throw new Error(`Unknown frame key: ${frame}`);
+}
+
+const {frameSrc, maskSrc, ClipComponent} = config;
+---
+
+<div
+        class={`framed-portrait group relative overflow-hidden rounded-2xl ${className} fade-in`}
+        data-framed-portrait
+>
+    <div
+            class="applied-mask--frameclip h-full w-full"
+            style={`mask-image: url(${maskSrc}); -webkit-mask-image: url(${maskSrc});`}
+    >
+        <img
+                src={photoSrc}
+                alt={photoAlt}
+                data-photo
+                class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+    </div>
+
+    <img
+            src={frameSrc}
+            alt=""
+            data-frame
+            class="absolute inset-0 h-full w-full pointer-events-none fade-in-nested-50"
+            aria-hidden="true"
+    />
+
+    <ClipComponent/>
+
+    <script is:inline>
+        (() => {
+            const root = document.currentScript.parentElement;
+            const shape = root.querySelector("[data-frame-window]");
+            const photo = root.querySelector("[data-photo]");
+
+            function syncPhotoToWindow() {
+                const shapeRect = shape.getBoundingClientRect();
+                const wrapperRect = root.getBoundingClientRect();
+
+                photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
+                photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
+                photo.style.width = `${shapeRect.width}px`;
+                photo.style.height = `${shapeRect.height}px`;
+            }
+
+            const ro = new ResizeObserver(syncPhotoToWindow);
+            ro.observe(root);
+
+            if (photo.complete) {
+                syncPhotoToWindow();
+            } else {
+                photo.addEventListener("load", syncPhotoToWindow, {once: true});
+            }
+
+            window.addEventListener("load", syncPhotoToWindow, {once: true});
+        })()
+    </script>
+</div>
+
+<style>
+
+    .fade-in {
+        opacity: 1;
+        transition: opacity 5s cubic-bezier(.2,.8,.2,1);
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    .fade-in-nested-50 {
+        opacity: .5;
+        transition: opacity 10s cubic-bezier(.2,.8,.2,1);
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    img[data-frame] {
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    .framed-portrait {
+        width: 600px;
+        height: 600px;
+    }
+
+    .applied-mask--frameclip {
+        mask-position: center;
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-mode: alpha;
+
+        -webkit-mask-position: center;
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+    }
+</style>
+
+<!--<script is:inline>-->
+<!--    (() => {-->
+<!--        const shape = document.querySelector("[data-frame-window]");-->
+<!--        const photo = document.querySelector("[data-photo]");-->
+<!--        const frameWrapper = document.querySelector("[data-framed-portrait]");-->
+
+<!--        function syncPhotoToWindow() {-->
+<!--            const shapeRect = shape.getBoundingClientRect();-->
+<!--            const wrapperRect = frameWrapper.getBoundingClientRect();-->
+
+<!--            photo.style.top = `${shapeRect.top - wrapperRect.top}px`;-->
+<!--            photo.style.left = `${shapeRect.left - wrapperRect.left}px`;-->
+<!--            photo.style.width = `${shapeRect.width}px`;-->
+<!--            photo.style.height = `${shapeRect.height}px`;-->
+<!--        }-->
+
+<!--        const ro = new ResizeObserver(syncPhotoToWindow);-->
+<!--        ro.observe(frameWrapper);-->
+
+<!--        if (photo.complete) {-->
+<!--            syncPhotoToWindow();-->
+<!--        } else {-->
+<!--            photo.addEventListener("load", syncPhotoToWindow, {once: true});-->
+<!--        }-->
+
+<!--        window.addEventListener("load", syncPhotoToWindow, {once: true});-->
+<!--    })();-->
+<!--</script>-->
