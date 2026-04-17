@@ -30,13 +30,13 @@ guestSpot:
     primaryRole: Tattoo Artist
 title: Xenomorph is coming to guest spot!
 detailsShort: "specializing in hunting and killing, the xenomorph will be here April 2-4. "
-image: /uploads/events/xenomorph_hero_image.webp
 alt: Xeno
 published: true
 featured: true
 archived: false
-startDate: 2026-05-21
+date: 2026-05-21
 endDate: 2026-04-04
+location: Madagascar
 promoBar:
   enabled: true
   message: The Xenomporph is coming to guest spot! April 2-4

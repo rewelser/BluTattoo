@@ -48,6 +48,7 @@ export function fmtDate(dateStr: string): string {
 }
 
 // todo: expand this for recurrences
+// replacing usages of this with EventDateRange; better for incorporating <time> semantic tags
 export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
     return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
 }
@@ -74,6 +75,7 @@ export function fmtTime(time: string): string {
     return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
 }
 
+// Replaced with concise, almost-readable inline react tsx nested ternary (in order to include <time> semantics)
 export function fmtTimeWindow(ev: Pick<EventItem, "startTime" | "endTime">): string {
     const {startTime, endTime} = ev;
     if (startTime && endTime) return `${fmtTime(startTime)}–${fmtTime(endTime)}`;

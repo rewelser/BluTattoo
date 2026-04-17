@@ -5,7 +5,11 @@ import {defaults} from "../../config/site.ts";
 import {loadUpcomingGuestSpotCandidates} from "../../domain/events/selectors.ts";
 import SparkleCorners from "../../components/decor/SparkleCorners.astro";
 import GuestArtistCardInfoBanner from "../../components/decor/GuestArtistCardInfoBanner.astro";
-import Frame1Svg from "../../components/decor/Frame1Svg.astro";
+import TestFrameClip1SVG from "../../components/decor/TestFrameClip1SVG.astro";
+import TestFrameClip2SVG from "../../components/decor/TestFrameClip2SVG.astro";
+import FramedPortrait from "../../components/decor/frameportraits/FramedPortrait.astro";
+// import { Image } from "astro:assets";
+
 
 
 let artists = await loadActiveArtists();
@@ -27,33 +31,28 @@ const guestArtists = guestSpotEvents
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const title = "Artists";
 ---
-
-<Layout title={title}>
-    <article class="page-article">
+<Layout title={title} pageTheme="neutraldark">
+    <article class="page-article page-article--grid">
         <h1 class="page-title">{title}</h1>
-        <Frame1Svg/>
-        <script is:inline>
-            (() => {
-                const shape = document.getElementById("opening-shape");
-                const photo = document.getElementById("photo");
-                const box = shape.getBBox();
 
-                photo.setAttribute("x", box.x);
-                photo.setAttribute("y", box.y);
-                photo.setAttribute("width", box.width);
-                photo.setAttribute("height", box.height);
-            })();
-        </script>
+<!--<TestFrameClip1SVG/>-->
+
+
+        <!--<TestFrameClip2SVG/>-->
+
+
+        <FramedPortrait
+                photoSrc="/uploads/people/laurna.jpeg"
+                photoAlt="Laurna"
+                frameType="squareframe1"
+        />
+
         {
             guestArtists.length > 0 && (
                         <section class="mt-8">
                             <div class="flex flex-wrap justify-center gap-6">
                                 {guestArtists.map((guest) => {
                                     const href = `/events/${guest.id}`;
-                                    const runwayPhotoHref =
-                                        guest.guestSpot[0].runwayPhoto
-                                            ? `/src/content/events/${guest.guestSpot[0].runwayPhoto}`
-                                            : undefined;
                                     return (
                                             <div class="relative p-5 pt-20 sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)] lg:w-[calc((100%-4.5rem)/4)] flex justify-center">
                                                 <a
@@ -61,16 +60,23 @@ const title = "Artists";
                                                         class="group block w-full"
                                                 >
                                                     <div class="relative overflow-visible">
-                                                        <div class="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-200">
+                                                        <div class="aspect-[4/5] w-full overflow-hidden rounded-md bg-gray-200">
                                                             <img
-                                                                    src={runwayPhotoHref ?? defaultPersonProfilePicture}
+                                                                    src={guest.guestSpot[0].runwayPhoto?.src ?? defaultPersonProfilePicture}
                                                                     alt={guest.guestSpot[0].guestName}
                                                                     class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                             />
                                                         </div>
+                                                        <!--<SparkleCorners-->
+                                                        <!--        color="transparent"-->
+                                                        <!--        fillColor="#2E2EFF"-->
+                                                        <!--        size={24}-->
+                                                        <!--        gap={16}-->
+                                                        <!--        offset={-20}-->
+                                                        <!--/>-->
                                                         <SparkleCorners
-                                                                color="transparent"
-                                                                fillColor="#2E2EFF"
+                                                                color="black"
+                                                                fillColor="gold"
                                                                 size={24}
                                                                 gap={16}
                                                                 offset={-20}
@@ -89,14 +95,40 @@ const title = "Artists";
                         </section>
             )
         }
-        <div class="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center place-content-center">
             <!-- Artist Card -->
             {artists.map((artist) => {
                 return (
-                        <a href="#" class="group block spin-in">
+                        <a href="#" class="group block">
                             <div class="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-200">
                                 <img
-                                        src={artist.data.runwayPhoto ?? defaultPersonProfilePicture}
+                                        src={artist.data.runwayPhoto?.src ?? defaultPersonProfilePicture}
+                                        alt={artist.data.name}
+                                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                            </div>
+                            <p class="mt-3 text-center text-base font-medium tracking-wide">
+                                {artist.data.name}
+                            </p>
+                        </a>
+                );
+            })}
+        </div>
+
+
+
+
+
+        <div class="mt-8 flex flex-wrap justify-center gap-6">
+            {artists.map((artist) => {
+                return (
+                        <a
+                                href={`/artists/${artist.id}`}
+                                class="group block basis-full sm:basis-[calc((100%-1.5rem)/2)] md:basis-[calc((100%-3rem)/3)] lg:basis-[calc((100%-4.5rem)/4)]"
+                        >
+                            <div class="aspect-[4/5] w-full overflow-hidden bg-gray-200">
+                                <img
+                                        src={artist.data.runwayPhoto?.src ?? defaultPersonProfilePicture}
                                         alt={artist.data.name}
                                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />

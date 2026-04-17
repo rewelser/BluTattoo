@@ -1,0 +1,33 @@
+---
+// EventTimeWindow.astro
+import type {EventItem} from "../domain/events/types";
+import {fmtTime} from "../domain/events/format";
+
+interface Props {
+    ev: Pick<EventItem, "startTime" | "endTime">;
+}
+
+const {ev} = Astro.props;
+const {startTime, endTime} = ev;
+---
+<>
+    {startTime && endTime ? (
+            <>
+                <time datetime={startTime}>{fmtTime(startTime)}</time>
+                {" – "}
+                <time datetime={endTime}>{fmtTime(endTime)}</time>
+            </>
+    ) : startTime ? (
+            <>
+                Starts
+                <time datetime={startTime}>{fmtTime(startTime)}</time>
+            </>
+    ) : endTime ? (
+            <>
+                Until
+                <time datetime={endTime}>{fmtTime(endTime)}</time>
+            </>
+    ) : (
+            <>All day</>
+    )}
+</>

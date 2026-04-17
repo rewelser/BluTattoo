@@ -49,9 +49,9 @@ const title = "FAQ";
     </p>
   </article>
 
-
-  {/* SEO: FAQPage structured data */}
-  <script type="application/ld+json">
-    {JSON.stringify(faqJsonLd)}
-  </script>
+  {/* SEO structured data */}
+  <script
+      type="application/ld+json"
+      set:html={JSON.stringify(faqJsonLd)}
+  />
 </Layout>

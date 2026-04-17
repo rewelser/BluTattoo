@@ -8,7 +8,6 @@ import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
-import Frame1Svg from "../components/decor/Frame1Svg.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -123,7 +122,7 @@ const title = "Home";
   />
   <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
   <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
-  <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-700">
+  <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
     <ParallaxWindow
       src="/uploads/misc_images/bigroom.webp"
       kind="image"
@@ -138,7 +137,7 @@ const title = "Home";
     </ParallaxWindow>
     <style>
       :global(.applied-mask--heart) {
-        mask-image: url("/uploads/misc_images/down-droplet.svg");
+        mask-image: url("/uploads/misc_images/frameclip.svg");
         /* mask-size: 220px 220px; */
         mask-size: contain;
         mask-position: center;
@@ -189,10 +188,10 @@ const title = "Home";
     </script>
     <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
     <div
-      class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-[seashell]"
+      class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose"
     >
       <h2
-        class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah] text-[seashell]"
+        class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]"
       >
         Our Story
       </h2>
@@ -222,18 +221,4 @@ const title = "Home";
       <HrDivider color="seashell" />
     </div>
   </section>
-
-  <Frame1Svg/>
-  <script is:inline>
-      (() => {
-          const shape = document.getElementById("opening-shape");
-          const photo = document.getElementById("photo");
-          const box = shape.getBBox();
-
-          photo.setAttribute("x", box.x);
-          photo.setAttribute("y", box.y);
-          photo.setAttribute("width", box.width);
-          photo.setAttribute("height", box.height);
-      })();
-  </script>
 </Layout>

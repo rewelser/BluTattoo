@@ -2,93 +2,92 @@
 import Flourish from "./Flourish1.astro";
 
 type Props = {
-  durationMs?: number;
-  delayMs?: number;
-  easing?: string;
-  class?: string;
+    durationMs?: number;
+    delayMs?: number;
+    easing?: string;
+    class?: string;
 };
 
 const {
-  durationMs = 2000,
-  delayMs = 0,
-  easing = "linear",
-  class: className = "",
+    durationMs = 2000,
+    delayMs = 0,
+    easing = "linear",
+    class: className = "",
 } = Astro.props;
 ---
-
 <div
-  class={`flex flex-row justify-around pb-50 js-fade-up ${className}`}
-  data-reveal-wrapper
-  data-duration-ms={durationMs}
-  data-delay-ms={delayMs}
-  data-easing={easing}
+        class={`flex flex-row justify-around pb-50 js-fade-up ${className}`}
+        data-reveal-wrapper
+        data-duration-ms={durationMs}
+        data-delay-ms={delayMs}
+        data-easing={easing}
 >
-  <div class="w-125 px-2">
-    <Flourish id="left" mirrored={true} />
-  </div>
+    <div class="w-125 px-2">
+        <Flourish id="left" mirrored={true}/>
+    </div>
 
-  <div class="w-125 px-2">
-    <Flourish id="right" />
-  </div>
+    <div class="w-125 px-2">
+        <Flourish id="right"/>
+    </div>
 </div>
 
 <script type="module">
-  function runReveal(root) {
-    const durationMs = Number(root.dataset.durationMs ?? 2000);
-    const delayMs = Number(root.dataset.delayMs ?? 0);
-    const easing = root.dataset.easing ?? "linear";
+    function runReveal(root) {
+        const durationMs = Number(root.dataset.durationMs ?? 2000);
+        const delayMs = Number(root.dataset.delayMs ?? 0);
+        const easing = root.dataset.easing ?? "linear";
 
-    const svgs = root.querySelectorAll("svg[data-reveal-svg]");
-    svgs.forEach((svg) => {
-      // optional: prevent double-running if class toggles again
-      if (svg.dataset.revealRan === "1") return;
-      svg.dataset.revealRan = "1";
+        const svgs = root.querySelectorAll("svg[data-reveal-svg]");
+        svgs.forEach((svg) => {
+            // optional: prevent double-running if class toggles again
+            if (svg.dataset.revealRan === "1") return;
+            svg.dataset.revealRan = "1";
 
-      const strokesSelector = svg.getAttribute("data-reveal-strokes") || "#maskStrokes";
-      const maskGroup = svg.querySelector(strokesSelector);
-      if (!maskGroup) return;
+            const strokesSelector = svg.getAttribute("data-reveal-strokes") || "#maskStrokes";
+            const maskGroup = svg.querySelector(strokesSelector);
+            if (!maskGroup) return;
 
-      const paths = Array.from(maskGroup.querySelectorAll("path"));
-      paths.forEach((p) => {
-        const len = p.getTotalLength?.();
-        if (!len || !Number.isFinite(len)) return;
+            const paths = Array.from(maskGroup.querySelectorAll("path"));
+            paths.forEach((p) => {
+                const len = p.getTotalLength?.();
+                if (!len || !Number.isFinite(len)) return;
 
-        p.style.strokeDasharray = String(len);
-        p.style.strokeDashoffset = String(len);
+                p.style.strokeDasharray = String(len);
+                p.style.strokeDashoffset = String(len);
 
-        p.animate(
-          [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
-          { duration: durationMs, delay: delayMs, easing, fill: "forwards" }
-        );
-      });
-    });
-  }
-
-  const root =
-    document.currentScript?.previousElementSibling?.matches?.("[data-reveal-wrapper]")
-      ? document.currentScript.previousElementSibling
-      : document.currentScript?.closest?.("[data-reveal-wrapper]")
-        ?? document.querySelector("[data-reveal-wrapper]"); // keep your old fallback
-
-  if (!root) {
-    console.warn("[reveal] no root found");
-  } else {
-    const tryRun = () => {
-      if (!root.classList.contains("is-in")) return false;
-      runReveal(root);
-      return true;
-    };
-
-    // If fade-up already marked it in-view, run immediately
-    if (tryRun()) {
-      // done
-    } else {
-      // Otherwise, wait until fade-up adds "is-in"
-      const mo = new MutationObserver(() => {
-        if (tryRun()) mo.disconnect();
-      });
-
-      mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+                p.animate(
+                    [{strokeDashoffset: len}, {strokeDashoffset: 0}],
+                    {duration: durationMs, delay: delayMs, easing, fill: "forwards"}
+                );
+            });
+        });
     }
-  }
+
+    const root =
+        document.currentScript?.previousElementSibling?.matches?.("[data-reveal-wrapper]")
+            ? document.currentScript.previousElementSibling
+            : document.currentScript?.closest?.("[data-reveal-wrapper]")
+            ?? document.querySelector("[data-reveal-wrapper]"); // keep your old fallback
+
+    if (!root) {
+        console.warn("[reveal] no root found");
+    } else {
+        const tryRun = () => {
+            if (!root.classList.contains("is-in")) return false;
+            runReveal(root);
+            return true;
+        };
+
+        // If fade-up already marked it in-view, run immediately
+        if (tryRun()) {
+            // done
+        } else {
+            // Otherwise, wait until fade-up adds "is-in"
+            const mo = new MutationObserver(() => {
+                if (tryRun()) mo.disconnect();
+            });
+
+            mo.observe(root, {attributes: true, attributeFilter: ["class"]});
+        }
+    }
 </script>

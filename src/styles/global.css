@@ -7,6 +7,42 @@
 
 @plugin "@tailwindcss/typography";
 
+@utility prose-seashell {
+    --tw-prose-body: #e9ddd5;
+    --tw-prose-headings: #fff5ee;
+    --tw-prose-lead: #d8c7bc;
+    --tw-prose-links: #fff5ee;
+    --tw-prose-bold: #fff5ee;
+    --tw-prose-counters: #cdb8ab;
+    --tw-prose-bullets: #a78f82;
+    --tw-prose-hr: #5e5149;
+    --tw-prose-quotes: #f6e8df;
+    --tw-prose-quote-borders: #7a685e;
+    --tw-prose-captions: #c7b2a6;
+    --tw-prose-code: #fff5ee;
+    --tw-prose-pre-code: #f6e8df;
+    --tw-prose-pre-bg: #2a2320;
+    --tw-prose-th-borders: #7a685e;
+    --tw-prose-td-borders: #5e5149;
+
+    --tw-prose-invert-body: #e9ddd5;
+    --tw-prose-invert-headings: #fff5ee;
+    --tw-prose-invert-lead: #d8c7bc;
+    --tw-prose-invert-links: #fff5ee;
+    --tw-prose-invert-bold: #fff5ee;
+    --tw-prose-invert-counters: #cdb8ab;
+    --tw-prose-invert-bullets: #a78f82;
+    --tw-prose-invert-hr: #5e5149;
+    --tw-prose-invert-quotes: #f6e8df;
+    --tw-prose-invert-quote-borders: #7a685e;
+    --tw-prose-invert-captions: #c7b2a6;
+    --tw-prose-invert-code: #fff5ee;
+    --tw-prose-invert-pre-code: #f6e8df;
+    --tw-prose-invert-pre-bg: rgb(0 0 0 / 50%);
+    --tw-prose-invert-th-borders: #7a685e;
+    --tw-prose-invert-td-borders: #5e5149;
+}
+
 @property --promo-bar-h {
     syntax: "<length>";
     inherits: true;
@@ -68,9 +104,49 @@
 
 @layer components {
 
+    #pagecontent-wrap {
+        @apply relative bg-white;
+    }
+
+    #pagecontent-wrap[data-page-theme="neutraldark"] {
+        @apply bg-neutral-700;
+    }
+
+    #pagecontent-wrap[data-page-theme="neutraldark"] .page-article {
+        @apply text-[seashell];
+    }
+
+    section[data-section-theme="neutraldark"] {
+        @apply bg-neutral-700 text-[seashell];
+    }
+
+    section[data-section-theme="default"] .apply-themed-prose {
+        @apply prose prose-lg;
+    }
+
+    section[data-section-theme="neutraldark"] .apply-themed-prose {
+        @apply prose prose-lg prose-invert prose-seashell;
+    }
+
     /* Shared article shell used by FAQ / Contact / Aftercare */
     .page-article {
         @apply mx-auto max-w-6xl px-5 py-7 md:px-6 md:py-8;
+    }
+
+    .page-article--bleed {
+        @apply max-w-none px-0 md:px-0 py-0 md:px-0;
+    }
+
+    .page-article--bleed .content-rail {
+        @apply mx-auto w-full max-w-6xl px-5 py-7 md:px-6 md:py-8;
+    }
+
+    /*.page-article--bleed .content-rail section {*/
+    /*    @apply w-full;*/
+    /*}*/
+
+    .page-article--grid {
+        @apply max-w-7xl;
     }
 
     /* If you want the article itself to be a flex column consistently */
@@ -82,14 +158,14 @@
     .page-title {
         @apply mb-6 text-center text-4xl font-semibold! tracking-tight;
     }
-}
 
-.skeleton-text {
-    @apply h-5 m-1 rounded bg-black/10 animate-pulse;
-}
+    .skeleton-text {
+        @apply h-5 m-1 rounded bg-black/10 animate-pulse;
+    }
 
-.skeleton-promo-hero-image {
-    @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
+    .skeleton-promo-hero-image {
+        @apply h-[30vh] sm:h-[70vh] md:h-[120vh] rounded bg-black/20 animate-pulse;
+    }
 }
 
 @theme {

@@ -1,3 +1,23 @@
 ---
-$END$
+import type {EventItem} from "../../domain/events/types";
+import {fmtDate} from "../domain/events/format.ts";
+
+interface Props {
+    ev: Pick<EventItem, "startDate" | "endDate">;
+}
+
+const {ev} = Astro.props;
+
+const sameDay = !ev.endDate || ev.startDate === ev.endDate;
 ---
+<>
+    {sameDay ? (
+            <time datetime={ev.startDate}>{fmtDate(ev.startDate)}</time>
+    ) : (
+            <>
+                <time datetime={ev.startDate}>{fmtDate(ev.startDate)}</time>
+                {" – "}
+                <time datetime={ev.endDate}>{fmtDate(ev.endDate)}</time>
+            </>
+    )}
+</>

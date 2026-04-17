@@ -1,46 +1,36 @@
 ---
 const n = 6;
 ---
+<div class="relative overflow-hidden shadow-lg p-8" aria-hidden="true">
+    <div class="skeleton-promo-hero-image"/>
+</div>
 
-<!-- {
-    featured?.image && (
-        <PromoHero
-            image={featured.image}
-            alt={featured.alt ?? featured.title}
-            className="p-8"
-        />
-    )
-} -->
-<section class="relative overflow-hidden shadow-lg p-8">
-  <div
-  class="skeleton-promo-hero-image"
-/>
-</section>
-
-<section class="space-y-3">
-    <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
-    <div class="divide-y divide-black/10 border border-black/10">
+<section class="space-y-3" aria-busy="true" aria-labelledby="upcoming-heading">
+    <h2 id="upcoming-heading" class="text-xl font-semibold tracking-tight">Upcoming</h2>
+    <p class="sr-only">Loading upcoming events.</p>
+    <div class="divide-y divide-black/10 border border-black/10" aria-hidden="true">
         {
-            Array.from({ length: n }).map(() => (
-                <div class="block p-4 hover:bg-black/5">
-                    <div class="font-medium">
-                        <div class="skeleton-text w-[15%]" />
+            Array.from({length: n}).map(() => (
+                    <div class="block p-4 hover:bg-black/5">
+                        <div class="font-medium">
+                            <div class="skeleton-text w-[15%]"/>
+                        </div>
+                        <div class="flex items-center w-fit pb-1 text-sm opacity-80 border-b-2 border-dotted border-black/20">
+                            <div class="skeleton-text w-[10vw]"/>
+                            •{" "}
+                            <div class="skeleton-text w-[15vw]"/>
+                        </div>
+                        <div class="flex flex-wrap w-[50%] pt-2">
+                            <div class="skeleton-text w-[17%]"/>
+                            <div class="skeleton-text w-[31%]"/>
+                            <div class="skeleton-text w-[7%]"/>
+                            <div class="skeleton-text w-[15%]"/>
+                            <div class="skeleton-text w-[20%]"/>
+                            <div class="skeleton-text w-[8%]"/>
+                            <div class="skeleton-text w-[15%]"/>
+                            <div class="skeleton-text w-[11%]"/>
+                        </div>
                     </div>
-                    <div class="flex items-center w-fit pb-1 text-sm opacity-80 border-b-2 border-dotted border-black/20">
-                        <div class="skeleton-text w-[10vw]" /> •{" "}
-                        <div class="skeleton-text w-[15vw]" />
-                    </div>
-                    <div class="flex flex-wrap w-[50%] pt-2">
-                        <div class="skeleton-text w-[17%]" />
-                        <div class="skeleton-text w-[31%]" />
-                        <div class="skeleton-text w-[7%]" />
-                        <div class="skeleton-text w-[15%]" />
-                        <div class="skeleton-text w-[20%]" />
-                        <div class="skeleton-text w-[8%]" />
-                        <div class="skeleton-text w-[15%]" />
-                        <div class="skeleton-text w-[11%]" />
-                    </div>
-                </div>
             ))
         }
         <!-- <hr class="w-[30%] my-1 border-t-2 border-dotted border-black/10"> -->

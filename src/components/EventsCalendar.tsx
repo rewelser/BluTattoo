@@ -1,17 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
 import {
     buildEventsByYearMonthDate,
 } from "../domain/events/grouping.ts";
 import "../styles/EventsCalendar.css";
-import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
+// import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
+import {fmtDate, fmtTime} from "../domain/events/format.ts";
 
 interface EventsCalendarProps {
     events: EventItem[];
 }
 
 // sherpa thuggin
-export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
+export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
     // todo: is there a better place in here to declare this? Maybe not
     const eventsByYearMonthDate: EventsByYearMonthDate = buildEventsByYearMonthDate(events);
     const [traversedDate, setTraversedDate] = useState<Date>(() => {
@@ -36,7 +37,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
         const prevTrailingPlaceholders = firstDayOfWeek - 1;
         const nextLeadingPlaceholders = 7 - lastDayOfWeek;
 
-        const monthDates = Array.from({ length: daysInMonth }, (_, i) => {
+        const monthDates = Array.from({length: daysInMonth}, (_, i) => {
             const y = year;
             const m = month;
             const d = i + 1; // + 1 to increment
@@ -59,9 +60,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
             };
         });
 
-        const prevTrailingDates = Array.from({ length: prevTrailingPlaceholders }, (_, i) => (new Date(year, month, -(prevTrailingPlaceholders - 1) + i).getDate()));
+        const prevTrailingDates = Array.from({length: prevTrailingPlaceholders}, (_, i) => (new Date(year, month, -(prevTrailingPlaceholders - 1) + i).getDate()));
 
-        const nextLeadingDates = Array.from({ length: nextLeadingPlaceholders }, (_, i) => (new Date(year, month + 1, i + 1).getDate()));
+        const nextLeadingDates = Array.from({length: nextLeadingPlaceholders}, (_, i) => (new Date(year, month + 1, i + 1).getDate()));
 
         return {
             monthDates,
@@ -95,7 +96,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
 
     const getAllWeekdayNames = (
         locale: string = "en-US",
-        options: Intl.DateTimeFormatOptions = { weekday: "short" }
+        options: Intl.DateTimeFormatOptions = {weekday: "short"}
     ) => {
         const days = [];
         const date = new Date("1970-01-04T12:00:00.000Z");
@@ -125,8 +126,8 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
     }, [canHover]);
 
     return (
-        <div>
-            <section className="flex items-center justify-between p-5 sm:p-10 md:px-30">
+        <section aria-labelledby="calendar-month-heading">
+            <div className="flex items-center justify-between p-5 sm:p-10 md:px-30">
                 <button
                     className="cursor-pointer"
                     onClick={prev}
@@ -137,11 +138,11 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                         className="h-6 w-6 fill-current"
                         aria-hidden="true"
                     >
-                        <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+                        <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/>
                     </svg>
                 </button>
 
-                <h1 className="text-3xl sm:text-5xl">{monthYearLabel}</h1>
+                <h2 id="calendar-month-heading" className="text-3xl sm:text-5xl">{monthYearLabel}</h2>
 
                 <button
                     className="cursor-pointer"
@@ -153,10 +154,10 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                         className="h-6 w-6 fill-current"
                         aria-hidden="true"
                     >
-                        <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                        <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/>
                     </svg>
                 </button>
-            </section>
+            </div>
 
             <div className="grid h-full w-full grid-cols-7 items-center gap-1">
                 {getAllWeekdayNames().map((day) => (
@@ -178,16 +179,16 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
 
                 {calendarData.monthDates.map(
                     ({
-                        rawYear,
-                        rawMonth,
-                        rawDate,
-                        year,
-                        month,
-                        dateNum,
-                        day,
-                        dateKey,
-                        isoLike,
-                    }) => {
+                         rawYear,
+                         rawMonth,
+                         rawDate,
+                         year,
+                         month,
+                         dateNum,
+                         day,
+                         dateKey,
+                         isoLike,
+                     }) => {
                         const now = new Date();
 
                         const isToday =
@@ -199,6 +200,11 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
                         const hasEvents = dailyEvents.length > 0;
                         const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
+                        if (dailyEvents.length === 1 && dailyEvents[0].id.toLowerCase().includes("west")) {
+                            console.log("west");
+                            console.log("needsSingleEventImageVariant", needsSingleEventImageVariant);
+                            console.log("dailyEvents[0].image", dailyEvents[0]);
+                        }
                         const isOpen = openDateKey === dateKey;
                         return (
                             <div
@@ -214,7 +220,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                                 style={{
                                     gridColumnStart: day,
                                     ...(needsSingleEventImageVariant && {
-                                        backgroundImage: `url(${dailyEvents[0].image})`
+                                        backgroundImage: `url(${dailyEvents[0].image?.src})`
                                     })
                                 }}
                             >
@@ -229,15 +235,16 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                                                 <span className="italic font-bold">
                                                     {ev.startTime ? (
                                                         <>
-                                                            {fmtTime(ev.startTime)}
+                                                            <time dateTime={ev.startTime}>{fmtTime(ev.startTime)}</time>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            {fmtTimeWindow(ev)}
+                                                            {/*{fmtTimeWindow(ev)}*/}
+                                                            All Day
                                                         </>
                                                     )}
                                                 </span>
-                                                <br />
+                                                <br/>
 
                                                 {ev.title}
                                             </a>
@@ -259,10 +266,27 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                                                         ${!ev.detailsShort ? "no-short-details" : ""}`}
                                                     >
                                                         <a href={`/events/${ev.id}`}>
-                                                            <h2 className="text-xl leading-none">{ev.title} →</h2>
+                                                            <h3 className="text-xl leading-none">{ev.title} →</h3>
                                                         </a>
                                                         <div className="text-xs leading-none py-2">
-                                                            {fmtTimeWindow(ev)}
+                                                            {/*{fmtTimeWindow(ev)}*/}
+                                                            {ev.startTime && ev.endTime ?
+                                                                <>
+                                                                    <time
+                                                                        dateTime={ev.startTime}>{fmtTime(ev.startTime)}</time>
+                                                                    {` – `}
+                                                                    <time
+                                                                        dateTime={ev.endTime}>{fmtTime(ev.endTime)}</time>
+                                                                </>
+                                                                : ev.startTime ?
+                                                                    <>Starts <time
+                                                                        dateTime={ev.startTime}>{fmtTime(ev.startTime)}</time></>
+                                                                    : ev.endTime ?
+                                                                        <>
+                                                                            Until <time
+                                                                            dateTime={ev.endTime}>{fmtTime(ev.endTime)}</time>
+                                                                        </>
+                                                                        : "All day"}
                                                             {ev.location && ` • ${ev.location}`}
                                                         </div>
                                                         {ev.detailsShort && (
@@ -290,6 +314,6 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
                     </div>
                 ))}
             </div>
-        </div>
+        </section>
     );
 };

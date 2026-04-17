@@ -120,12 +120,13 @@ const title = "Booking";
                     class="px-4 pt-8 pb-16"
                     aria-labelledby="people-tree-title"
             >
-                <h1 id="people-tree-title" class="sr-only">People</h1>
+                <h1 id="people-tree-title" class="sr-only">{title}</h1>
                 <ul class="m-0 list-none p-0" data-accordion-root>
                     {
                         people.map((person, personIndex) => {
-                            const personBtnId = `person-${personIndex}-toggle`;
-                            const personPanelId = `person-${personIndex}-panel`;
+                            const personBtnId = `person-${person.id}-toggle`;
+                            const personPanelId = `person-${person.id}-panel`;
+                            const personHeadingId = `person-${person.id}-heading`;
                             const csb = person.data.contactSocialsBooking;
                             const profilePicture =
                                 csb?.bookingProfilePicture ??
@@ -172,27 +173,31 @@ const title = "Booking";
                                 csb &&
                                 hasBookables && (
                                         <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] overflow-hidden not-first:mt-3">
-                                            <button
-                                                    id={personBtnId}
-                                                    class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
-                                                    type="button"
-                                                    aria-expanded="false"
-                                                    aria-controls={personPanelId}
-                                                    data-accordion-toggle
-                                                    data-accordion-level="root"
-                                            >
-                                                {/* <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]"> */}
-                                                <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[3px_3px_0px_1px_var(--profile-frame-shadow-color)]">
-                                                    <img
-                                                            src={profilePicture}
-                                                            alt={`Booking profile image for ${person.data.name}`}
-                                                            decoding="async"
-                                                            loading="lazy"
-                                                            class="h-full w-full object-cover"
-                                                    />
-                                                </div>
+                                            <section aria-labelledby={personHeadingId}>
+                                                <h2 id={personHeadingId} class="sr-only">
+                                                    {person.data.name}
+                                                </h2>
+                                                <button
+                                                        id={personBtnId}
+                                                        class="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent p-2 text-left text-inherit"
+                                                        type="button"
+                                                        aria-expanded="false"
+                                                        aria-controls={personPanelId}
+                                                        data-accordion-toggle
+                                                        data-accordion-level="root"
+                                                >
+                                                    {/* <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]"> */}
+                                                    <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[3px_3px_0px_1px_var(--profile-frame-shadow-color)]">
+                                                        <img
+                                                                src={csb.bookingProfilePicture?.src ?? defaultPersonProfilePicture}
+                                                                alt={`Booking profile image for ${person.data.name}`}
+                                                                decoding="async"
+                                                                loading="lazy"
+                                                                class="h-full w-full object-cover"
+                                                        />
+                                                    </div>
 
-                                                <span class="grid gap-[0.2rem] text-center">
+                                                    <span class="grid gap-[0.2rem] text-center">
                                                 <span class="text-[1.05rem] font-bold leading-[1.2]">
                                                     {person.data.name}
                                                 </span>
@@ -201,260 +206,261 @@ const title = "Booking";
                                                 </span>
                                             </span>
 
-                                                <svg
-                                                        viewBox="0 0 24 24"
-                                                        aria-hidden="true"
-                                                        class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                    <svg
+                                                            viewBox="0 0 24 24"
+                                                            aria-hidden="true"
+                                                            class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                    >
+                                                        <path
+                                                                fill="currentColor"
+                                                                d="M7 10l5 5 5-5H7z"
+                                                        />
+                                                    </svg>
+                                                </button>
+
+                                                <div
+                                                        id={personPanelId}
+                                                        class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                                        aria-labelledby={personBtnId}
+                                                        data-accordion-panel
+                                                        inert
                                                 >
-                                                    <path
-                                                            fill="currentColor"
-                                                            d="M7 10l5 5 5-5H7z"
-                                                    />
-                                                </svg>
-                                            </button>
+                                                    <div class="p-4">
+                                                        {csb.bookingNote && (
+                                                                <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
+                                                                    {csb.bookingNote}
+                                                                </p>
+                                                        )}
 
-                                            <div
-                                                    id={personPanelId}
-                                                    class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
-                                                    aria-labelledby={personBtnId}
-                                                    data-accordion-panel
-                                                    inert
-                                            >
-                                                <div class="p-4">
-                                                    {csb.bookingNote && (
-                                                            <p class="mb-4 mt-0 leading-[1.55] opacity-[0.88]">
-                                                                {csb.bookingNote}
-                                                            </p>
-                                                    )}
+                                                        <ul class="m-0 grid list-none gap-2 p-0">
+                                                            {bookables.map(
+                                                                (item, index) => {
+                                                                    const typeKey =
+                                                                        item.type as IconType;
+                                                                    const entry =
+                                                                        iconRegistry[
+                                                                            typeKey
+                                                                            ];
+                                                                    const {Icon} =
+                                                                        entry;
 
-                                                    <ul class="m-0 grid list-none gap-2 p-0">
-                                                        {bookables.map(
-                                                            (item, index) => {
-                                                                const typeKey =
-                                                                    item.type as IconType;
-                                                                const entry =
-                                                                    iconRegistry[
-                                                                        typeKey
-                                                                        ];
-                                                                const {Icon} =
-                                                                    entry;
+                                                                    const hasNotes = (
+                                                                        item: any,
+                                                                    ): item is {
+                                                                        notes: string;
+                                                                    } => {
+                                                                        return (
+                                                                            "notes" in
+                                                                            item &&
+                                                                            typeof item.notes ===
+                                                                            "string"
+                                                                        );
+                                                                    };
+                                                                    const hasHref = (
+                                                                        item: any,
+                                                                    ): item is {
+                                                                        href: string;
+                                                                    } => {
+                                                                        return (
+                                                                            "href" in
+                                                                            item &&
+                                                                            typeof item.href ===
+                                                                            "string"
+                                                                        );
+                                                                    };
 
-                                                                const hasNotes = (
-                                                                    item: any,
-                                                                ): item is {
-                                                                    notes: string;
-                                                                } => {
-                                                                    return (
-                                                                        "notes" in
+                                                                    const resolvedHref =
+                                                                        hasHref(item)
+                                                                            ? item.type ===
+                                                                            "phone"
+                                                                                ? `tel:${item.href}`
+                                                                                : item.type ===
+                                                                                "email"
+                                                                                    ? `mailto:${item.href}`
+                                                                                    : item.href
+                                                                            : null;
+
+                                                                    const merchantId =
+                                                                        "merchantId" in
                                                                         item &&
-                                                                        typeof item.notes ===
-                                                                        "string"
-                                                                    );
-                                                                };
-                                                                const hasHref = (
-                                                                    item: any,
-                                                                ): item is {
-                                                                    href: string;
-                                                                } => {
-                                                                    return (
-                                                                        "href" in
+                                                                        item.merchantId;
+                                                                    const locationId =
+                                                                        "locationId" in
                                                                         item &&
-                                                                        typeof item.href ===
-                                                                        "string"
-                                                                    );
-                                                                };
+                                                                        item.locationId;
 
-                                                                const resolvedHref =
-                                                                    hasHref(item)
-                                                                        ? item.type ===
-                                                                        "phone"
-                                                                            ? `tel:${item.href}`
-                                                                            : item.type ===
-                                                                            "email"
-                                                                                ? `mailto:${item.href}`
-                                                                                : item.href
-                                                                        : null;
+                                                                    const isPreferred =
+                                                                        item.preferred;
 
-                                                                const merchantId =
-                                                                    "merchantId" in
-                                                                    item &&
-                                                                    item.merchantId;
-                                                                const locationId =
-                                                                    "locationId" in
-                                                                    item &&
-                                                                    item.locationId;
+                                                                    const formatItem = (
+                                                                        item: any,
+                                                                    ) => {
+                                                                        if (
+                                                                            item.category ===
+                                                                            "contact"
+                                                                        )
+                                                                            return item.href;
 
-                                                                const isPreferred =
-                                                                    item.preferred;
+                                                                        if (
+                                                                            item.category ===
+                                                                            "social"
+                                                                        ) {
+                                                                            return item.handle
+                                                                                ? `${item.handle} | ${item.type}`
+                                                                                : item.type;
+                                                                        }
 
-                                                                const formatItem = (
-                                                                    item: any,
-                                                                ) => {
-                                                                    if (
-                                                                        item.category ===
-                                                                        "contact"
-                                                                    )
-                                                                        return item.href;
+                                                                        return item.type;
+                                                                    };
 
-                                                                    if (
-                                                                        item.category ===
-                                                                        "social"
-                                                                    ) {
-                                                                        return item.handle
-                                                                            ? `${item.handle} | ${item.type}`
-                                                                            : item.type;
-                                                                    }
+                                                                    const subBtnId = `person-${person.id}-sub-${index}-toggle`;
+                                                                    const subPanelId = `person-${person.id}-sub-${index}-panel`;
 
-                                                                    return item.type;
-                                                                };
-
-                                                                const subBtnId = `person-${personIndex}-sub-${index}-toggle`;
-                                                                const subPanelId = `person-${personIndex}-sub-${index}-panel`;
-
-                                                                return (
-                                                                        <div
-                                                                                class={`${isPreferred ? "preferred" : "bookable"} relative`}
-                                                                        >
-                                                                            <li
-                                                                                    class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}
+                                                                    return (
+                                                                            <div
+                                                                                    class={`${isPreferred ? "preferred" : "bookable"} relative`}
                                                                             >
-                                                                                {hasHref(
-                                                                                    item,
-                                                                                ) &&
-                                                                                resolvedHref ? (
-                                                                                        <a
-                                                                                                class="font-semibold break-all"
-                                                                                                href={
-                                                                                                    resolvedHref
-                                                                                                }
-                                                                                                target={
-                                                                                                    item.href.startsWith(
-                                                                                                        "http",
-                                                                                                    )
-                                                                                                        ? "_blank"
-                                                                                                        : undefined
-                                                                                                }
-                                                                                                rel={
-                                                                                                    item.href.startsWith(
-                                                                                                        "http",
-                                                                                                    )
-                                                                                                        ? "noreferrer noopener"
-                                                                                                        : undefined
-                                                                                                }
-                                                                                        >
-                                                                                            <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
-                                                                                                <div class="h-full content-center">
-                                                                                                    <div
-                                                                                                            aria-hidden="true"
-                                                                                                            class="flex h-10 w-10"
-                                                                                                    >
-                                                                                                        <Icon class="h-full w-full"/>
-                                                                                                    </div>
-                                                                                                </div>
-
-                                                                                                <div class="grid gap-[0.35rem] text-center content-center pr-10">
-                                                                                                    {formatItem(
-                                                                                                        item,
-                                                                                                    )}
-                                                                                                    {hasNotes(
-                                                                                                        item,
-                                                                                                    ) && (
-                                                                                                            <div class="text-[0.95rem] leading-[1.5] opacity-80">
-                                                                                                                {
-                                                                                                                    item.notes
-                                                                                                                }
-                                                                                                            </div>
-                                                                                                    )}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </a>
-                                                                                ) : (
-                                                                                        <>
-                                                                                            <button
-                                                                                                    id={
-                                                                                                        subBtnId
+                                                                                <li
+                                                                                        class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}
+                                                                                >
+                                                                                    {hasHref(
+                                                                                        item,
+                                                                                    ) &&
+                                                                                    resolvedHref ? (
+                                                                                            <a
+                                                                                                    class="font-semibold break-all"
+                                                                                                    href={
+                                                                                                        resolvedHref
                                                                                                     }
-                                                                                                    class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
-                                                                                                    type="button"
-                                                                                                    aria-expanded="false"
-                                                                                                    aria-controls={
-                                                                                                        subPanelId
+                                                                                                    target={
+                                                                                                        item.href.startsWith(
+                                                                                                            "http",
+                                                                                                        )
+                                                                                                            ? "_blank"
+                                                                                                            : undefined
                                                                                                     }
-                                                                                                    data-accordion-toggle
-                                                                                                    data-accordion-level="nested"
+                                                                                                    rel={
+                                                                                                        item.href.startsWith(
+                                                                                                            "http",
+                                                                                                        )
+                                                                                                            ? "noreferrer noopener"
+                                                                                                            : undefined
+                                                                                                    }
                                                                                             >
-                                                                                                <div class="h-full content-center">
-                                                                                                    <div
-                                                                                                            aria-hidden="true"
-                                                                                                            class="flex h-10 w-10"
-                                                                                                    >
-                                                                                                        <Icon class="h-full w-full"/>
+                                                                                                <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
+                                                                                                    <div class="h-full content-center">
+                                                                                                        <div
+                                                                                                                aria-hidden="true"
+                                                                                                                class="flex h-10 w-10"
+                                                                                                        >
+                                                                                                            <Icon class="h-full w-full"/>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div class="grid gap-[0.35rem] text-center content-center pr-10">
+                                                                                                        {formatItem(
+                                                                                                            item,
+                                                                                                        )}
+                                                                                                        {hasNotes(
+                                                                                                            item,
+                                                                                                        ) && (
+                                                                                                                <div class="text-[0.95rem] leading-[1.5] opacity-80">
+                                                                                                                    {
+                                                                                                                        item.notes
+                                                                                                                    }
+                                                                                                                </div>
+                                                                                                        )}
                                                                                                     </div>
                                                                                                 </div>
-
-                                                                                                <div class="grid gap-[0.35rem] text-center content-center font-semibold break-all">
-                                                                                                    {
-                                                                                                        item.type
-                                                                                                    }
-                                                                                                </div>
-
-                                                                                                <svg
-                                                                                                        viewBox="0 0 24 24"
-                                                                                                        aria-hidden="true"
-                                                                                                        class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                                                            </a>
+                                                                                    ) : (
+                                                                                            <>
+                                                                                                <button
+                                                                                                        id={
+                                                                                                            subBtnId
+                                                                                                        }
+                                                                                                        class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
+                                                                                                        type="button"
+                                                                                                        aria-expanded="false"
+                                                                                                        aria-controls={
+                                                                                                            subPanelId
+                                                                                                        }
+                                                                                                        data-accordion-toggle
+                                                                                                        data-accordion-level="nested"
                                                                                                 >
-                                                                                                    <path
-                                                                                                            fill="currentColor"
-                                                                                                            d="M7 10l5 5 5-5H7z"
-                                                                                                    />
-                                                                                                </svg>
-                                                                                            </button>
+                                                                                                    <div class="h-full content-center">
+                                                                                                        <div
+                                                                                                                aria-hidden="true"
+                                                                                                                class="flex h-10 w-10"
+                                                                                                        >
+                                                                                                            <Icon class="h-full w-full"/>
+                                                                                                        </div>
+                                                                                                    </div>
 
-                                                                                            <div
-                                                                                                    id={
-                                                                                                        subPanelId
-                                                                                                    }
-                                                                                                    class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
-                                                                                                    aria-labelledby={
-                                                                                                        subBtnId
-                                                                                                    }
-                                                                                                    data-accordion-panel
-                                                                                                    inert
-                                                                                            >
-                                                                                                <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
-                                                                                                    <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
-                                                                                                        Square
-                                                                                                        module
-                                                                                                        placeholder
-                                                                                                        <br/>
-                                                                                                        merchantId:{" "}
+                                                                                                    <div class="grid gap-[0.35rem] text-center content-center font-semibold break-all">
                                                                                                         {
-                                                                                                            merchantId
-                                                                                                        }
-                                                                                                        <br/>
-                                                                                                        locationId:{" "}
-                                                                                                        {
-                                                                                                            locationId
+                                                                                                            item.type
                                                                                                         }
                                                                                                     </div>
+
+                                                                                                    <svg
+                                                                                                            viewBox="0 0 24 24"
+                                                                                                            aria-hidden="true"
+                                                                                                            class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                                                                    >
+                                                                                                        <path
+                                                                                                                fill="currentColor"
+                                                                                                                d="M7 10l5 5 5-5H7z"
+                                                                                                        />
+                                                                                                    </svg>
+                                                                                                </button>
+
+                                                                                                <div
+                                                                                                        id={
+                                                                                                            subPanelId
+                                                                                                        }
+                                                                                                        class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                                                                                        aria-labelledby={
+                                                                                                            subBtnId
+                                                                                                        }
+                                                                                                        data-accordion-panel
+                                                                                                        inert
+                                                                                                >
+                                                                                                    <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
+                                                                                                        <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
+                                                                                                            Square
+                                                                                                            module
+                                                                                                            placeholder
+                                                                                                            <br/>
+                                                                                                            merchantId:{" "}
+                                                                                                            {
+                                                                                                                merchantId
+                                                                                                            }
+                                                                                                            <br/>
+                                                                                                            locationId:{" "}
+                                                                                                            {
+                                                                                                                locationId
+                                                                                                            }
+                                                                                                        </div>
+                                                                                                    </div>
                                                                                                 </div>
-                                                                                            </div>
+                                                                                            </>
+                                                                                    )}
+                                                                                </li>
+                                                                                {isPreferred && (
+                                                                                        <>
+                                                                                            <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint"/>
+                                                                                            <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]"/>
                                                                                         </>
                                                                                 )}
-                                                                            </li>
-                                                                            {isPreferred && (
-                                                                                    <>
-                                                                                        <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint"/>
-                                                                                        <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]"/>
-                                                                                    </>
-                                                                            )}
-                                                                        </div>
-                                                                );
-                                                            },
-                                                        )}
-                                                    </ul>
+                                                                            </div>
+                                                                    );
+                                                                },
+                                                            )}
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </section>
                                         </li>
                                 )
                             );

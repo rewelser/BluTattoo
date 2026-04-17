@@ -1,288 +1,335 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { Image } from "astro:assets";
-import { loadActiveArtists } from "../../domain/people/server.ts";
-import { render, getCollection, type CollectionEntry } from "astro:content";
+import {Image} from "astro:assets";
+import {loadActiveArtists} from "../../domain/people/server.ts";
+import {render, getCollection, type CollectionEntry} from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
-import { ArtistGallery } from "../../components/ArtistGalleryNoThumbs.tsx";
-import { Picture } from "astro:assets";
+import {ArtistGallery} from "../../components/ArtistGalleryNoThumbs.tsx";
+import {Picture} from "astro:assets";
 import SocialRow from "../../components/SocialRow.astro";
 
 const isAsset = (v: unknown) =>
-  typeof v === "object" && v !== null && "src" in (v as any);
+    typeof v === "object" && v !== null && "src" in (v as any);
 
 export async function getStaticPaths() {
-  // const artists = await getCollection("artists");
-  let artists = await loadActiveArtists();
-  // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
+    // const artists = await getCollection("artists");
+    let artists = await loadActiveArtists();
+    // artists = (await getCollection("artists")) as CollectionEntry<"artists">[];
 
-  // todo: I did this differently (at a later time) for events. Take a look at that at some point to reconcile.
-  return artists.map((entry) => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+    // todo: I did this differently (at a later time) for events. Take a look at that at some point to reconcile.
+    return artists.map((entry) => ({
+        params: {slug: entry.id},
+        props: {entry},
+    }));
 }
 
-const { entry } = Astro.props;
+const {entry} = Astro.props;
 
 // Render the Markdown *body* (the part after the frontmatter)
-const { Content } = await render(entry);
+const {Content} = await render(entry);
 
 const thumb = (src: string, w: number) =>
-  src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
+    src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
 
 const square = entry.data.contactSocialsBooking?.platforms?.find(
-  (p) => p.type === "square",
+    (p) => p.type === "square",
 );
 
 const socials = entry.data.contactSocialsBooking?.socials?.find(
-  (item) => item.type === "instagram",
+    (item) => item.type === "instagram",
 );
 
 const moduleInfo = square?.linkOrModuleInfo.find(
-  (item) => item.mode === "moduleInfo",
+    (item) => item.mode === "moduleInfo",
 );
 ---
 
 <script>
-  import { bootFadeUp } from "../../scripts/fade-up";
-  bootFadeUp({ observeMutations: true });
-  //js-fade-up
+    import {bootFadeUp} from "../../scripts/fade-up";
+
+    bootFadeUp({observeMutations: true});
+    //js-fade-up
 </script>
 
 <Layout
-  title={entry.data.name}
-  preloadImage={entry.data.pagePhoto as string}
+        title={entry.data.name}
+        preloadImage={entry.data.pagePhoto}
 >
-  <article class="space-y-6">
-    <header class="text-orange-100">
-      <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
-        <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {
-            entry.data.pagePhoto && (
-              <div class="portrait fade-in-left-and-glow-anim">
-                <div>
-                  <img
-                    src={entry.data.pagePhoto as string}
-                    alt={`Portrait of ${entry.data.name}`}
-                    width="400"
-                    height="400"
-                    decoding="async"
-                    loading="eager"
-                    fetchpriority="high"
-                    class="mask-b-from-60% mask-b-to-100%"
-                  />
+    <article class="space-y-6">
+        <header class="text-orange-100">
+            <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
+                <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {
+                        entry.data.pagePhoto && (
+                                    <div class="portrait fade-in-left-and-glow-anim">
+                                        <div>
+                                            <img
+                                                    src={entry.data.pagePhoto.src}
+                                                    alt={`Portrait of ${entry.data.name}`}
+                                                    width="400"
+                                                    height="400"
+                                                    decoding="async"
+                                                    loading="eager"
+                                                    fetchpriority="high"
+                                                    class="mask-b-from-60% mask-b-to-100%"
+                                            />
+                                        </div>
+                                    </div>
+                        )
+                    }
+                    <style>
+                        @media (width < 40rem) {
+                            .portrait {
+                                filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35)) drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+                            }
+                        }
+
+                        @media (width >= 40rem) {
+                            .fade-in-left-and-glow-anim {
+                                --portrait-in: 6000ms;
+                                opacity: 0;
+                                transform: translate3d(-200px, 0, 0);
+                                filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35)) drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
+                                animation: portraitIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1) forwards,
+                                glowIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+                                will-change: transform, opacity;
+                            }
+
+                            @keyframes portraitIn {
+                                to {
+                                    opacity: 1;
+                                    transform: translate3d(0, 0, 0);
+                                }
+                            }
+
+                            @keyframes glowIn {
+                                to {
+                                    filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35)) drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
+                                }
+                            }
+
+                            @media (prefers-reduced-motion: reduce) {
+                                .fade-in-left-and-glow-anim {
+                                    opacity: 1;
+                                    transform: none;
+                                    animation: none;
+                                }
+                            }
+                        }
+                    </style>
+                    <div id="artist-bio" class="flex items-center p-5 js-fade-up">
+                        <div>
+                            <h1 class="text-3xl font-bold">{entry.data.name}</h1>
+
+                            <!-- {
+                              entry.data.contactSocialsBooking?.socials && (
+                                <p>
+                                  <SocialRow
+                                    links={entry.data.contactSocialsBooking.socials}
+                                    class="my-3"
+                                    anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                                  />
+                                </p>
+                              )
+                            } -->
+
+                            {
+                                entry.data.contactSocialsBooking?.socials && (
+                                            <p>
+                                                <SocialRow
+                                                        links={entry.data.contactSocialsBooking.socials}
+                                                        class="my-3"
+                                                        anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                                                />
+                                            </p>
+                                )
+                            }
+
+                            <section class="js-fade-up">
+                                <h2 class="sr-only">Bio</h2>
+                                <p class="whitespace-pre-line">
+                                    <Content/>
+                                </p>
+                            </section>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            )
-          }
-          <style>
-            @media (width <40rem) {
-              .portrait {
-                filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                  drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
-              }
-            }
-
-            @media (width >=40rem) {
-              .fade-in-left-and-glow-anim {
-                --portrait-in: 6000ms;
-                opacity: 0;
-                transform: translate3d(-200px, 0, 0);
-                filter: drop-shadow(-80px -10px 80px rgba(99, 102, 241, 0.35))
-                  drop-shadow(-80px -10px 92px rgba(99, 102, 241, 0.18));
-                animation:
-                  portraitIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
-                    forwards,
-                  glowIn var(--portrait-in) cubic-bezier(0.2, 0.9, 0.2, 1)
-                    forwards;
-                will-change: transform, opacity;
-              }
-
-              @keyframes portraitIn {
-                to {
-                  opacity: 1;
-                  transform: translate3d(0, 0, 0);
-                }
-              }
-
-              @keyframes glowIn {
-                to {
-                  filter: drop-shadow(-1px -10px 10px rgba(99, 102, 241, 0.35))
-                    drop-shadow(-1px -10px 22px rgba(99, 102, 241, 0.18));
-                }
-              }
-
-              @media (prefers-reduced-motion: reduce) {
-                .fade-in-left-and-glow-anim {
-                  opacity: 1;
-                  transform: none;
-                  animation: none;
-                }
-              }
-            }
-          </style>
-          <div id="artist-bio" class="flex items-center p-5 js-fade-up">
-            <div class="poopy">
-              <h1 class="text-3xl font-bold">{entry.data.name}</h1>
-
-              <!-- {
-                entry.data.contactSocialsBooking?.socials && (
-                  <p>
-                    <SocialRow
-                      links={entry.data.contactSocialsBooking.socials}
-                      class="my-3"
-                      anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
-                    />
-                  </p>
-                )
-              } -->
-
-              {
-                entry.data.contactSocialsBooking?.socials && (
-                  <p>
-                    <SocialRow
-                      links={entry.data.contactSocialsBooking.socials}
-                      class="my-3"
-                      anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
-                    />
-                  </p>
-                )
-              }
-
-              <section class="js-fade-up">
-                <h2 class="sr-only">Bio</h2>
-                <p class="whitespace-pre-line">
-                  <Content />
-                </p>
-              </section>
             </div>
-          </div>
+            {/* Divider */}
+            <div aria-hidden="true">
+                <!-- drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)] -->
+                <svg class="block h-full w-full" viewBox="1 1 590 213">
+                    <defs>
+                        <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
+                            <feDropShadow
+                                    dx="2"
+                                    dy="4"
+                                    stdDeviation="3"
+                                    flood-color="#000"
+                                    flood-opacity="0.5"></feDropShadow>
+                        </filter>
+                    </defs>
+                    <path
+                            d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z"
+                            fill="black"></path>
+                </svg>
+            </div>
+        </header>
+
+        <div class="hero-container">
+            <div class="hero mb-40"></div>
         </div>
-      </div>
-      {/* Divider */}
-      <div aria-hidden="true">
-        <!-- drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)] -->
-        <svg class="block h-full w-full" viewBox="1 1 590 213">
-          <defs>
-            <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
-              <feDropShadow
-                dx="2"
-                dy="4"
-                stdDeviation="3"
-                flood-color="#000"
-                flood-opacity="0.5"></feDropShadow>
-            </filter>
-          </defs>
-          <path
-            d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z"
-            fill="black"></path>
-        </svg>
-      </div>
-    </header>
+        <style>
+            .hero-container {
+                /* 10px_12px_14px_rgba(4,4,4,0.90) */
+                filter: drop-shadow(1px 2px 14px rgba(4, 4, 4, 0.9));
+            }
 
-    <!-- <div class="hero-container">
-      <div class="hero mb-40"></div>
-    </div> -->
-    <style>
-      .hero-container {
-        /* 10px_12px_14px_rgba(4,4,4,0.90) */
-        filter: drop-shadow(1px 2px 14px rgba(4, 4, 4, 0.9));
-      }
-      .hero {
-        background: red;
-        /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
+            @property --c1x {
+                syntax: "<percentage>";
+                inherits: false;
+                initial-value: 70%;
+            }
+            @property --c1y {
+                syntax: "<percentage>";
+                inherits: false;
+                initial-value: 120%;
+            }
+            @property --c2x {
+                syntax: "<percentage>";
+                inherits: false;
+                initial-value: 30%;
+            }
+            @property --c2y {
+                syntax: "<percentage>";
+                inherits: false;
+                initial-value: 50%;
+            }
 
-        filter: drop-shadow(30px 10px 4px #4444dd);
-        clip-path: shape(
-          from 0 0,
-          hline to 100%,
-          vline to 85%,
-          curve to 0 85% with 70% 120% / 30% 50%,
-          close
-        );
-        /* clip-path: shape(
-          from 0 0,
-          hline to 100%,
-          vline to 100%,
-          curve to 0 100% with 66.67% 150% / 33.33% 50%,
-          close
-        ); */
-        aspect-ratio: 1.311;
-        /* aspect-ratio: 1; */
+            .hero {
+                background: red;
+                /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
+                /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
 
-        /* clip-path: shape(
-          from 0% 0%,
-          hline to 100%,
-          vline to 87.39%,
-          curve to 0% 87.39% with 66.67% 131.08%/33.33% 43.69%,
-          close
-        ); */
-      }
-    </style>
+                //filter: drop-shadow(30px 10px 4px #4444dd);
+                clip-path: shape(
+                        from 0 0,
+                        hline to 100%,
+                        vline to 85%,
+                        curve to 0 85% with 70% 120% / 30% 50%,
+                        close
+                );
 
-    <!-- Artist Gallery -->
-    {
-      entry.data.images?.length && (
-        <section class="js-fade-up">
-          <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
-            <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
-              <div>
-                <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
-                  Gallery
-                </h2>
-                <p class="text-sm text-gray-600 js-fade-up">
-                  Tap/click to view full size.
-                </p>
-              </div>
+                clip-path: shape(
+                        from 0 0,
+                        hline to 100%,
+                        vline to 85%,
+                        curve to 0 85% with 30% 50% / 70% 120%,
+                        close
+                );
 
-              <p class="text-xs text-gray-500">
-                {entry.data.images.length} photos
-              </p>
-            </div>
+                clip-path: shape(
+                        from 0 0,
+                        hline to 100%,
+                        vline to 85%,
+                        curve to 0 85% with var(--c1x) var(--c1y) / var(--c2x) var(--c2y),
+                        close
+                );
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-              {entry.data.images.map((img, idx) => (
-                <button
-                  type="button"
-                  class="group overflow-hidden rounded-md text-left cursor-pointer"
-                  data-idx={idx}
-                  onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
-                >
-                  <img
-                    src={thumb(img.src as string, 360)}
-                    srcset={`${thumb(img.src as string, 240)} 240w,
+                transition:
+                        --c1x 500ms ease,
+                        --c1y 500ms ease,
+                        --c2x 500ms ease,
+                        --c2y 500ms ease;
+                /* clip-path: shape(
+                  from 0 0,
+                  hline to 100%,
+                  vline to 100%,
+                  curve to 0 100% with 66.67% 150% / 33.33% 50%,
+                  close
+                ); */
+                aspect-ratio: 1.311;
+                /* aspect-ratio: 1; */
+
+                /* clip-path: shape(
+                  from 0% 0%,
+                  hline to 100%,
+                  vline to 87.39%,
+                  curve to 0% 87.39% with 66.67% 131.08%/33.33% 43.69%,
+                  close
+                ); */
+            }
+
+            .hero:hover {
+                --c1x: 30%;
+                --c1y: 50%;
+                --c2x: 70%;
+                --c2y: 120%;
+            }
+        </style>
+
+        <!-- Artist Gallery -->
+        {
+            entry.data.images?.length && (
+                        <section class="js-fade-up">
+                            <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
+                                <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
+                                    <div>
+                                        <h2 class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
+                                            Gallery
+                                        </h2>
+                                        <p class="text-sm text-gray-600 js-fade-up">
+                                            Tap/click to view full size.
+                                        </p>
+                                    </div>
+
+                                    <p class="text-xs text-gray-500">
+                                        {entry.data.images.length} photos
+                                    </p>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                                    {entry.data.images.map((img, idx) => (
+                                            <button
+                                                    type="button"
+                                                    class="group overflow-hidden rounded-md text-left cursor-pointer"
+                                                    data-idx={idx}
+                                                    onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
+                                            >
+                                                <img
+                                                        src={thumb(img.src as string, 360)}
+                                                        srcset={`${thumb(img.src as string, 240)} 240w,
                           ${thumb(img.src as string, 360)} 360w,
                           ${thumb(img.src as string, 480)} 480w,
                           ${thumb(img.src as string, 720)} 720w`}
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    alt={img.alt ?? ""}
-                    loading="lazy"
-                    decoding="async"
-                    class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                  />
-                </button>
-              ))}
-            </div>
-            <ArtistGallery client:load images={entry.data.images} />
-          </div>
-        </section>
-      )
-    }
+                                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                        alt={img.alt ?? ""}
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                                />
+                                            </button>
+                                    ))}
+                                </div>
+                                <ArtistGallery client:load images={entry.data.images}/>
+                            </div>
+                        </section>
+            )
+        }
 
-    {/* Preferred: Square embed if present */}
-    {
-      square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (
-        <div class="p-5 mx-auto max-w-6xl">
-          <SquareAppointments
-            merchantSlug={moduleInfo.merchantId}
-            locationSlug={moduleInfo.locationId}
-            label={moduleInfo.label}
-            className="mt-2"
-          />
-        </div>
-      )
-    }
-  </article>
+        {/* Preferred: Square embed if present */}
+        {
+            square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (
+                        <div class="p-5 mx-auto max-w-6xl">
+                            <SquareAppointments
+                                    merchantSlug={moduleInfo.merchantId}
+                                    locationSlug={moduleInfo.locationId}
+                                    label={moduleInfo.label}
+                                    className="mt-2"
+                            />
+                        </div>
+            )
+        }
+    </article>
 </Layout>

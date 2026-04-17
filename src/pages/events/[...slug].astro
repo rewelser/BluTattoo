@@ -2,10 +2,12 @@
 import Layout from "../../layouts/Layout.astro";
 import PromoHero from "../../components/PromoHero.astro";
 import {getCollection, getEntry, render} from "astro:content";
-import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
+// import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
 import SocialRow from "../../components/SocialRow.astro";
 import HrDivider from "../../components/decor/HrDivider.astro";
 import {getTransformedEventBySlug, loadTransformedEvents} from "../../domain/events/server.ts";
+import EventDateRange from "../../components/EventDateRange.astro";
+import EventTimeWindow from "../../components/EventTimeWindow.astro";
 
 export async function getStaticPaths() {
     const entries = await loadTransformedEvents();
@@ -21,8 +23,8 @@ if (!entry) throw new Error(`Event not found: ${slug}`);
 const {Content} = await render(entry);
 const ev = entry.data;
 
-console.log("ev.image", ev.image);
-console.log("ev.href");
+// console.log("ev.image", ev.image);
+// console.log("ev.href");
 ---
 
 <Layout title={ev.title}>
@@ -37,9 +39,11 @@ console.log("ev.href");
 
         <div class="border border-black/10 p-5 md:p-6">
             <div class="text-sm opacity-80">
-                {fmtDateRange(ev)}
+                <!--{fmtDateRange(ev)}-->
+                <EventDateRange ev={ev}/>
                 {" • "}
-                {fmtTimeWindow(ev)}
+                <!--{fmtTimeWindow(ev)}-->
+                <EventTimeWindow ev={ev}/>
                 {ev.location ? ` • ${ev.location}` : ""}
             </div>
 

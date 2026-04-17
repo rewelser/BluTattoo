@@ -1,8 +1,9 @@
 ---
 import PromoHero from "../components/PromoHero.astro";
 import type {EventItem} from "../domain/events/types.ts";
-import {fmtDateRange} from "../domain/events/format.ts";
+// import {fmtDateRange} from "../domain/events/format.ts";
 import {getUpcomingCandidates, pickFeaturedHero} from "../domain/events/selectors.ts";
+import EventDateRange from "./EventDateRange.astro";
 
 export interface Props {
     events: EventItem[];
@@ -15,47 +16,53 @@ const upcoming = getUpcomingCandidates(events, new Date());
 const featured = pickFeaturedHero(upcoming);
 ---
 
-{
-    featured?.image && (
-    <PromoHero
-            href={`/events/${featured.id}`}
-            image={featured.image}
-            alt={featured.alt ?? featured.title}
-            className="p-8"
-    />
+
+<>
+    {
+        featured?.image && (
+                    <PromoHero
+                            href={`/events/${featured.id}`}
+                            image={featured.image}
+                            alt={featured.alt ?? featured.title}
+                            className="p-8"
+                    ></PromoHero>
         )
     }
 
-{
-    upcoming.length > 0 ? (
-    <section class="space-y-3">
-        <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
+    {
+        upcoming.length > 0 ? (
+                <section class="space-y-3">
+                    <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
 
-        <div class="divide-y divide-black/10 border border-black/10">
-            {upcoming.map((ev) => (
-                    <a
-                            class="block p-4 hover:bg-black/5"
-                            href={`/events/${ev.id}`}
-                    >
-                        <div class="font-medium">{ev.title}</div>
-                        <div class={`w-fit pb-1 text-sm opacity-80 ${ev.detailsShort ? "border-b-2 border-dotted border-black/20" : ""}`}>
-                            {fmtDateRange(ev)}
-                            {ev.location ? ` • ${ev.location}` : ""}
-                        </div>
-                        {ev.detailsShort && (
-                                <div class="pt-2">{ev.detailsShort}</div>
-                        )}
-                    </a>
-            ))}
-        </div>
-    </section>
+                    <ul class="divide-y divide-black/10 border border-black/10">
+                        {upcoming.map((ev) => (
+                                <li key={ev.id}>
+                                    <a
+                                            class="block p-4 hover:bg-black/5"
+                                            href={`/events/${ev.id}`}
+                                    >
+                                        <div class="font-medium">{ev.title}</div>
+                                        <div class={`w-fit pb-1 text-sm opacity-80 ${ev.detailsShort ? "border-b-2 border-dotted border-black/20" : ""}`}>
+                                            <!--{fmtDateRange(ev)}-->
+                                            <EventDateRange ev={ev}/>
+                                            {ev.location ? ` • ${ev.location}` : ""}
+                                        </div>
+                                        {ev.detailsShort && (
+                                                <div class="pt-2">{ev.detailsShort}</div>
+                                        )}
+                                    </a>
+                                </li>
+                        ))}
+                    </ul>
+                </section>
         ) : (
-    <section class="border border-black/10 p-5 md:p-6">
-        <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
-        <p class="mt-2 leading-relaxed">
-            We’re planning events and guest spots. As soon as dates are
-            locked in, they’ll appear here.
-        </p>
-    </section>
+                <section class="border border-black/10 p-5 md:p-6">
+                    <h2 class="text-xl font-semibold tracking-tight">Stay tuned</h2>
+                    <p class="mt-2 leading-relaxed">
+                        We’re planning events and guest spots. As soon as dates are
+                        locked in, they’ll appear here.
+                    </p>
+                </section>
         )
     }
+</>

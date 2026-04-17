@@ -149,14 +149,14 @@ export const siteInfoSocialsSchema = z
 
 const events = defineCollection({
     loader: glob({pattern: "**/*.{md,mdx}", base: "./src/content/events"}),
-    schema: z.object({
+    schema: ({image}) => z.object({
         guestSpot: z.array(z.object({
                     type: z.literal("guestInfo"),
                     guestName: z.string(),
-                    runwayPhoto: optionalString,
+                    runwayPhoto: image().optional(),
                     primaryRole: primaryRoleSchema,
                     contactSocialsBooking: z.object({
-                        bookingProfilePicture: optionalString,
+                        bookingProfilePicture: image().optional(),
                         booksOpen: z.boolean().default(true),
                         booksClosedNote: z.string(),
                         contact: contactSchema,
@@ -171,12 +171,12 @@ const events = defineCollection({
             .optional(),
         title: z.string(),
         detailsShort: z.preprocess(emptyStrToUndef, z.string().optional()),
-        image: z.preprocess(emptyStrToUndef, z.string().optional()),
+        image: image().optional(),
         alt: z.preprocess(emptyStrToUndef, z.string().optional()),
         published: z.boolean().default(true),
         featured: z.boolean().default(false),
         archived: z.boolean().default(false),
-        startDate: isoDate,
+        date: isoDate,
         endDate: z.preprocess(emptyStrToUndef, isoDate.optional()),
         startTime: z.preprocess(toHm, timeHM.optional()).optional(),
         endTime: z.preprocess(toHm, timeHM.optional()).optional(),
@@ -218,7 +218,10 @@ const events = defineCollection({
                 color2: z.preprocess(emptyStrToUndef, z.string().optional()),
             })
             .optional(),
-    }),
+    }).transform(({date, ...rest}) => ({
+        ...rest,
+        startDate: date,
+    })),
 });
 
 /*** endregion ***/
@@ -227,19 +230,19 @@ const events = defineCollection({
 
 const people = defineCollection({
     loader: glob({pattern: '**/[^_]*.{md,mdx}', base: './src/content/people'}),
-    schema: () =>
+    schema: ({ image }) =>
         z.object({
             name: z.string(),
             active: z.boolean().default(true),
             order: z.number().default(999),
 
-            pagePhoto: optionalString,
-            runwayPhoto: optionalString,
+            pagePhoto: image().optional(),
+            runwayPhoto: image().optional(),
 
             primaryRole: primaryRoleSchema,
 
             contactSocialsBooking: z.object({
-                bookingProfilePicture: optionalString,
+                bookingProfilePicture: image().optional(),
                 booksOpen: z.boolean().default(true),
                 booksClosedNote: z.string(),
                 contact: contactSchema,
@@ -294,7 +297,13 @@ const siteInfo = defineCollection({
     loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo"}),
     schema: z.object({
         siteName: z.string(),
-        address: z.string(),
+        address: z.object({
+            streetAddress: z.string(),
+            addressLocality: z.string(),
+            addressRegion: z.string().length(2),
+            postalCode: z.string(),
+            addressCountry: z.string().length(2).default("US")
+        }),
         phone: z.preprocess(emptyStrToUndef, z.string().optional()),
         email: z.preprocess(emptyStrToUndef, z.string().optional()),
         hours: z.array(z.object({label: z.string(), value: z.string()})).optional(),

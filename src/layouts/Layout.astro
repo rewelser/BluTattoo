@@ -10,7 +10,7 @@ import Footer from "../components/footer/Footer.astro";
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
 
-const {title, isHome = false, preloadImage} = Astro.props;
+const {title, isHome = false, preloadImage, pageTheme = "default"} = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/spectral";
 import "@fontsource/fleur-de-leah";
@@ -77,7 +77,7 @@ import "@fontsource/fleur-de-leah/400.css";
                 <!-- todo: what is this doing? vvv -->
                 <!-- todo2: I dupepd it and got rid of z-40 to test that out. I think I added z-40 for an obsolete reason -->
                 <!-- <div id="pagecontent-wrap" class="relative z-40 bg-white"> -->
-                <div id="pagecontent-wrap" class="relative bg-white">
+                <div id="pagecontent-wrap" data-page-theme={pageTheme}>
                     <slot/>
                     {/* page content goes here */}
                 </div>

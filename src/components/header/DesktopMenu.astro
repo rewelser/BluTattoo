@@ -64,7 +64,7 @@ const isItemActive = (item: MenuItem) => {
                                             </svg>
                                         </summary>
 
-                                        <ul class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20">
+                                        <ul data-desktop-submenu-dropdown class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20 max-h-[50vh] overflow-y-auto overscroll-none">
                                             <li>
                                                 <a
                                                         href={item.href}

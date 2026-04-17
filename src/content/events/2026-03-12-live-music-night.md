@@ -4,7 +4,7 @@ detailsShort: "An evening of local acoustic performers."
 published: true
 featured: false
 archived: false
-startDate: "2026-03-12"
+date: "2026-03-12"
 startTime: 19:00
 endTime: 21:30
 location: "Downtown Arts Café"

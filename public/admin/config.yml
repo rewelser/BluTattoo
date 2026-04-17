@@ -28,11 +28,12 @@ collections:
     label: "Team Members"
     description: "Add new resident team members here: tattoo artists, piercers, etc."
     folder: "src/content/people"
+    path: "{{slug}}/index"
+    media_folder: ""
+    public_folder: ""
     create: true
     identifier_field: name
     slug: "{{slug}}"
-    media_folder: "/public/uploads/people"
-    public_folder: "/uploads/people"
     fields:
       - { name: name, label: "Name", widget: string }
       - { name: active, label: "Active", widget: boolean, default: true, required: true }
@@ -267,6 +268,8 @@ collections:
         label: "Portfolio Images"
         widget: list
         required: false
+        media_folder: "/public/uploads/people"
+        public_folder: "/uploads/people"
         fields:
           - { name: src, label: "Image", widget: image }
           - { name: alt, label: "Alt text", widget: string, required: false }
@@ -293,7 +296,28 @@ collections:
         format: "json"
         fields:
           - { name: siteName, label: "Site Name", widget: string, default: "BluTattoo Studio" }
-          - { name: address, label: "Address (single line)", widget: string }
+          - name: "address"
+            label: "Address"
+            widget: "object"
+            fields:
+            - { name: "streetAddress", label: "Street", widget: "string" }
+            - { name: "addressLocality", label: "City", widget: "string" }
+            - name: "addressRegion"
+              label: "State"
+              widget: "string"
+              hint: "2-letter USPS state code (e.g., VA; CA)"
+              pattern: [ "^[A-Z]{2}$", "Use 2-letter state code (e.g., VA; CA)" ]
+            - name: "postalCode"
+              label: "ZIP"
+              widget: "string"
+              hint: "5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)"
+              pattern: ["^\\d{5}(-\\d{4})?$", "Use 5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)"]
+            - name: "addressCountry"
+              label: "Country Code"
+              widget: "string"
+              default: "US"
+              hint: "ISO 3166-1 alpha-2 country code (eg., US)"
+              pattern: ["^[A-Z]{2}$", "Must be a 2-letter ISO 3166-1 alpha-2 country code (eg., US)"]
           - name: phone
             label: "Phone Number"
             widget: string
@@ -387,42 +411,18 @@ collections:
                     media_folder: "public/uploads/misc_images"
                     public_folder: "/uploads/misc_images"
 
-  - name: "home"
-    label: "Homepage"
-    files:
-      - name: "main"
-        label: "Homepage Content"
-        file: "src/content/home/main.json"
-        format: "json"
-        fields:
-          - name: promoMain
-            label: "Promo (main)"
-            widget: object
-            required: false
-            collapsed: true
-            hint: "Toggle on to put a promo image on the home page."
-            fields:
-              - { name: promoEnabled, label: "Enable Promo", widget: boolean, default: true }
-
-              - name: promoImage
-                label: "Promo Image"
-                widget: image
-                required: false
-                media_folder: "/public/uploads/promos"
-                public_folder: "/uploads/promos"
-                hint: "Recommended: wide image (e.g. 1600×900+)"
-
-              - { name: promoAlt, label: "Image Alt Text", widget: string, required: false }
-
   - name: "eventsActive"
     label: "Events (Active)"
     folder: "src/content/events"
+    path: "{{year}}/{{month}}/{{day}}/{{slug}}/index"
+    media_folder: ""
+    public_folder: ""
     create: true
-    slug: "{{startDate}}-{{slug}}"
+    slug: "{{slug}}"
     format: "frontmatter"
     filter: { field: "archived", value: false }
-    summary: "{{startDate}} — {{title}}"
-    sortable_fields: [ "startDate", "title", "guestSpot", "commit_date" ]
+    summary: "{{date}} — {{title}}"
+    sortable_fields: [ "date", "title", "guestSpot", "commit_date" ]
     description: "Create events for guest spots, flash days, and other shop happenings."
     view_filters:
       - field: guestSpot
@@ -677,17 +677,13 @@ collections:
         label: "Event Image"
         widget: image
         required: false
-        media_folder: "/public/uploads/events"
-        public_folder: "/uploads/events"
-      #        media_folder: "assets/images"
-      #        public_folder: "assets/images"
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
       - { name: published, label: "Published", widget: boolean, default: true }
       - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
       # DATE RANGE (inclusive endDate)
-      - name: startDate
+      - name: date
         label: "Start Date"
         widget: datetime
         date_format: "YYYY-MM-DD"
@@ -842,21 +838,31 @@ collections:
   - name: "eventsArchive"
     label: "Events (Archive)"
     folder: "src/content/events"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    path: "{{year}}/{{month}}/{{day}}/{{slug}}/index"
+    media_folder: ""
+    public_folder: ""
+    create: false
+    slug: "{{slug}}"
     format: "frontmatter"
     filter: { field: "archived", value: true }
-    summary: "{{startDate}} — {{title}}"
-    sortable_fields: [ "startDate", "title", "commit_date" ]
+    summary: "{{date}} — {{title}}"
+    sortable_fields: [ "date", "title", "guestSpot", "commit_date" ]
     description: "Create events for guest spots, flash days, and other shop happenings."
+    view_filters:
+      - field: guestSpot
+        label: "Guest Spot"
+        pattern: true
+      - label: Featured Status
+        field: featured
+        pattern: true
     fields:
       - name: guestSpot
-        label: Is This Event a Guest Spot?
+        label: "Is This Event a Guest Spot?"
         summary: "{{guestName}}"
         hint: "(If not, you can ignore this section.)"
         label_singular: "guest spot"
         widget: list
-        min: 1
+        min: 0
         max: 1
         types:
           - name: guestInfo
@@ -864,27 +870,230 @@ collections:
             widget: object
             fields:
               - { name: guestName, label: "Guest Name", widget: string }
+              - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
               - name: primaryRole
                 label: "Primary Role"
                 widget: select
                 options:
                   - { label: "Tattoo Artist", value: "Tattoo Artist" }
                   - { label: "Piercer", value: "Piercer" }
-              - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
-              - label: "Socials"
-                name: socials
+              - name: "contactSocialsBooking"
+                label: "Contact, Socials, & Booking"
                 widget: "object"
                 required: false
                 collapsed: true
                 fields:
-                  - { name: instagram, label: "Instagram", widget: "string", required: false }
-                  - { name: tiktok, label: "TikTok", widget: "string", required: false }
-                  - { name: youtube, label: "YouTube", widget: "string", required: false }
-                  - { name: facebook, label: "Facebook", widget: "string", required: false }
-                  - { name: x, label: "X (Twitter)", widget: "string", required: false }
-                  - { name: threads, label: "Threads", widget: "string", required: false }
-                  - { name: tumblr, label: "Tumblr", widget: "string", required: false }
-                  - { name: pinterest, label: "Pinterest", widget: "string", required: false }
+                  - { name: bookingProfilePicture, label: "Profile Picture (Booking Page)", widget: image, required: false }
+                  - { name: booksOpen, label: "Are books open?", widget: boolean, default: true, required: true }
+                  - { name: booksClosedNote, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'" }
+                  - name: contact
+                    label: "Contact"
+                    widget: list
+                    min: 0
+                    types:
+                      - name: "phone"
+                        label: "phone"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - name: href
+                            label: "Phone Number"
+                            widget: string
+                            required: true
+                            hint: "Enter a 10-digit US number including area code. Example: (555) 123-4567"
+                            pattern:
+                              [
+                                "^(?:\\+?1[-.\\s]?)?(?:\\(?\\d{3}\\)?[-.\\s]?)\\d{3}[-.\\s]?\\d{4}$",
+                                "Enter a valid US phone number with area code, such as (555) 123-4567 or 555-123-4567."
+                              ]
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc" }
+
+                      - name: "email"
+                        label: "email"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "Email Address", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc" }
+
+                      - name: "website"
+                        label: "website"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: notes, label: Notes, widget: text, required: false, hint: "external website" }
+
+                  - name: socials
+                    label: "Social Media Links"
+                    widget: list
+                    min: 0
+                    types:
+                      - name: "instagram"
+                        label: "Instagram"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "facebook"
+                        label: "Facebook"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "tiktok"
+                        label: "TikTok"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "x"
+                        label: "X (Twitter)"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "threads"
+                        label: "Threads"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "tumblr"
+                        label: "Tumblr"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "youtube"
+                        label: "YouTube"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                      - name: "pinterest"
+                        label: "Pinterest"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: href, label: "URL", widget: string, required: true }
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: platforms
+                    label: "Platforms"
+                    widget: list
+                    min: 0
+                    types:
+                      - name: square
+                        label: "Square Appointments"
+                        widget: object
+                        required: true
+                        collapsed: false
+                        fields:
+                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                          - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                          - name: linkOrModuleInfo
+                            label: "Simple link or Square module info"
+                            widget: list
+                            min: 1
+                            types:
+                              - name: platformUrl
+                                label: "Square Link"
+                                widget: object
+                                required: true
+                                fields:
+                                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                                  - { name: href, label: "URL", widget: string, required: true }
+
+                              - name: moduleInfo
+                                label: "Module Info"
+                                widget: object
+                                fields:
+                                  - name: enabled
+                                    label: "Enabled?"
+                                    widget: boolean
+                                    required: true
+                                    default: true
+                                    hint: "Toggle on to show the Square Appointments embed on this person's page &/ booking section."
+                                  - name: merchantId
+                                    label: "Merchant ID"
+                                    widget: string
+                                    required: true
+                                    hint: "From your Square embed snippet (e.g., 'DM7VKY8Q63GNP')."
+                                    pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
+                                  - name: locationId
+                                    label: "Location ID"
+                                    widget: string
+                                    required: true
+                                    hint: "From your Square embed snippet (e.g., '7WQ0KXC8ZSD90')."
+                                    pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
+                                  - name: label
+                                    label: "Button Label"
+                                    widget: string
+                                    required: false
+                                    default: "Book an appointment"
+
+                  - name: bookingNote
+                    label: "General Booking Note"
+                    widget: "text"
+                    required: false
+                    hint: "Example: 'For tattoo inquiries, Sierra prefers Facebook Messenger.'"
+
 
       - { name: title, label: Title, widget: string }
       - { name: detailsShort, label: Details (short), widget: string, required: false }
@@ -892,15 +1101,13 @@ collections:
         label: "Event Image"
         widget: image
         required: false
-        media_folder: "/public/uploads/events"
-        public_folder: "/uploads/events"
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
       - { name: published, label: "Published", widget: boolean, default: true }
       - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
       # DATE RANGE (inclusive endDate)
-      - name: startDate
+      - name: date
         label: "Start Date"
         widget: datetime
         date_format: "YYYY-MM-DD"
@@ -1051,7 +1258,6 @@ collections:
             hint: "If two colors are set, bar uses a left→right gradient."
 
       - { name: body, label: "Details (long - event page)", widget: markdown, required: false }
-
 
   - name: "imagetest"
     label: "Image Test"

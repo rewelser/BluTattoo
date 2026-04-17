@@ -4,7 +4,7 @@ detailsShort: "Family-friendly movie under the stars Again."
 published: true
 featured: true
 archived: false
-startDate: "2026-03-28"
+date: "2026-03-28"
 startTime: 20:00
 endTime: 22:00
 location: "Central Park Amphitheater"

@@ -5,7 +5,7 @@
  * 
  * We have this script run in both predev & prebuild (package.json). The thumbs bypass 
  * content.config.ts by dint of having the same src name as their original version.
- * Look to const thumb in [slug].astro for usage.
+ * Look to const thumb in [...slug].astro for usage.
  */
 
 import fs from "node:fs";

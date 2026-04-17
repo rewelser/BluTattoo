@@ -1,24 +1,39 @@
 ---
 // src/pages/piercing.astro
 import Layout from "../layouts/Layout.astro";
+import PiercingPageHeadingSvg from "../components/decor/PiercingPageHeadingSvg.astro";
 const title = "Piercing";
+
+
+const topText = "BLUTATTOO";
+const letters = Array.from(topText);
+const stagger = 0.06;
+const rise = -10;
+const dur = 0.5;
 ---
 
 <Layout title={title}>
-  <article class="page-article page-article--stack space-y-6">
-    <h1 class="page-title">{title}</h1>
+    <article class="page-article page-article--stack page-article--bleed space-y-6">
+        <h1 class="page-title">
+            <span class="sr-only">{title}</span>
+            <PiercingPageHeadingSvg/>
+        </h1>
 
-    <section class="border border-black/10 p-5 md:p-6">
-      <h2 class="text-xl font-semibold tracking-tight">Coming soon</h2>
-      <p class="mt-2 leading-relaxed">
-        We don’t currently have a piercer on staff, but we’re actively exploring
-        options.
-      </p>
-      <p class="mt-3 text-sm">
-        Want updates? <a class="underline hover:no-underline" href="/contact"
-          >Contact us</a
-        > and we’ll point you in the right direction.
-      </p>
-    </section>
-  </article>
+        <!--<div class="h-[500px]"></div>-->
+
+        <div class="content-rail">
+            <section class=" border border-black/10 p-5 md:p-6">
+                <h2 class="text-xl font-semibold tracking-tight">Coming soon</h2>
+                <p class="mt-2 leading-relaxed">
+                    We don’t currently have a piercer on staff, but we’re actively exploring
+                    options.
+                </p>
+                <p class="mt-3 text-sm">
+                    Want updates? <a class="underline hover:no-underline" href="/contact"
+                >Contact us</a
+                > and we’ll point you in the right direction.
+                </p>
+            </section>
+        </div>
+    </article>
 </Layout>

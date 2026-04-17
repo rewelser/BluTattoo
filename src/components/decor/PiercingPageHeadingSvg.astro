@@ -1,0 +1,216 @@
+---
+const {
+    class: className = "",
+} = Astro.props as Props;
+
+const topText = "BLUTATTOO";
+const topLetters = Array.from(topText);
+const bottomText = "PIERCING";
+const bottomLetters = Array.from(bottomText);
+const stagger = 0.06;
+const rise = -10;
+const drop = 10;
+const dur = 0.5;
+---
+<div
+        class="curveclip-piercing-logo-wrap relative"
+        aria-hidden="true"
+>
+    <div class="curveclip-bg bg-radial from-black to-blue-950">
+        <div class={`relative flex justify-center items-center w-full ${className}`}>
+            <div class="piercing-logo-wrap bg-white p-8 mb-8 mt-[30vh] sm:p-10 sm:mb-10 sm:mt-[50vh] rounded-full w-[75%] sm:w-full max-w-md">
+                <svg
+                        viewBox="5 5 290 290"
+                        class="rounded-full overflow-visible shadow-2xl"
+                        aria-hidden="true"
+                        focusable="false"
+                >
+                    <image
+                            href="uploads/misc_images/001498 copy.png"
+                            x="55"
+                            y="55"
+                            width="190"
+                            height="190"
+                            preserveAspectRatio="xMidYMid meet"
+                            class="piercing-image"
+                    />
+
+                    <g class="rotating-text">
+                        <text class="ring-text">
+                            <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+                                {
+                                    topLetters.map((letter, i) => (
+                                            <tspan dy={rise} opacity="0">
+                                                {letter}
+                                                <animate
+                                                        class="letter-anim"
+                                                        attributeName="dy"
+                                                        from={String(rise)}
+                                                        to="0"
+                                                        dur={`${dur}s`}
+                                                        begin="indefinite"
+                                                        fill="freeze"
+                                                />
+                                                <animate
+                                                        class="letter-anim"
+                                                        attributeName="opacity"
+                                                        from="0"
+                                                        to="1"
+                                                        dur={`${dur}s`}
+                                                        begin="indefinite"
+                                                        fill="freeze"
+                                                />
+                                            </tspan>
+                                    ))
+                                }
+                            </textPath>
+                        </text>
+
+                        <g>
+                            <text class="ring-text" dy="18">
+                                <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">
+                                    {'\u200B'}
+                                    {
+                                        bottomLetters.map((letter, i) => (
+                                                <tspan dy={drop} opacity="0">
+                                                    {letter}
+                                                    <animate
+                                                            class="letter-anim"
+                                                            attributeName="dy"
+                                                            from={String(drop)}
+                                                            to="0"
+                                                            dur={`${dur}s`}
+                                                            begin="indefinite"
+                                                            fill="freeze"
+                                                    />
+                                                    <animate
+                                                            class="letter-anim"
+                                                            attributeName="opacity"
+                                                            from="0"
+                                                            to="1"
+                                                            dur={`${dur}s`}
+                                                            begin="indefinite"
+                                                            fill="freeze"
+                                                    />
+                                                </tspan>
+                                        ))
+                                    }
+                                </textPath>
+                            </text>
+                        </g>
+                    </g>
+
+                    <defs>
+                        <path id="topArc" d="M 30 150 A 120 120 0 0 1 270 150"/>
+                        <path id="bottomArc" d="M 30 150 A 120 120 0 0 0 270 150"/>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        const setupLogoAnimation = () => {
+            const wrap = document.querySelector('.piercing-logo-wrap');
+            if (!wrap) return;
+
+            const rotatingText = wrap.querySelector('.rotating-text');
+            const piercingImage = wrap.querySelector('.piercing-image');
+            const allAnimates = [...wrap.querySelectorAll('.letter-anim')];
+
+            let hasPlayed = false;
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    const entry = entries[0];
+                    if (!entry.isIntersecting || hasPlayed) return;
+
+                    hasPlayed = true;
+
+                    rotatingText?.classList.add('is-visible');
+                    piercingImage?.classList.add('is-visible');
+
+                    allAnimates.forEach((anim, index) => {
+                        const delay = Math.floor((index / 2) * 60);
+                        // divide by 2 because each letter has 2 animate tags: dy + opacity
+
+                        setTimeout(() => {
+                            if (typeof anim.beginElement === 'function') {
+                                anim.beginElement();
+                            }
+                        }, delay);
+                    });
+
+                    observer.disconnect();
+                },
+                {threshold: 0.7}
+            );
+            observer.observe(wrap);
+        }
+
+        setupLogoAnimation();
+    })();
+
+</script>
+
+<style>
+    .rotating-text {
+        transform-origin: 150px 150px;
+        transform-box: view-box;
+        opacity: 0;
+    }
+
+    .rotating-text.is-visible {
+        animation: fadeRotateIn 1.2s ease-out forwards;
+    }
+
+    .piercing-image {
+        opacity: 0;
+    }
+
+    .piercing-image.is-visible {
+        animation: fadeUp 1.2s ease-out forwards;
+    }
+
+    .ring-text {
+        fill: black;
+        font-size: 28px;
+        letter-spacing: 0;
+    }
+
+    @keyframes fadeRotateIn {
+        from {
+            opacity: 0;
+            transform: rotate(20deg);
+        }
+        to {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* curveclip-bg clip-path settings */
+
+    .curveclip-bg {
+        clip-path: shape(
+                from 0 0,
+                hline to 100%,
+                vline to 80%,
+                curve to 0 80% with 50% 120%,
+                close
+        );
+    }
+</style>

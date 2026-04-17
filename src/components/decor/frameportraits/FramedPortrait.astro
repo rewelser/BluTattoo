@@ -1,29 +1,32 @@
 ---
-import {registry, type FrameKey} from "./frameclips/registry.ts";
+import {frameRegistry, type FrameKey} from "./frameclips/registry.ts";
+import {getImage} from "astro:assets";
 
 interface Props {
     photoSrc: string;
     photoAlt: string;
-    frame: FrameKey;
+    frameType: FrameKey;
     class?: string;
-    frameOpacity?: number;
 }
 
 const {
     photoSrc,
     photoAlt,
-    frame,
+    frameType,
     class: className = "",
-    frameOpacity = 0.4,
 } = Astro.props;
 
-const config = registry[frame];
+const config = frameRegistry[frameType];
 
 if (!config) {
-    throw new Error(`Unknown frame key: ${frame}`);
+    throw new Error(`Unknown frame key: ${frameType}`);
 }
 
-const {frameSrc, maskSrc, ClipComponent} = config;
+const {FrameClipComponent, frame, mask} = config;
+
+// todo: remove these, but ask why using img.src exposes whole path???
+const frameSvg = await getImage({src: frame});
+const maskSvg = await getImage({src: mask});
 ---
 
 <div
@@ -32,7 +35,7 @@ const {frameSrc, maskSrc, ClipComponent} = config;
 >
     <div
             class="applied-mask--frameclip h-full w-full"
-            style={`mask-image: url(${maskSrc}); -webkit-mask-image: url(${maskSrc});`}
+            style={`mask-image: url("${mask.src}"); -webkit-mask-image: url("${mask.src}");`}
     >
         <img
                 src={photoSrc}
@@ -43,14 +46,14 @@ const {frameSrc, maskSrc, ClipComponent} = config;
     </div>
 
     <img
-            src={frameSrc}
+            src={frame.src}
             alt=""
             data-frame
             class="absolute inset-0 h-full w-full pointer-events-none fade-in-nested-50"
             aria-hidden="true"
     />
 
-    <ClipComponent/>
+    <FrameClipComponent/>
 
     <script is:inline>
         (() => {
@@ -95,12 +98,6 @@ const {frameSrc, maskSrc, ClipComponent} = config;
     .fade-in-nested-50 {
         opacity: .5;
         transition: opacity 10s cubic-bezier(.2,.8,.2,1);
-        @starting-style {
-            opacity: 0;
-        }
-    }
-
-    img[data-frame] {
         @starting-style {
             opacity: 0;
         }
