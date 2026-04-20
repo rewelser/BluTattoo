@@ -1,54 +1,144 @@
 ---
+import {frameRegistry, type FrameKey} from "./decor/frameportraits/frameclips/registry.ts";
+import SparkleCorners from "./decor/SparkleCorners.astro";
+import type {ImageMetadata} from "astro";
+import {defaults} from "../config/site.ts";
+
+import GuestArtistCardInfoBanner from "./decor/GuestArtistCardInfoBanner.astro";
+
 interface Props {
-  url: string;
-  data: {
-    title: string;
-    styles?: string[];
-    images?: { src: string; alt?: string }[];
-    instagram?: string;
-  };
+    artistPhoto: ImageMetadata | undefined;
+    artistName: string;
+    photoAlt: string;
+    frameType?: FrameKey;
+    isGuestSpot?: boolean;
+    class?: string;
 }
-const { url, data } = Astro.props;
 
-// Use the first image as the card thumbnail
-const thumb = data.images?.[0];
+const {
+    artistPhoto,
+    artistName,
+    photoAlt,
+    frameType,
+    isGuestSpot,
+    class: className = "",
+} = Astro.props;
+
+const config = frameType ? frameRegistry[frameType] : undefined;
+
+
+// const config = frameRegistry[frameType];
+//
+// if (!config) {
+//     throw new Error(`Unknown frame key: ${frameType}`);
+// }
+//
+// const {FrameClipComponent, frame, mask} = config;
+
+const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
 ---
-<article class="rounded-md overflow-hidden shadow hover:shadow-lg transition-shadow bg-white">
-  <a href={url} class="block">
-    {thumb && (
-      <img
-        src={`${thumb.src}?w=600&auto=format`}
-        srcset={`${thumb.src}?w=400 400w, ${thumb.src}?w=800 800w`}
-        sizes="(max-width: 768px) 100vw, 33vw"
-        alt={thumb.alt ?? `${data.title} portfolio thumbnail`}
-        class="w-full h-64 object-cover"
-        loading="lazy"
-        decoding="async"
-      />
-    )}
-    <div class="p-4">
-      <h2 class="text-xl font-semibold mb-1">{data.title}</h2>
+<>
+    {!config ?
+        (
+                <>
+                    <div class="relative">
+                        <div
+                                class={`artist-card group relative overflow-hidden rounded-2xl ${className}`}
+                        >
+                            <img
+                                    src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
+                                    alt={photoAlt}
+                                    data-artist-card-photo
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="object-fit transition-transform duration-300 group-hover:scale-105"
+                            />
+                        </div>
+                        <SparkleCorners
+                                color="black"
+                                fillColor="gold"
+                                size={24}
+                                gap={16}
+                                offset={-20}
+                        />
+                    </div>
+                    <p class="mt-3 text-center text-base font-medium tracking-wide">
+                        {artistName}
+                    </p>
 
-      {data.styles && data.styles.length > 0 && (
-        <p class="text-sm text-gray-600 mb-2">
-          {data.styles.join(", ")}
-        </p>
-      )}
+                </>
+        ) : (
+                    <>
+                        <GuestArtistCardInfoBanner/>
+                        <div
+                                class={`framed-artist-card group relative overflow-visible rounded-2xl ${className}`}
+                        >
+                            <div
+                                    class="applied-mask--frameclip h-full w-full"
+                                    style={`mask-image: url("${config.mask.src}"); -webkit-mask-image: url("${config.mask.src}");`}
+                            >
+                                <img
+                                        src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
+                                        alt={photoAlt}
+                                        data-artist-card-photo
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                            </div>
 
-      {data.instagram && (
-        <span class="inline-flex items-center text-indigo-600 text-sm hover:underline">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-4 h-4 mr-1"
-            aria-hidden="true"
-          >
-            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
-          </svg>
-          Instagram
-        </span>
-      )}
-    </div>
-  </a>
-</article>
+                            <img
+                                    src={config.frame.src}
+                                    alt=""
+                                    data-frame
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="absolute inset-0 h-full w-full pointer-events-none"
+                                    aria-hidden="true"
+                            />
+                            <config.FrameClipComponent/>
+                            <SparkleCorners
+                                    color="black"
+                                    fillColor="gold"
+                                    size={24}
+                                    gap={16}
+                                    offset={-40}
+                            />
+
+                            <script is:inline>
+                                (() => {
+                                    const root = document.currentScript.parentElement;
+                                    const shape = root.querySelector("[data-frame-window]");
+                                    const photo = root.querySelector("[data-artist-card-photo]");
+
+                                    function syncPhotoToWindow() {
+                                        const shapeRect = shape.getBoundingClientRect();
+                                        const wrapperRect = root.getBoundingClientRect();
+
+                                        photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
+                                        photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
+                                        photo.style.width = `${shapeRect.width}px`;
+                                        photo.style.height = `${shapeRect.height}px`;
+                                    }
+
+                                    const ro = new ResizeObserver(syncPhotoToWindow);
+                                    ro.observe(root);
+
+                                    if (photo.complete) {
+                                        syncPhotoToWindow();
+                                    } else {
+                                        photo.addEventListener("load", syncPhotoToWindow, {once: true});
+                                    }
+
+                                    window.addEventListener("load", syncPhotoToWindow, {once: true});
+                                })()
+                            </script>
+                        </div>
+                        <p class="mt-3 text-center text-base font-medium tracking-wide">
+                            {artistName}
+                        </p>
+                    </>
+
+        )
+    }
+</>

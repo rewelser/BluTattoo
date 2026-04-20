@@ -1,13 +1,13 @@
 ---
 name: Sierra
-order: 3
 active: true
-primaryRole: Tattoo Artist
+order: 3
 pagePhoto: sierra_headshot.jpg
+runwayPhotoFrame: roundframe2
+primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
-  booksClosedNote: "Books are currently closed."
-
+  booksClosedNote: Books are currently closed.
 images:
   - src: /uploads/people/sierra_headshot.jpg
     alt: sierra_headshot

@@ -1,145 +1,120 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import {loadActiveArtists, loadActivePeople} from "../../domain/people/server";
-import {defaults} from "../../config/site.ts";
-import {loadUpcomingGuestSpotCandidates} from "../../domain/events/selectors.ts";
-import SparkleCorners from "../../components/decor/SparkleCorners.astro";
-import GuestArtistCardInfoBanner from "../../components/decor/GuestArtistCardInfoBanner.astro";
-import TestFrameClip1SVG from "../../components/decor/TestFrameClip1SVG.astro";
-import TestFrameClip2SVG from "../../components/decor/TestFrameClip2SVG.astro";
-import FramedPortrait from "../../components/decor/frameportraits/FramedPortrait.astro";
-// import { Image } from "astro:assets";
+import ArtistRunway from "../../components/ArtistRunway.astro";
 
-
-
-let artists = await loadActiveArtists();
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
-const primaryRole = "Tattoo Artist";
-const seen = new Set<string>();
-const guestArtists = guestSpotEvents
-    .filter(ev => ev.guestSpot[0].primaryRole === primaryRole)
-    .filter((ev) => {
-        if (seen.has(ev.guestSpot[0].guestName)) {
-            return false;
-        }
-        seen.add(ev.guestSpot[0].guestName);
-        return true;
-    });
-
-
-
-const defaultPersonProfilePicture = defaults.personProfilePicture;
 const title = "Artists";
 ---
 <Layout title={title} pageTheme="neutraldark">
     <article class="page-article page-article--grid">
         <h1 class="page-title">{title}</h1>
 
-<!--<TestFrameClip1SVG/>-->
 
 
-        <!--<TestFrameClip2SVG/>-->
+        <!--<div class="mt-8 flex flex-wrap justify-center gap-6">-->
+
+        <!--</div>-->
+
+        <ArtistRunway  />
+
+        <!--<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">-->
+        <!--    {artists.map((artist) => {-->
+        <!--        return (-->
+        <!--                <a-->
+        <!--                        href={`/artists/${artist.id}`}-->
+        <!--                >-->
+        <!--                    <FramedPortrait-->
+        <!--                            artistPhoto={artist.data.runwayPhoto}-->
+        <!--                            photoAlt={artist.data.name}-->
+        <!--                            frameType={artist.data.runwayPhotoFrame}-->
+        <!--                    />-->
+        <!--                    <p class="mt-3 text-center text-base font-medium tracking-wide">-->
+        <!--                        {artist.data.name}-->
+        <!--                    </p>-->
+        <!--                </a>-->
+        <!--        );-->
+        <!--    })}-->
+
+        <!--    &lt;!&ndash;<FramedPortrait&ndash;&gt;-->
+        <!--    &lt;!&ndash;        photoSrc="/uploads/people/laurna.jpeg"&ndash;&gt;-->
+        <!--    &lt;!&ndash;        photoAlt="Laurna"&ndash;&gt;-->
+        <!--    &lt;!&ndash;        frameType="squareframe2"&ndash;&gt;-->
+        <!--    &lt;!&ndash;/>&ndash;&gt;-->
+        <!--    &lt;!&ndash;<FramedPortrait&ndash;&gt;-->
+        <!--    &lt;!&ndash;        photoSrc="/uploads/people/laurna.jpeg"&ndash;&gt;-->
+        <!--    &lt;!&ndash;        photoAlt="Laurna"&ndash;&gt;-->
+        <!--    &lt;!&ndash;        frameType="squareframe2"&ndash;&gt;-->
+        <!--    &lt;!&ndash;/>&ndash;&gt;-->
+        <!--</div>-->
+
+        <!--{-->
+        <!--    guestArtists.length > 0 && (-->
+        <!--                <section class="mt-8">-->
+        <!--                    <div class="flex flex-wrap justify-center gap-6">-->
+        <!--                        {guestArtists.map((guest) => {-->
+        <!--                            const href = `/events/${guest.id}`;-->
+        <!--                            return (-->
+        <!--                                    <div class="relative p-5 pt-20 sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)] lg:w-[calc((100%-4.5rem)/4)] flex justify-center">-->
+        <!--                                        <a-->
+        <!--                                                href={href}-->
+        <!--                                                class="group block w-full"-->
+        <!--                                        >-->
+        <!--                                            <div class="relative overflow-visible">-->
+        <!--                                                <div class="aspect-[4/5] w-full overflow-hidden rounded-md bg-gray-200">-->
+        <!--                                                    <img-->
+        <!--                                                            src={guest.guestSpot[0].runwayPhoto?.src ?? defaultPersonProfilePicture}-->
+        <!--                                                            alt={guest.guestSpot[0].guestName}-->
+        <!--                                                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"-->
+        <!--                                                    />-->
+        <!--                                                </div>-->
+        <!--                                                &lt;!&ndash;<SparkleCorners&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;        color="transparent"&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;        fillColor="#2E2EFF"&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;        size={24}&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;        gap={16}&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;        offset={-20}&ndash;&gt;-->
+        <!--                                                &lt;!&ndash;/>&ndash;&gt;-->
+        <!--                                                <SparkleCorners-->
+        <!--                                                        color="black"-->
+        <!--                                                        fillColor="gold"-->
+        <!--                                                        size={24}-->
+        <!--                                                        gap={16}-->
+        <!--                                                        offset={-20}-->
+        <!--                                                />-->
+        <!--                                            </div>-->
+        <!--                                            <p class="mt-3 text-center text-base font-medium tracking-wide">-->
+        <!--                                                {guest.guestSpot[0].guestName}-->
+        <!--                                            </p>-->
+        <!--                                        </a>-->
+        <!--                                        <GuestArtistCardInfoBanner/>-->
+        <!--                                    </div>-->
+
+        <!--                            );-->
+        <!--                        })}-->
+        <!--                    </div>-->
+        <!--                </section>-->
+        <!--    )-->
+        <!--}-->
 
 
-        <FramedPortrait
-                photoSrc="/uploads/people/laurna.jpeg"
-                photoAlt="Laurna"
-                frameType="squareframe1"
-        />
-
-        {
-            guestArtists.length > 0 && (
-                        <section class="mt-8">
-                            <div class="flex flex-wrap justify-center gap-6">
-                                {guestArtists.map((guest) => {
-                                    const href = `/events/${guest.id}`;
-                                    return (
-                                            <div class="relative p-5 pt-20 sm:w-[calc((100%-1.5rem)/2)] md:w-[calc((100%-3rem)/3)] lg:w-[calc((100%-4.5rem)/4)] flex justify-center">
-                                                <a
-                                                        href={href}
-                                                        class="group block w-full"
-                                                >
-                                                    <div class="relative overflow-visible">
-                                                        <div class="aspect-[4/5] w-full overflow-hidden rounded-md bg-gray-200">
-                                                            <img
-                                                                    src={guest.guestSpot[0].runwayPhoto?.src ?? defaultPersonProfilePicture}
-                                                                    alt={guest.guestSpot[0].guestName}
-                                                                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                            />
-                                                        </div>
-                                                        <!--<SparkleCorners-->
-                                                        <!--        color="transparent"-->
-                                                        <!--        fillColor="#2E2EFF"-->
-                                                        <!--        size={24}-->
-                                                        <!--        gap={16}-->
-                                                        <!--        offset={-20}-->
-                                                        <!--/>-->
-                                                        <SparkleCorners
-                                                                color="black"
-                                                                fillColor="gold"
-                                                                size={24}
-                                                                gap={16}
-                                                                offset={-20}
-                                                        />
-                                                    </div>
-                                                    <p class="mt-3 text-center text-base font-medium tracking-wide">
-                                                        {guest.guestSpot[0].guestName}
-                                                    </p>
-                                                </a>
-                                                <GuestArtistCardInfoBanner/>
-                                            </div>
-
-                                    );
-                                })}
-                            </div>
-                        </section>
-            )
-        }
-        <div class="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center place-content-center">
-            <!-- Artist Card -->
-            {artists.map((artist) => {
-                return (
-                        <a href="#" class="group block">
-                            <div class="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-200">
-                                <img
-                                        src={artist.data.runwayPhoto?.src ?? defaultPersonProfilePicture}
-                                        alt={artist.data.name}
-                                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                            </div>
-                            <p class="mt-3 text-center text-base font-medium tracking-wide">
-                                {artist.data.name}
-                            </p>
-                        </a>
-                );
-            })}
-        </div>
-
-
-
-
-
-        <div class="mt-8 flex flex-wrap justify-center gap-6">
-            {artists.map((artist) => {
-                return (
-                        <a
-                                href={`/artists/${artist.id}`}
-                                class="group block basis-full sm:basis-[calc((100%-1.5rem)/2)] md:basis-[calc((100%-3rem)/3)] lg:basis-[calc((100%-4.5rem)/4)]"
-                        >
-                            <div class="aspect-[4/5] w-full overflow-hidden bg-gray-200">
-                                <img
-                                        src={artist.data.runwayPhoto?.src ?? defaultPersonProfilePicture}
-                                        alt={artist.data.name}
-                                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                            </div>
-                            <p class="mt-3 text-center text-base font-medium tracking-wide">
-                                {artist.data.name}
-                            </p>
-                        </a>
-                );
-            })}
-        </div>
+        <!--<div class="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center place-content-center">-->
+        <!--    &lt;!&ndash; Artist Card &ndash;&gt;-->
+        <!--    {artists.map((artist) => {-->
+        <!--        return (-->
+        <!--                <a href="#" class="group block">-->
+        <!--                    <div class="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-gray-200">-->
+        <!--                        <img-->
+        <!--                                src={artist.data.runwayPhoto?.src ?? defaultPersonProfilePicture}-->
+        <!--                                alt={artist.data.name}-->
+        <!--                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"-->
+        <!--                        />-->
+        <!--                    </div>-->
+        <!--                    <p class="mt-3 text-center text-base font-medium tracking-wide">-->
+        <!--                        {artist.data.name}-->
+        <!--                    </p>-->
+        <!--                </a>-->
+        <!--        );-->
+        <!--    })}-->
+        <!--</div>-->
     </article>
 </Layout>
 

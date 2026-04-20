@@ -1,12 +1,14 @@
 ---
 name: Lara
-order: 1
 active: true
-primaryRole: Tattoo Artist
+order: 1
 pagePhoto: lara_headshot.jpg
+runwayPhoto: lara-runway.jpg
+runwayPhotoFrame: roundframe1
+primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
-  booksClosedNote: "Books are currently closed."
+  booksClosedNote: Books are currently closed.
   platforms:
     - type: square
       enabled: true
@@ -15,7 +17,6 @@ contactSocialsBooking:
           enabled: true
           merchantId: qwerty
           locationId: QWERTY
-
 images:
   - src: https://res.cloudinary.com/your-cloud/image/upload/v123/lara1.jpg
     alt: Blackwork snake on forearm

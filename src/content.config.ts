@@ -3,6 +3,7 @@ import {glob} from 'astro/loaders';
 import {socialTypes} from "./domain/contact/defs.ts";
 
 import type {SocialType} from "./domain/contact/types.ts";
+import {frameTypes} from "./domain/decor/defs.ts";
 
 // const imageOrString = (image: any) => z.union([image(), z.string()]);
 
@@ -44,6 +45,11 @@ const isoDate = z.preprocess((val) => {
 /*** endregion ***/
 
 /*** region *** Schemas ****/
+
+const cmsFrameTypes = ["none", ...frameTypes] as const;
+
+const frameSchema = z.enum(cmsFrameTypes)
+    .transform((value) => (value === "none" ? undefined : value));
 
 const primaryRoleSchema = z.enum(['Tattoo Artist', 'Piercer']);
 
@@ -230,7 +236,7 @@ const events = defineCollection({
 
 const people = defineCollection({
     loader: glob({pattern: '**/[^_]*.{md,mdx}', base: './src/content/people'}),
-    schema: ({ image }) =>
+    schema: ({image}) =>
         z.object({
             name: z.string(),
             active: z.boolean().default(true),
@@ -238,6 +244,7 @@ const people = defineCollection({
 
             pagePhoto: image().optional(),
             runwayPhoto: image().optional(),
+            runwayPhotoFrame: frameSchema,
 
             primaryRole: primaryRoleSchema,
 

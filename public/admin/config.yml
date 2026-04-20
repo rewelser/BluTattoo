@@ -39,7 +39,12 @@ collections:
       - { name: active, label: "Active", widget: boolean, default: true, required: true }
       - { name: order, label: "List Order", widget: number, default: 999 }
       - { name: pagePhoto, label: "Photo (on Artist or Piercing Page)", widget: image, required: false }
-      - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
+      - { name: runwayPhoto, label: "Runway Photo (Front & All Artists Page)", widget: image, required: false }
+      - name: runwayPhotoFrame
+        label: "Frame for Runway Photo"
+        widget: select
+        options: ["none", "roundframe1", "roundframe2", "roundframe3", "roundframe4", "squareframe1", "squareframe2", "squareframe3", "archedframe1"]
+        default: "none"
       - name: primaryRole
         label: "Primary Role"
         widget: select
@@ -271,7 +276,13 @@ collections:
         media_folder: "/public/uploads/people"
         public_folder: "/uploads/people"
         fields:
-          - { name: src, label: "Image", widget: image }
+          - name: src
+            label: "Image"
+            widget: image
+            allow_multiple: true
+            media_library:
+              config:
+                multiple: true
           - { name: alt, label: "Alt text", widget: string, required: false }
 
       - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
@@ -447,6 +458,11 @@ collections:
             fields:
               - { name: guestName, label: "Guest Name", widget: string }
               - { name: runwayPhoto, label: "Runway Photo (Front Page)", widget: image, required: false }
+              - name: runwayPhotoFrame
+                label: "Frame for Runway Photo"
+                widget: select
+                options: [ "none", "guestframe" ]
+                default: "none"
               - name: primaryRole
                 label: "Primary Role"
                 widget: select

@@ -4,6 +4,7 @@ active: true
 order: 999
 pagePhoto: zirk1.jpeg
 runwayPhoto: boogleech.png
+runwayPhotoFrame: squareframe2
 primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
@@ -25,7 +26,7 @@ contactSocialsBooking:
       enabled: true
       bookable: false
       href: https://www.tiktok.com/
-  bookingProfilePicture: "heimlich.jpg"
+  bookingProfilePicture: heimlich.jpg
   bookingNote: note
   platforms:
     - type: square

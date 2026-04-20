@@ -1,0 +1,71 @@
+---
+import type {ImageMetadata} from "astro";
+import {loadActiveArtists} from "../domain/people/server.ts";
+import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
+import ArtistCard from "./ArtistCard.astro";
+
+
+let artists = await loadActiveArtists();
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
+const primaryRole = "Tattoo Artist";
+const seen = new Set<string>();
+const guestArtists = guestSpotEvents
+    .filter(ev => ev.guestSpot[0].primaryRole === primaryRole)
+    .filter((ev) => {
+        if (seen.has(ev.guestSpot[0].guestName)) {
+            return false;
+        }
+        seen.add(ev.guestSpot[0].guestName);
+        return true;
+    });
+
+
+---
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    {artists.map((artist) => {
+        return (
+                <a
+                        href={`/artists/${artist.id}`}
+                        class="relative overflow-visible"
+                >
+                    <ArtistCard
+                            artistPhoto={artist.data.runwayPhoto}
+                            artistName={artist.data.name}
+                            photoAlt={artist.data.name}
+                            frameType={artist.data.runwayPhotoFrame}
+                    />
+                </a>
+        );
+    })}
+</div>
+
+<style is:global>
+    .artist-card,
+    .framed-artist-card {
+        aspect-ratio: 3 / 4;
+        opacity: 1;
+        transition: opacity 5s cubic-bezier(.2, .8, .2, 1);
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    [data-frame] {
+        opacity: .3;
+        transition: opacity 10s cubic-bezier(.2, .8, .2, 1);
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    .applied-mask--frameclip {
+        mask-position: center;
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-mode: alpha;
+
+        -webkit-mask-position: center;
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+    }
+</style>

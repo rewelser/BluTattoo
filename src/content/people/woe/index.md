@@ -4,6 +4,7 @@ active: true
 order: 999
 pagePhoto: xenomorph_hero_image.webp
 runwayPhoto: xenomorph_runway.webp
+runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true

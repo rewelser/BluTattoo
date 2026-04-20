@@ -3,6 +3,8 @@ name: Zoe
 active: true
 order: 5
 pagePhoto: zoester_transparent_cropped.png
+runwayPhoto: zoe-runway.jpg
+runwayPhotoFrame: roundframe3
 primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
@@ -13,12 +15,12 @@ contactSocialsBooking:
       enabled: true
       bookable: true
       preferred: true
-      handle: "ztheghost"
+      handle: ztheghost
     - type: facebook
       href: https://www.facebook.com/example/
       enabled: true
       bookable: true
-      handle: "ztheghost"
+      handle: ztheghost
     - type: threads
       href: https://www.threads.net/@example
       enabled: true
@@ -58,7 +60,7 @@ contactSocialsBooking:
     - type: website
       enabled: true
       href: https://www.example.com
-      notes: "help help help help help"
+      notes: help help help help help
 images:
   - src: /uploads/people/zoe_headshot.png
     alt: big snake of poop on forearm
