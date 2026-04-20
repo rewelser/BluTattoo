@@ -25,7 +25,7 @@ const {
 } = Astro.props;
 
 const config = frameType ? frameRegistry[frameType] : undefined;
-
+console.log("config", config);
 
 // const config = frameRegistry[frameType];
 //
@@ -76,7 +76,7 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                             <div
                                     class="applied-mask--frameclip h-full w-full"
                                     style={`mask-image: url("${config.mask.src}"); -webkit-mask-image: url("${config.mask.src}");`}
-                            >
+                            >ffffffff
                                 <img
                                         src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
                                         alt={photoAlt}
