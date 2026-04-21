@@ -1,5 +1,6 @@
 ---
-import type {EventItem} from "../../domain/events/types";
+// import type {EventItem} from "../../domain/events/types";
+import type { EventItem } from "../domain/events/types";
 import {fmtDate} from "../domain/events/format.ts";
 
 interface Props {
@@ -7,11 +8,9 @@ interface Props {
 }
 
 const {ev} = Astro.props;
-
-const sameDay = !ev.endDate || ev.startDate === ev.endDate;
 ---
 <>
-    {sameDay ? (
+    {!ev.endDate || ev.startDate === ev.endDate ? (
             <time datetime={ev.startDate}>{fmtDate(ev.startDate)}</time>
     ) : (
             <>
