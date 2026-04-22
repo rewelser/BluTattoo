@@ -29,8 +29,8 @@ collections:
     description: "Add new resident team members here: tattoo artists, piercers, etc."
     folder: "src/content/people"
     path: "{{slug}}/index"
-    media_folder: ""
-    public_folder: ""
+    media_folder: "assets/images"
+    public_folder: "assets/images"
     create: true
     identifier_field: name
     slug: "{{slug}}"
@@ -271,19 +271,8 @@ collections:
 
       - name: images
         label: "Portfolio Images"
-        widget: list
-        required: false
-        media_folder: "/public/uploads/people"
-        public_folder: "/uploads/people"
-        fields:
-          - name: src
-            label: "Image"
-            widget: image
-            allow_multiple: true
-            media_library:
-              config:
-                multiple: true
-          - { name: alt, label: "Alt text", widget: string, required: false }
+        widget: image
+        multiple: true
 
       - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
 

@@ -258,12 +258,7 @@ const people = defineCollection({
                 bookingNote: optionalText
             }).optional(),
 
-            images: z.array(
-                z.object({
-                    src: z.string(),
-                    alt: optionalString
-                })
-            ).optional(),
+            images: z.array(image()).optional(),
 
             body: optionalText
         })

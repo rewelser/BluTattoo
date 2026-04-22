@@ -31,6 +31,7 @@ const {Content} = await render(entry);
 
 const thumb = (src: string, w: number) =>
     src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
+import { Image } from "astro:assets";
 
 const square = entry.data.contactSocialsBooking?.platforms?.find(
     (p) => p.type === "square",
@@ -54,7 +55,7 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 
 <Layout
         title={entry.data.name}
-        preloadImage={entry.data.pagePhoto}
+        preloadImage={entry.data.pagePhoto?.src}
 >
     <article class="space-y-6">
         <header class="text-orange-100">
@@ -158,116 +159,13 @@ const moduleInfo = square?.linkOrModuleInfo.find(
             </div>
             {/* Divider */}
             <div aria-hidden="true">
-                <!-- drop-shadow-[10px_12px_14px_rgba(4,4,4,0.90)] -->
                 <svg class="block h-full w-full" viewBox="1 1 590 213">
-                    <defs>
-                        <filter id="shadow" x="20%" y="20%" width="150%" height="150%">
-                            <feDropShadow
-                                    dx="2"
-                                    dy="4"
-                                    stdDeviation="3"
-                                    flood-color="#000"
-                                    flood-opacity="0.5"></feDropShadow>
-                        </filter>
-                    </defs>
                     <path
                             d="M.5,67.66C138.58-15.68,457.87,282.01,595.78,198.61V.5H.5v67.16Z"
                             fill="black"></path>
                 </svg>
             </div>
         </header>
-
-        <div class="hero-container">
-            <div class="hero mb-40"></div>
-        </div>
-        <style>
-            .hero-container {
-                /* 10px_12px_14px_rgba(4,4,4,0.90) */
-                filter: drop-shadow(1px 2px 14px rgba(4, 4, 4, 0.9));
-            }
-
-            @property --c1x {
-                syntax: "<percentage>";
-                inherits: false;
-                initial-value: 70%;
-            }
-            @property --c1y {
-                syntax: "<percentage>";
-                inherits: false;
-                initial-value: 120%;
-            }
-            @property --c2x {
-                syntax: "<percentage>";
-                inherits: false;
-                initial-value: 30%;
-            }
-            @property --c2y {
-                syntax: "<percentage>";
-                inherits: false;
-                initial-value: 50%;
-            }
-
-            .hero {
-                background: red;
-                /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
-                /* clip-path: path("M 0 0 H 300 V 200 C 200 300, 100 100, 0 200 Z"); */
-
-                //filter: drop-shadow(30px 10px 4px #4444dd);
-                clip-path: shape(
-                        from 0 0,
-                        hline to 100%,
-                        vline to 85%,
-                        curve to 0 85% with 70% 120% / 30% 50%,
-                        close
-                );
-
-                clip-path: shape(
-                        from 0 0,
-                        hline to 100%,
-                        vline to 85%,
-                        curve to 0 85% with 30% 50% / 70% 120%,
-                        close
-                );
-
-                clip-path: shape(
-                        from 0 0,
-                        hline to 100%,
-                        vline to 85%,
-                        curve to 0 85% with var(--c1x) var(--c1y) / var(--c2x) var(--c2y),
-                        close
-                );
-
-                transition:
-                        --c1x 500ms ease,
-                        --c1y 500ms ease,
-                        --c2x 500ms ease,
-                        --c2y 500ms ease;
-                /* clip-path: shape(
-                  from 0 0,
-                  hline to 100%,
-                  vline to 100%,
-                  curve to 0 100% with 66.67% 150% / 33.33% 50%,
-                  close
-                ); */
-                aspect-ratio: 1.311;
-                /* aspect-ratio: 1; */
-
-                /* clip-path: shape(
-                  from 0% 0%,
-                  hline to 100%,
-                  vline to 87.39%,
-                  curve to 0% 87.39% with 66.67% 131.08%/33.33% 43.69%,
-                  close
-                ); */
-            }
-
-            .hero:hover {
-                --c1x: 30%;
-                --c1y: 50%;
-                --c2x: 70%;
-                --c2y: 120%;
-            }
-        </style>
 
         <!-- Artist Gallery -->
         {
@@ -290,6 +188,27 @@ const moduleInfo = square?.linkOrModuleInfo.find(
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                          <!--          {entry.data.images.map((img, idx) => (-->
+                          <!--                  <button-->
+                          <!--                          type="button"-->
+                          <!--                          class="group overflow-hidden rounded-md text-left cursor-pointer"-->
+                          <!--                          data-idx={idx}-->
+                          <!--                          onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}-->
+                          <!--                  >-->
+                          <!--                      <img-->
+                          <!--                              src={thumb(img as string, 360)}-->
+                          <!--                              srcset={`${thumb(img as string, 240)} 240w,-->
+                          <!--${thumb(img as string, 360)} 360w,-->
+                          <!--${thumb(img as string, 480)} 480w,-->
+                          <!--${thumb(img as string, 720)} 720w`}-->
+                          <!--                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"-->
+                          <!--                              alt={`${entry.data.name} gallery image ${idx}`}-->
+                          <!--                              loading="lazy"-->
+                          <!--                              decoding="async"-->
+                          <!--                              class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"-->
+                          <!--                      />-->
+                          <!--                  </button>-->
+                          <!--          ))}-->
                                     {entry.data.images.map((img, idx) => (
                                             <button
                                                     type="button"
@@ -297,14 +216,11 @@ const moduleInfo = square?.linkOrModuleInfo.find(
                                                     data-idx={idx}
                                                     onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
                                             >
-                                                <img
-                                                        src={thumb(img.src as string, 360)}
-                                                        srcset={`${thumb(img.src as string, 240)} 240w,
-                          ${thumb(img.src as string, 360)} 360w,
-                          ${thumb(img.src as string, 480)} 480w,
-                          ${thumb(img.src as string, 720)} 720w`}
-                                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                                        alt={img.alt ?? ""}
+                                                <Image
+                                                        src={img}
+                                                        widths={[240, 360, 480, 512, 720]}
+                                                        sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 767px) calc((100vw - 64px) / 2), (max-width: 1023px) calc((100vw - 80px) / 3), (max-width: 1152px) calc((100vw - 128px) / 4), 256px"
+                                                        alt={`${entry.data.name} gallery image ${idx + 1}`}
                                                         loading="lazy"
                                                         decoding="async"
                                                         class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"

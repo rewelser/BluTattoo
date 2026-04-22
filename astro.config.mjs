@@ -16,7 +16,9 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  integrations: [decapCmsOauth(), react()],
+  integrations: [decapCmsOauth({
+    decapCMSSrcUrl: "https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"
+  }), react()],
 
   adapter: vercel(),
 });

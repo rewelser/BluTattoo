@@ -61,14 +61,5 @@ contactSocialsBooking:
       enabled: true
       href: https://www.example.com
       notes: help help help help help
-images:
-  - src: /uploads/people/zoe_headshot.png
-    alt: big snake of poop on forearm
-  - src: /uploads/people/sierra_headshot.png
-    alt: Fine line floral
-  - src: /uploads/people/zirk1.png
-    alt: Fine line floral
-  - src: /uploads/people/zoe_headshot.png
-    alt: Fine line floral
 ---
 Zoe is the shop apprentice. Check out her work and book below:
