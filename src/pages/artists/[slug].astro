@@ -228,7 +228,13 @@ const moduleInfo = square?.linkOrModuleInfo.find(
                                             </button>
                                     ))}
                                 </div>
-                                <ArtistGallery client:load images={entry.data.images}/>
+                                <ArtistGallery
+                                        client:load
+                                        images={entry.data.images.map((img, idx) => ({
+                                            src: img.src,
+                                            alt: `${entry.data.name} gallery image ${idx + 1}`,
+                                        }))}
+                                />
                             </div>
                         </section>
             )

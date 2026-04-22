@@ -153,6 +153,43 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         };
     }, [isOpen]);
 
+    // constrain focus off background while open
+    useEffect(() => {
+        if (!isOpen) return;
+        if (typeof document === "undefined") return;
+
+        const modalEl = containerRef.current;
+        if (!modalEl) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+
+        // Focus the dialog itself so keyboard events start inside it
+        modalEl.focus();
+
+        // Mark everything else in <body> inert while the dialog is open
+        const bodyChildren = Array.from(document.body.children);
+        const inerted: HTMLElement[] = [];
+
+        for (const el of bodyChildren) {
+            if (el === modalEl) continue;
+            if (el.contains(modalEl)) continue;
+            if (modalEl.contains(el)) continue;
+
+            const htmlEl = el as HTMLElement;
+            htmlEl.inert = true;
+            inerted.push(htmlEl);
+        }
+
+        return () => {
+            for (const el of inerted) {
+                el.inert = false;
+            }
+
+            // Restore focus if possible
+            previouslyFocused?.focus?.();
+        };
+    }, [isOpen]);
+
     const markLoaded = (src: string) =>
         setLoadedBySrc((p) => ({ ...p, [src]: true }));
 
@@ -835,6 +872,9 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         <LightboxPortal>
             <div
                 ref={containerRef}
+                tabIndex={-1}
+                role="dialog"
+                aria-modal="true"
                 className="fixed inset-0 z-[999] overflow-hidden select-none touch-none backdrop-blur-sm text-white"
                 style={{
                     pointerEvents: isClosing ? "none" : "auto",
