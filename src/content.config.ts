@@ -160,6 +160,7 @@ const events = defineCollection({
                     type: z.literal("guestInfo"),
                     guestName: z.string(),
                     runwayPhoto: image().optional(),
+                    runwayPhotoFrame: frameSchema,
                     primaryRole: primaryRoleSchema,
                     contactSocialsBooking: z.object({
                         bookingProfilePicture: image().optional(),

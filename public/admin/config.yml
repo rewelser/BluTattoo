@@ -450,8 +450,8 @@ collections:
               - name: runwayPhotoFrame
                 label: "Frame for Runway Photo"
                 widget: select
-                options: [ "none", "guestframe" ]
-                default: "none"
+                options: [ "none", "squareframe3" ]
+                default: "squareframe3"
               - name: primaryRole
                 label: "Primary Role"
                 widget: select

@@ -40,7 +40,9 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
     {!config ?
         (
                 <>
-                    <div class="relative">
+                    <div class="relative artist-card-container">
+                        {isGuestSpot &&
+                                <GuestArtistCardInfoBanner/>}
                         <div
                                 class={`artist-card group relative overflow-hidden rounded-2xl ${className}`}
                         >
@@ -53,13 +55,16 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                                     class="object-fit transition-transform duration-300 group-hover:scale-105"
                             />
                         </div>
-                        <SparkleCorners
-                                color="black"
-                                fillColor="gold"
-                                size={24}
-                                gap={16}
-                                offset={-20}
-                        />
+
+                        {isGuestSpot && (
+                                <SparkleCorners
+                                        color="black"
+                                        fillColor="gold"
+                                        size={24}
+                                        gap={16}
+                                        offset={-20}
+                                />
+                        )}
                     </div>
                     <p class="mt-3 text-center text-base font-medium tracking-wide">
                         {artistName}
@@ -67,15 +72,16 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
 
                 </>
         ) : (
-                    <>
-                        <GuestArtistCardInfoBanner/>
+                    <div class="artist-card-container">
+                        {isGuestSpot &&
+                                <GuestArtistCardInfoBanner/>}
                         <div
                                 class={`framed-artist-card group relative overflow-visible rounded-2xl ${className}`}
                         >
                             <div
                                     class="applied-mask--frameclip h-full w-full"
                                     style={`mask-image: url("${config.mask.src}"); -webkit-mask-image: url("${config.mask.src}");`}
-                            >ffffffff
+                            >
                                 <img
                                         src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
                                         alt={photoAlt}
@@ -96,13 +102,15 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                                     aria-hidden="true"
                             />
                             <config.FrameClipComponent/>
-                            <SparkleCorners
-                                    color="black"
-                                    fillColor="gold"
-                                    size={24}
-                                    gap={16}
-                                    offset={-40}
-                            />
+                            {isGuestSpot && (
+                                    <SparkleCorners
+                                            color="black"
+                                            fillColor="gold"
+                                            size={36}
+                                            gap={16}
+                                            offset={-40}
+                                    />
+                            )}
 
                             <script is:inline>
                                 (() => {
@@ -136,7 +144,7 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                         <p class="mt-3 text-center text-base font-medium tracking-wide">
                             {artistName}
                         </p>
-                    </>
+                    </div>
 
         )
     }

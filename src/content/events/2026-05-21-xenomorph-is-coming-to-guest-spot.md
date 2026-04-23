@@ -27,6 +27,7 @@ guestSpot:
           handle: example
     guestName: The Xenomorph
     runwayPhoto: assets/images/xenomorph_runway.webp
+    runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist
 title: Xenomorph is coming to guest spot!
 detailsShort: "specializing in hunting and killing, the xenomorph will be here April 2-4. "

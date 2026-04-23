@@ -20,54 +20,95 @@ const guestArtists = guestSpotEvents
     });
 
 
+// Same visual width as:
+// grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3
+const cardSlotClass =
+    "w-full sm:w-[calc((100%-1.5rem)/2)] xl:w-[calc((100%-3rem)/3)]";
 ---
-<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-    {artists.map((artist) => {
-        return (
-                <a
-                        href={`/artists/${artist.id}`}
-                        class="relative overflow-visible"
-                >
-                    <ArtistCard
-                            artistPhoto={artist.data.runwayPhoto}
-                            artistName={artist.data.name}
-                            photoAlt={artist.data.name}
-                            frameType={artist.data.runwayPhotoFrame}
-                    />
-                </a>
-        );
-    })}
-</div>
+<>
+    {guestArtists.length > 0 && (
+            <section class="mt-8">
+                <div class="flex flex-wrap justify-around gap-6">
+                    {guestArtists.map((guest) => {
+                        const spot = guest.guestSpot[0];
+                        console.log("frame", spot.runwayPhotoFrame);
+                        return (
+                                <a
+                                        href={`/events/${guest.id}`}
+                                        class={`relative block ${cardSlotClass}`}
+                                >
+                                    <ArtistCard
+                                            artistPhoto={spot.runwayPhoto}
+                                            artistName={spot.guestName}
+                                            photoAlt={spot.guestName}
+                                            frameType={spot.runwayPhotoFrame}
+                                            isGuestSpot={true}
+                                    />
+                                </a>
+                        );
+                    })}
+                </div>
+            </section>
+    )}
 
-<style is:global>
-    .artist-card,
-    .framed-artist-card {
-        aspect-ratio: 4 / 5;
-        //width: 397.6px;
-        //height: 500px;
-        opacity: 1;
-        transition: opacity 5s cubic-bezier(.2, .8, .2, 1);
-        @starting-style {
-            opacity: 0;
+    <section class="mt-8">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {artists.map((artist) => {
+                return (
+                        <a
+                                href={`/artists/${artist.id}`}
+                                class="relative overflow-visible"
+                        >
+                            <ArtistCard
+                                    artistPhoto={artist.data.runwayPhoto}
+                                    artistName={artist.data.name}
+                                    photoAlt={artist.data.name}
+                                    frameType={artist.data.runwayPhotoFrame}
+                            />
+                        </a>
+                );
+            })}
+        </div>
+    </section>
+
+
+    <style is:global>
+        .artist-card-container {
+            opacity: 1;
+            transition: opacity 5s cubic-bezier(.2, .8, .2, 1);
+            @starting-style {
+                opacity: 0;
+            }
         }
-    }
 
-    [data-frame] {
-        opacity: .3;
-        transition: opacity 10s cubic-bezier(.2, .8, .2, 1);
-        @starting-style {
-            opacity: 0;
+        .artist-card,
+        .framed-artist-card {
+            aspect-ratio: 4 / 5;
+            //width: 397.6px;
+            //height: 500px;
         }
-    }
 
-    .applied-mask--frameclip {
-        mask-position: center;
-        mask-size: contain;
-        mask-repeat: no-repeat;
-        mask-mode: alpha;
+        [data-frame] {
+            opacity: .3;
+            transition: opacity 10s cubic-bezier(.2, .8, .2, 1);
+            @starting-style {
+                opacity: 0;
+            }
+        }
 
-        -webkit-mask-position: center;
-        -webkit-mask-size: contain;
-        -webkit-mask-repeat: no-repeat;
-    }
-</style>
+        .applied-mask--frameclip {
+            mask-position: center;
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-mode: alpha;
+
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+        }
+    </style>
+
+</>
+
+
+
