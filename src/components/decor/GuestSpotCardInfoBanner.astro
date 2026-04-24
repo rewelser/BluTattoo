@@ -1,0 +1,14 @@
+---
+import GuestSpotCardInfoBannerSvg from "./GuestSpotCardInfoBannerSvg.astro";
+const {
+    color = 'black',
+    size = 24,
+    style = '',
+    primaryRole,
+    dateRange
+} = Astro.props;
+---
+
+<div class="relative w-full top-0 z-10 translate-y-[70px]">
+    <GuestSpotCardInfoBannerSvg primaryRole={primaryRole} dateRange={dateRange} />
+</div>

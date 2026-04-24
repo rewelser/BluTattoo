@@ -1,4 +1,8 @@
 ---
+const {
+    primaryRole,
+    dateRange,
+} = Astro.props;
 ---
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -183,10 +187,10 @@
     </g>
     <text font-size="70" fill="#000">
         <textPath href="#event-text-path-1" startOffset="50%" text-anchor="middle">
-            Upcoming Guest Tattoo Artist
+            Upcoming Guest {primaryRole}
         </textPath>
         <textPath href="#event-text-path-2" startOffset="50%" text-anchor="middle">
-            Apr 18–20 • Book Now
+            {dateRange} • Book Now
         </textPath>
     </text>
 </svg>

@@ -1,4 +1,4 @@
-import type {EventItem} from "./types.ts";
+import type {EventItem, DateParts} from "./types.ts";
 
 const monthFormatter = new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -26,8 +26,22 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
     day: "numeric",
 });
 
-export function fmtDate(dateStr: string): string {
+const dateFormatterNoYear = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+});
+
+const dateFormatterMonthOnly = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+});
+
+const dateFormatterDayOnly = new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+});
+
+export const parseDateParts = (dateStr: string): DateParts => {
     const [rawYear, rawMonth, rawDate] = dateStr.split("-");
+
     const year = Number(rawYear);
     const month = Number(rawMonth);
     const date = Number(rawDate);
@@ -44,13 +58,37 @@ export function fmtDate(dateStr: string): string {
         throw new Error(`Invalid date: ${dateStr}`);
     }
 
-    return dateFormatter.format(new Date(year, month - 1, date));
+    return {year, month, date};
 }
 
-// todo: expand this for recurrences
-// replacing usages of this with EventDateRange; better for incorporating <time> semantic tags
+const toLocalDate = ({year, month, date}: DateParts): Date => {
+    return new Date(year, month - 1, date);
+};
+
+export function fmtDate(dateStr: string, showYear: boolean = true): string {
+    const localDate = toLocalDate(parseDateParts(dateStr));
+
+    return showYear ? dateFormatter.format(localDate) : dateFormatterNoYear.format(localDate);
+}
+
+// todo - recurrences: expand this for recurrences
+/**
+ * Some usages of this are now replaced with the EventDateRange component to incorporate <time> semantic tags,
+ * but in certain places where this is meaningless/impossible (such as inside of SVGs like the
+ * GuestSpotCardInfoBannerSvg), this function still has a use.
+ */
 export function fmtDateRange(ev: Pick<EventItem, "startDate" | "endDate">): string {
-    return ev.endDate ? `${fmtDate(ev.startDate)} – ${fmtDate(ev.endDate)}` : fmtDate(ev.startDate);
+    if (ev.endDate) {
+        const start = parseDateParts(ev.startDate);
+        const end = parseDateParts(ev.endDate);
+        const eventSpansSingleMonth = start.month === end.month && start.year === end.year;
+        if (eventSpansSingleMonth) {
+            const localStartDate = toLocalDate(start);
+            const localEndDate = toLocalDate(end);
+            return `${dateFormatterMonthOnly.format(localStartDate)} ${dateFormatterDayOnly.format(localStartDate)} – ${dateFormatterDayOnly.format(localEndDate)}`;
+        }
+    }
+    return ev.endDate ? `${fmtDate(ev.startDate, false)} – ${fmtDate(ev.endDate, false)}` : fmtDate(ev.startDate, false);
 }
 
 export function fmtTime(time: string): string {

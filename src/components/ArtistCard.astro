@@ -4,23 +4,27 @@ import SparkleCorners from "./decor/SparkleCorners.astro";
 import type {ImageMetadata} from "astro";
 import {defaults} from "../config/site.ts";
 
-import GuestArtistCardInfoBanner from "./decor/GuestArtistCardInfoBanner.astro";
+import GuestSpotCardInfoBanner from "./decor/GuestSpotCardInfoBanner.astro";
 
 interface Props {
-    artistPhoto: ImageMetadata | undefined;
-    artistName: string;
+    personPhoto: ImageMetadata | undefined;
+    personName: string;
+    primaryRole?: string;
     photoAlt: string;
     frameType?: FrameKey;
     isGuestSpot?: boolean;
+    guestSpotDateRange?: string;
     class?: string;
 }
 
 const {
-    artistPhoto,
-    artistName,
+    personPhoto,
+    personName,
+    primaryRole = "Tattoo Artist",
     photoAlt,
     frameType,
     isGuestSpot,
+    guestSpotDateRange,
     class: className = "",
 } = Astro.props;
 
@@ -40,16 +44,20 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
     {!config ?
         (
                 <>
-                    <div class="relative artist-card-container">
+                    <div class="relative person-card-container">
                         {isGuestSpot &&
-                                <GuestArtistCardInfoBanner/>}
+                                <GuestSpotCardInfoBanner
+                                        primaryRole={primaryRole}
+                                        dateRange={guestSpotDateRange}
+                                />
+                        }
                         <div
-                                class={`artist-card group relative overflow-hidden rounded-2xl ${className}`}
+                                class={`person-card group relative overflow-hidden rounded-2xl ${className}`}
                         >
                             <img
-                                    src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
+                                    src={personPhoto?.src ?? defaultPersonRunwayPhoto}
                                     alt={photoAlt}
-                                    data-artist-card-photo
+                                    data-person-card-photo
                                     loading="lazy"
                                     decoding="async"
                                     class="object-fit transition-transform duration-300 group-hover:scale-105"
@@ -67,25 +75,29 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                         )}
                     </div>
                     <p class="mt-3 text-center text-base font-medium tracking-wide">
-                        {artistName}
+                        {personName}
                     </p>
 
                 </>
         ) : (
-                    <div class="artist-card-container">
+                    <div class="person-card-container">
                         {isGuestSpot &&
-                                <GuestArtistCardInfoBanner/>}
+                                <GuestSpotCardInfoBanner
+                                        primaryRole={primaryRole}
+                                        dateRange={guestSpotDateRange}
+                                />
+                        }
                         <div
-                                class={`framed-artist-card group relative overflow-visible rounded-2xl ${className}`}
+                                class={`framed-person-card group relative overflow-visible rounded-2xl ${className}`}
                         >
                             <div
                                     class="applied-mask--frameclip h-full w-full"
                                     style={`mask-image: url("${config.mask.src}"); -webkit-mask-image: url("${config.mask.src}");`}
                             >
                                 <img
-                                        src={artistPhoto?.src ?? defaultPersonRunwayPhoto}
+                                        src={personPhoto?.src ?? defaultPersonRunwayPhoto}
                                         alt={photoAlt}
-                                        data-artist-card-photo
+                                        data-person-card-photo
                                         loading="lazy"
                                         decoding="async"
                                         class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
@@ -116,7 +128,7 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                                 (() => {
                                     const root = document.currentScript.parentElement;
                                     const shape = root.querySelector("[data-frame-window]");
-                                    const photo = root.querySelector("[data-artist-card-photo]");
+                                    const photo = root.querySelector("[data-person-card-photo]");
 
                                     function syncPhotoToWindow() {
                                         const shapeRect = shape.getBoundingClientRect();
@@ -142,7 +154,7 @@ const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
                             </script>
                         </div>
                         <p class="mt-3 text-center text-base font-medium tracking-wide">
-                            {artistName}
+                            {personName}
                         </p>
                     </div>
 

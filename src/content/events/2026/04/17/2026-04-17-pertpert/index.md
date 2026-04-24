@@ -7,6 +7,7 @@ guestSpot:
       bookingProfilePicture: xenomorph_profile.jpg
     guestName: PERTPERT
     runwayPhoto: xenomorph_runway.webp
+    runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist
 title: PERTPERT
 image: xenomorph_hero_image.webp

@@ -3,6 +3,7 @@ import type {ImageMetadata} from "astro";
 import {loadActiveArtists} from "../domain/people/server.ts";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
 import ArtistCard from "./ArtistCard.astro";
+import {fmtDateRange} from "../domain/events/format.ts";
 
 
 let artists = await loadActiveArtists();
@@ -31,18 +32,19 @@ const cardSlotClass =
                 <div class="flex flex-wrap justify-around gap-6">
                     {guestArtists.map((guest) => {
                         const spot = guest.guestSpot[0];
-                        console.log("frame", spot.runwayPhotoFrame);
+                        const dateRange = fmtDateRange(guest);
                         return (
                                 <a
                                         href={`/events/${guest.id}`}
                                         class={`relative block ${cardSlotClass}`}
                                 >
                                     <ArtistCard
-                                            artistPhoto={spot.runwayPhoto}
-                                            artistName={spot.guestName}
+                                            personPhoto={spot.runwayPhoto}
+                                            personName={spot.guestName}
                                             photoAlt={spot.guestName}
                                             frameType={spot.runwayPhotoFrame}
                                             isGuestSpot={true}
+                                            guestSpotDateRange={dateRange}
                                     />
                                 </a>
                         );
@@ -60,8 +62,8 @@ const cardSlotClass =
                                 class="relative overflow-visible"
                         >
                             <ArtistCard
-                                    artistPhoto={artist.data.runwayPhoto}
-                                    artistName={artist.data.name}
+                                    personPhoto={artist.data.runwayPhoto}
+                                    personName={artist.data.name}
                                     photoAlt={artist.data.name}
                                     frameType={artist.data.runwayPhotoFrame}
                             />
@@ -73,7 +75,7 @@ const cardSlotClass =
 
 
     <style is:global>
-        .artist-card-container {
+        .person-card-container {
             opacity: 1;
             transition: opacity 5s cubic-bezier(.2, .8, .2, 1);
             @starting-style {
@@ -81,8 +83,8 @@ const cardSlotClass =
             }
         }
 
-        .artist-card,
-        .framed-artist-card {
+        .person-card,
+        .framed-person-card {
             aspect-ratio: 4 / 5;
             //width: 397.6px;
             //height: 500px;

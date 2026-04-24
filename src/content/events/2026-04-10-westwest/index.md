@@ -7,6 +7,7 @@ guestSpot:
       bookingProfilePicture: xenomorph_profile.jpg
     guestName: WESTWEST
     runwayPhoto: ""
+    runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist
 title: WESTWEST
 image: ""

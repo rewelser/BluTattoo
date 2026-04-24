@@ -7,6 +7,7 @@ guestSpot:
       bookingProfilePicture: xenomorph_profile.jpg
     guestName: RESTREST
     runwayPhoto: xenomorph_runway.webp
+    runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist
 title: RESTREST
 image: xenomorph_hero_image.webp
