@@ -1,16 +1,12 @@
 ---
 guestSpot:
-  - type: guestInfo
     contactSocialsBooking:
       booksOpen: true
       booksClosedNote: Books are currently closed.
-      bookingProfilePicture: assets/images/xenomorph_profile.jpg
     guestName: GEST
-    runwayPhoto: assets/images/xenomorph_runway.webp
     runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist
 title: GESTGEST
-image: assets/images/xenomorph_hero_image.webp
 published: true
 featured: false
 archived: false

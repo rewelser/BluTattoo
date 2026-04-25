@@ -6,7 +6,7 @@ guestSpot:
       booksClosedNote: Books are currently closed.
     guestName: WARTWART
     primaryRole: Tattoo Artist
-    runwayPhotoFrame: squareframe3
+    runwayPhotoFrame: none
 title: WARTWART
 published: true
 featured: false
