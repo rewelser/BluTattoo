@@ -1,6 +1,5 @@
 ---
 guestSpot:
-  - type: guestInfo
     guestName: CURRENT GUEST
     runwayPhotoFrame: squareframe3
     primaryRole: Tattoo Artist

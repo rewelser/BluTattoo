@@ -55,222 +55,225 @@ collections:
           - { label: "Tattoo Artist", value: "Tattoo Artist" }
           - { label: "Piercer", value: "Piercer" }
 
-      - name: "contactSocialsBooking"
-        label: "Contact, Socials, & Booking"
-        widget: "object"
-        required: false
-        collapsed: false
-        fields:
-          - { name: bookingProfilePicture, label: "Profile Picture (Booking Page)", widget: image, required: false }
-          - { name: booksOpen, label: "Are books open?", widget: boolean, default: true, required: true }
-          - { name: booksClosedNote, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'" }
-          - name: contact
-            label: "Contact"
-            widget: list
-            min: 0
-            types:
-              - name: "phone"
-                label: "phone"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - name: href
-                    label: "Phone Number"
-                    widget: string
-                    required: true
-                    hint: "Enter a 10-digit US number including area code. Example: (555) 123-4567"
-                    pattern:
-                      [
-                        "^(?:\\+?1[-.\\s]?)?(?:\\(?\\d{3}\\)?[-.\\s]?)\\d{3}[-.\\s]?\\d{4}$",
-                        "Enter a valid US phone number with area code, such as (555) 123-4567 or 555-123-4567."
-                      ]
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc" }
-
-              - name: "email"
-                label: "email"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "Email Address", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc" }
-
-              - name: "website"
-                label: "website"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: notes, label: Notes, widget: text, required: false, hint: "external website" }
-
-          - name: socials
-            label: "Social Media Links"
-            widget: list
-            min: 0
-            types:
-              - name: "instagram"
-                label: "Instagram"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "facebook"
-                label: "Facebook"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "tiktok"
-                label: "TikTok"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "x"
-                label: "X (Twitter)"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "threads"
-                label: "Threads"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "tumblr"
-                label: "Tumblr"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "youtube"
-                label: "YouTube"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-              - name: "pinterest"
-                label: "Pinterest"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: href, label: "URL", widget: string, required: true }
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - { name: handle, label: "Username/Handle", widget: text, required: false }
-
-          - name: platforms
-            label: "Platforms"
-            widget: list
-            min: 0
-            types:
-              - name: square
-                label: "Square Appointments"
-                widget: object
-                required: true
-                collapsed: false
-                fields:
-                  - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                  - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
-                  - name: linkOrModuleInfo
-                    label: "Simple link or Square module info"
-                    widget: list
-                    min: 1
-                    types:
-                      - name: platformUrl
-                        label: "Square Link"
-                        widget: object
-                        required: true
-                        fields:
-                          - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
-                          - { name: href, label: "URL", widget: string, required: true }
-
-                      - name: moduleInfo
-                        label: "Module Info"
-                        widget: object
-                        fields:
-                          - name: enabled
-                            label: "Enabled?"
-                            widget: boolean
-                            required: true
-                            default: true
-                            hint: "Toggle on to show the Square Appointments embed on this person's page &/ booking section."
-                          - name: merchantId
-                            label: "Merchant ID"
-                            widget: string
-                            required: true
-                            hint: "From your Square embed snippet (e.g., 'DM7VKY8Q63GNP')."
-                            pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
-                          - name: locationId
-                            label: "Location ID"
-                            widget: string
-                            required: true
-                            hint: "From your Square embed snippet (e.g., '7WQ0KXC8ZSD90')."
-                            pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
-                          - name: label
-                            label: "Button Label"
-                            widget: string
-                            required: false
-                            default: "Book an appointment"
-
-          - name: bookingNote
-            label: "General Booking Note"
-            widget: "text"
+          - name: "contactSocialsBooking"
+            label: "Contact, Socials, & Booking"
+            widget: "object"
             required: false
-            hint: "Example: 'For tattoo inquiries, Sierra prefers Facebook Messenger.'"
+            collapsed: true
+            fields:
+              - { name: bookingProfilePicture, label: "Profile Picture (Booking Page)", widget: image, required: false }
+              - { name: booksOpen, label: "Are books open?", widget: boolean, default: true, required: true }
+              - { name: booksClosedNote, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'" }
+              - name: contact
+                label: "Contact"
+                required: false
+                widget: list
+                min: 0
+                types:
+                  - name: "phone"
+                    label: "phone"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - name: href
+                        label: "Phone Number"
+                        widget: string
+                        required: true
+                        hint: "Enter a 10-digit US number including area code. Example: (555) 123-4567"
+                        pattern:
+                          [
+                            "^(?:\\+?1[-.\\s]?)?(?:\\(?\\d{3}\\)?[-.\\s]?)\\d{3}[-.\\s]?\\d{4}$",
+                            "Enter a valid US phone number with area code, such as (555) 123-4567 or 555-123-4567."
+                          ]
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc" }
+
+                  - name: "email"
+                    label: "email"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "Email Address", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: notes, label: Notes, widget: text, required: false, hint: "lead times, subject header, etc" }
+
+                  - name: "website"
+                    label: "website"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: notes, label: Notes, widget: text, required: false, hint: "external website" }
+
+              - name: socials
+                label: "Social Media Links"
+                required: false
+                widget: list
+                min: 0
+                types:
+                  - name: "instagram"
+                    label: "Instagram"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "facebook"
+                    label: "Facebook"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "tiktok"
+                    label: "TikTok"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "x"
+                    label: "X (Twitter)"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "threads"
+                    label: "Threads"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "tumblr"
+                    label: "Tumblr"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "youtube"
+                    label: "YouTube"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+                  - name: "pinterest"
+                    label: "Pinterest"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: href, label: "URL", widget: string, required: true }
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: bookable, label: "Allow Contact?", widget: boolean, default: false, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - { name: handle, label: "Username/Handle", widget: text, required: false }
+
+              - name: platforms
+                label: "Platforms"
+                required: false
+                widget: list
+                min: 0
+                types:
+                  - name: square
+                    label: "Square Appointments"
+                    widget: object
+                    required: true
+                    collapsed: false
+                    fields:
+                      - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                      - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - name: linkOrModuleInfo
+                        label: "Simple link or Square module info"
+                        widget: list
+                        min: 1
+                        types:
+                          - name: platformUrl
+                            label: "Square Link"
+                            widget: object
+                            required: true
+                            fields:
+                              - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
+                              - { name: href, label: "URL", widget: string, required: true }
+
+                          - name: moduleInfo
+                            label: "Module Info"
+                            widget: object
+                            fields:
+                              - name: enabled
+                                label: "Enabled?"
+                                widget: boolean
+                                required: true
+                                default: true
+                                hint: "Toggle on to show the Square Appointments embed on this person's page &/ booking section."
+                              - name: merchantId
+                                label: "Merchant ID"
+                                widget: string
+                                required: true
+                                hint: "From your Square embed snippet (e.g., 'DM7VKY8Q63GNP')."
+                                pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
+                              - name: locationId
+                                label: "Location ID"
+                                widget: string
+                                required: true
+                                hint: "From your Square embed snippet (e.g., '7WQ0KXC8ZSD90')."
+                                pattern: [ '^[A-Za-z0-9-]+$', "Use letters, numbers, and dashes. Case-sensitive." ]
+                              - name: label
+                                label: "Button Label"
+                                widget: string
+                                required: false
+                                default: "Book an appointment"
+
+              - name: bookingNote
+                label: "General Booking Note"
+                widget: "text"
+                required: false
+                hint: "Example: 'For tattoo inquiries, Sierra prefers Facebook Messenger.'"
 
       - name: images
         label: "Portfolio Images"
@@ -467,6 +470,7 @@ collections:
               - { name: booksClosedNote, label: "Closed Books Note", widget: text, required: true, default: "Books are currently closed.", hint: "Only active when books are not open. eg: 'books closed until April'" }
               - name: contact
                 label: "Contact"
+                required: false
                 widget: list
                 min: 0
                 types:
@@ -514,6 +518,7 @@ collections:
 
               - name: socials
                 label: "Social Media Links"
+                required: false
                 widget: list
                 min: 0
                 types:
@@ -615,6 +620,7 @@ collections:
 
               - name: platforms
                 label: "Platforms"
+                required: false
                 widget: list
                 min: 0
                 types:

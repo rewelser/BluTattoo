@@ -1,6 +1,5 @@
 ---
 guestSpot:
-  - type: guestInfo
     contactSocialsBooking:
       booksOpen: true
       booksClosedNote: Books are currently closed.
