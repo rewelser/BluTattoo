@@ -31,7 +31,6 @@ const {Content} = await render(entry);
 
 const thumb = (src: string, w: number) =>
     src.replace("/uploads/people/", `/uploads/_thumbs/people/${w}/`);
-import { Image } from "astro:assets";
 
 const square = entry.data.contactSocialsBooking?.platforms?.find(
     (p) => p.type === "square",
@@ -42,7 +41,7 @@ const socials = entry.data.contactSocialsBooking?.socials?.find(
 );
 
 const moduleInfo = square?.linkOrModuleInfo.find(
-    (item) => item.mode === "moduleInfo",
+    (item) => item.type === "moduleInfo",
 );
 ---
 

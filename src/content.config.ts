@@ -110,13 +110,13 @@ export const socialItemSchema = z.object({
 export const socialsSchema = z.array(socialItemSchema).optional();
 
 const squareLinkSchema = z.object({
-    mode: z.literal('platformUrl'),
+    type: z.literal('platformUrl'),
     enabled: z.boolean().default(true),
     href: z.string().url()
 });
 
 const squareModuleSchema = z.object({
-    mode: z.literal('moduleInfo'),
+    type: z.literal('moduleInfo'),
     enabled: z.boolean().default(true),
     merchantId: z.string().regex(/^[A-Za-z0-9-]+$/),
     locationId: z.string().regex(/^[A-Za-z0-9-]+$/),
@@ -130,7 +130,7 @@ const platformsSchema = z.array(
             enabled: z.boolean().default(true),
             preferred: z.boolean().optional(),
             linkOrModuleInfo: z.array(
-                z.discriminatedUnion('mode', [
+                z.discriminatedUnion('type', [
                     squareLinkSchema,
                     squareModuleSchema
                 ])
@@ -156,26 +156,22 @@ export const siteInfoSocialsSchema = z
 const events = defineCollection({
     loader: glob({pattern: "**/*.{md,mdx}", base: "./src/content/events"}),
     schema: ({image}) => z.object({
-        guestSpot: z.array(z.object({
-                    type: z.literal("guestInfo"),
-                    guestName: z.string(),
-                    runwayPhoto: image().optional(),
-                    runwayPhotoFrame: frameSchema,
-                    primaryRole: primaryRoleSchema,
-                    contactSocialsBooking: z.object({
-                        bookingProfilePicture: image().optional(),
-                        booksOpen: z.boolean().default(true),
-                        booksClosedNote: z.string(),
-                        contact: contactSchema,
-                        socials: socialsSchema,
-                        platforms: platformsSchema,
-                        bookingNote: optionalText
-                    }).optional(),
-                }
-            )
-        )
-            .max(1)
-            .optional(),
+        guestSpot: z.object({
+            guestName: z.string(),
+            runwayPhoto: image().optional(),
+            runwayPhotoFrame: frameSchema,
+            primaryRole: primaryRoleSchema,
+            contactSocialsBooking: z
+                .object({
+                    bookingProfilePicture: image().optional(),
+                    booksOpen: z.boolean().default(true),
+                    booksClosedNote: z.string(),
+                    contact: contactSchema,
+                    socials: socialsSchema,
+                    platforms: platformsSchema,
+                    bookingNote: optionalText,
+                }).optional(),
+        }).optional(),
         title: z.string(),
         detailsShort: z.preprocess(emptyStrToUndef, z.string().optional()),
         image: image().optional(),
@@ -189,32 +185,27 @@ const events = defineCollection({
         endTime: z.preprocess(toHm, timeHM.optional()).optional(),
         location: z.preprocess(emptyStrToUndef, z.string().optional()),
 
-        recurrenceRule: z
-            .array(
-                z.union([
-                    z.object({
-                        type: z.literal("recurrenceRuleWeekly"),
-                        interval: z.number().int().min(1).default(1).optional(),
-                        byWeekday: z.array(weekdayEnum).min(1),
-                    }),
-                    z.object({
-                        type: z.literal("recurrenceRuleMonthly"),
-                        interval: z.number().int().min(1).default(1).optional(),
-                        monthlyMode: z.enum(["monthday", "ordinalWeekday"]),
-                        byMonthDay: z.number().int().min(1).max(31).optional(),
-                        byWeekday: weekdayEnum.optional(),
-                        bySetPos: z.union([
-                            z.literal(1),
-                            z.literal(2),
-                            z.literal(3),
-                            z.literal(4),
-                            z.literal(-1),
-                        ]).optional(),
-                    }),
-                ])
-            )
-            .max(1)
-            .optional(),
+        recurrenceRule: z.union([
+            z.object({
+                type: z.literal("recurrenceRuleWeekly"),
+                interval: z.number().int().min(1).default(1).optional(),
+                byWeekday: z.array(weekdayEnum).min(1),
+            }),
+            z.object({
+                type: z.literal("recurrenceRuleMonthly"),
+                interval: z.number().int().min(1).default(1).optional(),
+                monthlyMode: z.enum(["monthday", "ordinalWeekday"]),
+                byMonthDay: z.number().int().min(1).max(31).optional(),
+                byWeekday: weekdayEnum.optional(),
+                bySetPos: z.union([
+                    z.literal(1),
+                    z.literal(2),
+                    z.literal(3),
+                    z.literal(4),
+                    z.literal(-1),
+                ]).optional(),
+            }),
+        ]).optional(),
 
         promoBar: z
             .object({

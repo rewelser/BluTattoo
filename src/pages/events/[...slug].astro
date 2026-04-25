@@ -52,7 +52,7 @@ const ev = entry.data;
             </div>
             {
                 (() => {
-                    const guest = ev.guestSpot?.[0];
+                    const guest = ev.guestSpot;
                     const socials = guest?.contactSocialsBooking?.socials;
                     if (!socials) return null;
 

@@ -45,7 +45,7 @@ contactSocialsBooking:
     - type: square
       enabled: true
       linkOrModuleInfo:
-        - mode: moduleInfo
+        - type: moduleInfo
           enabled: true
           merchantId: jhvsos6zvct0ls
           locationId: L6GQX5D0KDS8B

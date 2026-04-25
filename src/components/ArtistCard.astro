@@ -28,136 +28,108 @@ const {
     class: className = "",
 } = Astro.props;
 
-const config = frameType ? frameRegistry[frameType] : undefined;
-
-// const config = frameRegistry[frameType];
-//
-// if (!config) {
-//     throw new Error(`Unknown frame key: ${frameType}`);
-// }
-//
-// const {FrameClipComponent, frame, mask} = config;
+const frameConfig = frameType ? frameRegistry[frameType] : undefined;
 
 const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
 ---
-<>
-    {!config ?
-        (
-                <>
-                    <div class="relative person-card-container">
-                        {isGuestSpot &&
-                                <GuestSpotCardInfoBanner
-                                        primaryRole={primaryRole}
-                                        dateRange={guestSpotDateRange}
-                                />
-                        }
-                        <div
-                                class={`person-card group relative overflow-hidden rounded-2xl ${className}`}
-                        >
+<div
+        class="person-card-container"
+        data-person-card-container
+>
+    {isGuestSpot &&
+            <GuestSpotCardInfoBanner
+                    primaryRole={primaryRole}
+                    dateRange={guestSpotDateRange}
+            />
+    }
+    <div class="relative">
+        <div
+                class={`person-card group relative overflow-hidden rounded-2xl ${className}`}
+        >
+            {!frameConfig ?
+                (
+                        <>
                             <img
                                     src={personPhoto?.src ?? defaultPersonRunwayPhoto}
                                     alt={photoAlt}
                                     data-person-card-photo
                                     loading="lazy"
                                     decoding="async"
-                                    class="object-fit transition-transform duration-300 group-hover:scale-105"
+                                    class="object-cover transition-transform duration-300 group-hover:scale-105"
                             />
-                        </div>
+                        </>
+                ) : (
+                            <>
+                                <div
+                                        class="applied-mask--frameclip h-full w-full"
+                                        style={`mask-image: url("${frameConfig.mask.src}"); -webkit-mask-image: url("${frameConfig.mask.src}");`}
+                                >
+                                    <img
+                                            src={personPhoto?.src ?? defaultPersonRunwayPhoto}
+                                            alt={photoAlt}
+                                            data-person-card-photo
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                </div>
 
-                        {isGuestSpot && (
-                                <SparkleCorners
-                                        color="black"
-                                        fillColor="gold"
-                                        size={24}
-                                        gap={16}
-                                        offset={-20}
-                                />
-                        )}
-                    </div>
-                    <p class="mt-3 text-center text-base font-medium tracking-wide">
-                        {personName}
-                    </p>
-
-                </>
-        ) : (
-                    <div class="person-card-container">
-                        {isGuestSpot &&
-                                <GuestSpotCardInfoBanner
-                                        primaryRole={primaryRole}
-                                        dateRange={guestSpotDateRange}
-                                />
-                        }
-                        <div
-                                class={`framed-person-card group relative overflow-visible rounded-2xl ${className}`}
-                        >
-                            <div
-                                    class="applied-mask--frameclip h-full w-full"
-                                    style={`mask-image: url("${config.mask.src}"); -webkit-mask-image: url("${config.mask.src}");`}
-                            >
                                 <img
-                                        src={personPhoto?.src ?? defaultPersonRunwayPhoto}
-                                        alt={photoAlt}
-                                        data-person-card-photo
+                                        alt=""
+                                        data-frame
+                                        data-person-card-frame
+                                        data-person-card-frame-src={frameConfig.frame.src}
                                         loading="lazy"
                                         decoding="async"
-                                        class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
+                                        class="absolute inset-0 h-full w-full pointer-events-none"
+                                        aria-hidden="true"
                                 />
-                            </div>
+                                <frameConfig.FrameClipComponent/>
 
-                            <img
-                                    src={config.frame.src}
-                                    alt=""
-                                    data-frame
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="absolute inset-0 h-full w-full pointer-events-none"
-                                    aria-hidden="true"
-                            />
-                            <config.FrameClipComponent/>
-                            {isGuestSpot && (
-                                    <SparkleCorners
-                                            color="black"
-                                            fillColor="gold"
-                                            size={36}
-                                            gap={16}
-                                            offset={-40}
-                                    />
-                            )}
+                                <script is:inline>
+                                    (() => {
+                                        const root = document.currentScript.parentElement;
+                                        const shape = root.querySelector("[data-frame-window]");
+                                        const photo = root.querySelector("[data-person-card-photo]");
 
-                            <script is:inline>
-                                (() => {
-                                    const root = document.currentScript.parentElement;
-                                    const shape = root.querySelector("[data-frame-window]");
-                                    const photo = root.querySelector("[data-person-card-photo]");
+                                        function syncPhotoToWindow() {
+                                            const shapeRect = shape.getBoundingClientRect();
+                                            const wrapperRect = root.getBoundingClientRect();
 
-                                    function syncPhotoToWindow() {
-                                        const shapeRect = shape.getBoundingClientRect();
-                                        const wrapperRect = root.getBoundingClientRect();
+                                            photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
+                                            photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
+                                            photo.style.width = `${shapeRect.width}px`;
+                                            photo.style.height = `${shapeRect.height}px`;
+                                        }
 
-                                        photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
-                                        photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
-                                        photo.style.width = `${shapeRect.width}px`;
-                                        photo.style.height = `${shapeRect.height}px`;
-                                    }
+                                        const ro = new ResizeObserver(syncPhotoToWindow);
+                                        ro.observe(root);
 
-                                    const ro = new ResizeObserver(syncPhotoToWindow);
-                                    ro.observe(root);
+                                        if (photo.complete) {
+                                            syncPhotoToWindow();
+                                        } else {
+                                            photo.addEventListener("load", syncPhotoToWindow, {once: true});
+                                        }
 
-                                    if (photo.complete) {
-                                        syncPhotoToWindow();
-                                    } else {
-                                        photo.addEventListener("load", syncPhotoToWindow, {once: true});
-                                    }
+                                        window.addEventListener("load", syncPhotoToWindow, {once: true});
+                                    })()
+                                </script>
+                            </>
 
-                                    window.addEventListener("load", syncPhotoToWindow, {once: true});
-                                })()
-                            </script>
-                        </div>
-                        <p class="mt-3 text-center text-base font-medium tracking-wide">
-                            {personName}
-                        </p>
-                    </div>
-
-        )
-    }
-</>
+                )
+            }
+        </div>
+        {isGuestSpot && (
+                <SparkleCorners
+                        color="black"
+                        fillColor="gold"
+                        size={24}
+                        gap={16}
+                        offset={-40}
+                />
+        )}
+    </div>
+    <p class="mt-3 text-center text-base font-medium tracking-wide">
+        {personName}
+    </p>
+</div>

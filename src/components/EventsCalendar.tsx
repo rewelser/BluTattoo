@@ -200,11 +200,6 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
                         const hasEvents = dailyEvents.length > 0;
                         const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
-                        if (dailyEvents.length === 1 && dailyEvents[0].id.toLowerCase().includes("west")) {
-                            console.log("west");
-                            console.log("needsSingleEventImageVariant", needsSingleEventImageVariant);
-                            console.log("dailyEvents[0].image", dailyEvents[0]);
-                        }
                         const isOpen = openDateKey === dateKey;
                         return (
                             <div

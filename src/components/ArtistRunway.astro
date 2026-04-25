@@ -11,12 +11,12 @@ const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
 const primaryRole = "Tattoo Artist";
 const seen = new Set<string>();
 const guestArtists = guestSpotEvents
-    .filter(ev => ev.guestSpot[0].primaryRole === primaryRole)
+    .filter(ev => ev.guestSpot.primaryRole === primaryRole)
     .filter((ev) => {
-        if (seen.has(ev.guestSpot[0].guestName)) {
+        if (seen.has(ev.guestSpot.guestName)) {
             return false;
         }
-        seen.add(ev.guestSpot[0].guestName);
+        seen.add(ev.guestSpot.guestName);
         return true;
     });
 
@@ -31,7 +31,7 @@ const cardSlotClass =
             <section class="mt-8">
                 <div class="flex flex-wrap justify-around gap-6">
                     {guestArtists.map((guest) => {
-                        const spot = guest.guestSpot[0];
+                        const spot = guest.guestSpot;
                         const dateRange = fmtDateRange(guest);
                         return (
                                 <a
@@ -73,29 +73,80 @@ const cardSlotClass =
         </div>
     </section>
 
+    <script is:inline>
+        const cards = document.querySelectorAll("[data-person-card-container]");
+
+        const loadCard = async (card) => {
+            const photo = card.querySelector("[data-person-card-photo]");
+            const frame = card.querySelector("[data-person-card-frame]");
+
+            const photoReady =
+                photo?.complete ||
+                new Promise((resolve) => {
+                    photo?.addEventListener("load", resolve, {once: true});
+                    photo?.addEventListener("error", resolve, {once: true});
+                });
+
+            const frameReady = new Promise((resolve) => {
+
+                if (frame) {
+                    const frameSrc = frame.dataset.personCardFrameSrc;
+                    frame.addEventListener("load", resolve, {once: true});
+                    frame.addEventListener("error", resolve, {once: true});
+                    frame.src = frameSrc;
+                } else {
+                    resolve();
+                }
+            });
+
+            await Promise.all([photoReady, frameReady]);
+
+            card.dataset.ready = "true";
+        };
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (!entry.isIntersecting) continue;
+
+                    observer.unobserve(entry.target);
+                    loadCard(entry.target);
+                }
+            },
+            {
+                // rootMargin: "400px 0px",
+                threshold: 0.5,
+            }
+        );
+
+        cards.forEach((card) => observer.observe(card));
+    </script>
+
 
     <style is:global>
         .person-card-container {
-            opacity: 1;
-            transition: opacity 5s cubic-bezier(.2, .8, .2, 1);
-            @starting-style {
-                opacity: 0;
-            }
+            opacity: 0;
+            position: relative;
+            transition: opacity 7000ms cubic-bezier(.2, .8, .2, 1);
         }
 
-        .person-card,
-        .framed-person-card {
+        .person-card-container[data-ready="true"] {
+            opacity: 1;
+        }
+
+        [data-person-card-frame] {
+            opacity: 0;
+            transition: opacity 10s cubic-bezier(.2, .8, .2, 1);
+        }
+
+        .person-card-container[data-ready="true"] [data-person-card-frame] {
+            opacity: .3;
+        }
+
+        .person-card {
             aspect-ratio: 4 / 5;
             //width: 397.6px;
             //height: 500px;
-        }
-
-        [data-frame] {
-            opacity: .3;
-            transition: opacity 10s cubic-bezier(.2, .8, .2, 1);
-            @starting-style {
-                opacity: 0;
-            }
         }
 
         .applied-mask--frameclip {

@@ -66,8 +66,8 @@ export function compareEventsByStartDate(a: EventItem, b: EventItem): number {
  * after .filter(isGuestSpot).
  */
 export const isGuestSpot = (ev: EventItem): ev is GuestItem => {
-    return Array.isArray(ev.guestSpot) && ev.guestSpot.length > 0;
-}
+    return !!ev.guestSpot;
+};
 
 export function isEventArchived(ev: EventItem): boolean {
     return ev.archived === true;

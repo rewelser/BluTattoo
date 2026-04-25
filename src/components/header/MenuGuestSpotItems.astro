@@ -16,12 +16,12 @@ const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
 const seen = new Set<string>();
 const guests = renderGuestLinks(
     guestSpotEvents
-        .filter(ev => ev.guestSpot[0].primaryRole === primaryRole)
+        .filter(ev => ev.guestSpot.primaryRole === primaryRole)
         .filter((ev) => {
-            if (seen.has(ev.guestSpot[0].guestName)) {
+            if (seen.has(ev.guestSpot.guestName)) {
                 return false;
             }
-            seen.add(ev.guestSpot[0].guestName);
+            seen.add(ev.guestSpot.guestName);
             return true;
         })
 );

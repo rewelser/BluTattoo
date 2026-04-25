@@ -32,7 +32,7 @@ contactSocialsBooking:
     - type: square
       enabled: true
       linkOrModuleInfo:
-        - mode: moduleInfo
+        - type: moduleInfo
           enabled: true
           label: Book an appointment
           merchantId: asdasdasdasda
