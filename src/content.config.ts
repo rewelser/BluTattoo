@@ -307,14 +307,4 @@ const siteInfo = defineCollection({
 
 /*** endregion ***/
 
-const imagetest = defineCollection({
-    loader: glob({pattern: "**/*", base: "./src/content/imagetest"}),
-    schema: ({image}) =>
-        z.object({
-            title: z.string(),
-            src: image(),
-            alt: z.string()
-        }),
-});
-
-export const collections = {people, faqs, siteInfo, aftercare, events, imagetest}; // & home
+export const collections = {people, faqs, siteInfo, aftercare, events}; // & home

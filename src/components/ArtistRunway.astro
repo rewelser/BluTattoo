@@ -130,6 +130,10 @@ const cardSlotClass =
             transition: opacity 7000ms cubic-bezier(.2, .8, .2, 1);
         }
 
+        .person-card-container:has(.guest-spot-card-info-banner-container) {
+            margin-top: 70px;
+        }
+
         .person-card-container[data-ready="true"] {
             opacity: 1;
         }

@@ -1,0 +1,222 @@
+---
+// SharedElementModal.astro
+import SquareAppointmentsIsland2 from "./SquareAppointmentsIsland2.tsx";
+const id = `modal-${crypto.randomUUID()}`;
+const transitionName = `shared-card-${id}`;
+---
+<>
+    <div class="shell" data-shell={id} style={`--transitionName:${transitionName}`}>
+        <button class="card" data-card aria-haspopup="dialog">
+            <img
+                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+                    alt=""
+            />
+            <div class="card-content">
+                <h2>Mountain retreat</h2>
+                <p>Click to expand.</p>
+            </div>
+        </button>
+
+        <dialog class="dialog" data-dialog>
+
+            <article class="expanded-card" data-expanded-card>
+                <div class="modal-content">
+                    <button class="close" data-close aria-label="Close modal">×</button>
+                    <div class="modal-content-hero">
+                        <img
+                                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
+                                alt=""
+                        />
+                    </div>
+                    <div class="modal-content-lower">
+                        <h2>Mountain retreat</h2>
+                        <p>This modal uses the same logical card state, following the MDN pattern more closely.</p>
+                        <SquareAppointmentsIsland2
+                                client:load
+                                merchantSlug="jhvsos6zvct0ls"
+                                locationSlug="L6GQX5D0KDS8B"
+                                className="mt-2"
+                        />
+                    </div>
+                </div>
+            </article>
+        </dialog>
+    </div>
+
+    <script define:vars={{id}}>
+        const shell = document.querySelector(`[data-shell="${id}"]`);
+        const card = shell?.querySelector("[data-card]");
+        const dialog = shell?.querySelector("[data-dialog]");
+        const close = shell?.querySelector("[data-close]");
+
+        const transition = (fn) => {
+            if (document.startViewTransition) {
+                document.startViewTransition(fn);
+            } else {
+                fn();
+            }
+        }
+
+        const openModal = () => {
+            transition(() => {
+                shell.classList.add("is-open");
+                dialog.showModal();
+            })
+        }
+
+        const closeModal = () => {
+            transition(() => {
+                shell.classList.remove("is-open");
+                dialog.close();
+            })
+        }
+
+        card?.addEventListener("click", openModal);
+        close?.addEventListener("click", closeModal);
+        dialog?.addEventListener("click", (event) => {
+            if (event.target === dialog) {
+                closeModal();
+            }
+        });
+    </script>
+
+    <style define:vars={{transitionName}}>
+        .shell {
+            --radius: 24px;
+        }
+
+        .card,
+        .expanded-card {
+            view-transition-name: var(--transitionName);
+        }
+
+        .card {
+            width: min(420px, 90vw);
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 1rem;
+            padding: 0.75rem;
+            border: 0;
+            border-radius: var(--radius);
+            background: white;
+            box-shadow: 0 20px 60px rgb(0 0 0 / 0.12);
+            text-align: left;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .is-open .card {
+            view-transition-name: none;
+            visibility: hidden;
+        }
+
+        .card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 18px;
+        }
+
+        .card-content {
+            display: grid;
+            align-content: center;
+            gap: 0.4rem;
+        }
+
+        .dialog {
+            //position: fixed;
+            width: min(860px, calc(100vw - 2rem));
+            //height: fit-content;
+            //max-height: calc(100vh - 2rem);
+            max-height: calc(100vh - 2rem);
+            height: calc(100vh - 2rem);
+            padding: 0;
+            //border: 0;
+            //border: 5px dotted red;
+            margin: auto;
+            border-radius: var(--radius);
+            background: transparent;
+            overflow: hidden;
+            scrollbar-width: none;
+            overscroll-behavior: none;
+        }
+
+        .dialog::backdrop {
+            background: rgb(10 15 25 / 0.55);
+        }
+
+        .expanded-card {
+            position: relative;
+            overflow: auto;
+            height: calc(100vh - 2rem);
+            max-height: calc(100vh - 2rem);
+            border-radius: var(--radius);
+            //background: white;
+            //border: 5px dotted blue;
+            scrollbar-width: none;
+            overscroll-behavior: contain;
+        }
+
+        .modal-content {
+            border-radius: var(--radius);
+            min-height: 100%;
+            height: fit-content;
+            overflow: hidden;
+            background: white;
+            //outline: 1px solid red;
+        }
+
+        .shell:not(.is-open) .expanded-card {
+            view-transition-name: none;
+        }
+
+        .expanded-card img {
+            width: 100%;
+            height: min(420px, 45vh);
+            object-fit: cover;
+            display: block;
+        }
+
+        .modal-content-lower {
+            display: grid;
+            gap: 1rem;
+            //padding: 2rem;
+        }
+
+        h2, p {
+            margin: 0;
+        }
+
+        .close {
+            position: absolute;
+            z-index: 2;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 0;
+            border-radius: 999px;
+            background: white;
+            box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        :global(::view-transition-group(*)) {
+            animation-duration: 420ms;
+            animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        :global(html::view-transition-old(*)),
+        :global(html::view-transition-new(*)) {
+            height: 100%;
+            overflow: clip;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :global(::view-transition-group(*)) {
+                animation-duration: 1ms;
+            }
+        }
+    </style>
+</>

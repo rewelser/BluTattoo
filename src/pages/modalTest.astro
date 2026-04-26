@@ -1,0 +1,233 @@
+---
+---
+
+<main class="match-element-applied">
+    <ul>
+        <li>
+            <h2><a href="#">HTML</a></h2>
+            <h3>HyperText Markup Language</h3>
+            <p>
+                HyperText Markup Language (HTML) is the most basic building block of the
+                web. It defines the meaning and structure of web content. HTML provides
+                the fundamental building blocks for structuring web documents and apps.
+            </p>
+        </li>
+        <li>
+            <h2><a href="#">CSS</a></h2>
+            <h3>Cascading Style Sheets</h3>
+            <p>
+                Cascading Style Sheets (CSS) is a stylesheet language used to describe
+                the presentation of a document written in HTML or XML (including XML
+                dialects such as SVG, MathML or XHTML). CSS describes how elements
+                should be rendered on screen, on paper, in speech, or on other media.
+            </p>
+        </li>
+        <li>
+            <h2><a href="#">SVG</a></h2>
+            <h3>Scalable Vector Graphics</h3>
+            <p>
+                Scalable Vector Graphics (SVG) is an XML-based markup language for
+                describing two-dimensional based vector graphics.
+            </p>
+        </li>
+        <li>
+            <h2><a href="#">JS</a></h2>
+            <h3>JavaScript</h3>
+            <p>
+                JavaScript (JS) is the web's native programming language. JavaScript is
+                a lightweight, interpreted (or just-in-time compiled) programming
+                language with first-class functions. While it is most well-known as the
+                scripting language for web pages, many non-browser environments, such as
+                Node.js, also use it.
+            </p>
+        </li>
+    </ul>
+    <article></article>
+</main>
+<form>
+    <label for="match-element-checkbox">
+        Apply <code>match-element</code> to list items?
+    </label>
+    <input type="checkbox" id="match-element-checkbox" checked />
+</form>
+
+<style>
+    /* General styles and resets */
+    * {
+        box-sizing: border-box;
+        font-size: 0.9rem;
+    }
+
+    html {
+        font-family: "Helvetica", "Arial", sans-serif;
+        height: 100%;
+    }
+
+    body {
+        margin: 0;
+        height: inherit;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+    li h2 {
+        margin: 0;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+    }
+
+    li {
+        overflow: hidden;
+        container-type: inline-size;
+    }
+
+    li p {
+        display: none;
+    }
+
+    li.active-item p {
+        display: block;
+    }
+
+    li:nth-child(1) {
+        background-color: #cbc0d3;
+        border: 20px solid #cbc0d3;
+    }
+
+    li:nth-child(2) {
+        background-color: #efd3d7;
+        border: 20px solid #efd3d7;
+    }
+
+    li:nth-child(3) {
+        background-color: #feeafa;
+        border: 20px solid #feeafa;
+    }
+
+    li:nth-child(4) {
+        background-color: #dee2ff;
+        border: 20px solid #dee2ff;
+    }
+
+    /* Links */
+
+    a {
+        text-decoration: none;
+        color: rgb(0 0 255 / 0.8);
+    }
+
+    a:hover,
+    a:focus {
+        color: rgb(100 100 255);
+    }
+
+    /* Form and checkbox styles */
+    form {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 2;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid black;
+    }
+    main {
+        container-type: inline-size;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        gap: 2cqw;
+        position: relative;
+    }
+
+    ul {
+        width: 35cqw;
+        display: flex;
+        flex-direction: column;
+        gap: 1cqw;
+    }
+
+    article {
+        flex: 1;
+    }
+
+    li {
+        flex: 1;
+    }
+    .active-item {
+        position: absolute;
+        z-index: 1;
+        translate: 37cqw;
+        width: calc(100% - 37cqw);
+        height: 100%;
+    }
+    .match-element-applied li {
+        view-transition-name: match-element;
+    }
+    ::view-transition-group(*) {
+        animation-duration: 0.5s;
+    }
+
+    html::view-transition-old(*),
+    html::view-transition-new(*) {
+        height: 100%;
+    }
+
+</style>
+
+<script is:inline>
+    const mainElem = document.querySelector("main");
+    let prevElem;
+    let checkboxElem = document.querySelector("input");
+
+    // View transition code
+    function updateActiveItem(event) {
+        // Get the list item that contains the clicked link
+        const clickedElem = event.target.parentElement.parentElement;
+
+        // Set the active-item class on the list item
+        clickedElem.className = "active-item";
+
+        // Keep track of the previous item that was clicked, if any.
+        // Remove the active-item class from the previous item so that only
+        // one list item is placed over the <article> at any one time
+        if (prevElem === clickedElem) {
+            prevElem.className = "";
+            prevElem = undefined;
+        } else if (prevElem) {
+            prevElem.className = "";
+            prevElem = clickedElem;
+        } else {
+            prevElem = clickedElem;
+        }
+    }
+
+    mainElem.addEventListener("click", (event) => {
+        event.preventDefault(); // Prevent iframe from scrolling when clicked
+        // Do nothing unless a link is clicked inside the <main> element
+        if (event.target.tagName !== "A") {
+            return;
+        }
+
+        // Run updateActiveItem() on its own if view transitions are not supported
+        if (!document.startViewTransition) {
+            updateActiveItem(event);
+        } else {
+            // Run updateActiveItem() via startViewTransition()
+            const transition = document.startViewTransition(() =>
+                updateActiveItem(event),
+            );
+        }
+    });
+
+    // Toggle the class on <main> to control whether or not match-element is applied
+
+    checkboxElem.addEventListener("change", () => {
+        mainElem.classList.toggle("match-element-applied");
+    });
+
+</script>

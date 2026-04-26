@@ -18,7 +18,10 @@ const isActive = (href: string) =>
     currentPath === href || (href !== "/" && currentPath.startsWith(href));
 const isItemActive = (item: MenuItem) => {
     if (item.type === "link") return isActive(item.href);
-    return item.items.some((sub) => isActive(sub.href)) || isActive(item.href);
+    return (
+        item.items.some((sub) => isActive(sub.href)) ||
+        (item.href ? isActive(item.href) : false)
+    );
 };
 ---
 
@@ -34,7 +37,7 @@ const isItemActive = (item: MenuItem) => {
         <ul class="flex items-center justify-center gap-8 py-3">
             {
                 menuItems.map((item) => (
-                        <li class="relative">
+                        <li class="relative min-w-0">
                             {item.type === "link" ? (
                                     <a
                                             href={item.href}
@@ -54,7 +57,7 @@ const isItemActive = (item: MenuItem) => {
                                         >
                                             {item.label.toUpperCase()}
                                             <svg
-                                                    class="fill-current"
+                                                    class="fill-current min-w-[16px] min-h-[16px]"
                                                     width="16"
                                                     height="16"
                                                     viewBox="0 0 24 24"
@@ -64,7 +67,8 @@ const isItemActive = (item: MenuItem) => {
                                             </svg>
                                         </summary>
 
-                                        <ul data-desktop-submenu-dropdown class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20 max-h-[50vh] overflow-y-auto overscroll-none">
+                                        <ul data-desktop-submenu-dropdown
+                                            class="absolute left-1/2 -translate-x-1/2 mt-2 w-64 w-fit text-nowrap text-center border bg-black/95 text-orange-100 backdrop-blur p-2 shadow-lg z-20 max-h-[50vh] overflow-y-auto overscroll-none">
                                             <li>
                                                 <a
                                                         href={item.href}
@@ -105,14 +109,14 @@ const isItemActive = (item: MenuItem) => {
 
         const closeAll = () => {
             getOpenDetails().forEach((d) => d.removeAttribute("open"));
-        };
+            };
 
         const updateDesktopMenuHeight = () => {
             document.documentElement.style.setProperty(
                 "--desktop-menu-h",
                 root.offsetHeight + "px",
-            );
-        };
+                );
+            };
 
         // Only allow one <details> open at a time
         root.addEventListener("toggle", (e) => {
@@ -122,8 +126,8 @@ const isItemActive = (item: MenuItem) => {
 
             root.querySelectorAll("details[open]").forEach((d) => {
                 if (d !== el) d.removeAttribute("open");
+                });
             });
-        });
 
         // Close on outside click/tap
         document.addEventListener(
@@ -131,9 +135,9 @@ const isItemActive = (item: MenuItem) => {
             (e) => {
                 if (root.contains(e.target)) return;
                 closeAll();
-            },
+                },
             {passive: true},
-        );
+            );
 
         // Close on Escape
         document.addEventListener("keydown", (e) => {
@@ -143,18 +147,18 @@ const isItemActive = (item: MenuItem) => {
 
             closeAll();
             open[0].querySelector("summary")?.focus?.();
-        });
+            });
 
         // Optional: close when selecting a link inside a dropdown
         root.addEventListener("click", (e) => {
             const link = e.target.closest?.("details a");
             if (!link) return;
             closeAll();
-        });
+            });
 
         updateDesktopMenuHeight();
 
         window.addEventListener("resize", updateDesktopMenuHeight);
         window.addEventListener("orientationchange", updateDesktopMenuHeight);
-    })();
+        })();
 </script>

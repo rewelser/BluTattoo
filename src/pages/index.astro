@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getEntry } from "astro:content";
+import {getEntry} from "astro:content";
 import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 import HrDivider from "../components/decor/HrDivider.astro";
@@ -8,6 +8,9 @@ import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+import SquareAppointments from "../components/SquareAppointments.astro";
+import SharedElementModal from "../components/SharedElementModal.astro";
+import SquareAppointmentsIsland2 from "../components/SquareAppointmentsIsland2.tsx";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -15,211 +18,221 @@ const title = "Home";
 ---
 
 <script>
-  import { bootFadeUp } from "../scripts/fade-up";
-  bootFadeUp({ observeMutations: true });
+    import {bootFadeUp} from "../scripts/fade-up";
+
+    bootFadeUp({observeMutations: true});
 </script>
 
 <Layout isHome title={title}>
-  <section class="relative w-full py-32 px-6 overflow-hidden">
-    <!-- subtle background glow / depth -->
-    <!-- <div class="pointer-events-none absolute inset-0">
-      <div
-        class="absolute inset-0 bg-gradient-to-b from-black via-black to-black"
-      >
-      </div>
-      <div
-        class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-orange-500/10 blur-[120px] rounded-full"
-      >
-      </div>
-    </div> -->
+    <section class="relative w-full py-32 px-6 overflow-hidden">
+        <!-- subtle background glow / depth -->
+        <!-- <div class="pointer-events-none absolute inset-0">
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-black via-black to-black"
+          >
+          </div>
+          <div
+            class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-orange-500/10 blur-[120px] rounded-full"
+          >
+          </div>
+        </div> -->
 
-    <!-- content -->
-    <div
-      class="relative max-w-4xl mx-auto text-center flex flex-col items-center gap-8"
-    >
-      <!-- headline -->
-      <h1
-        class="text-5xl sm:text-7xl md:text-9xl leading-[1.1] font-[Fleur_de_Leah] js-fade-up"
-      >
-        More than a tattoo.
-      </h1>
+        <SharedElementModal/>
 
-      <!-- subheadline -->
-      <p
-        class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl js-fade-up"
-      >
-        A collaboration between artist and canvas — shaped by story, refined by
-        technique.
-      </p>
+        <!--<SquareAppointmentsIsland2-->
+        <!--        client:load-->
+        <!--        merchantSlug="jhvsos6zvct0ls"-->
+        <!--        locationSlug="L6GQX5D0KDS8B"-->
+        <!--        className="mt-2"-->
+        <!--/>-->
 
-      <!-- supporting line -->
-      <p
-        class="text-base sm:text-lg text-black/60 max-w-xl leading-relaxed js-fade-up"
-      >
-        At BluTattoo Studio, every piece is designed with intention and built to
-        last.
-      </p>
-
-      <!-- CTA -->
-      <div class="pt-6">
-        <a
-          href="/booking"
-          class="inline-block px-8 py-3 border border-orange-100/30 rounded-full text-sm tracking-wide uppercase
-               hover:bg-orange-100 hover:text-black transition duration-300 js-fade-up"
+        <!-- content -->
+        <div
+                class="relative max-w-4xl mx-auto text-center flex flex-col items-center gap-8"
         >
-          BOOKING
-        </a>
-      </div>
-    </div>
-  </section>
+            <!-- headline -->
+            <h1
+                    class="text-5xl sm:text-7xl md:text-9xl leading-[1.1] font-[Fleur_de_Leah] js-fade-up"
+            >
+                More than a tattoo.
+            </h1>
 
-  <!-- /////////////////////////////////////////// -->
+            <!-- subheadline -->
+            <p
+                    class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl js-fade-up"
+            >
+                A collaboration between artist and canvas — shaped by story, refined by
+                technique.
+            </p>
 
-  <DualFlourish durationMs={1000} easing="linear" />
+            <!-- supporting line -->
+            <p
+                    class="text-base sm:text-lg text-black/60 max-w-xl leading-relaxed js-fade-up"
+            >
+                At BluTattoo Studio, every piece is designed with intention and built to
+                last.
+            </p>
 
-  <!-- /////////////////////////////////////////// -->
-  <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
-  <ParallaxWindow
-    src="/uploads/misc_images/bigroom.webp"
-    kind="image"
-    windowHeight="35vh"
-    strength={0.55}
-  >
-    <!-- optional overlay -->
-    <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
-      A window into the scene
-    </h2>
-  </ParallaxWindow>
+            <!-- CTA -->
+            <div class="pt-6">
+                <a
+                        href="/booking"
+                        class="inline-block px-8 py-3 border border-orange-100/30 rounded-full text-sm tracking-wide uppercase
+               hover:bg-orange-100 hover:text-black transition duration-300 js-fade-up"
+                >
+                    BOOKING
+                </a>
+            </div>
+        </div>
+    </section>
 
-  <!-- <ParallaxWindow
-  src="/uploads/misc_videos/hero-720.mp4"
-  kind="video"
-  strength={0.95}
-  muted={true}
-  autoplay={true}
-  loop={true}
-  playsinline={true}
-/> -->
+    <!-- /////////////////////////////////////////// -->
 
-  <ScrollPeelStack
-    id="beforeafter-test"
-    heightVh={1500}
-    images={[
-      "/uploads/people/zirk1.jpeg",
-      "/uploads/misc_images/hero-poster.jpg",
-      "/uploads/misc_images/hero-poster-red.jpg",
-    ]}
-    sideImages={{
-      left: [
-        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A" },
-        { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B" },
-      ],
-      right: [
-        { src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C" },
-        { src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D" },
-      ],
-    }}
-    openStartVh={2}
-  />
-  <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
-  <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
-  <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
+    <DualFlourish durationMs={1000} easing="linear"/>
+
+    <!-- /////////////////////////////////////////// -->
+    <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
     <ParallaxWindow
-      src="/uploads/misc_images/bigroom.webp"
-      kind="image"
-      windowHeight="71vh"
-      strength={0.55}
-      class="applied-mask--heart"
+            src="/uploads/misc_images/bigroom.webp"
+            kind="image"
+            windowHeight="35vh"
+            strength={0.55}
     >
-      <!-- optional overlay -->
-      <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
-        A window into the scene
-      </h2>
+        <!-- optional overlay -->
+        <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
+            A window into the scene
+        </h2>
     </ParallaxWindow>
-    <style>
-      :global(.applied-mask--heart) {
-        mask-image: url("/uploads/misc_images/frameclip.svg");
-        /* mask-size: 220px 220px; */
-        mask-size: contain;
-        mask-position: center;
-        mask-repeat: no-repeat;
-      }
-    </style>
 
-    <svg
-      class="framed"
-      viewBox="0 0 738.39 738.39"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <clipPath id="frame-opening">
-          <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
-          ></circle>
-        </clipPath>
-      </defs>
+    <!-- <ParallaxWindow
+    src="/uploads/misc_videos/hero-720.mp4"
+    kind="video"
+    strength={0.95}
+    muted={true}
+    autoplay={true}
+    loop={true}
+    playsinline={true}
+  /> -->
 
-      <image
-        id="photo"
-        href="/uploads/people/lara_headshot.jpg"
-        preserveAspectRatio="xMidYMin slice"
-        clip-path="url(#frame-opening)"
-      />
+    <ScrollPeelStack
+            id="beforeafter-test"
+            heightVh={1500}
+            images={[
+                "/uploads/people/zirk1.jpeg",
+                "/uploads/misc_images/hero-poster.jpg",
+                "/uploads/misc_images/hero-poster-red.jpg",
+            ]}
+            sideImages={{
+                left: [
+                    {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A"},
+                    {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B"},
+                ],
+                right: [
+                    {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C"},
+                    {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D"},
+                ],
+            }}
+            openStartVh={2}
+    />
+    <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
+    <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
+    <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
+        <ParallaxWindow
+                src="/uploads/misc_images/bigroom.webp"
+                kind="image"
+                windowHeight="71vh"
+                strength={0.55}
+                class="applied-mask--heart"
+        >
+            <!-- optional overlay -->
+            <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
+                A window into the scene
+            </h2>
+        </ParallaxWindow>
+        <style>
+            :global(.applied-mask--heart) {
+                mask-image: url("/uploads/misc_images/frameclip.svg");
+                /* mask-size: 220px 220px; */
+                mask-size: contain;
+                mask-position: center;
+                mask-repeat: no-repeat;
+            }
+        </style>
 
-      <image
-        href="/uploads/misc_images/roundframe.png"
-        x="0"
-        y="0"
-        width="738.39"
-        height="738.39"
-        preserveAspectRatio="none"
-      />
-    </svg>
+        <svg
+                class="framed"
+                viewBox="0 0 738.39 738.39"
+                xmlns="http://www.w3.org/2000/svg"
+        >
+            <defs>
+                <clipPath id="frame-opening">
+                    <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
+                    ></circle>
+                </clipPath>
+            </defs>
 
-    <script is:inline>
-      (() => {
-        const shape = document.getElementById("opening-shape");
-        const photo = document.getElementById("photo");
-        const box = shape.getBBox();
+            <image
+                    id="photo"
+                    href="/uploads/people/lara_headshot.jpg"
+                    preserveAspectRatio="xMidYMin slice"
+                    clip-path="url(#frame-opening)"
+            />
 
-        photo.setAttribute("x", box.x);
-        photo.setAttribute("y", box.y);
-        photo.setAttribute("width", box.width);
-        photo.setAttribute("height", box.height);
-      })();
-    </script>
-    <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
-    <div
-      class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose"
-    >
-      <h2
-        class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]"
-      >
-        Our Story
-      </h2>
+            <image
+                    href="/uploads/misc_images/roundframe.png"
+                    x="0"
+                    y="0"
+                    width="738.39"
+                    height="738.39"
+                    preserveAspectRatio="none"
+            />
+        </svg>
 
-      <p>
-        Establishing and running a professional tattoo studio in the heart of
-        Uptown Martinsville, VA would be daunting for any new business owner. At
-        five months pregnant, local native Lara Blair did not at first feel up
-        to the task. “No one can be a mother and run a tattoo shop.” But with
-        family nearby and more on the way, she couldn’t move. With the
-        encouragement of Laurna, a veteran shop owner and tattoo artist who
-        joined BluTattoo early on, it became clear that there was no use living
-        a life ruled by fear of the unknown.
-      </p>
-      <p>
-        Making waves against the tide of male-dominated industry, Lara has built
-        BluTattoo into a thriving studio serving not only Martinsville, but
-        people across the region who are seeking hand-crafted art.
-      </p>
-      <p>
-        Not long after, the shop would welcome Sierra Davis, and later bring Zoe
-        Kirk under its wing as its first apprentice (now a licensed artist).
-        BluTattoo is proud to serve its community, and change the tide along the
-        way.
-      </p>
+        <script is:inline>
+            (() => {
+                const shape = document.getElementById("opening-shape");
+                const photo = document.getElementById("photo");
+                const box = shape.getBBox();
 
-      <HrDivider color="seashell" />
-    </div>
-  </section>
+                photo.setAttribute("x", box.x);
+                photo.setAttribute("y", box.y);
+                photo.setAttribute("width", box.width);
+                photo.setAttribute("height", box.height);
+            })();
+        </script>
+        <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
+        <div
+                class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose"
+        >
+            <h2
+                    class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]"
+            >
+                Our Story
+            </h2>
+
+            <p>
+                Establishing and running a professional tattoo studio in the heart of
+                Uptown Martinsville, VA would be daunting for any new business owner. At
+                five months pregnant, local native Lara Blair did not at first feel up
+                to the task. “No one can be a mother and run a tattoo shop.” But with
+                family nearby and more on the way, she couldn’t move. With the
+                encouragement of Laurna, a veteran shop owner and tattoo artist who
+                joined BluTattoo early on, it became clear that there was no use living
+                a life ruled by fear of the unknown.
+            </p>
+            <p>
+                Making waves against the tide of male-dominated industry, Lara has built
+                BluTattoo into a thriving studio serving not only Martinsville, but
+                people across the region who are seeking hand-crafted art.
+            </p>
+            <p>
+                Not long after, the shop would welcome Sierra Davis, and later bring Zoe
+                Kirk under its wing as its first apprentice (now a licensed artist).
+                BluTattoo is proud to serve its community, and change the tide along the
+                way.
+            </p>
+
+            <HrDivider color="seashell"/>
+        </div>
+    </section>
 </Layout>
