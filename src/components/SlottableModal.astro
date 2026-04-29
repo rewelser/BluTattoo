@@ -1,0 +1,275 @@
+---
+const {
+    cardButtonClass = "",
+    modalContentClass = "",
+    modalContentHeroClass = "",
+    modalContentLowerClass = "",
+} = Astro.props as {
+    cardButtonClass?: string;
+    modalContentClass?: string;
+    modalContentHeroClass?: string;
+    modalContentLowerClass?: string;
+};
+
+const id = `modal-${crypto.randomUUID()}`;
+const transitionName = `shared-card-${id}`;
+// const transitionName = `shared-card`;
+const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
+// const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
+---
+<>
+    <div class="shell" style={`--transitionName: ${transitionName};`}>
+        <button class={`card ${cardButtonClass}`} data-card aria-haspopup="dialog">
+            <slot name="card"/>
+        </button>
+
+        <dialog class="dialog" data-dialog>
+
+            <article class="expanded-card" data-expanded-card>
+                <button class="close" data-close aria-label="Close modal">×</button>
+                <div class="modal-content">
+                    <div class="modal-content-hero">
+                        <slot name="modal-content-hero"/>
+                    </div>
+                    <div class="modal-content-main">
+                        <slot name="modal-content-main"/>
+                    </div>
+                </div>
+            </article>
+        </dialog>
+        <script is:inline>
+            (() => {
+                const script = document.currentScript;
+                const shell = script?.closest(".shell");
+
+                const card = shell?.querySelector("[data-card]");
+                const dialog = shell?.querySelector("[data-dialog]");
+                const close = shell?.querySelector("[data-close]");
+
+                const clearActiveVt = () => {
+                    document
+                        .querySelectorAll(".shell[data-vt-active]")
+                        .forEach((el) => el.removeAttribute("data-vt-active"));
+                };
+
+                const transition = (fn, direction) => {
+                    clearActiveVt();
+                    shell?.setAttribute("data-vt-active", "");
+                    document.documentElement.dataset.vtDirection = direction;
+
+                    const transitionName = getComputedStyle(shell)
+                        .getPropertyValue("--transitionName")
+                        .trim();
+
+                    document.documentElement.style.setProperty(
+                        "--groupAnimationName",
+                        `-ua-view-transition-group-anim-${transitionName}`
+                    );
+
+                    if (document.startViewTransition) {
+                        const t = document.startViewTransition(fn);
+                        t.finished.finally(() => {
+                            shell?.removeAttribute("data-vt-active");
+                            delete document.documentElement.dataset.vtDirection;
+                            document.documentElement.style.removeProperty("--groupAnimationName");
+                        });
+                    } else {
+                        fn();
+                        shell?.removeAttribute("data-vt-active");
+                        delete document.documentElement.dataset.vtDirection;
+                    }
+                }
+
+                const openModal = () => {
+                    transition(() => {
+                        shell.classList.add("is-open");
+                        dialog.showModal();
+                        dialog.dispatchEvent(new CustomEvent("modal:open"));
+                    }, "open")
+                }
+
+                const closeModal = () => {
+                    transition(() => {
+                        shell.classList.remove("is-open");
+                        dialog.close();
+                        dialog.dispatchEvent(new CustomEvent("modal:close"));
+                    }, "close")
+                }
+
+                card?.addEventListener("click", openModal);
+                close?.addEventListener("click", closeModal);
+                dialog?.addEventListener("click", (event) => {
+                    if (event.target === dialog) {
+                        closeModal();
+                    }
+                });
+            })();
+        </script>
+        <style define:vars={{transitionName, groupAnimationName}}>
+            :global(:root) {
+                --radius-card: 50px;
+                --radius-expanded: 24px;
+                --vt-duration: 420ms;
+                --vt-duration: 4s;
+                --vt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+
+            @keyframes slottable-radius {
+                from {
+                    border-radius: var(--radius-card);
+                    box-shadow: 3px 4px 0px 0px #4DA3FF;
+                }
+                to {
+                    border-radius: var(--radius-expanded);
+                    box-shadow: 0px 0px 0px 0px #4DA3FF;
+                }
+            }
+
+            .card,
+            .expanded-card,
+            :global(.slotted-card-content) {
+                //view-transition-name: none;
+            }
+
+            .shell[data-vt-active]:not(.is-open) .card {
+                view-transition-name: var(--transitionName);
+                view-transition-class: slottable-modal;
+            }
+
+            .shell[data-vt-active].is-open .expanded-card {
+                view-transition-name: var(--transitionName);
+                view-transition-class: slottable-modal;
+            }
+
+            :global(.shell[data-vt-active] .slotted-card-content) {
+                //view-transition-name: match-element;
+                //view-transition-class: slotted-card-content;
+            }
+
+            :global(.shell:not([data-vt-active]) .slotted-card-content) {
+                //view-transition-name: none;
+            }
+
+            .shell[data-vt-active] .slotted-card-content {
+                //view-transition-name: match-element;
+                //view-transition-class: slotted-card-content;
+            }
+
+            .shell[data-vt-active] .card {
+                visibility: hidden;
+            }
+
+            :global(::view-transition-group(.slottable-modal)) {
+                animation-name: var(--groupAnimationName), slottable-radius;
+                //animation-name: -ua-view-transition-group-anim-shared-card, slottable-radius;
+                //animation-duration: 2s, 2s;
+                //animation-duration: var(--vt-duration);
+                animation-duration: var(--vt-duration), var(--vt-duration);
+                animation-timing-function: var(--vt-ease), var(--vt-ease);
+                //animation-timing-function: var(--vt-ease);
+                overflow: clip;
+                border-radius: var(--radius-expanded);
+                box-shadow: 3px 4px 0px 0px #4DA3FF;
+            }
+
+            :global(html[data-vt-direction="close"]::view-transition-group(.slottable-modal)) {
+                animation-direction: normal, reverse;
+            }
+
+            :global(html::view-transition-old(.slottable-modal)),
+            :global(html::view-transition-new(.slottable-modal)) {
+                animation: none;
+                height: 100%;
+                overflow: clip;
+                object-fit: none;
+            }
+
+            .card {
+                cursor: pointer;
+                border-radius: var(--radius-card);
+                overflow: hidden;
+            }
+
+            .dialog {
+                width: min(860px, calc(100vw - 2rem));
+                max-height: calc(100vh - 2rem);
+                height: calc(100vh - 2rem);
+                padding: 0;
+                margin: auto;
+                border-radius: var(--radius-expanded);
+                background: transparent;
+                overflow: hidden;
+                scrollbar-width: none;
+                overscroll-behavior: none;
+            }
+
+            .dialog::backdrop {
+                background: rgb(10 15 25 / 0.55);
+            }
+
+            .expanded-card {
+                position: relative;
+                overflow: auto;
+                height: calc(100vh - 2rem);
+                max-height: calc(100vh - 2rem);
+                border-radius: var(--radius-expanded);
+                scrollbar-width: none;
+                overscroll-behavior: contain;
+                overscroll-behavior-x: none;
+            }
+
+            .modal-content {
+                border-radius: var(--radius-expanded);
+                min-height: 100%;
+                height: fit-content;
+                overflow: hidden;
+                background: white;
+            }
+
+            :global(.modal-content-hero img) {
+                    width: 100%;
+                    height: min(420px, 45vh);
+                    object-fit: cover;
+                    display: block;
+            }
+
+            .close {
+                position: sticky;
+                top: 0;
+                margin-left: auto;
+                display: block;
+                z-index: 2;
+
+                /* pull it out of the normal layout space */
+                margin-bottom: -2.5rem;
+                transform: translate(-1rem, 1rem);
+
+                width: 2.5rem;
+                height: 2.5rem;
+                border: 0;
+                border-radius: 999px;
+                background: white;
+                box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+
+
+
+
+
+
+            :global(html::view-transition-old(.slotted-card-content)),
+            :global(html::view-transition-new(.slotted-card-content)) {
+                //object-fit: none;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                :global(::view-transition-group(*)) {
+                    animation-duration: 1ms;
+                }
+            }
+        </style>
+    </div>
+</>

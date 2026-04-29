@@ -1,6 +1,7 @@
 ---
 // SharedElementModal.astro
-import SquareAppointmentsIsland2 from "./SquareAppointmentsIsland2.tsx";
+// import SquareAppointmentsIsland2 from "./SquareAppointmentsIsland2.tsx";
+import SquareAppointmentsIsland3 from "./SquareAppointmentsIsland3.tsx";
 const id = `modal-${crypto.randomUUID()}`;
 const transitionName = `shared-card-${id}`;
 ---
@@ -20,8 +21,8 @@ const transitionName = `shared-card-${id}`;
         <dialog class="dialog" data-dialog>
 
             <article class="expanded-card" data-expanded-card>
+                <button class="close" data-close aria-label="Close modal">×</button>
                 <div class="modal-content">
-                    <button class="close" data-close aria-label="Close modal">×</button>
                     <div class="modal-content-hero">
                         <img
                                 src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
@@ -31,7 +32,7 @@ const transitionName = `shared-card-${id}`;
                     <div class="modal-content-lower">
                         <h2>Mountain retreat</h2>
                         <p>This modal uses the same logical card state, following the MDN pattern more closely.</p>
-                        <SquareAppointmentsIsland2
+                        <SquareAppointmentsIsland3
                                 client:load
                                 merchantSlug="jhvsos6zvct0ls"
                                 locationSlug="L6GQX5D0KDS8B"
@@ -61,6 +62,7 @@ const transitionName = `shared-card-${id}`;
             transition(() => {
                 shell.classList.add("is-open");
                 dialog.showModal();
+                dialog.dispatchEvent(new CustomEvent("modal:open"));
             })
         }
 
@@ -68,6 +70,7 @@ const transitionName = `shared-card-${id}`;
             transition(() => {
                 shell.classList.remove("is-open");
                 dialog.close();
+                dialog.dispatchEvent(new CustomEvent("modal:close"));
             })
         }
 
@@ -124,15 +127,10 @@ const transitionName = `shared-card-${id}`;
         }
 
         .dialog {
-            //position: fixed;
             width: min(860px, calc(100vw - 2rem));
-            //height: fit-content;
-            //max-height: calc(100vh - 2rem);
             max-height: calc(100vh - 2rem);
             height: calc(100vh - 2rem);
             padding: 0;
-            //border: 0;
-            //border: 5px dotted red;
             margin: auto;
             border-radius: var(--radius);
             background: transparent;
@@ -151,10 +149,9 @@ const transitionName = `shared-card-${id}`;
             height: calc(100vh - 2rem);
             max-height: calc(100vh - 2rem);
             border-radius: var(--radius);
-            //background: white;
-            //border: 5px dotted blue;
             scrollbar-width: none;
             overscroll-behavior: contain;
+            overscroll-behavior-x: none;
         }
 
         .modal-content {
@@ -163,7 +160,6 @@ const transitionName = `shared-card-${id}`;
             height: fit-content;
             overflow: hidden;
             background: white;
-            //outline: 1px solid red;
         }
 
         .shell:not(.is-open) .expanded-card {
@@ -188,10 +184,16 @@ const transitionName = `shared-card-${id}`;
         }
 
         .close {
-            position: absolute;
+            position: sticky;
+            top: 0;
+            margin-left: auto;
+            display: block;
             z-index: 2;
-            top: 0.75rem;
-            right: 0.75rem;
+
+            /* pull it out of the normal layout space */
+            margin-bottom: -2.5rem;
+            transform: translate(-1rem, 1rem);
+
             width: 2.5rem;
             height: 2.5rem;
             border: 0;

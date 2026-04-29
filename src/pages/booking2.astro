@@ -13,8 +13,7 @@ import {defaults} from "../config/site";
 import {loadActiveArtists} from "../domain/people/server.ts";
 import type {IconType} from "../domain/contact/types.ts";
 import SquareAppointments from "../components/SquareAppointments.astro";
-import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland3.tsx";
-import SlottableModal from "../components/SlottableModal.astro";
+import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland.tsx";
 
 
 let people = await loadActiveArtists();
@@ -287,109 +286,117 @@ const title = "Booking";
                                                                     const subPanelId = `person-${person.id}-sub-${index}-panel`;
 
                                                                     return (
-                                                                            <li class="relative">
-                                                                                {hasHref(item) && resolvedHref ? (
-                                                                                        <>
-                                                                                            <div class={`link-card relative z-10 rounded-[50px] border-3 ${isPreferred ? "preferred border-transparent" : "bookable border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}>
-                                                                                                <a
-                                                                                                        class="font-semibold break-all"
-                                                                                                        href={resolvedHref}
-                                                                                                        target={item.href.startsWith("http") ? "_blank" : undefined}
-                                                                                                        rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
-                                                                                                >
-                                                                                                    <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
-                                                                                                        <div class="h-full content-center">
-                                                                                                            <div
-                                                                                                                    aria-hidden="true"
-                                                                                                                    class="flex h-10 w-10"
-                                                                                                            >
-                                                                                                                <Icon class="h-full w-full"/>
-                                                                                                            </div>
-                                                                                                        </div>
-
-                                                                                                        <div class="grid gap-[0.35rem] text-center content-center pr-10">
-                                                                                                            {formatItem(item)}
-                                                                                                            {hasNotes(item) && (
-                                                                                                                    <div class="text-[0.95rem] leading-[1.5] opacity-80">
-                                                                                                                        {item.notes}
-                                                                                                                    </div>
-                                                                                                            )}
+                                                                            <div class={`${isPreferred ? "preferred" : "bookable"} relative`}>
+                                                                                <li class={`relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}>
+                                                                                    {hasHref(item) && resolvedHref ? (
+                                                                                            <a
+                                                                                                    class="font-semibold break-all"
+                                                                                                    href={resolvedHref}
+                                                                                                    target={item.href.startsWith("http") ? "_blank" : undefined}
+                                                                                                    rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
+                                                                                            >
+                                                                                                <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
+                                                                                                    <div class="h-full content-center">
+                                                                                                        <div
+                                                                                                                aria-hidden="true"
+                                                                                                                class="flex h-10 w-10"
+                                                                                                        >
+                                                                                                            <Icon class="h-full w-full"/>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                            {isPreferred && (
-                                                                                                    <>
-                                                                                                        <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint"/>
-                                                                                                        <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]"/>
-                                                                                                    </>
-                                                                                            )}
-                                                                                        </>
-                                                                                ) : (
+
+                                                                                                    <div class="grid gap-[0.35rem] text-center content-center pr-10">
+                                                                                                        {formatItem(item)}
+                                                                                                        {hasNotes(item) && (
+                                                                                                                <div class="text-[0.95rem] leading-[1.5] opacity-80">
+                                                                                                                    {item.notes}
+                                                                                                                </div>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </a>
+                                                                                    ) : (
+                                                                                            <>
+                                                                                                <button
+                                                                                                        id={subBtnId}
+                                                                                                        class="grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
+                                                                                                        type="button"
+                                                                                                        aria-expanded="false"
+                                                                                                        aria-controls={subPanelId}
+                                                                                                        data-accordion-toggle
+                                                                                                        data-accordion-level="nested"
+                                                                                                >
+                                                                                                    <div class="h-full content-center">
+                                                                                                        <div aria-hidden="true"
+                                                                                                             class="flex h-10 w-10">
+                                                                                                            <Icon class="h-full w-full"/>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div class="grid gap-[0.35rem] text-center content-center font-semibold break-all">
+                                                                                                        {item.type}
+                                                                                                    </div>
+
+                                                                                                    <svg
+                                                                                                            viewBox="0 0 24 24"
+                                                                                                            aria-hidden="true"
+                                                                                                            class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
+                                                                                                    >
+                                                                                                        <path
+                                                                                                                fill="currentColor"
+                                                                                                                d="M7 10l5 5 5-5H7z"
+                                                                                                        />
+                                                                                                    </svg>
+                                                                                                </button>
+
+                                                                                                <div
+                                                                                                        id={subPanelId}
+                                                                                                        class="h-0 overflow-hidden transition-[height] duration-[260ms] ease-[ease] will-change-[height]"
+                                                                                                        aria-labelledby={subBtnId}
+                                                                                                        data-accordion-panel
+                                                                                                        inert
+                                                                                                >
+                                                                                                    <div class="border-t border-white/10 px-4 pt-[0.875rem] pb-4">
+                                                                                                        <div class="grid min-h-32 place-items-center border border-dashed border-white/20 p-4 text-center opacity-75">
+                                                                                                            Square
+                                                                                                            module
+                                                                                                            placeholder
+                                                                                                            <br/>
+                                                                                                            merchantId:{" "}
+                                                                                                            {merchantId}
+                                                                                                            <br/>
+                                                                                                            locationId:{" "}
+                                                                                                            {locationId}
+                                                                                                            {
+                                                                                                                merchantId && locationId && squareModuleLabel && (
+                                                                                                                    <!--<div class="p-5 mx-auto max-w-6xl">-->
+                                                                                                                            <SquareAppointments
+                                                                                                                                    merchantSlug={merchantId}
+                                                                                                                                    locationSlug={locationId}
+                                                                                                                                    className="mt-2"
+                                                                                                                            />
+//                                                                                                                            </div>
+                                                                                                                )
+                                                                                                            }
+                                                                                                            <SquareAppointmentsIsland
+                                                                                                                    client:load
+                                                                                                                    merchantSlug="jhvsos6zvct0ls"
+                                                                                                                    locationSlug="L6GQX5D0KDS8B"
+                                                                                                                    className="mt-2 w-full"
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </>
+                                                                                    )}
+                                                                                </li>
+                                                                                {isPreferred && (
                                                                                         <>
-                                                                                            {
-                                                                                                merchantId && locationId && (
-                                                                                                            <SlottableModal
-                                                                                                                    cardButtonClass={`w-full relative z-10 rounded-[50px] border-3 ${isPreferred ? "preferred border-transparent" : "bookable border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}>
-                                                                                                                <Fragment
-                                                                                                                        slot="card">
-                                                                                                                    <>
-                                                                                                                        <!--<div class={`${isPreferred ? "preferred" : "bookable"} relative z-10 rounded-[50px] border-3 ${isPreferred ? "border-transparent" : "border-[#4DA3FF] shadow-[3px_4px_0px_#4DA3FF]"} bg-(--subitem-bookable-bg-color) not-first:mt-2`}>-->
-                                                                                                                        <div
-                                                                                                                                class="slotted-card-content grid min-h-12 w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-0 bg-transparent px-4 py-[0.875rem] text-left text-inherit"
-                                                                                                                        >
-                                                                                                                            <div class="h-full content-center">
-                                                                                                                                <div aria-hidden="true"
-                                                                                                                                     class="flex h-10 w-10">
-                                                                                                                                    <Icon class="h-full w-full"/>
-                                                                                                                                </div>
-                                                                                                                            </div>
-
-                                                                                                                            <div class="grid gap-[0.35rem] text-center content-center font-semibold break-all">
-                                                                                                                                {item.type}
-                                                                                                                                | {person.data.name}
-                                                                                                                            </div>
-
-                                                                                                                            <svg
-                                                                                                                                    viewBox="0 0 24 24"
-                                                                                                                                    aria-hidden="true"
-                                                                                                                                    class="h-4 w-4 shrink-0 transition-transform duration-200 ease-[ease]"
-                                                                                                                            >
-                                                                                                                                <path
-                                                                                                                                        fill="currentColor"
-                                                                                                                                        d="M7 10l5 5 5-5H7z"
-                                                                                                                                />
-                                                                                                                            </svg>
-                                                                                                                        </div>
-                                                                                                                        {isPreferred && (
-                                                                                                                                <>
-                                                                                                                                    <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint"/>
-                                                                                                                                    <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]"/>
-                                                                                                                                </>
-                                                                                                                        )}
-                                                                                                                    </>
-                                                                                                                </Fragment>
-                                                                                                                <Fragment
-                                                                                                                        slot="modal-content-hero">
-                                                                                                                    <img
-                                                                                                                            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
-                                                                                                                            alt=""
-                                                                                                                    />
-                                                                                                                </Fragment>
-                                                                                                                <Fragment
-                                                                                                                        slot="modal-content-main">
-                                                                                                                    <SquareAppointmentsIsland
-                                                                                                                            client:load
-                                                                                                                            merchantSlug={merchantId}
-                                                                                                                            locationSlug={locationId}/>
-                                                                                                                </Fragment>
-                                                                                                            </SlottableModal>
-
-                                                                                                )
-                                                                                            }
+                                                                                            <div class="preferred-ping absolute top-[1.5px] left-[2px] h-full w-full bg-[#ffd230] rounded-[9999px] animate-ping-faint"/>
+                                                                                            <div class="preferred-shadow absolute top-[3px] left-[4px] w-full h-full rounded-[100px]"/>
                                                                                         </>
                                                                                 )}
-                                                                            </li>
+                                                                            </div>
                                                                     );
                                                                 },
                                                             )}
@@ -397,6 +404,31 @@ const title = "Booking";
                                                     </div>
                                                 </div>
                                             </section>
+
+                                            <div class="overlay-widget">
+                                                <button class="overlay-toggle" type="button">
+                                                    Show overlay
+                                                </button>
+
+                                                <div class="full-bleed-overlay" hidden>
+                                                    <div class="overlay-content">
+                                                        <h1>Full bleed overlay</h1>
+                                                        <p>This overlay is scoped to this widget instance.</p>
+                                                        <!--<SquareAppointments-->
+                                                        <!--        merchantSlug="jhvsos6zvct0ls"-->
+                                                        <!--        locationSlug="L6GQX5D0KDS8B"-->
+                                                        <!--        className="mt-2"-->
+                                                        <!--/>-->
+                                                        <!--<SquareAppointmentsIsland-->
+                                                        <!--        client:load-->
+                                                        <!--        merchantSlug="jhvsos6zvct0ls"-->
+                                                        <!--        locationSlug="L6GQX5D0KDS8B"-->
+                                                        <!--        className="mt-2"-->
+                                                        <!--/>-->
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </li>
                                 )
                             );
@@ -406,6 +438,53 @@ const title = "Booking";
             </section>
         </div>
     </main>
+
+
+    <style>
+        .overlay-widget .overlay-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1001;
+        }
+
+        .overlay-widget .full-bleed-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-widget .full-bleed-overlay[hidden] {
+            display: none;
+        }
+
+        .overlay-widget .overlay-content {
+            text-align: center;
+        }
+    </style>
+
+    <script is:inline>
+        document.querySelectorAll(".overlay-widget").forEach((widget) => {
+            const button = widget.querySelector(".overlay-toggle");
+            const overlay = widget.querySelector(".full-bleed-overlay");
+
+            button.addEventListener("click", () => {
+                const isHidden = overlay.hasAttribute("hidden");
+
+                overlay.toggleAttribute("hidden", !isHidden);
+                button.textContent = isHidden ? "Hide overlay" : "Show overlay";
+            });
+        });
+    </script>
+
     <!-- </html> -->
     <script is:inline>
         window.addEventListener("scroll", function () {
@@ -500,13 +579,13 @@ const title = "Booking";
             background-color: #f0fdff;
         }
 
-        .preferred.link-card {
+        .preferred li {
             background: linear-gradient(var(--subitem-preferred-bg-color) 0 0) padding-box,
             conic-gradient(from var(--glow-deg), var(--preferred-gradient)) border-box;
             animation: glow 10s linear infinite;
         }
 
-        .preferred-shadow {
+        .preferred .preferred-shadow {
             background: conic-gradient(
                     from var(--glow-deg),
                     var(--preferred-gradient)

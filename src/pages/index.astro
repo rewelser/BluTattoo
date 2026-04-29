@@ -10,7 +10,8 @@ import HrDivider from "../components/decor/HrDivider.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 import SquareAppointments from "../components/SquareAppointments.astro";
 import SharedElementModal from "../components/SharedElementModal.astro";
-import SquareAppointmentsIsland2 from "../components/SquareAppointmentsIsland2.tsx";
+import SquareAppointmentsIsland3 from "../components/SquareAppointmentsIsland3.tsx";
+import SlottableModal from "../components/SlottableModal.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -45,6 +46,35 @@ const title = "Home";
         <!--        locationSlug="L6GQX5D0KDS8B"-->
         <!--        className="mt-2"-->
         <!--/>-->
+
+        <SlottableModal>
+            <Fragment slot="card">
+                <img
+                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+                        alt=""
+                />
+                <div class="card-content">
+                    <h2>Mountain retreat</h2>
+                    <p>Click to expand.</p>
+                </div>
+            </Fragment>
+            <Fragment slot="modal-content-hero">
+                <img
+                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
+                        alt=""
+                />
+            </Fragment>
+            <Fragment slot="modal-content-main">
+                <h2>Mountain retreat</h2>
+                <p>This modal uses the same logical card state, following the MDN pattern more closely.</p>
+                <SquareAppointmentsIsland3
+                        client:load
+                        merchantSlug="jhvsos6zvct0ls"
+                        locationSlug="L6GQX5D0KDS8B"
+                        className="mt-2"
+                />
+            </Fragment>
+        </SlottableModal>
 
         <!-- content -->
         <div
@@ -116,7 +146,7 @@ const title = "Home";
 
     <ScrollPeelStack
             id="beforeafter-test"
-            heightVh={1500}
+            heightVh={800}
             images={[
                 "/uploads/people/zirk1.jpeg",
                 "/uploads/misc_images/hero-poster.jpg",
