@@ -7,35 +7,37 @@ runwayPhoto: boogleech.png
 runwayPhotoFrame: squareframe2
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: heimlich.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
   contact:
     - type: phone
+      href: '3333333333'
       enabled: true
-      href: "3333333333"
   socials:
     - type: instagram
-      enabled: true
-      bookable: false
       href: https://www.instagram.com/
+      enabled: true
+      bookable: false
     - type: facebook
-      enabled: true
-      bookable: false
       href: https://www.facebook.com/
-    - type: tiktok
       enabled: true
       bookable: false
+    - type: tiktok
       href: https://www.tiktok.com/
-  bookingProfilePicture: heimlich.jpg
-  bookingNote: note
+      enabled: true
+      bookable: false
   platforms:
     - type: square
       enabled: true
+      preferred: true
       linkOrModuleInfo:
         - type: moduleInfo
           enabled: true
-          label: Book an appointment
           merchantId: asdasdasdasda
           locationId: 7WQ0KXC8ZSD90
+          label: Book an appointment
+  bookingNote: note
 ---
+
 test artist.

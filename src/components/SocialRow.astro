@@ -9,11 +9,13 @@ const {
     class: className = "",
     anchorClass = "",
     iconClass = "w-6 h-6 fill-current",
+    extraFilter,
 } = Astro.props as {
-    links?: SocialItems;
+    links: SocialItems;
     class?: string;
     anchorClass?: string;
     iconClass?: string;
+    extraFilter?: (item: SocialItems[number]) => boolean;
 };
 
 const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
@@ -23,7 +25,10 @@ const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
     {
         socialTypes.map((key) => {
             const item = links.find(
-                (item) => item.type === key && item.enabled,
+                (item) =>
+                    item.type === key &&
+                    item.enabled &&
+                    (extraFilter ? extraFilter(item) : true),
             );
             const href = item?.href;
 

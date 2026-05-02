@@ -9,6 +9,17 @@ primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
   booksClosedNote: Books are currently closed.
+  contact:
+    - type: phone
+      href: '4444444444'
+      enabled: true
+    - type: email
+      href: zmail@yahoo.com
+      enabled: true
+    - type: website
+      href: https://www.example.com
+      enabled: true
+      notes: help help help help help
   socials:
     - type: instagram
       href: https://www.instagram.com/example/
@@ -19,28 +30,28 @@ contactSocialsBooking:
     - type: facebook
       href: https://www.facebook.com/example/
       enabled: true
-      bookable: true
+      bookable: false
       handle: ztheghost
     - type: threads
       href: https://www.threads.net/@example
       enabled: true
-      bookable: true
+      bookable: false
     - type: x
-      enabled: true
-      bookable: true
       href: https://www.threads.net/@example
+      enabled: true
+      bookable: false
     - type: tumblr
-      enabled: true
-      bookable: true
       href: https://www.threads.net/@example
+      enabled: true
+      bookable: false
     - type: youtube
-      enabled: true
-      bookable: true
       href: https://www.threads.net/@example
+      enabled: true
+      bookable: false
     - type: pinterest
-      enabled: true
-      bookable: true
       href: https://www.threads.net/@example
+      enabled: true
+      bookable: false
   platforms:
     - type: square
       enabled: true
@@ -50,16 +61,6 @@ contactSocialsBooking:
           merchantId: jhvsos6zvct0ls
           locationId: L6GQX5D0KDS8B
           label: Book an appointment
-  contact:
-    - type: phone
-      enabled: true
-      href: "4444444444"
-    - type: email
-      enabled: true
-      href: zmail@yahoo.com
-    - type: website
-      enabled: true
-      href: https://www.example.com
-      notes: help help help help help
 ---
+
 Zoe is the shop apprentice. Check out her work and book below:

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 
 type Props = {
     merchantSlug: string;
@@ -17,43 +17,72 @@ export default function SquareAppointmentsIsland({
     const [loading, setLoading] = useState(false);
     const [initialized, setInitialized] = useState(false);
 
+    const rootRef = useRef<HTMLDivElement | null>(null);
     const wrapRef = useRef<HTMLDivElement | null>(null);
+    const countRef = useRef<number>(0);
 
     const base = `https://app.squareup.com/appointments/buyer/widget/${merchantSlug}/${locationSlug}`;
 
     useEffect(() => {
-        if (!open || initialized || !wrapRef.current) return;
+        const root = rootRef.current;
+        const dialog = root?.closest("dialog");
+
+        if (!dialog) return;
+
+        const handleOpen = () => setOpen(true);
+        const handleClose = () => setOpen(false);
+
+        dialog.addEventListener("modal:open", handleOpen);
+        dialog.addEventListener("modal:close", handleClose);
+        dialog.addEventListener("close", handleClose);
+
+        return () => {
+            dialog.removeEventListener("modal:open", handleOpen);
+            dialog.removeEventListener("modal:close", handleClose);
+            dialog.removeEventListener("close", handleClose);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!open || loading || initialized || !wrapRef.current) return;
+        console.log("//////");
+        console.log("open", open);
+        console.log("loading", loading);
+
+
+        if (countRef.current >= 1) return;
+        countRef.current++;
+        console.log("countRef", countRef.current);
 
         setLoading(true);
 
         const script = document.createElement("script");
         script.src = `${base}.js`;
+        // script.src = base;
         script.async = true;
 
         script.onload = () => {
-            setLoading(false);      // script loaded
-            setInitialized(true);   // prevent re-injection
+            setLoading(false);
+            setInitialized(true);
+            console.log("should be initialized");
         };
 
         script.onerror = () => {
-            setLoading(false);      // fail gracefully
+            setLoading(false);
+            console.log("onerror");
         };
 
         wrapRef.current.appendChild(script);
+
+        return () => {
+            script.remove();
+        };
     }, [open, initialized, base]);
 
     return (
-        <div className={className}>
-            <button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-            >
-                {label}
-            </button>
-
-            {open && (
-                <div className="mt-3 border border-gray-200 p-3">
+        <div ref={rootRef} className={className}>
+            {(open || initialized) && (
+                <div className="p-3">
                     {loading && (
                         <div className="text-sm text-gray-500">
                             Loading booking widget…
@@ -61,9 +90,9 @@ export default function SquareAppointmentsIsland({
                     )}
 
                     <div ref={wrapRef}>
-                        <a href={base} target="_blank" rel="noopener noreferrer">
-                            {label}
-                        </a>
+                        {/*<a href={base} target="_blank" rel="noopener noreferrer">*/}
+                        {/*    {label}*/}
+                        {/*</a>*/}
                     </div>
                 </div>
             )}

@@ -8,10 +8,6 @@ import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
-import SquareAppointments from "../components/SquareAppointments.astro";
-import SharedElementModal from "../components/SharedElementModal.astro";
-import SquareAppointmentsIsland3 from "../components/SquareAppointmentsIsland3.tsx";
-import SlottableModal from "../components/SlottableModal.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -37,44 +33,6 @@ const title = "Home";
           >
           </div>
         </div> -->
-
-        <SharedElementModal/>
-
-        <!--<SquareAppointmentsIsland2-->
-        <!--        client:load-->
-        <!--        merchantSlug="jhvsos6zvct0ls"-->
-        <!--        locationSlug="L6GQX5D0KDS8B"-->
-        <!--        className="mt-2"-->
-        <!--/>-->
-
-        <SlottableModal>
-            <Fragment slot="card">
-                <img
-                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
-                        alt=""
-                />
-                <div class="card-content">
-                    <h2>Mountain retreat</h2>
-                    <p>Click to expand.</p>
-                </div>
-            </Fragment>
-            <Fragment slot="modal-content-hero">
-                <img
-                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
-                        alt=""
-                />
-            </Fragment>
-            <Fragment slot="modal-content-main">
-                <h2>Mountain retreat</h2>
-                <p>This modal uses the same logical card state, following the MDN pattern more closely.</p>
-                <SquareAppointmentsIsland3
-                        client:load
-                        merchantSlug="jhvsos6zvct0ls"
-                        locationSlug="L6GQX5D0KDS8B"
-                        className="mt-2"
-                />
-            </Fragment>
-        </SlottableModal>
 
         <!-- content -->
         <div

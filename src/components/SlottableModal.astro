@@ -4,11 +4,26 @@ const {
     modalContentClass = "",
     modalContentHeroClass = "",
     modalContentLowerClass = "",
+
+    cardRadius = "50px",
+    expandedRadius = "24px",
+    cardShadow = "none",
+    expandedShadow = "none",
+    cardBorder = "0 solid transparent",
+    expandedBorder = "0 solid transparent",
+    ...rest
 } = Astro.props as {
     cardButtonClass?: string;
     modalContentClass?: string;
     modalContentHeroClass?: string;
     modalContentLowerClass?: string;
+
+    cardRadius: string,
+    expandedRadius: string,
+    cardShadow: string,
+    expandedShadow: string,
+    cardBorder: string,
+    expandedBorder: string,
 };
 
 const id = `modal-${crypto.randomUUID()}`;
@@ -19,8 +34,10 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 ---
 <>
     <div class="shell" style={`--transitionName: ${transitionName};`}>
-        <button class={`card ${cardButtonClass}`} data-card aria-haspopup="dialog">
-            <slot name="card"/>
+        <button class={`card ${cardButtonClass}`} data-card aria-haspopup="dialog" {...rest}>
+            <div class="card-content">
+                <slot name="card"/>
+            </div>
         </button>
 
         <dialog class="dialog" data-dialog>
@@ -37,7 +54,16 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 </div>
             </article>
         </dialog>
-        <script is:inline>
+        <script define:vars={{
+            transitionName,
+            groupAnimationName,
+            cardRadius,
+            expandedRadius,
+            cardShadow,
+            expandedShadow,
+            cardBorder,
+            expandedBorder
+        }}>
             (() => {
                 const script = document.currentScript;
                 const shell = script?.closest(".shell");
@@ -52,31 +78,43 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                         .forEach((el) => el.removeAttribute("data-vt-active"));
                 };
 
-                const transition = (fn, direction) => {
+                const vtSetup = (direction) => {
                     clearActiveVt();
                     shell?.setAttribute("data-vt-active", "");
                     document.documentElement.dataset.vtDirection = direction;
+                    document.documentElement.style.setProperty("--groupAnimationName", groupAnimationName);
+                    document.documentElement.style.setProperty('--cardRadius', cardRadius);
+                    document.documentElement.style.setProperty('--expandedRadius', expandedRadius);
+                    document.documentElement.style.setProperty('--cardShadow', cardShadow);
+                    document.documentElement.style.setProperty('--expandedShadow', expandedShadow);
+                    document.documentElement.style.setProperty('--cardBorder', cardBorder);
+                    document.documentElement.style.setProperty('--expandedBorder', expandedBorder);
+                }
 
-                    const transitionName = getComputedStyle(shell)
-                        .getPropertyValue("--transitionName")
-                        .trim();
-
-                    document.documentElement.style.setProperty(
+                const vtBreakdown = () => {
+                    shell?.removeAttribute("data-vt-active");
+                    delete document.documentElement.dataset.vtDirection;
+                    for (const name of [
                         "--groupAnimationName",
-                        `-ua-view-transition-group-anim-${transitionName}`
-                    );
+                        "--cardRadius",
+                        "--expandedRadius",
+                        "--cardShadow",
+                        "--expandedShadow",
+                        "--cardBorder",
+                        "--expandedBorder",
+                    ]) {
+                        document.documentElement.style.removeProperty(name);
+                    }
+                }
 
+                const transition = (fn, direction) => {
+                    vtSetup(direction);
                     if (document.startViewTransition) {
                         const t = document.startViewTransition(fn);
-                        t.finished.finally(() => {
-                            shell?.removeAttribute("data-vt-active");
-                            delete document.documentElement.dataset.vtDirection;
-                            document.documentElement.style.removeProperty("--groupAnimationName");
-                        });
+                        t.finished.finally(vtBreakdown);
                     } else {
                         fn();
-                        shell?.removeAttribute("data-vt-active");
-                        delete document.documentElement.dataset.vtDirection;
+                        vtBreakdown();
                     }
                 }
 
@@ -105,30 +143,39 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 });
             })();
         </script>
-        <style define:vars={{transitionName, groupAnimationName}}>
+
+        <style define:vars={{
+            transitionName,
+            groupAnimationName,
+            cardRadius,
+            expandedRadius,
+            cardShadow,
+            expandedShadow,
+            cardBorder,
+            expandedBorder
+        }}>
+            body:has([data-vt-active]),
+            body:has(.shell.is-open) {
+                overflow: hidden;
+            }
+
             :global(:root) {
-                --radius-card: 50px;
-                --radius-expanded: 24px;
-                --vt-duration: 420ms;
-                --vt-duration: 4s;
+                --vt-duration: 800ms;
+                //--vt-duration: 2s;
                 --vt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
             }
 
-            @keyframes slottable-radius {
+            @keyframes slottable-modal-anim {
                 from {
-                    border-radius: var(--radius-card);
-                    box-shadow: 3px 4px 0px 0px #4DA3FF;
+                    border-radius: var(--cardRadius);
+                    box-shadow: var(--cardShadow);
+                    outline: var(--cardBorder);
                 }
                 to {
-                    border-radius: var(--radius-expanded);
-                    box-shadow: 0px 0px 0px 0px #4DA3FF;
+                    border-radius: var(--expandedRadius);
+                    box-shadow: var(--expandedShadow);
+                    outline: var(--expandedBorder);
                 }
-            }
-
-            .card,
-            .expanded-card,
-            :global(.slotted-card-content) {
-                //view-transition-name: none;
             }
 
             .shell[data-vt-active]:not(.is-open) .card {
@@ -141,35 +188,15 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 view-transition-class: slottable-modal;
             }
 
-            :global(.shell[data-vt-active] .slotted-card-content) {
-                //view-transition-name: match-element;
-                //view-transition-class: slotted-card-content;
-            }
-
-            :global(.shell:not([data-vt-active]) .slotted-card-content) {
-                //view-transition-name: none;
-            }
-
-            .shell[data-vt-active] .slotted-card-content {
-                //view-transition-name: match-element;
-                //view-transition-class: slotted-card-content;
-            }
-
             .shell[data-vt-active] .card {
                 visibility: hidden;
             }
 
             :global(::view-transition-group(.slottable-modal)) {
-                animation-name: var(--groupAnimationName), slottable-radius;
-                //animation-name: -ua-view-transition-group-anim-shared-card, slottable-radius;
-                //animation-duration: 2s, 2s;
-                //animation-duration: var(--vt-duration);
+                animation-name: var(--groupAnimationName), slottable-modal-anim;
                 animation-duration: var(--vt-duration), var(--vt-duration);
                 animation-timing-function: var(--vt-ease), var(--vt-ease);
-                //animation-timing-function: var(--vt-ease);
                 overflow: clip;
-                border-radius: var(--radius-expanded);
-                box-shadow: 3px 4px 0px 0px #4DA3FF;
             }
 
             :global(html[data-vt-direction="close"]::view-transition-group(.slottable-modal)) {
@@ -186,17 +213,17 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 
             .card {
                 cursor: pointer;
-                border-radius: var(--radius-card);
-                overflow: hidden;
+                border-radius: var(--cardRadius);
+                //overflow: hidden;
             }
 
             .dialog {
-                width: min(860px, calc(100vw - 2rem));
-                max-height: calc(100vh - 2rem);
-                height: calc(100vh - 2rem);
+                width: min(860px, calc(100dvw - 2rem));
+                max-height: calc(100dvh - 2rem);
+                height: calc(100dvh - 2rem);
                 padding: 0;
                 margin: auto;
-                border-radius: var(--radius-expanded);
+                border-radius: var(--expandedRadius);
                 background: transparent;
                 overflow: hidden;
                 scrollbar-width: none;
@@ -210,16 +237,16 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             .expanded-card {
                 position: relative;
                 overflow: auto;
-                height: calc(100vh - 2rem);
-                max-height: calc(100vh - 2rem);
-                border-radius: var(--radius-expanded);
+                height: calc(100dvh - 2rem);
+                max-height: calc(100dvh - 2rem);
+                border-radius: var(--expandedRadius);
                 scrollbar-width: none;
                 overscroll-behavior: contain;
                 overscroll-behavior-x: none;
             }
 
             .modal-content {
-                border-radius: var(--radius-expanded);
+                border-radius: var(--expandedRadius);
                 min-height: 100%;
                 height: fit-content;
                 overflow: hidden;
@@ -227,10 +254,10 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             }
 
             :global(.modal-content-hero img) {
-                    width: 100%;
-                    height: min(420px, 45vh);
-                    object-fit: cover;
-                    display: block;
+                width: 100%;
+                height: min(420px, 45dvh);
+                object-fit: cover;
+                display: block;
             }
 
             .close {
@@ -252,17 +279,6 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
                 font-size: 1.5rem;
                 cursor: pointer;
-            }
-
-
-
-
-
-
-
-            :global(html::view-transition-old(.slotted-card-content)),
-            :global(html::view-transition-new(.slotted-card-content)) {
-                //object-fit: none;
             }
 
             @media (prefers-reduced-motion: reduce) {

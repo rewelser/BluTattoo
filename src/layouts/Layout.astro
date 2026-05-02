@@ -12,7 +12,6 @@ const site = await getEntry("siteInfo", "main");
 
 const {title, isHome = false, preloadImage, pageTheme = "default"} = Astro.props;
 import "@fontsource/diplomata-sc";
-import "@fontsource/spectral";
 import "@fontsource/fleur-de-leah";
 
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
@@ -24,11 +23,6 @@ import spectral900Url from "@fontsource/spectral/files/spectral-latin-900-normal
 import diplomataUrl from "@fontsource/diplomata-sc/files/diplomata-sc-latin-400-normal.woff2?url";
 import fleurdeleahUrl from "@fontsource/fleur-de-leah/files/fleur-de-leah-latin-400-normal.woff2?url";
 
-import "@fontsource/spectral/400.css";
-import "@fontsource/spectral/500.css";
-import "@fontsource/spectral/600.css";
-import "@fontsource/spectral/700.css";
-import "@fontsource/spectral/800.css";
 // import "@fontsource/spectral/900.css";
 import "@fontsource/diplomata-sc/400.css";
 import "@fontsource/fleur-de-leah/400.css";
@@ -43,13 +37,6 @@ import "@fontsource/fleur-de-leah/400.css";
           /* Paint black immediately to avoid white flash between navigations */
           html, body { background:#000; }
         </style> -->
-        <link
-                rel="preload"
-                href={spectral400Url}
-                as="font"
-                type="font/woff2"
-                crossorigin
-        />
         <link
                 rel="preload"
                 href={diplomataUrl}

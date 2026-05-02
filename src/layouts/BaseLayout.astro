@@ -2,6 +2,12 @@
 import { getEntry } from "astro:content";
 import "../styles/global.css";
 import { defaults } from "../config/site";
+import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
+import spectral500Url from "@fontsource/spectral/files/spectral-latin-500-normal.woff2?url";
+import spectral600Url from "@fontsource/spectral/files/spectral-latin-600-normal.woff2?url";
+import spectral700Url from "@fontsource/spectral/files/spectral-latin-700-normal.woff2?url";
+import spectral800Url from "@fontsource/spectral/files/spectral-latin-800-normal.woff2?url";
+import spectral900Url from "@fontsource/spectral/files/spectral-latin-900-normal.woff2?url";
 
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;
@@ -13,6 +19,13 @@ const {
     bodyStyle = "",
     htmlLang = "en",
 } = Astro.props;
+
+import "@fontsource/spectral";
+import "@fontsource/spectral/400.css";
+import "@fontsource/spectral/500.css";
+import "@fontsource/spectral/600.css";
+import "@fontsource/spectral/700.css";
+import "@fontsource/spectral/800.css";
 ---
 
 <!doctype html>
@@ -23,6 +36,13 @@ const {
         <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
         <title>{pageTitle ? `${pageTitle} | ${siteName}` : siteName}</title>
         {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
+        <link
+                rel="preload"
+                href={spectral400Url}
+                as="font"
+                type="font/woff2"
+                crossorigin
+        />
         <slot name="head" />
     </head>
     <body class={`${bodyClass} margin-0`} style={bodyStyle}>

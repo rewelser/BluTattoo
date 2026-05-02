@@ -36,7 +36,7 @@ const featured = pickFeaturedHero(upcoming);
 
                     <ul class="divide-y divide-black/10 border border-black/10">
                         {upcoming.map((ev) => (
-                                <li key={ev.id}>
+                                <li>
                                     <a
                                             class="block p-4 hover:bg-black/5"
                                             href={`/events/${ev.id}`}
