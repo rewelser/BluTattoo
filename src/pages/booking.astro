@@ -17,36 +17,39 @@ import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland.tsx
 import SlottableModal from "../components/SlottableModal.astro";
 import SocialRow from "../components/SocialRow.astro";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
-
+import {fmtDateRange} from "../domain/events/format.ts";
+import SparkleCorners from "../components/decor/SparkleCorners.astro";
+import {siteInfoSocialsToItems} from "../domain/contact/adapters.ts";
 
 let residentPeople = await loadActiveArtists();
 const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
 const seen = new Set<string>();
-const guestSpots = guestSpotEvents
-    .filter((ev) => {
-        if (seen.has(ev.guestSpot.guestName)) {
-            return false;
-        }
-        seen.add(ev.guestSpot.guestName);
-        return true;
-    }).map((guest) => {
-        return {
-
-            id: `guest-${guest.id.replaceAll("/", "-")}`,
-            hrefId: guest.id,
-            data: {
-                name: guest.guestSpot.guestName,
-                ...guest.guestSpot
-            },
-            variant: "guest",
-        }
-    });
-
 
 const people = [
-    ...guestSpots,
+    ...guestSpotEvents
+        .filter((ev) => {
+            if (seen.has(ev.guestSpot.guestName)) {
+                return false;
+            }
+            seen.add(ev.guestSpot.guestName);
+            return true;
+        }).map((guest) => {
+            return {
+                event: guest,
+                id: `guest-${guest.id.replaceAll("/", "-")}`,
+                hrefId: guest.id,
+                data: {
+                    name: guest.guestSpot.guestName,
+                    ...guest.guestSpot,
+                    startDate: guest.startDate,
+                    endDate: guest.endDate,
+                },
+                variant: "guest",
+            }
+        }),
     ...residentPeople.map((person) => {
         return {
+            event: undefined,
             id: person.id,
             data: person.data,
             variant: "resident"
@@ -64,7 +67,9 @@ const sickleSvg = `
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sickleSvg)}`;
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = branding?.logoDark ?? defaults.siteLogo;
+const bookingHeroPhoto = branding?.hero.bookingHeroPhoto ?? defaults.bookingHeroPhoto;
 const defaultPersonProfilePicture = defaults.personProfilePicture;
+const siteSocials = siteInfoSocialsToItems(site.data.socials);
 const title = "Booking";
 ---
 
@@ -111,18 +116,29 @@ const title = "Booking";
                     id="booking-header"
                     class="relative flex flex-col justify-center"
             >
-                <div
-                        id="header-img-container"
-                        class="relative md:rounded-4xl overflow-hidden opacity-0"
-                >
-                    <img
-                            class="backdrop-opacity-10"
-                            src="/uploads/misc_images/teamstock.jpg"
-                    />
+                <div id="header-img-container">
+                    <div
+                            id="header-img-translator"
+                            class="relative md:rounded-4xl overflow-hidden"
+                    >
+                        <img
+                                class="backdrop-opacity-10 object-cover"
+                                src={bookingHeroPhoto}
+                                loading="eager"
+                                decoding="async"
+                                fetchpriority="high"
+                                alt=""
+                        />
+                    </div>
                 </div>
 
                 <style>
                     #header-img-container {
+                        aspect-ratio: 16 / 11;
+                        width: 100%;
+                    }
+
+                    #header-img-translator {
                         /* mask: linear-gradient(to bottom, black, transparent); */
                         mask: linear-gradient(
                                 to bottom,
@@ -138,22 +154,83 @@ const title = "Booking";
                                 close
                         );
                     }
+
+                    #header-img-container img {
+                        aspect-ratio: 16 / 11;
+                        object-fit: cover;
+                        object-position: center top;
+                    }
                 </style>
-                <div class="relative w-full">
+                <div id="booking-header-activity">
                     <!-- <DesktopTopLogo logo_dark={logo_dark} siteName={siteName} /> -->
                     <div
-                            class="mx-auto px-4 py-6 md:py-8 flex items-center justify-center"
+                            class="mx-auto px-4 py-6 md:py-8 flex flex-col items-center justify-center"
                     >
                         <!-- <a href="/" class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-(--brand-profile-border-color) shadow-[6px_4px_0px_var(--brand-profile-shadow-color)]"> -->
                         <a
                                 id="brand-profile-pic"
                                 href="/"
-                                class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 -translate-y-1/2 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
+                                class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
                         >
                             <img src={logoDark} alt={`${siteName} Homepage`}/>
                         </a>
+                        <button id="shareBtn">Share</button>
+
+                        <script>
+                            document.getElementById('shareBtn').addEventListener('click', async () => {
+                                if (navigator.share) {
+                                    try {
+                                        await navigator.share({
+                                            title: document.title,
+                                            text: 'Check this out',
+                                            url: window.location.href
+                                        });
+                                    } catch (err) {
+                                        console.error('Share failed:', err);
+                                    }
+                                } else {
+                                    alert('Sharing not supported on this browser');
+                                }
+                            });
+                        </script>
+                        <SlottableModal
+                                square=true
+                                cardButtonClass="m-5"
+                                modalContentHeroClass="p-5"
+                                cardRadius="50px"
+                                duration="420ms"
+                        >
+                            <Fragment slot="card">
+                                <div class="aspect-square h-10 w-10 bg-white/80 p-3 rounded-full flex items-center justify-center">
+                                    <img src="/uploads/misc_images/shareicon.png" alt=""/>
+                                </div>
+                            </Fragment>
+                            <Fragment slot="modal-content-hero">
+                                <img class="object-contain" src={logoDark} alt={`${siteName} Homepage`}/>
+                            </Fragment>
+                            <Fragment slot="modal-content-main">
+                                <div class="h-100 w-100"></div>
+                            </Fragment>
+                        </SlottableModal>
+                        <SocialRow links={siteSocials} class="text-black"
+                                   anchorClass="aspect-square h-10 w-10 bg-white/80 rounded-md flex items-center justify-center"/>
                     </div>
                 </div>
+                <style>
+                    #booking-header-activity {
+                        position: relative;
+                        width: 100%;
+                        transform: translateY(calc(var(--spacing) * -30));
+                        margin-bottom: calc(var(--spacing) * -30);
+                    }
+
+                    @media (min-width: 768px) {
+                        #booking-header-activity {
+                            transform: translateY(calc(var(--spacing) * -40));
+                            margin-bottom: calc(var(--spacing) * -40);
+                        }
+                    }
+                </style>
             </header>
             <section
                     class="px-4 pt-8 pb-16"
@@ -214,10 +291,18 @@ const title = "Booking";
 
                             const hasBookables = (bookables?.length ?? 0) > 0;
 
+                            const isGuest = person.variant === "guest" && person.event && person.hrefId;
+
                             return (
                                 csb &&
                                 hasBookables && (
-                                        <li class="relative rounded-[50px] border-2 border-black bg-[floralwhite] shadow-[3px_4px_0px_black] overflow-hidden not-first:mt-3">
+                                        <li class={`person-bookable-card-li ${isGuest ? "guest" : ""}`}>
+                                            {isGuest && (
+                                                    <div class="absolute rounded-4xl bg-white border-2 border-gray-300 -translate-y-[50%] translate-x-16 py-1 px-2 break-words font-[Spectral]">
+                                                        Guest {person.data.primaryRole.replaceAll("Tattoo ", "")}
+                                                        &#10209 {fmtDateRange(person.event)}</div>
+                                                    <SparkleCorners fillColor="gold"/>
+                                            )}
                                             <section aria-labelledby={personHeadingId}>
                                                 <h2 id={personHeadingId} class="sr-only">
                                                     {person.data.name}
@@ -232,7 +317,7 @@ const title = "Booking";
                                                         data-accordion-level="root"
                                                 >
                                                     {/* <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[6px_4px_0px_var(--profile-frame-shadow-color)]"> */}
-                                                    <div class="h-16 w-16 overflow-hidden rounded-[50px] border-2 border-(--profile-frame-border-color) shadow-[3px_3px_0px_1px_var(--profile-frame-shadow-color)]">
+                                                    <div class="profile-picture">
                                                         <img
                                                                 src={csb.bookingProfilePicture?.src ?? defaultPersonProfilePicture}
                                                                 alt={`Booking profile image for ${person.data.name}`}
@@ -414,6 +499,7 @@ const title = "Booking";
                                                                                                                         <Fragment
                                                                                                                                 slot="modal-content-hero">
                                                                                                                             <img
+                                                                                                                                    class="object-cover"
                                                                                                                                     src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
                                                                                                                                     alt=""
                                                                                                                             />
@@ -456,7 +542,7 @@ const title = "Booking";
                                                                     <div class={`link-card basic not-first:mt-2`}>
                                                                         <a
                                                                                 class="font-semibold break-words"
-                                                                                href={`/artists/${person.id}`}
+                                                                                href={`${isGuest ? `/events/${person.hrefId}` : `/artists/${person.id}`}`}
                                                                         >
                                                                             <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-[0.375rem] py-[0.375rem]">
                                                                                 <div class="h-full content-center">
@@ -473,8 +559,15 @@ const title = "Booking";
                                                                                 </div>
                                                                                 <div class="grid gap-[0.35rem] text-center content-center pr-[3.5rem]">
                                                                                     <div class="text-[0.95rem] leading-[1.5] opacity-80">
-                                                                                        Go to <span
-                                                                                            class="lowercase">{person.data.primaryRole}</span>
+                                                                                        Go to
+                                                                                        <span
+                                                                                                class="lowercase"
+                                                                                        >{isGuest ? (
+                                                                                            "Event"
+                                                                                        ) : (
+                                                                                            `${person.data.primaryRole.replaceAll("Tattoo ", "")}`
+                                                                                        )}
+                                                                                        </span>
                                                                                         page →
                                                                                     </div>
                                                                                 </div>
@@ -517,8 +610,8 @@ const title = "Booking";
             const bookingContent = document.getElementById("booking-content");
             const scrollHeightHeaderImg = bookingContent.clientHeight;
             const wallaperFlashAnimated = document.querySelector(".wallpaper-flash-animated");
-            const headerImgContainer = document.querySelector("#header-img-container");
-            const headerImg = document.querySelector("#header-img-container img");
+            const headerImgTranslator = document.querySelector("#header-img-translator");
+            const headerImg = document.querySelector("#header-img-translator img");
 
             const bookingContentRectTop = bookingContent.getBoundingClientRect().top;
             const scrollPositionHeaderImg = Math.abs(Math.min(0, bookingContentRectTop),);
@@ -526,9 +619,9 @@ const title = "Booking";
 
             wallaperFlashAnimated.style.transform = `translateY(${scrollPosition * 0.5}px)`;
 
-            headerImgContainer.style.transform = `translateY(${scrollPositionHeaderImg * 0.5}px)`;
+            headerImgTranslator.style.transform = `translateY(${scrollPositionHeaderImg * 0.2}px)`;
             // headerImg.style.transform = `scale(${1 + headerImgProgress * 0.1})`;
-            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.9})`; // why did I originally go with .1?? .9 is so much better, desktop & mobile
+            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.6})`; // why did I originally go with .1?? .9 is so much better, desktop & mobile
             headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
             // headerImg.style.opacity = `${1 - headerImgProgress * }`;
         });
@@ -621,6 +714,54 @@ const title = "Booking";
             text-align: center;
             max-width: 28rem;
             margin-inline: auto;
+        }
+
+        .person-bookable-card-li {
+            position: relative;
+            border-width: 2px;
+            border-style: solid;
+            border-radius: 50px;
+            background-color: floralwhite;
+        }
+
+        .person-bookable-card-li:not(.guest) {
+            border-color: black;
+            box-shadow: 3px 4px 0 0 black;
+        }
+
+        .person-bookable-card-li.guest {
+            border-color: #e0c7ff;
+            box-shadow: 3px 4px 0 0 #e0c7ff;
+        }
+
+        .person-bookable-card-li:not(:first-child) {
+            margin-top: 1.5rem;
+        }
+
+        .person-bookable-card-li:not(:first-child):not(.guest) {
+            margin-top: 0.75rem;
+        }
+
+        .person-bookable-card-li:nth-last-child(1 of .guest) {
+            margin-bottom: 4rem;
+        }
+
+        .profile-picture {
+            height: 4rem;
+            width: 4rem;
+            overflow: hidden;
+            border-width: 2px;
+            border-radius: 50px;
+        }
+
+        .person-bookable-card-li:not(.guest) .profile-picture {
+            border-color: var(--profile-frame-border-color);
+            box-shadow: 3px 3px 0 1px var(--profile-frame-shadow-color);
+        }
+
+        .person-bookable-card-li.guest .profile-picture {
+            border-color: lightgoldenrodyellow;
+            box-shadow: 3px 3px 0 1px palegoldenrod;
         }
 
         .link-card-li {

@@ -32,5 +32,6 @@ image: santa-hero.jpg
 published: true
 featured: false
 archived: false
-date: 2026-05-01
+date: 2026-05-04
+endDate: 2026-06-05
 ---

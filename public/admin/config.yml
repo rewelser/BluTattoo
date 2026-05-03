@@ -417,6 +417,14 @@ collections:
                     media_folder: "public/uploads/misc_images"
                     public_folder: "/uploads/misc_images"
 
+              - name: bookingHeroPhoto
+                label: "Hero image for booking page"
+                widget: image
+                required: true
+                hint: "Group photo, or something like that (don't use site logo -- that will appear overtop)."
+                media_folder: "public/uploads/misc_images"
+                public_folder: "/uploads/misc_images"
+
   - name: "eventsActive"
     label: "Events (Active)"
     folder: "src/content/events"

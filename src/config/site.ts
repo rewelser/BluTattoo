@@ -3,6 +3,7 @@ export const defaults = {
     siteLogo: "/default_media/genericlogo.svg",
     personProfilePicture: "/default_media/default-booking-profile.jpg",
     personRunwayPhoto: "/default_media/default-runway-photo.svg",
+    bookingHeroPhoto: "/default_media/default-booking-photo.jpg",
     address: {
         streetAddress: "123 Main St",
         addressLocality: "Anytown",

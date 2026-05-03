@@ -1,10 +1,15 @@
 ---
+// heroHeight was default: min(420px,45dvh); we changed this to calc((100dvh - 2rem)/2)
 const {
+    square = false,
     cardButtonClass = "",
+    expandedCardClass = "",
     modalContentClass = "",
     modalContentHeroClass = "",
     modalContentLowerClass = "",
 
+    heroHeight = "calc((100dvh - 2rem)/2)",
+    duration = "800ms",
     cardRadius = "50px",
     expandedRadius = "24px",
     cardShadow = "none",
@@ -13,11 +18,15 @@ const {
     expandedBorder = "0 solid transparent",
     ...rest
 } = Astro.props as {
+    square?: boolean,
     cardButtonClass?: string;
+    expandedCardClass?: string;
     modalContentClass?: string;
     modalContentHeroClass?: string;
     modalContentLowerClass?: string;
 
+    heroHeight: string,
+    duration?: string,
     cardRadius: string,
     expandedRadius: string,
     cardShadow: string,
@@ -40,12 +49,11 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             </div>
         </button>
 
-        <dialog class="dialog" data-dialog>
-
-            <article class="expanded-card" data-expanded-card>
+        <dialog class={`dialog ${square ? "square" : ""}`} data-dialog>
+            <article class={`expanded-card ${expandedCardClass}`} data-expanded-card>
                 <button class="close" data-close aria-label="Close modal">×</button>
                 <div class="modal-content">
-                    <div class="modal-content-hero">
+                    <div class={`modal-content-hero ${modalContentHeroClass}`}>
                         <slot name="modal-content-hero"/>
                     </div>
                     <div class="modal-content-main">
@@ -57,6 +65,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
         <script define:vars={{
             transitionName,
             groupAnimationName,
+            heroHeight,
+            duration,
             cardRadius,
             expandedRadius,
             cardShadow,
@@ -83,6 +93,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                     shell?.setAttribute("data-vt-active", "");
                     document.documentElement.dataset.vtDirection = direction;
                     document.documentElement.style.setProperty("--groupAnimationName", groupAnimationName);
+                    document.documentElement.style.setProperty("--heroHeight", heroHeight);
+                    document.documentElement.style.setProperty("--duration", duration);
                     document.documentElement.style.setProperty('--cardRadius', cardRadius);
                     document.documentElement.style.setProperty('--expandedRadius', expandedRadius);
                     document.documentElement.style.setProperty('--cardShadow', cardShadow);
@@ -96,6 +108,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                     delete document.documentElement.dataset.vtDirection;
                     for (const name of [
                         "--groupAnimationName",
+                        "--heroHeight",
+                        "--duration",
                         "--cardRadius",
                         "--expandedRadius",
                         "--cardShadow",
@@ -147,6 +161,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
         <style define:vars={{
             transitionName,
             groupAnimationName,
+            heroHeight,
+            duration,
             cardRadius,
             expandedRadius,
             cardShadow,
@@ -160,8 +176,6 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             }
 
             :global(:root) {
-                --vt-duration: 800ms;
-                //--vt-duration: 2s;
                 --vt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
             }
 
@@ -194,7 +208,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 
             :global(::view-transition-group(.slottable-modal)) {
                 animation-name: var(--groupAnimationName), slottable-modal-anim;
-                animation-duration: var(--vt-duration), var(--vt-duration);
+                animation-duration: var(--duration), var(--duration);
                 animation-timing-function: var(--vt-ease), var(--vt-ease);
                 overflow: clip;
             }
@@ -218,9 +232,12 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             }
 
             .dialog {
-                width: min(860px, calc(100dvw - 2rem));
-                max-height: calc(100dvh - 2rem);
-                height: calc(100dvh - 2rem);
+                --modal-gutter: 1rem;
+                --modal-square-size: min(
+                        860px,
+                        calc(100dvw - (var(--modal-gutter) * 2)),
+                        calc(100dvh - (var(--modal-gutter) * 2))
+                );
                 padding: 0;
                 margin: auto;
                 border-radius: var(--expandedRadius);
@@ -230,6 +247,29 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 overscroll-behavior: none;
             }
 
+            .dialog:not(.square) {
+                width: min(860px, calc(100dvw - 2rem));
+                max-height: calc(100dvh - 2rem);
+                height: calc(100dvh - 2rem);
+            }
+
+            .dialog.square {
+                width: var(--modal-square-size);
+                height: var(--modal-square-size);
+                aspect-ratio: 1;
+            }
+
+            .dialog.square .expanded-card {
+                height: 100%;
+                width: 100%;
+                aspect-ratio: 1;
+            }
+
+            .dialog.square .modal-content-hero {
+                height: calc(var(--modal-square-size) / 2);
+                overflow: hidden;
+            }
+
             .dialog::backdrop {
                 background: rgb(10 15 25 / 0.55);
             }
@@ -237,12 +277,15 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             .expanded-card {
                 position: relative;
                 overflow: auto;
-                height: calc(100dvh - 2rem);
-                max-height: calc(100dvh - 2rem);
                 border-radius: var(--expandedRadius);
                 scrollbar-width: none;
                 overscroll-behavior: contain;
                 overscroll-behavior-x: none;
+            }
+
+            .dialog:not(.square) .expanded-card {
+                height: calc(100dvh - 2rem);
+                max-height: calc(100dvh - 2rem);
             }
 
             .modal-content {
@@ -253,10 +296,14 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 background: white;
             }
 
+            .dialog:not(.square) .modal-content-hero {
+                height: var(--heroHeight);
+                overflow: hidden;
+            }
+
             :global(.modal-content-hero img) {
                 width: 100%;
-                height: min(420px, 45dvh);
-                object-fit: cover;
+                height: 100%;
                 display: block;
             }
 
