@@ -1,0 +1,22 @@
+---
+
+const {
+    class: className = "",
+} = Astro.props as {
+    class?: string;
+}
+---
+<!--flex h-full w-full justify-center items-center overflow-x-auto-->
+<!--flex items-center gap-3 w-fit max-w-full flex-nowrap-->
+
+<!--or -->
+
+<!--flex w-full justify-center-->
+<!--flex gap-4 p-4 max-w-full flex-nowrap overflow-x-auto-->
+
+
+<div class={`flex w-full justify-center ${className}`}>
+    <div class="flex gap-4 max-w-full flex-nowrap overflow-x-auto" style="scrollbar-width: none;">
+        <slot name="scrollContent" />
+    </div>
+</div>

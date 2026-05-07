@@ -6,7 +6,7 @@ const {
     expandedCardClass = "",
     modalContentClass = "",
     modalContentHeroClass = "",
-    modalContentLowerClass = "",
+    modalContentMainClass = "",
 
     heroHeight = "calc((100dvh - 2rem)/2)",
     duration = "800ms",
@@ -23,7 +23,7 @@ const {
     expandedCardClass?: string;
     modalContentClass?: string;
     modalContentHeroClass?: string;
-    modalContentLowerClass?: string;
+    modalContentMainClass?: string;
 
     heroHeight: string,
     duration?: string,
@@ -56,7 +56,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                     <div class={`modal-content-hero ${modalContentHeroClass}`}>
                         <slot name="modal-content-hero"/>
                     </div>
-                    <div class="modal-content-main">
+                    <div class={`modal-content-main ${modalContentMainClass}`}>
                         <slot name="modal-content-main"/>
                     </div>
                 </div>
@@ -234,7 +234,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             .dialog {
                 --modal-gutter: 1rem;
                 --modal-square-size: min(
-                        860px,
+                        460px,
                         calc(100dvw - (var(--modal-gutter) * 2)),
                         calc(100dvh - (var(--modal-gutter) * 2))
                 );
@@ -265,7 +265,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                 aspect-ratio: 1;
             }
 
-            .dialog.square .modal-content-hero {
+            .dialog.square .modal-content-hero,
+            .dialog.square .modal-content-main {
                 height: calc(var(--modal-square-size) / 2);
                 overflow: hidden;
             }

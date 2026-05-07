@@ -1,24 +1,26 @@
 ---
-import { iconRegistry } from "./graphics/icons/registry";
-import { socialTypes } from "../domain/contact/defs.ts";
+import {iconRegistry} from "./graphics/icons/registry";
+import {socialTypes} from "../domain/contact/defs.ts";
 
-import type {SocialItems} from "../domain/contact/types.ts";
+import type {IconVariant, SocialItems} from "../domain/contact/types.ts";
 
 const {
     links = [],
+    variant = "thin",
     class: className = "",
     anchorClass = "",
-    iconClass = "w-6 h-6 fill-current",
+    iconClass = "w-6 h-6",
     extraFilter,
 } = Astro.props as {
     links: SocialItems;
+    variant?: IconVariant;
     class?: string;
     anchorClass?: string;
     iconClass?: string;
     extraFilter?: (item: SocialItems[number]) => boolean;
 };
 
-const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
+const aAttrs = {target: "_blank", rel: "noopener noreferrer"};
 ---
 
 <div class={`flex items-center gap-3 ${className}`}>
@@ -32,20 +34,20 @@ const aAttrs = { target: "_blank", rel: "noopener noreferrer" };
             );
             const href = item?.href;
 
-            const entry = iconRegistry[key];
+            const entry = iconRegistry[key]?.[variant] ?? iconRegistry[key]?.default;
             if (!entry) return null;
 
-            const { label, Icon } = entry;
+            const {label, Icon} = entry;
             return (
                 item && (
-                    <a
-                        href={href}
-                        aria-label={label}
-                        {...aAttrs}
-                        class={`flex items-center ${anchorClass}`}
-                    >
-                        <Icon class={iconClass} />
-                    </a>
+                        <a
+                                href={href}
+                                aria-label={label}
+                                {...aAttrs}
+                                class={`flex items-center ${anchorClass}`}
+                        >
+                            <Icon class={`fill-current ${iconClass}`}/>
+                        </a>
                 )
             );
         })

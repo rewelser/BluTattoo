@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="390.07" height="398.67" viewBox="0 0 390.07 398.67">
+  <path d="M81.39,177.13h-42.4c-13.19,0-23.99,7.82-23.99,17.37v171.8c0,9.56,10.79,17.37,23.99,17.37h312.09c13.19,0,23.99-7.82,23.99-17.37v-171.8c0-9.56-10.79-17.37-23.99-17.37h-48.82,48.81c13.19,0,23.99,7.82,23.99,17.37v171.8c0,9.56-10.79,17.37-23.99,17.37H38.99c-13.19,0-23.99-7.82-23.99-17.37v-171.8c0-9.56,10.79-17.37,23.99-17.37h48.82" style="fill: none; stroke: #000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+  <g>
+    <line x1="195.03" y1="280.4" x2="195.03" y2="32.53" style="fill: none; stroke: #000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+    <polygon points="317.73 131.94 295.75 152.4 195.06 44.05 94.34 152.4 72.36 131.94 195.06 0 317.73 131.94"/>
+  </g>
+</svg>

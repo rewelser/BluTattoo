@@ -24,10 +24,30 @@ contactSocialsBooking:
     - type: instagram
       href: https://www.instagram.com/example/
       enabled: true
-      bookable: true
+      bookable: false
       preferred: true
       handle: ztheghost
     - type: facebook
+      href: https://www.facebook.com/example/
+      enabled: true
+      bookable: false
+      handle: ztheghost
+    - type: facebookMessenger
+      href: https://www.facebook.com/example/
+      enabled: true
+      bookable: true
+      handle: ztheghost
+    - type: whatsapp
+      href: https://www.facebook.com/example/
+      enabled: true
+      bookable: true
+      handle: ztheghost
+    - type: snapchat
+      href: https://www.facebook.com/example/
+      enabled: true
+      bookable: true
+      handle: ztheghost
+    - type: tiktok
       href: https://www.facebook.com/example/
       enabled: true
       bookable: false
