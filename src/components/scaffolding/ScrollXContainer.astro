@@ -3,11 +3,13 @@ const {
     class: className = "",
     scrollContainerClass = "",
     scrollBtnClass = "h-10 w-10 p-3 m-3 rounded-full bg-gray-100 border-1 border-solid border-gray-300",
+    justificationClass = "justify-center",
 
 } = Astro.props as {
     class?: string;
     scrollContainerClass?: string;
     scrollBtnClass?: string;
+    justificationClass?: string;
 }
 ---
 <!--flex h-full w-full justify-center items-center overflow-x-auto-->
@@ -19,7 +21,7 @@ const {
 <!--flex gap-4 p-4 max-w-full flex-nowrap overflow-x-auto-->
 
 
-<div class={`relative flex w-full justify-center ${className}`}>
+<div class={`relative flex w-full ${justificationClass} ${className}`}>
     <div class={`scroll-container flex gap-4 max-w-full flex-nowrap overflow-x-auto ${scrollContainerClass}`}
          style="scrollbar-width: none;">
         <slot name="scrollContent"/>

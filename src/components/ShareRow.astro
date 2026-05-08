@@ -13,7 +13,9 @@ const {
         'snapchat',
     ],
     variant = "roundColor",
-    class: className = "",
+    class: className,
+    justificationClass,
+    scrollBtnClass,
     anchorClass = "p-1 w-[60px]",
     iconClass = "w-12 h-12",
 
@@ -31,7 +33,7 @@ const buttonIconSpanClass = "flex justify-center items-center rounded-full overf
 const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visible";
 ---
 
-<ScrollXContainer class={`${className}`} scrollContainerClass="px-3">
+<ScrollXContainer class={className} scrollContainerClass="px-3" justificationClass={justificationClass} scrollBtnClass={scrollBtnClass}>
     <Fragment slot="scrollContent">
         <div class={buttonAnchorContainerClass}>
             <button
