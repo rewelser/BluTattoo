@@ -119,33 +119,18 @@ const moduleInfo = square?.linkOrModuleInfo.find(
                         }
                     </style>
                     <div id="artist-bio" class="flex items-center p-5 js-fade-up">
-                        <div>
+                        <div class="w-full">
                             <h1 class="text-3xl font-bold">{entry.data.name}</h1>
-
-                            <!-- {
-                              entry.data.contactSocialsBooking?.socials && (
-                                <p>
-                                  <SocialRow
-                                    links={entry.data.contactSocialsBooking.socials}
-                                    class="my-3"
-                                    anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
-                                  />
-                                </p>
-                              )
-                            } -->
-
                             {
                                 entry.data.contactSocialsBooking?.socials && (
-                                            <p>
                                                 <SocialRow
                                                         links={entry.data.contactSocialsBooking.socials}
                                                         class="my-3"
                                                         anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                                                        scrollBtnClass="h-10 w-10 p-3 m-1 rounded-full bg-black/70 border-1 border-solid border-orange-100"
                                                 />
-                                            </p>
                                 )
                             }
-
                             <section class="js-fade-up">
                                 <h2 class="sr-only">Bio</h2>
                                 <p class="whitespace-pre-line">

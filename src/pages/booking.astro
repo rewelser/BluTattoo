@@ -292,27 +292,7 @@ const title = "Booking";
                         >
                             <img src={logoDark} alt={`${siteName} Homepage`}/>
                         </a>
-                        <button id="shareBtn" class="text-white">Share</button>
-
-                        <script>
-                            document.getElementById('shareBtn').addEventListener('click', async () => {
-                                if (navigator.share) {
-                                    try {
-                                        await navigator.share({
-                                            title: document.title,
-                                            text: 'Check this out',
-                                            url: window.location.href
-                                        });
-                                    } catch (err) {
-                                        console.error('Share failed:', err);
-                                    }
-                                } else {
-                                    alert('Sharing not supported on this browser');
-                                }
-                            });
-                        </script>
                         <ShareModal siteName={siteName} logo={logoDark}/>
-
                         <SocialRow links={siteSocials} variant="thin" class="text-white" iconClass="h-8 w-8"/>
                         <div class="overflow-hidden overflow-x-auto">
                             <div class="flex flex-nowrap">
@@ -691,34 +671,19 @@ const title = "Booking";
                                                                 {hasNonbookableSocials && (
                                                                         <li class="link-card-li">
                                                                             <div class={`link-card basic h-[4.25rem] w-full not-first:mt-2`}>
-                                                                                <div class="flex h-full w-full justify-center items-center overflow-x-auto">
-                                                                                    <SocialRow
-                                                                                            links={nonbookableSocials}
-                                                                                            class="w-fit max-w-full flex-nowrap"
-                                                                                            anchorClass="px-3"
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-                                                                        </li>
-                                                                )}
-                                                                {hasNonbookableSocials && (
-                                                                        <li class="link-card-li">
-                                                                            <div class={`link-card basic h-[4.25rem] w-full not-first:mt-2`}>
-                                                                                <!--<div class="flex h-full w-full justify-center items-center overflow-x-auto">-->
-                                                                                <!--    <SocialRow-->
-                                                                                <!--            links={nonbookableSocials}-->
-                                                                                <!--            class="w-fit max-w-full flex-nowrap"-->
-                                                                                <!--            anchorClass="px-3"-->
-                                                                                <!--    />-->
-                                                                                <!--</div>-->
-                                                                                <ScrollXContainer class="h-full">
-                                                                                    <Fragment slot="scrollContent">
-                                                                                        <SocialRow
-                                                                                                links={nonbookableSocials}
-                                                                                                anchorClass="px-3"
-                                                                                        />
-                                                                                    </Fragment>
-                                                                                </ScrollXContainer>
+                                                                                <!--<ScrollXContainer class="h-full">-->
+                                                                                <!--    <Fragment slot="scrollContent">-->
+                                                                                <!--        <SocialRow-->
+                                                                                <!--                links={nonbookableSocials}-->
+                                                                                <!--                anchorClass="px-3"-->
+                                                                                <!--        />-->
+                                                                                <!--    </Fragment>-->
+                                                                                <!--</ScrollXContainer>-->
+                                                                                <SocialRow
+                                                                                        links={nonbookableSocials}
+                                                                                        class="h-full"
+                                                                                        anchorClass="px-3"
+                                                                                />
                                                                             </div>
                                                                         </li>
                                                                 )}

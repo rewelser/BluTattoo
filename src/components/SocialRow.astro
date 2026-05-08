@@ -3,11 +3,13 @@ import {iconRegistry} from "./graphics/icons/registry";
 import {socialTypes} from "../domain/contact/defs.ts";
 
 import type {IconVariant, SocialItems} from "../domain/contact/types.ts";
+import ScrollXContainer from "./scaffolding/ScrollXContainer.astro";
 
 const {
     links = [],
     variant = "thin",
     class: className = "",
+    scrollBtnClass,
     anchorClass = "",
     iconClass = "w-6 h-6",
     extraFilter,
@@ -15,6 +17,7 @@ const {
     links: SocialItems;
     variant?: IconVariant;
     class?: string;
+    scrollBtnClass?: string;
     anchorClass?: string;
     iconClass?: string;
     extraFilter?: (item: SocialItems[number]) => boolean;
@@ -23,33 +26,66 @@ const {
 const aAttrs = {target: "_blank", rel: "noopener noreferrer"};
 ---
 
-<div class={`flex items-center gap-3 ${className}`}>
-    {
-        socialTypes.map((key) => {
-            const item = links.find(
-                (item) =>
-                    item.type === key &&
-                    item.enabled &&
-                    (extraFilter ? extraFilter(item) : true),
-            );
-            const href = item?.href;
+<!--<div class={`flex items-center gap-3 ${className}`}>-->
+<!--    {-->
+<!--        socialTypes.map((key) => {-->
+<!--            const item = links.find(-->
+<!--                (item) =>-->
+<!--                    item.type === key &&-->
+<!--                    item.enabled &&-->
+<!--                    (extraFilter ? extraFilter(item) : true),-->
+<!--            );-->
+<!--            const href = item?.href;-->
 
-            const entry = iconRegistry[key]?.[variant] ?? iconRegistry[key]?.default;
-            if (!entry) return null;
+<!--            const entry = iconRegistry[key]?.[variant] ?? iconRegistry[key]?.default;-->
+<!--            if (!entry) return null;-->
 
-            const {label, Icon} = entry;
-            return (
-                item && (
-                        <a
-                                href={href}
-                                aria-label={label}
-                                {...aAttrs}
-                                class={`flex items-center ${anchorClass}`}
-                        >
-                            <Icon class={`fill-current ${iconClass}`}/>
-                        </a>
-                )
-            );
-        })
-    }
-</div>
+<!--            const {label, Icon} = entry;-->
+<!--            return (-->
+<!--                item && (-->
+<!--                        <a-->
+<!--                                href={href}-->
+<!--                                aria-label={label}-->
+<!--                                {...aAttrs}-->
+<!--                                class={`flex items-center ${anchorClass}`}-->
+<!--                        >-->
+<!--                            <Icon class={`fill-current ${iconClass}`}/>-->
+<!--                        </a>-->
+<!--                )-->
+<!--            );-->
+<!--        })-->
+<!--    }-->
+<!--</div>-->
+
+<ScrollXContainer class={`${className}`} scrollContainerClass="items-center gap-3" scrollBtnClass={scrollBtnClass}>
+    <Fragment slot="scrollContent">
+        {
+            socialTypes.map((key) => {
+                const item = links.find(
+                    (item) =>
+                        item.type === key &&
+                        item.enabled &&
+                        (extraFilter ? extraFilter(item) : true),
+                );
+                const href = item?.href;
+
+                const entry = iconRegistry[key]?.[variant] ?? iconRegistry[key]?.default;
+                if (!entry) return null;
+
+                const {label, Icon} = entry;
+                return (
+                    item && (
+                            <a
+                                    href={href}
+                                    aria-label={label}
+                                    {...aAttrs}
+                                    class={`flex items-center ${anchorClass}`}
+                            >
+                                <Icon class={`fill-current ${iconClass}`}/>
+                            </a>
+                    )
+                );
+            })
+        }
+    </Fragment>
+</ScrollXContainer>

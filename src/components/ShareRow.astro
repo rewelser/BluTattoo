@@ -14,7 +14,7 @@ const {
     ],
     variant = "roundColor",
     class: className = "",
-    anchorClass = "",
+    anchorClass = "p-1 w-[60px]",
     iconClass = "w-12 h-12",
 
 } = Astro.props as {
@@ -24,124 +24,168 @@ const {
     anchorClass?: string;
     iconClass?: string;
 };
+
+const buttonAnchorContainerClass = "h-full flex flex-col justify-center";
+const buttonClass = "flex flex-col items-center justify-center font-light text-xs cursor-pointer";
+const buttonIconSpanClass = "flex justify-center items-center rounded-full overflow-hidden bg-gray-200 p-3";
+const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visible";
 ---
 
-<div class={`flex gap-4 ${className}`}>
-    <button
-            type="button"
-            class={`relative copy-link-btn flex flex-col items-center justify-between font-light text-xs cursor-pointer ${anchorClass}`}
-            aria-live="polite"
-    >
-    <span
-            class={`icon-shell flex justify-center items-center rounded-full overflow-hidden bg-gray-200 p-3 ${iconClass}`}
-    >
-        <svg
-                class="copy-icon"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 498.83 498.83"
-        >
-            <path
-                    d="M319.2,366.46l-89.29,89.29c-37.45,37.45-98.76,37.45-136.23-.03l-50.6-50.6c-37.45-37.45-37.45-98.76,0-136.21l89.29-89.29"
-                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"
-            />
-            <path
-                    d="M179.63,132.37l89.29-89.29c37.45-37.45,98.76-37.45,136.21,0l50.6,50.6c37.47,37.47,37.47,98.79.03,136.23l-89.29,89.29"
-                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"
-            />
-            <line
-                    x1="370.7"
-                    y1="128.13"
-                    x2="124.82"
-                    y2="374.01"
-                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"
-            />
-        </svg>
+<ScrollXContainer class={`${className}`} scrollContainerClass="px-3">
+    <Fragment slot="scrollContent">
+        <div class={buttonAnchorContainerClass}>
+            <button
+                    type="button"
+                    class={`copy-link-btn ${buttonClass} ${anchorClass}`}
+                    aria-live="polite"
+            >
+            <span
+                    class={`icon-shell ${buttonIconSpanClass} ${iconClass}`}
+            >
+                <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path d="M325.79,373.05l-89.29,89.29c-37.45,37.45-98.76,37.45-136.23-.03l-50.6-50.6c-37.45-37.45-37.45-98.76,0-136.21l89.29-89.29"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>
+                  <path d="M186.22,138.96l89.29-89.29c37.45-37.45,98.76-37.45,136.21,0l50.6,50.6c37.47,37.47,37.47,98.79.03,136.23l-89.29,89.29"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>
+                  <line x1="377.29" y1="134.72" x2="131.4" y2="380.6"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>
+                </svg>
 
-        <svg
-                class="check-icon hidden"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 424.75 275.88"
-        >
-            <line
-                    x1="409.75"
-                    y1="15"
-                    x2="163.87"
-                    y2="260.88"
-                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"
-            />
-            <line
-                    x1="161.57"
-                    y1="259.23"
-                    x2="15"
-                    y2="112.66"
-                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"
-            />
-        </svg>
-    </span>
+                <svg class="check-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <line x1="453.38" y1="133.06" x2="207.49" y2="378.94"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>
+                  <line x1="205.19" y1="377.28" x2="58.62" y2="230.71"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>
+                </svg>
+            </span>
 
-        <span class="label pt-2 text-nowrap text-start absolute bottom-0 left-1/2 -translate-x-1/2 overflow-visible">Copy Link</span>
-    </button>
+                <span class={`label ${labelClass}`}>Copy Link</span>
+            </button>
 
-    <script is:inline>
-        (() => {
-            const button = document.currentScript?.previousElementSibling;
+            <script is:inline>
+                (() => {
+                    const button = document.currentScript?.previousElementSibling;
 
-            if (!(button instanceof HTMLButtonElement)) return;
+                    if (!(button instanceof HTMLButtonElement)) return;
 
-            const label = button.querySelector(".label");
-            const copyIcon = button.querySelector(".copy-icon");
-            const checkIcon = button.querySelector(".check-icon");
+                    const label = button.querySelector(".label");
+                    const copyIcon = button.querySelector(".copy-icon");
+                    const checkIcon = button.querySelector(".check-icon");
 
-            let timeout;
+                    let timeout;
 
-            button.addEventListener("click", async () => {
-                try {
-                    await navigator.clipboard.writeText(window.location.href);
+                    button.addEventListener("click", async () => {
+                        try {
+                            await navigator.clipboard.writeText(window.location.href);
 
-                    label.textContent = "Link Copied!";
+                            label.textContent = "Link Copied!";
 
-                    copyIcon?.classList.add("hidden");
-                    checkIcon?.classList.remove("hidden");
+                            copyIcon?.classList.add("hidden");
+                            checkIcon?.classList.remove("hidden");
 
-                    button.classList.add("text-green-600");
+                            button.classList.add("text-green-600");
 
-                    clearTimeout(timeout);
+                            clearTimeout(timeout);
 
-                    timeout = setTimeout(() => {
-                        label.textContent = "Copy Link";
+                            timeout = setTimeout(() => {
+                                label.textContent = "Copy Link";
 
-                        copyIcon?.classList.remove("hidden");
-                        checkIcon?.classList.add("hidden");
+                                copyIcon?.classList.remove("hidden");
+                                checkIcon?.classList.add("hidden");
 
-                        button.classList.remove("text-green-600");
-                    }, 2000);
-                } catch (err) {
-                    console.error("Failed to copy link", err);
-                }
-            });
-        })();
-    </script>
+                                button.classList.remove("text-green-600");
+                            }, 2000);
+                        } catch (err) {
+                            console.error("Failed to copy link", err);
+                        }
+                    });
+                })();
+            </script>
+        </div>
 
+        {
+            shareTypes.map((key) => {
+                const entry = getIconEntry(key, [variant, "round", "thick"]);
 
-    {
-        shareTypes.map((key) => {
-            const entry = getIconEntry(key, [variant, "round", "thick"]);
+                if (!entry) return null;
+                const {label, Icon} = entry;
+                return (
+                    entry && (
+                            <div class={buttonAnchorContainerClass}>
+                                <a
+                                        href="fishy.com"
+                                        aria-label={label}
+                                        class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}
+                                >
+                                    <Icon class={iconClass}/>
+                                    <span class={`${labelClass}`}>{label}</span>
+                                </a>
+                            </div>
+                    )
+                );
+            })
+        }
 
-            if (!entry) return null;
-            const {label, Icon} = entry;
-            return (
-                entry && (
-                        <a
-                                href="fishy.com"
-                                aria-label={label}
-                                class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}
-                        >
-                            <Icon class={iconClass}/>
-                            <span class="pt-2">{label}</span>
-                        </a>
-                )
-            );
-        })
-    }
+        <div class={buttonAnchorContainerClass}>
+            <button class={`${buttonClass} ${anchorClass}`}>
+            <span class={`${buttonIconSpanClass} ${iconClass}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <rect x="17.87" y="86.25" width="476.26" height="339.5" rx="68.47" ry="68.47"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="446.99" y1="140.91" x2="256.16" y2="287.17"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="333.35" y1="247.13" x2="446.99" y2="371.09"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="65.01" y1="140.91" x2="255.84" y2="287.17"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="178.65" y1="247.13" x2="65.01" y2="371.09"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                </svg>
+            </span>
+                <span class={`${labelClass}`}>Email</span>
+            </button>
+        </div>
 
-</div>
+        <div class={buttonAnchorContainerClass}>
+            <button class={`${buttonClass} ${anchorClass}`}>
+            <span class={`${buttonIconSpanClass} ${iconClass}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path d="M142.36,254.83h-42.4c-13.19,0-23.99,7.82-23.99,17.37v171.8c0,9.56,10.79,17.37,23.99,17.37h312.09c13.19,0,23.99-7.82,23.99-17.37v-171.8c0-9.56-10.79-17.37-23.99-17.37h-48.82,48.81c13.19,0,23.99,7.82,23.99,17.37v171.8c0,9.56-10.79,17.37-23.99,17.37H99.96c-13.19,0-23.99-7.82-23.99-17.37v-171.8c0-9.56,10.79-17.37,23.99-17.37h48.82"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="256" y1="358.1" x2="256" y2="50.63"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="134.58" y1="187.89" x2="256" y2="50.63"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                  <line x1="377.42" y1="187.89" x2="256" y2="50.63"
+                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                </svg>
+            </span>
+                <span class={`${labelClass}`}>More</span>
+
+            </button>
+            <script is:inline>
+                (() => {
+                    const button = document.currentScript?.previousElementSibling;
+
+                    if (!(button instanceof HTMLButtonElement)) return;
+
+                    button.addEventListener('click', async () => {
+                        if (navigator.share) {
+                            try {
+                                await navigator.share({
+                                    title: document.title,
+                                    text: 'Check this out',
+                                    url: window.location.href
+                                });
+                            } catch (err) {
+                                console.error('Share failed:', err);
+                            }
+                        } else {
+                            alert('Sharing not supported on this browser');
+                        }
+                    });
+                })();
+            </script>
+        </div>
+    </Fragment>
+</ScrollXContainer>

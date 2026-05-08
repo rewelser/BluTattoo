@@ -1,9 +1,13 @@
 ---
-
 const {
     class: className = "",
+    scrollContainerClass = "",
+    scrollBtnClass = "h-10 w-10 p-3 m-3 rounded-full bg-gray-100 border-1 border-solid border-gray-300",
+
 } = Astro.props as {
     class?: string;
+    scrollContainerClass?: string;
+    scrollBtnClass?: string;
 }
 ---
 <!--flex h-full w-full justify-center items-center overflow-x-auto-->
@@ -15,8 +19,95 @@ const {
 <!--flex gap-4 p-4 max-w-full flex-nowrap overflow-x-auto-->
 
 
-<div class={`flex w-full justify-center ${className}`}>
-    <div class="flex gap-4 max-w-full flex-nowrap overflow-x-auto" style="scrollbar-width: none;">
-        <slot name="scrollContent" />
+<div class={`relative flex w-full justify-center ${className}`}>
+    <div class={`scroll-container flex gap-4 max-w-full flex-nowrap overflow-x-auto ${scrollContainerClass}`}
+         style="scrollbar-width: none;">
+        <slot name="scrollContent"/>
     </div>
+    <div class="absolute w-full h-full pointer-events-none flex justify-between items-center">
+        <button class={`left-btn pointer-events-auto select-none cursor-pointer ${scrollBtnClass}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <line x1="104.21" y1="256" x2="407.79" y2="58.42"
+                      style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                <line x1="104.21" y1="256" x2="407.79" y2="453.58"
+                      style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+            </svg>
+        </button>
+        <button class={`right-btn pointer-events-auto select-none cursor-pointer ${scrollBtnClass}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <line x1="407.79" y1="256" x2="104.21" y2="58.42"
+                      style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+                <line x1="407.79" y1="256" x2="104.21" y2="453.58"
+                      style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
+            </svg>
+        </button>
+    </div>
+    <script is:inline>
+        (() => {
+            const buttonLeft = document.currentScript?.parentElement.querySelector(".left-btn");
+            const buttonRight = document.currentScript?.parentElement.querySelector(".right-btn");
+            const scrollContainer = document.currentScript?.parentElement.querySelector(".scroll-container");
+            const firstEl = scrollContainer.firstElementChild;
+            const lastEl = scrollContainer.lastElementChild;
+
+            buttonLeft.addEventListener("click", () => {
+                scrollContainer.scrollTo({
+                    left: 0,
+                    behavior: "smooth",
+                });
+            });
+
+            buttonRight.addEventListener("click", () => {
+                scrollContainer.scrollTo({
+                    left: scrollContainer.scrollWidth,
+                    behavior: "smooth",
+                });
+            });
+
+            const callback = (entries) => {
+                entries.forEach(entry => {
+                    if (entry.target === firstEl) {
+                        buttonLeft.disabled = entry.isIntersecting;
+                    }
+
+                    if (entry.target === lastEl) {
+                        buttonRight.disabled = entry.isIntersecting;
+                    }
+                });
+            };
+
+            const options = {
+                root: scrollContainer,
+                rootMargin: '0px',
+                threshold: 0.5
+            };
+
+            const observer = new IntersectionObserver(callback, options);
+            observer.observe(firstEl);
+            observer.observe(lastEl);
+
+            console.log({
+                scrollContainer,
+                firstEl,
+                lastEl,
+                scrollWidth: scrollContainer.scrollWidth,
+                clientWidth: scrollContainer.clientWidth,
+                overflows: scrollContainer.scrollWidth > scrollContainer.clientWidth,
+            });
+        })();
+    </script>
+    <style>
+        .left-btn,
+        .right-btn {
+            opacity: 1;
+            transition: opacity 200ms ease;
+        }
+
+        .left-btn:disabled,
+        .right-btn:disabled {
+            pointer-events: none;
+            opacity: 0;
+            cursor: default;
+        }
+    </style>
 </div>

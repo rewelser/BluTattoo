@@ -1,7 +1,7 @@
 ---
 import SlottableModal from "./SlottableModal.astro";
 import ShareRow1 from "./ShareRow.astro";
-import ShareRow2 from "./ShareRow2.astro";
+import ShareRow from "./ShareRow.astro";
 import {defaults} from "../config/site.ts";
 
 const {
@@ -45,13 +45,9 @@ const {
         </div>
     </Fragment>
     <Fragment slot="modal-content-main">
-        <!--<div class="h-100 w-100"></div>-->
-        <span class="shrink-0 text-center font-medium">
+        <span class="text-center font-medium">
             Share {siteName}!
         </span>
-        <div class="flex w-full justify-center">
-            <ShareRow1 class="p-4 max-w-full flex-nowrap overflow-x-auto"/>
-        </div>
-        <ShareRow2 class="p-4"/>
+        <ShareRow class="h-full"/>
     </Fragment>
 </SlottableModal>
