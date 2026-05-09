@@ -39,8 +39,8 @@ const makeShareUrl = (key: IconType) => {
     // const url = Astro.url.href;
 
     const siteUrl = Astro.site ?? new URL("https://your-domain.com");
-    // const url = new URL(Astro.url.pathname, siteUrl).href;
-    const url = window.location.href;
+    const url = new URL(Astro.url.pathname, siteUrl).href;
+    // const url = window.location.href; // todo: Browser APIs are not available on the server.
     const title = "Check this out";
 
     switch (key) {
