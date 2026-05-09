@@ -34,9 +34,15 @@ const buttonClass = "flex flex-col items-center justify-center font-light text-x
 const buttonIconSpanClass = "flex justify-center items-center rounded-full overflow-hidden bg-gray-200 p-3";
 const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visible";
 
-
+console.log({
+    "Astro.url.href": Astro.url.href,
+    "Astro.url.origin": Astro.url.origin,
+    "Astro.originPathname": Astro.originPathname,
+})
 const makeShareUrl = (key: IconType) => {
     const url = Astro.url.href;
+    // const url2 = Astro.originPathname;
+
 
     // const siteUrl = Astro.site ?? new URL("https://your-domain.com");
     // const url = new URL(Astro.url.pathname, siteUrl).href;
@@ -140,11 +146,8 @@ const makeShareUrl = (key: IconType) => {
                 return (
                     entry && (
                             <div class={buttonAnchorContainerClass}>
-                                <a
-                                        href={makeShareUrl(key)}
-                                        aria-label={label}
-                                        class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}
-                                >
+                                 <a href={makeShareUrl(key)} aria-label={label} class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>
+                                <!--    <a href="fishy.com" aria-label={label} class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>-->
                                     <Icon class={iconClass}/>
                                     <span class={`${labelClass}`}>{label}</span>
                                 </a>
