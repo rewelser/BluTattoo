@@ -23,6 +23,8 @@ const {
     shareTypes: IconType[],
     variant?: IconVariant;
     class?: string;
+    justificationClass?: string;
+    scrollBtnClass?: string;
     anchorClass?: string;
     iconClass?: string;
 };
@@ -34,7 +36,10 @@ const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visi
 
 
 const makeShareUrl = (key: IconType) => {
-    const url = Astro.url.href;
+    // const url = Astro.url.href;
+
+    const siteUrl = Astro.site ?? new URL("https://your-domain.com");
+    const url = new URL(Astro.url.pathname, siteUrl).href;
     const title = "Check this out";
 
     switch (key) {
