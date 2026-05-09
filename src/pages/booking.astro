@@ -206,7 +206,7 @@ const title = "Booking";
         <meta property="og:description" content="Short description here" />
         <meta property="og:url" content="https://example.com/page" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={logoDark} />
+        <meta property="og:image" content={`${Astro.url.origin}${logoDark}`} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Your Title" />
