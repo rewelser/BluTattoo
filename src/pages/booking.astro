@@ -199,6 +199,20 @@ const title = "Booking";
         <title>Star Drift Test</title>
     </head> -->
 <BaseLayout title={title} bodyClass="bg-black">
+    <Fragment slot="head">
+        <meta name="description" content="Short description here" />
+
+        <meta property="og:title" content="Your Title" />
+        <meta property="og:description" content="Short description here" />
+        <meta property="og:url" content="https://example.com/page" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={logoDark} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Your Title" />
+        <meta name="twitter:description" content="Short description here" />
+        <meta name="twitter:image" content={logoDark} />
+    </Fragment>
     <main class="page">
         <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
         <!-- <div class="wallpaper wallpaper-gradient h-screen bg-gradient-to-b from-neutral-300 to-stone-600 hidden md:block" aria-hidden="true"> -->

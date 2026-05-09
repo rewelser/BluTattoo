@@ -31,6 +31,26 @@ const buttonAnchorContainerClass = "h-full flex flex-col justify-center";
 const buttonClass = "flex flex-col items-center justify-center font-light text-xs cursor-pointer";
 const buttonIconSpanClass = "flex justify-center items-center rounded-full overflow-hidden bg-gray-200 p-3";
 const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visible";
+
+
+const makeShareUrl = (key: IconType) => {
+    const url = Astro.url.href;
+    const title = "Check this out";
+
+    switch (key) {
+        case "x":
+            return `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+
+        case "facebook":
+            return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+
+        case "whatsapp":
+            return `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`;
+
+        default:
+            return null;
+    }
+};
 ---
 
 <ScrollXContainer class={className} scrollContainerClass="px-3" justificationClass={justificationClass} scrollBtnClass={scrollBtnClass}>
@@ -115,7 +135,7 @@ const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visi
                     entry && (
                             <div class={buttonAnchorContainerClass}>
                                 <a
-                                        href="fishy.com"
+                                        href={makeShareUrl(key)}
                                         aria-label={label}
                                         class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}
                                 >

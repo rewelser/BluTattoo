@@ -27,7 +27,7 @@ const {
         <slot name="scrollContent"/>
     </div>
     <div class="absolute w-full h-full pointer-events-none flex justify-between items-center">
-        <button class={`left-btn pointer-events-auto select-none cursor-pointer ${scrollBtnClass}`}>
+        <button class={`left-btn select-none ${scrollBtnClass}`}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <line x1="104.21" y1="256" x2="407.79" y2="58.42"
                       style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
@@ -35,7 +35,7 @@ const {
                       style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
             </svg>
         </button>
-        <button class={`right-btn pointer-events-auto select-none cursor-pointer ${scrollBtnClass}`}>
+        <button class={`right-btn select-none ${scrollBtnClass}`}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <line x1="407.79" y1="256" x2="104.21" y2="58.42"
                       style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
@@ -87,22 +87,19 @@ const {
             const observer = new IntersectionObserver(callback, options);
             observer.observe(firstEl);
             observer.observe(lastEl);
-
-            console.log({
-                scrollContainer,
-                firstEl,
-                lastEl,
-                scrollWidth: scrollContainer.scrollWidth,
-                clientWidth: scrollContainer.clientWidth,
-                overflows: scrollContainer.scrollWidth > scrollContainer.clientWidth,
-            });
         })();
     </script>
     <style>
-        .left-btn,
-        .right-btn {
-            opacity: 1;
+        .left-btn, .right-btn {
+            will-change: opacity;
             transition: opacity 200ms ease;
+        }
+
+        .left-btn:enabled,
+        .right-btn:enabled {
+            pointer-events: auto;
+            opacity: 1;
+            cursor: pointer;
         }
 
         .left-btn:disabled,
