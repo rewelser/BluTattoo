@@ -187,6 +187,7 @@ const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(fla
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = branding?.logoDark ?? defaults.siteLogo;
 const bookingHeroPhoto = branding?.hero.bookingHeroPhoto ?? defaults.bookingHeroPhoto;
+const bookingShareOGPhoto = branding?.bookingShareOGPhoto ?? defaults.bookingHeroPhoto;
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const siteSocials = site && siteInfoSocialsToItems(site.data.socials);
 const title = "Booking";
@@ -206,7 +207,8 @@ const title = "Booking";
         <meta property="og:description" content="Short description here" />
         <meta property="og:url" content="https://example.com/page" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={`${Astro.url.origin}${logoDark}`} />
+        <!--<meta property="og:image" content={`${Astro.url.origin}${logoDark}`} />-->
+        <meta property="og:image" content={`${Astro.url.origin}${bookingShareOGPhoto}`} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Your Title" />

@@ -1,6 +1,7 @@
 {
   "logoDark": "/uploads/misc_images/logos/blutattoo-trimmed-black.svg",
   "logoLight": "/uploads/misc_images/logos/blutattoo-trimmed-light(orange100-fdecd8).svg",
+  "bookingShareOGPhoto": "uploads/misc_images/blutattoo_booking_og.png",
   "hero": {
     "video": {
       "mp4": "/uploads/misc_videos/hero-720.mp4",

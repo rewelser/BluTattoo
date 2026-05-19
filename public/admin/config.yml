@@ -383,6 +383,14 @@ collections:
             media_folder: "public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
 
+          - name: bookingShareOGPhoto
+            label: "OG image for sharing links to booking page"
+            widget: image
+            required: true
+            hint: "The image intended to appear on the link to the booking page, shared on social media."
+            media_folder: "public/uploads/misc_images"
+            public_folder: "/uploads/misc_images"
+
           - name: hero
             label: "Hero"
             widget: object
