@@ -34,13 +34,20 @@ const buttonClass = "flex flex-col items-center justify-center font-light text-x
 const buttonIconSpanClass = "flex justify-center items-center rounded-full overflow-hidden bg-gray-200 p-3";
 const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visible";
 
-console.log({
-    "Astro.url.href": Astro.url.href,
-    "Astro.url.origin": Astro.url.origin,
-    "Astro.originPathname": Astro.originPathname,
-})
+/**
+ * For debugging:
+ * --------------
+ *  console.log({
+ *      "Astro.url.href": Astro.url.href,
+ *      "Astro.url.pathname": Astro.url.pathname,
+ *      "Astro.url.origin": Astro.url.origin,
+ *      "Astro.originPathname": Astro.originPathname,
+ *      "Astro.site": Astro.site
+ *  })
+ **/
 const makeShareUrl = (key: IconType) => {
-    const url = Astro.url.href;
+    // const url = Astro.url.href;
+    const url = new URL(Astro.url.pathname, Astro.site).toString();
     // const url2 = Astro.originPathname;
 
 
@@ -59,13 +66,20 @@ const makeShareUrl = (key: IconType) => {
         case "whatsapp":
             return `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`;
 
+        case "snapchat":
+            return `https://www.snapchat.com/share?link=${encodeURIComponent(url)}`;
+
+        case "email":
+            return `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`;
+
         default:
             return null;
     }
 };
 ---
 
-<ScrollXContainer class={className} scrollContainerClass="px-3" justificationClass={justificationClass} scrollBtnClass={scrollBtnClass}>
+<ScrollXContainer class={className} scrollContainerClass="px-3" justificationClass={justificationClass}
+                  scrollBtnClass={scrollBtnClass}>
     <Fragment slot="scrollContent">
         <div class={buttonAnchorContainerClass}>
             <button
@@ -146,8 +160,9 @@ const makeShareUrl = (key: IconType) => {
                 return (
                     entry && (
                             <div class={buttonAnchorContainerClass}>
-                                 <a href={makeShareUrl(key)} aria-label={label} class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>
-                                <!--    <a href="fishy.com" aria-label={label} class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>-->
+                                <a href={makeShareUrl(key)} aria-label={label} target="_blank" rel="noopener noreferrer"
+                                   class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>
+                                    <!--    <a href="fishy.com" aria-label={label} class={`flex flex-col items-center justify-center font-light text-xs ${anchorClass}`}>-->
                                     <Icon class={iconClass}/>
                                     <span class={`${labelClass}`}>{label}</span>
                                 </a>

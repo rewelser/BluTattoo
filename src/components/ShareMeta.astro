@@ -1,0 +1,42 @@
+---
+import type {IconType, IconVariant} from "../domain/contact/types.ts";
+import branding from "../content/branding.json";
+import {defaults} from "../config/site";
+import {getEntry} from "astro:content";
+const {
+    title,
+    description,
+    ogImage,
+
+} = Astro.props as {
+    title: string,
+    description: string,
+    ogImage: string,
+
+};
+
+const site = await getEntry("siteInfo", "main");
+const siteName = site?.data?.siteName ?? defaults.siteName;
+
+
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const imageUrl = new URL(ogImage, Astro.site).toString();
+---
+<>
+    <meta name="description" content={description}/>
+
+    <meta property="og:title" content={title}/>
+    <meta property="og:description" content={description}/>
+    <meta property="og:url" content={canonical}/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content={imageUrl}/>
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:site_name" content={siteName}/>
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content={title}/>
+    <meta name="twitter:description" content={description}/>
+    <meta name="twitter:image" content={imageUrl}/>
+    <meta name="twitter:image:alt" content={title} />
+</>

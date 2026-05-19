@@ -23,6 +23,7 @@ import {siteInfoSocialsToItems} from "../domain/contact/adapters.ts";
 import ShareRow from "../components/ShareRow.astro";
 import ShareModal from "../components/ShareModal.astro";
 import ScrollXContainer from "../components/scaffolding/ScrollXContainer.astro";
+import ShareMeta from "../components/ShareMeta.astro";
 
 let residentPeople = await loadActiveArtists();
 const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
@@ -191,6 +192,7 @@ const bookingShareOGPhoto = branding?.bookingShareOGPhoto ?? defaults.bookingHer
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const siteSocials = site && siteInfoSocialsToItems(site.data.socials);
 const title = "Booking";
+const description = `${title} page for ${siteName}`;
 ---
 
 <!-- <html lang="en">
@@ -201,20 +203,11 @@ const title = "Booking";
     </head> -->
 <BaseLayout title={title} bodyClass="bg-black">
     <Fragment slot="head">
-        <meta name="description" content="Short description here" />
-
-        <meta property="og:title" content="Your Title" />
-        <meta property="og:description" content="Short description here" />
-        <meta property="og:url" content="https://example.com/page" />
-        <meta property="og:type" content="website" />
-        <!--<meta property="og:image" content={`${Astro.url.origin}${logoDark}`} />-->
-        <meta property="og:image" content={`${Astro.url.origin}/${bookingShareOGPhoto}`} />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Your Title" />
-        <meta name="twitter:description" content="Short description here" />
-        <!--<meta name="twitter:image" content={logoDark} />-->
-        <meta name="twitter:image" content={`${Astro.url.origin}/${bookingShareOGPhoto}`} />
+        <ShareMeta
+                title={title}
+                description={description}
+                ogImage={bookingShareOGPhoto}
+        />
     </Fragment>
     <main class="page">
         <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
