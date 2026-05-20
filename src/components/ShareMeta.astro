@@ -1,6 +1,5 @@
 ---
 import type {IconType, IconVariant} from "../domain/contact/types.ts";
-import branding from "../content/branding.json";
 import {defaults} from "../config/site";
 import {getEntry} from "astro:content";
 const {
@@ -23,8 +22,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const imageUrl = new URL(ogImage, Astro.site).toString();
 ---
 <>
-    <meta name="description" content={description}/>
-
     <meta property="og:title" content={title}/>
     <meta property="og:description" content={description}/>
     <meta property="og:url" content={canonical}/>

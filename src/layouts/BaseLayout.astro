@@ -2,30 +2,39 @@
 import { getEntry } from "astro:content";
 import "../styles/global.css";
 import { defaults } from "../config/site";
+import ShareMeta from "../components/ShareMeta.astro";
+import branding from "../content/branding.json"
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
 import spectral500Url from "@fontsource/spectral/files/spectral-latin-500-normal.woff2?url";
 import spectral600Url from "@fontsource/spectral/files/spectral-latin-600-normal.woff2?url";
 import spectral700Url from "@fontsource/spectral/files/spectral-latin-700-normal.woff2?url";
 import spectral800Url from "@fontsource/spectral/files/spectral-latin-800-normal.woff2?url";
 import spectral900Url from "@fontsource/spectral/files/spectral-latin-900-normal.woff2?url";
-
-const site = await getEntry("siteInfo", "main");
-const siteName = site?.data?.siteName ?? defaults.siteName;
-
-const {
-    title: pageTitle,
-    preloadImage,
-    bodyClass = "",
-    bodyStyle = "",
-    htmlLang = "en",
-} = Astro.props;
-
 import "@fontsource/spectral";
 import "@fontsource/spectral/400.css";
 import "@fontsource/spectral/500.css";
 import "@fontsource/spectral/600.css";
 import "@fontsource/spectral/700.css";
 import "@fontsource/spectral/800.css";
+
+const site = await getEntry("siteInfo", "main");
+const siteName = site?.data?.siteName ?? defaults.siteName;
+
+const baseOgImage = branding?.sitewideOGPhoto ?? defaults.ogPhoto;
+
+// todo: have ogImage be site ogImage, else default og image (what it currently is)--so, it takes one, else it takes the site one, else it uses the default one
+const {
+    title: pageTitle,
+    description: pageDescription,
+    ogImage = baseOgImage,
+    preloadImage,
+    bodyClass = "",
+    bodyStyle = "",
+    htmlLang = "en",
+} = Astro.props;
+
+const pageTitleUsed = pageTitle ? `${pageTitle} | ${siteName}` : siteName;
+const pageDescriptionUsed = pageDescription ? pageDescription : siteName;
 ---
 
 <!doctype html>
@@ -34,7 +43,13 @@ import "@fontsource/spectral/800.css";
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
-        <title>{pageTitle ? `${pageTitle} | ${siteName}` : siteName}</title>
+        <title>{pageTitleUsed}</title>
+        <meta name="description" content={pageDescriptionUsed} />
+        <ShareMeta
+                title={pageTitleUsed}
+                description={pageDescriptionUsed}
+                ogImage={ogImage}
+        />
         {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
         <link
                 rel="preload"

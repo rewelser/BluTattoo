@@ -12,9 +12,10 @@ import type {EventItem} from "../../domain/events/types.ts";
 
 const events: EventItem[] = await getTransformedEventItemsCached();
 const title = "Events";
+const description = "View upcoming guest spots, events, and special appearances at BluTattoo.";
 ---
 
-<Layout title={title}>
+<Layout title={title} description={description}>
     <article class="page-article page-article--stack space-y-6">
         <h1 class="page-title">{title}</h1>
 

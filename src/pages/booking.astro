@@ -188,11 +188,12 @@ const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(fla
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = branding?.logoDark ?? defaults.siteLogo;
 const bookingHeroPhoto = branding?.hero.bookingHeroPhoto ?? defaults.bookingHeroPhoto;
-const bookingShareOGPhoto = branding?.bookingShareOGPhoto ?? defaults.bookingHeroPhoto;
+const bookingShareOGPhoto = branding?.bookingShareOGPhoto ?? defaults.ogPhoto;
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const siteSocials = site && siteInfoSocialsToItems(site.data.socials);
 const title = "Booking";
-const description = `${title} page for ${siteName}`;
+// const description = `${title} page for ${siteName}`;
+const description = "Book a tattoo appointment at BluTattoo, view available artists, and find the right next step for your tattoo idea.";
 ---
 
 <!-- <html lang="en">
@@ -201,14 +202,7 @@ const description = `${title} page for ${siteName}`;
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Star Drift Test</title>
     </head> -->
-<BaseLayout title={title} bodyClass="bg-black">
-    <Fragment slot="head">
-        <ShareMeta
-                title={title}
-                description={description}
-                ogImage={bookingShareOGPhoto}
-        />
-    </Fragment>
+<BaseLayout title={title} description={description} ogImage={bookingShareOGPhoto} bodyClass="bg-black">
     <main class="page">
         <!-- <div id="wallpaper-gradient" class="wallpaper h-screen bg-gradient-to-b from-stone-500 to-stone-700" aria-hidden="true" /> -->
         <!-- <div class="wallpaper wallpaper-gradient h-screen bg-gradient-to-b from-neutral-300 to-stone-600 hidden md:block" aria-hidden="true"> -->

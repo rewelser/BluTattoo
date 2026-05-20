@@ -25,9 +25,10 @@ const ev = entry.data;
 
 // console.log("ev.image", ev.image);
 // console.log("ev.href");
+const description = `Learn more about the following event: ${ev.title}`;
 ---
 
-<Layout title={ev.title}>
+<Layout title={ev.title} description={description}>
     <article class="page-article page-article--stack space-y-6">
         <h1 class="page-title">{ev.title}</h1>
 

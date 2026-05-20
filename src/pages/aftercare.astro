@@ -8,9 +8,10 @@ if (!entry) {
 }
 const { Content } = await render(entry);
 const title = entry.data.title ?? "Aftercare";
+const description = "Read BluTattoo aftercare instructions for tattoos and piercings, including cleaning, healing, and what to avoid."
 ---
 
-<Layout title={title}>
+<Layout title={title} description={description}>
   <article
     class="page-article page-article--stack prose
            prose-headings:tracking-tight prose-p:leading-relaxed"

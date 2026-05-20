@@ -43,6 +43,8 @@ const socials = entry.data.contactSocialsBooking?.socials?.find(
 const moduleInfo = square?.linkOrModuleInfo.find(
     (item) => item.type === "moduleInfo",
 );
+
+const description = `Learn more about ${entry.data.name}, view tattoo style information, and find booking details at BluTattoo.`;
 ---
 
 <script>
@@ -54,6 +56,7 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 
 <Layout
         title={entry.data.name}
+        description={description}
         preloadImage={entry.data.pagePhoto?.src}
 >
     <article class="space-y-6">

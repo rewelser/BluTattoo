@@ -383,6 +383,14 @@ collections:
             media_folder: "public/uploads/misc_images/logos"
             public_folder: "/uploads/misc_images/logos"
 
+          - name: sitewideOGPhoto
+            label: "Sitewide OG image fallback"
+            widget: image
+            required: true
+            hint: "The fallback image intended to appear on links to site pages shared on social media, if no other one is specified."
+            media_folder: "public/uploads/misc_images"
+            public_folder: "/uploads/misc_images"
+
           - name: bookingShareOGPhoto
             label: "OG image for sharing links to booking page"
             widget: image

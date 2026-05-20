@@ -12,6 +12,7 @@ import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
 const title = "Home";
+const description = "BluTattoo is a tattoo and piercing studio offering custom tattoos, guest artist events, piercing services, booking, aftercare, and artist information.";
 ---
 
 <script>
@@ -20,7 +21,7 @@ const title = "Home";
     bootFadeUp({observeMutations: true});
 </script>
 
-<Layout isHome title={title}>
+<Layout isHome title={title} description={description}>
     <section class="relative w-full py-32 px-6 overflow-hidden">
         <!-- subtle background glow / depth -->
         <!-- <div class="pointer-events-none absolute inset-0">
