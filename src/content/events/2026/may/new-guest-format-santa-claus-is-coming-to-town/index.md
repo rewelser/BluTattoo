@@ -27,8 +27,14 @@ guestSpot:
           - type: platformUrl
             enabled: true
             href: https://example.com/
+          - type: moduleInfo
+            enabled: true
+            merchantId: jhvsos6zvct0ls
+            locationId: L6GQX5D0KDS8B
+            label: Book an appointment
 title: 'new guest format: Santa Claus is coming to town!'
 image: santa-hero.jpg
+ogPhotoTexted: santaog_texted.png
 published: true
 featured: false
 archived: false

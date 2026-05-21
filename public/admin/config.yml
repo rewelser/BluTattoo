@@ -42,6 +42,8 @@ collections:
       - { name: active, label: "Active", widget: boolean, default: true, required: true }
       - { name: order, label: "List Order", widget: number, default: 999 }
       - { name: pagePhoto, label: "Photo (on Artist or Piercing Page)", widget: image, required: false }
+      - { name: ogPhotoTextless, label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
+      - { name: ogPhotoTexted, label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
       - { name: runwayPhoto, label: "Runway Photo (Front & All Artists Page)", widget: image, required: false }
       - name: runwayPhotoFrame
         label: "Frame for Runway Photo"
@@ -711,6 +713,8 @@ collections:
         widget: image
         required: false
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
+      - { name: ogPhotoTextless, label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
+      - { name: ogPhotoTexted, label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
       - { name: published, label: "Published", widget: boolean, default: true }
       - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }

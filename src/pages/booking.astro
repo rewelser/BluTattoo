@@ -24,6 +24,7 @@ import ShareRow from "../components/ShareRow.astro";
 import ShareModal from "../components/ShareModal.astro";
 import ScrollXContainer from "../components/scaffolding/ScrollXContainer.astro";
 import ShareMeta from "../components/ShareMeta.astro";
+import {getOgImageSrc} from "../domain/decor/selectors.ts";
 
 let residentPeople = await loadActiveArtists();
 const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
@@ -47,6 +48,9 @@ const people = [
                     ...guest.guestSpot,
                     startDate: guest.startDate,
                     endDate: guest.endDate,
+                    ogPhotoTextless: guest.ogPhotoTextless,
+                    ogPhotoTexted: guest.ogPhotoTexted,
+                    eventImage: guest.image,
                 },
                 variant: "guest",
             }
@@ -383,6 +387,9 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
 
                             const isGuest = person.variant === "guest" && person.event && person.hrefId;
 
+                            const ogImage = person.data.ogPhotoTextless ?? person.data.ogPhotoTexted ?? person.data.eventImage ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
+                            const ogImageSrc = getOgImageSrc(ogImage);
+
                             return (
                                 csb &&
                                 hasBookables && (
@@ -572,6 +579,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                                                                             expandedShadow="none"
                                                                                                                             cardBorder={`${isPreferred ? "3px solid var(--preferred-accent-color)" : "3px solid var(--bookable-accent-color)"}`}
                                                                                                                             expandedBorder={`${isPreferred ? "0px solid var(--preferred-accent-color)" : "0px solid var(--bookable-accent-color)"}`}
+                                                                                                                            heroHeight="initial"
                                                                                                                     >
                                                                                                                         <Fragment
                                                                                                                                 slot="card">
@@ -596,8 +604,8 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                                                                         <Fragment
                                                                                                                                 slot="modal-content-hero">
                                                                                                                             <img
-                                                                                                                                    class="object-cover"
-                                                                                                                                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80"
+                                                                                                                                    class="object-cover object-top"
+                                                                                                                                    src={ogImageSrc}
                                                                                                                                     alt=""
                                                                                                                             />
                                                                                                                         </Fragment>

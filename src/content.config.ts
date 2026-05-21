@@ -175,6 +175,8 @@ const events = defineCollection({
         title: z.string(),
         detailsShort: z.preprocess(emptyStrToUndef, z.string().optional()),
         image: image().optional(),
+        ogPhotoTextless: image().optional(),
+        ogPhotoTexted: image().optional(),
         alt: z.preprocess(emptyStrToUndef, z.string().optional()),
         published: z.boolean().default(true),
         featured: z.boolean().default(false),
@@ -235,6 +237,8 @@ const people = defineCollection({
             order: z.number().default(999),
 
             pagePhoto: image().optional(),
+            ogPhotoTextless: image().optional(),
+            ogPhotoTexted: image().optional(),
             runwayPhoto: image().optional(),
             runwayPhotoFrame: frameSchema,
 

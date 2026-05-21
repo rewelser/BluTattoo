@@ -22,11 +22,13 @@ const siteName = site?.data?.siteName ?? defaults.siteName;
 
 const baseOgImage = branding?.sitewideOGPhoto ?? defaults.ogPhoto;
 
-// todo: have ogImage be site ogImage, else default og image (what it currently is)--so, it takes one, else it takes the site one, else it uses the default one
+const sitewideOgImage = branding?.sitewideOGPhoto;
+const fallbackOgImage = defaults.ogPhoto;
+
 const {
     title: pageTitle,
     description: pageDescription,
-    ogImage = baseOgImage,
+    ogImage,
     preloadImage,
     bodyClass = "",
     bodyStyle = "",
@@ -35,6 +37,12 @@ const {
 
 const pageTitleUsed = pageTitle ? `${pageTitle} | ${siteName}` : siteName;
 const pageDescriptionUsed = pageDescription ? pageDescription : siteName;
+const ogImageUsed =
+    ogImage ??
+    sitewideOgImage ??
+    fallbackOgImage;
+const siteUrl = Astro.site ?? Astro.url.origin;
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -45,10 +53,12 @@ const pageDescriptionUsed = pageDescription ? pageDescription : siteName;
         <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
         <title>{pageTitleUsed}</title>
         <meta name="description" content={pageDescriptionUsed} />
+        <link rel="canonical" href={canonical} />
         <ShareMeta
                 title={pageTitleUsed}
                 description={pageDescriptionUsed}
-                ogImage={ogImage}
+                canonical={canonical}
+                ogImage={ogImageUsed}
         />
         {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
         <link
