@@ -175,8 +175,8 @@ const events = defineCollection({
         title: z.string(),
         detailsShort: z.preprocess(emptyStrToUndef, z.string().optional()),
         image: image().optional(),
-        ogPhotoTextless: image().optional(),
-        ogPhotoTexted: image().optional(),
+        ogPhotoTextless: optionalString,
+        ogPhotoTexted: optionalString,
         alt: z.preprocess(emptyStrToUndef, z.string().optional()),
         published: z.boolean().default(true),
         featured: z.boolean().default(false),
@@ -237,8 +237,8 @@ const people = defineCollection({
             order: z.number().default(999),
 
             pagePhoto: image().optional(),
-            ogPhotoTextless: image().optional(),
-            ogPhotoTexted: image().optional(),
+            ogPhotoTextless: optionalString,
+            ogPhotoTexted: optionalString,
             runwayPhoto: image().optional(),
             runwayPhotoFrame: frameSchema,
 
@@ -321,8 +321,8 @@ const branding = defineCollection({
             logoLight: image(),
             bookingFlashLight: image().optional(),
             bookingFlashDark: image().optional(),
-            sitewideOGPhoto: image(),
-            bookingShareOGPhoto: image(),
+            sitewideOGPhoto: z.string(),
+            bookingShareOGPhoto: z.string(),
             hero: z.object({
                 video: z.object({
                     mp4: z.string(),

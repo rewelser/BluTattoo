@@ -42,8 +42,18 @@ collections:
       - { name: active, label: "Active", widget: boolean, default: true, required: true }
       - { name: order, label: "List Order", widget: number, default: 999 }
       - { name: pagePhoto, label: "Photo (on Artist or Piercing Page)", widget: image, required: false }
-      - { name: ogPhotoTextless, label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
-      - { name: ogPhotoTexted, label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
+      - name: ogPhotoTextless
+        label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc."
+        widget: image
+        required: false
+        media_folder: "/public/uploads/ogimages"
+        public_folder: "/uploads/ogimages"
+      - name: ogPhotoTexted
+        label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc."
+        widget: image
+        required: false
+        media_folder: "/public/uploads/ogimages"
+        public_folder: "/uploads/ogimages"
       - { name: runwayPhoto, label: "Runway Photo (Front & All Artists Page)", widget: image, required: false }
       - name: runwayPhotoFrame
         label: "Frame for Runway Photo"
@@ -388,6 +398,16 @@ collections:
             widget: image
             required: true
             hint: "The fallback image intended to appear on links to site pages shared on social media, if no other one is specified."
+            media_folder: "/public/uploads/ogimages"
+            public_folder: "/uploads/ogimages"
+
+          - name: bookingShareOGPhoto
+            label: "OG image for sharing links to booking page"
+            widget: image
+            required: true
+            hint: "The image intended to appear on the link to the booking page, shared on social media."
+            media_folder: "/public/uploads/ogimages"
+            public_folder: "/uploads/ogimages"
 
           - name: bookingFlashLight
             label: "Moving flash design for booking page (light-transparent)"
@@ -400,12 +420,6 @@ collections:
             widget: image
             required: false
             hint: "The moving background design that will appear on the booking page behind the link sheet (desktop)."
-
-          - name: bookingShareOGPhoto
-            label: "OG image for sharing links to booking page"
-            widget: image
-            required: true
-            hint: "The image intended to appear on the link to the booking page, shared on social media."
 
           - name: hero
             label: "Hero"
@@ -715,8 +729,18 @@ collections:
         widget: image
         required: false
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
-      - { name: ogPhotoTextless, label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
-      - { name: ogPhotoTexted, label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc.", widget: image, required: false }
+      - name: ogPhotoTextless
+        label: "OG Photo w/o name. 1200x630 (1.91:1) for share links, banners, etc."
+        widget: image
+        required: false
+        media_folder: "/public/uploads/ogimages"
+        public_folder: "/uploads/ogimages"
+      - name: ogPhotoTexted
+        label: "OG Photo with name. 1200x630 (1.91:1) for share links, banners, etc."
+        widget: image
+        required: false
+        media_folder: "/public/uploads/ogimages"
+        public_folder: "/uploads/ogimages"
       - { name: published, label: "Published", widget: boolean, default: true }
       - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
