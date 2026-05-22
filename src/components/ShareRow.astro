@@ -5,6 +5,7 @@ import {getIconEntry, iconRegistry} from "./graphics/icons/registry.ts";
 import ScrollXContainer from "./scaffolding/ScrollXContainer.astro";
 import {getEntry} from "astro:content";
 import {defaults} from "../config/site.ts";
+import ShareIcon from "./graphics/shareIcon.astro";
 
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;
@@ -12,11 +13,17 @@ const siteName = site?.data?.siteName ?? defaults.siteName;
 const {
     shareTitle = `Check out ${siteName}`,
     shareUrl = new URL(Astro.url.pathname, Astro.site).toString(),
+    // shareTypes = [
+    //     'x',
+    //     'facebook',
+    //     'facebookMessenger',
+    //     'instagram',
+    //     'whatsapp',
+    //     'snapchat',
+    // ],
     shareTypes = [
         'x',
         'facebook',
-        'facebookMessenger',
-        'instagram',
         'whatsapp',
         'snapchat',
     ],
@@ -55,6 +62,7 @@ const labelClass = "pt-2 text-center text-nowrap whitespace-nowrap overflow-visi
  *      "Astro.site": Astro.site
  *  })
  **/
+// case "reddit": return `https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}`;
 const encodeShareUrl = (key: IconType) => {
     switch (key) {
         case "x":
@@ -194,16 +202,7 @@ const encodeShareUrl = (key: IconType) => {
         <div class={buttonAnchorContainerClass}>
             <button class={`${buttonClass} ${anchorClass}`}>
             <span class={`${buttonIconSpanClass} ${iconClass}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                  <path d="M142.36,254.83h-42.4c-13.19,0-23.99,7.82-23.99,17.37v171.8c0,9.56,10.79,17.37,23.99,17.37h312.09c13.19,0,23.99-7.82,23.99-17.37v-171.8c0-9.56-10.79-17.37-23.99-17.37h-48.82,48.81c13.19,0,23.99,7.82,23.99,17.37v171.8c0,9.56-10.79,17.37-23.99,17.37H99.96c-13.19,0-23.99-7.82-23.99-17.37v-171.8c0-9.56,10.79-17.37,23.99-17.37h48.82"
-                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
-                  <line x1="256" y1="358.1" x2="256" y2="50.63"
-                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
-                  <line x1="134.58" y1="187.89" x2="256" y2="50.63"
-                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
-                  <line x1="377.42" y1="187.89" x2="256" y2="50.63"
-                        style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 30px;"/>
-                </svg>
+                <ShareIcon/>
             </span>
                 <span class={`${labelClass}`}>More</span>
 

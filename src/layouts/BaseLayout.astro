@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import "../styles/global.css";
 import { defaults } from "../config/site";
 import ShareMeta from "../components/ShareMeta.astro";
-import branding from "../content/branding.json"
+const branding = await getEntry("branding", "main");
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
 import spectral500Url from "@fontsource/spectral/files/spectral-latin-500-normal.woff2?url";
 import spectral600Url from "@fontsource/spectral/files/spectral-latin-600-normal.woff2?url";
@@ -20,9 +20,9 @@ import "@fontsource/spectral/800.css";
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;
 
-const baseOgImage = branding?.sitewideOGPhoto ?? defaults.ogPhoto;
+const baseOgImage = branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
 
-const sitewideOgImage = branding?.sitewideOGPhoto;
+const sitewideOgImage = branding?.data.sitewideOGPhoto;
 const fallbackOgImage = defaults.ogPhoto;
 
 const {

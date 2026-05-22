@@ -443,6 +443,78 @@ collections:
                 media_folder: "public/uploads/misc_images"
                 public_folder: "/uploads/misc_images"
 
+  - name: "branding2"
+    label: "Branding"
+    files:
+      - name: "main"
+        label: "Main"
+        file: "src/content/branding/main.json"
+        media_folder: "assets/images"
+        public_folder: "assets/images"
+        format: "json"
+        fields:
+          - name: logoDark
+            label: "Logo (SVG or PNG, dark version)"
+            widget: image
+            required: true
+            hint: "Header logo (dark-on-light version)."
+
+          - name: logoLight
+            label: "Logo (SVG or PNG, light version)"
+            widget: image
+            required: true
+            hint: "Header logo (light-on-dark version)."
+
+          - name: sitewideOGPhoto
+            label: "Sitewide OG image fallback"
+            widget: image
+            required: true
+            hint: "The fallback image intended to appear on links to site pages shared on social media, if no other one is specified."
+
+          - name: bookingShareOGPhoto
+            label: "OG image for sharing links to booking page"
+            widget: image
+            required: true
+            hint: "The image intended to appear on the link to the booking page, shared on social media."
+
+          - name: hero
+            label: "Hero"
+            widget: object
+            required: false
+            fields:
+              - name: video
+                label: "Video"
+                widget: object
+                required: false
+                fields:
+                  - name: mp4
+                    label: "MP4"
+                    widget: file
+                    required: true
+                    hint: "Fallback format for most browsers."
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: webm
+                    label: "WebM"
+                    widget: file
+                    required: false
+                    hint: "Smaller/faster in supported browsers."
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: poster
+                    label: "Poster image"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
+              - name: bookingHeroPhoto
+                label: "Hero image for booking page"
+                widget: image
+                required: true
+                hint: "Group photo, or something like that (don't use site logo -- that will appear overtop)."
+
   - name: "eventsActive"
     label: "Events (Active)"
     folder: "src/content/events"

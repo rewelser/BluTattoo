@@ -311,4 +311,27 @@ const siteInfo = defineCollection({
 
 /*** endregion ***/
 
-export const collections = {people, faqs, siteInfo, aftercare, events}; // & home
+/*** region *** Branding Collection ****/
+
+const branding = defineCollection({
+    loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/branding"}),
+    schema: ({image}) =>
+        z.object({
+            logoDark: image(),
+            logoLight: image(),
+            sitewideOGPhoto: image(),
+            bookingShareOGPhoto: image(),
+            hero: z.object({
+                video: z.object({
+                    mp4: z.string(),
+                    webm: z.string().optional(),
+                    poster: image(),
+                }).optional(),
+                bookingHeroPhoto: image(),
+            }).optional(),
+        }),
+});
+
+/*** endregion ***/
+
+export const collections = {people, faqs, siteInfo, aftercare, events, branding}; // & home

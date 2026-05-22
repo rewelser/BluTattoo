@@ -8,6 +8,10 @@ import SquareAppointments from "../../components/SquareAppointments.astro";
 import {ArtistGallery} from "../../components/ArtistGalleryNoThumbs.tsx";
 import {Picture} from "astro:assets";
 import SocialRow from "../../components/SocialRow.astro";
+import ShareModal from "../../components/ShareModal.astro";
+import branding from "../../content/branding.json";
+import {defaults} from "../../config/site.ts";
+
 
 const isAsset = (v: unknown) =>
     typeof v === "object" && v !== null && "src" in (v as any);
@@ -45,6 +49,7 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 );
 
 const description = `Learn more about ${entry.data.name}, view tattoo style information, and find booking details at BluTattoo.`;
+const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
 ---
 
 <script>
@@ -123,7 +128,11 @@ const description = `Learn more about ${entry.data.name}, view tattoo style info
                     </style>
                     <div id="artist-bio" class="flex items-center p-5 js-fade-up">
                         <div class="w-full">
-                            <h1 class="text-3xl font-bold">{entry.data.name}</h1>
+                            <h1 class="text-3xl font-bold inline-block">
+                                {entry.data.name}
+                            </h1>
+                            <ShareModal shareTitle={entry.data.name} shareHero={ogImage} shellClass="inline-block" cardButtonClass="m-2" cardButtonColorClass="bg-white/10 border-1 border-solid border-orange-100/40" heroFullBleed={true} />
+
                             {
                                 entry.data.contactSocialsBooking?.socials && (
                                                 <SocialRow

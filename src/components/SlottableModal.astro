@@ -2,6 +2,7 @@
 // heroHeight was default: min(420px,45dvh); we changed this to calc((100dvh - 2rem)/2)
 const {
     square = false,
+    shellClass,
     cardButtonClass = "",
     expandedCardClass = "",
     modalContentClass = "",
@@ -19,6 +20,7 @@ const {
     ...rest
 } = Astro.props as {
     square?: boolean,
+    shellClass?: string;
     cardButtonClass?: string;
     expandedCardClass?: string;
     modalContentClass?: string;
@@ -42,7 +44,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 // const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 ---
 <>
-    <div class="shell" style={`--transitionName: ${transitionName};`}>
+    <div class={`shell ${shellClass}`} style={`--transitionName: ${transitionName}; font-family: var(--default-font-family);`}>
         <button class={`card ${cardButtonClass}`} data-card aria-haspopup="dialog" {...rest}>
             <div class="card-content">
                 <slot name="card"/>

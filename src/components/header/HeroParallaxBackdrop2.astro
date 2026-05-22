@@ -1,8 +1,10 @@
 ---
+import {getImageSrc} from "../../domain/decor/selectors.ts";
+import type {ImageMetadata} from "astro";
 type VideoSources = {
   mp4: string;
   webm?: string;
-  poster?: string;
+  poster: ImageMetadata;
 };
 
 const {
@@ -18,16 +20,10 @@ const {
   parallaxStrength?: number;
 };
 
-const fallback: VideoSources = {
-  mp4: "/uploads/misc_videos/hero-720.mp4",
-  webm: "/uploads/misc_videos/hero-720.webm",
-  poster: "/uploads/misc_images/hero-poster.jpg",
-};
-
 const heroVid = {
-  mp4: video?.mp4 ?? fallback.mp4,
-  webm: video?.webm ?? fallback.webm,
-  poster: video?.poster ?? fallback.poster,
+  mp4: video?.mp4,
+  webm: video?.webm,
+  poster: video?.poster,
 };
 
 // Clamp strength to [0, 1]
@@ -54,7 +50,7 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
         loop
         playsinline
         preload="none"
-        poster={heroVid.poster}
+        poster={heroVid.poster?.src}
         aria-hidden="true"
       >
         <source src={heroVid.webm} type="video/webm" />

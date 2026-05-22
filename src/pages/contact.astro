@@ -6,7 +6,7 @@ import {defaults} from "../config/site";
 const site = await getEntry("siteInfo", "main");
 
 // Fallbacks if content isn’t filled yet
-const shopName = site?.data.name ?? defaults.siteName;
+const shopName = site?.data.siteName ?? defaults.siteName;
 const addressObj = site?.data.address ?? defaults.address;
 
 const phone = site?.data.phone ?? defaults.sitePhone;

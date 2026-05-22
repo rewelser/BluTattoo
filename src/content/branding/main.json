@@ -1,0 +1,14 @@
+{
+  "logoDark": "assets/images/blutattoo-trimmed-black.svg",
+  "logoLight": "assets/images/blutattoo-trimmed-light(orange100-fdecd8).svg",
+  "sitewideOGPhoto": "assets/images/blutattoo_sitewide_og.png",
+  "bookingShareOGPhoto": "assets/images/blutattoo_booking_og.png",
+  "hero": {
+    "video": {
+      "mp4": "/uploads/misc_videos/hero-720.mp4",
+      "webm": "/uploads/misc_videos/hero-720.webm",
+      "poster": "assets/images/hero-poster.jpg"
+    },
+    "bookingHeroPhoto": "assets/images/DSC02546.jpg"
+  }
+}

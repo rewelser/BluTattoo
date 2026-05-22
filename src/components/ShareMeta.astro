@@ -2,8 +2,8 @@
 import {defaults} from "../config/site";
 import {getEntry} from "astro:content";
 // import type {ImageMetadata} from "astro";
-import type {OgImage} from "../domain/decor/types.ts";
-import {getOgImageSrc} from "../domain/decor/selectors.ts";
+import type {ImageSourceOrMetadata} from "../domain/decor/types.ts";
+import {getImageSrc} from "../domain/decor/selectors.ts";
 
 const {
     title,
@@ -15,11 +15,11 @@ const {
     title: string,
     description: string,
     canonical: string,
-    ogImage: OgImage,
+    ogImage: ImageSourceOrMetadata,
 
 };
 
-const imageSrc = getOgImageSrc(ogImage);
+const imageSrc = getImageSrc(ogImage);
 
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;

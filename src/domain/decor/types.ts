@@ -6,6 +6,6 @@ import type {ImageMetadata} from "astro";
 // export type FrameType = typeof frameType[number];
 export type FrameType = typeof frameTypes[number];
 
-export type OgImage =
+export type ImageSourceOrMetadata =
     | string
     | ImageMetadata;

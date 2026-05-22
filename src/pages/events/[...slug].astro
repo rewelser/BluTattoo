@@ -10,7 +10,8 @@ import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
 import branding from "../../content/branding.json";
 import {defaults} from "../../config/site.ts";
-import {getOgImageSrc} from "../../domain/decor/selectors.ts";
+import {getImageSrc} from "../../domain/decor/selectors.ts";
+import ShareModal from "../../components/ShareModal.astro";
 
 export async function getStaticPaths() {
     const entries = await loadTransformedEvents();
@@ -50,6 +51,7 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding.
                 <!--{fmtTimeWindow(ev)}-->
                 <EventTimeWindow ev={ev}/>
                 {ev.location ? ` • ${ev.location}` : ""}
+                <ShareModal shareTitle={ev.title} shareHero={ogImage} variant={2} shellClass="inline-block" cardButtonClass="mx-2" cardRadius="0.375rem" variant2ShareText="share event" heroFullBleed={true} />
             </div>
 
             <div data-section="event-info" class="prose mt-4 max-w-none">

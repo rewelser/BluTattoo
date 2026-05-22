@@ -1,5 +1,4 @@
 ---
-import branding from "../../content/branding.json";
 import PromoBarLoader from "./PromoBarLoader.astro";
 import PromoBarFallback from "./PromoBarFallback.astro";
 import MobileMenu from "./MobileMenu.astro";
@@ -7,20 +6,24 @@ import DesktopMenu from "./DesktopMenu.astro";
 // import HeroBackdrop from "./HeroBackdrop.astro";
 import HeroParallaxBackdrop from "./HeroParallaxBackdrop2.astro";
 import DesktopTopLogo from "./DesktopTopLogo.astro";
-import { navItems as menuItems } from "../../domain/navigation/defs.ts";
+import {navItems as menuItems} from "../../domain/navigation/defs.ts";
+import {getEntry} from "astro:content";
+import {getImageSrc} from "../../domain/decor/selectors.ts";
+const branding = await getEntry("branding", "main");
 
-const { variant = "default", defaults, site } = Astro.props;
+
+const {variant = "default", defaults, site} = Astro.props;
 
 const siteName = site?.data?.siteName ?? defaults.siteName;
-const logoDark = branding?.logoDark ?? defaults.siteLogo;
-const logoLight = branding?.logoLight ?? defaults.siteLogo;
-const heroVideo = branding?.hero?.video;
+const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
+const logoLight = getImageSrc(branding?.data.logoLight ?? defaults.siteLogo);
+const heroVideo = branding?.data.hero?.video;
 ---
 
 <!-- Promo announcement bar -->
-<PromoBarLoader fallbackHref="/events" currentPath={Astro.url.pathname} server:defer />
+<PromoBarLoader fallbackHref="/events" currentPath={Astro.url.pathname} server:defer/>
 <!--<PromoBarLoader fallbackHref="/events" currentPath={Astro.url.pathname} />-->
-  <!--<PromoBarFallback slot="fallback" />-->
+<!--<PromoBarFallback slot="fallback" />-->
 <!--</PromoBarLoader>-->
 
 <!-- {
@@ -31,26 +34,26 @@ const heroVideo = branding?.hero?.video;
   )
 } -->
 {
-  variant === "home" ? (
+    variant === "home" ? (
     <HeroParallaxBackdrop
-      logoDark={logoDark}
-      siteName={siteName}
-      video={heroVideo}
-      strength={0.9}
+            logoDark={logoDark}
+            siteName={siteName}
+            video={heroVideo}
+            strength={0.9}
     />
-  ) : (
-    <DesktopTopLogo logoDark={logoDark} siteName={siteName} />
-  )
-}
+        ) : (
+    <DesktopTopLogo logoDark={logoDark} siteName={siteName}/>
+        )
+    }
 <header class="promo-bar-offset promo-bar-transitions sticky top-0 z-50">
-  <!-- desktop nav -->
-  <DesktopMenu menuItems={menuItems} currentPath={Astro.url.pathname} />
+    <!-- desktop nav -->
+    <DesktopMenu menuItems={menuItems} currentPath={Astro.url.pathname}/>
 
-  <!-- mobile nav + logo -->
-  <MobileMenu
-    menuItems={menuItems}
-    logoLight={logoLight}
-    variant={variant}
-    siteName={siteName}
-  />
+    <!-- mobile nav + logo -->
+    <MobileMenu
+            menuItems={menuItems}
+            logoLight={logoLight}
+            variant={variant}
+            siteName={siteName}
+    />
 </header>

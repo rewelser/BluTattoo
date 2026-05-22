@@ -24,7 +24,7 @@ import ShareRow from "../components/ShareRow.astro";
 import ShareModal from "../components/ShareModal.astro";
 import ScrollXContainer from "../components/scaffolding/ScrollXContainer.astro";
 import ShareMeta from "../components/ShareMeta.astro";
-import {getOgImageSrc} from "../domain/decor/selectors.ts";
+import {getImageSrc} from "../domain/decor/selectors.ts";
 
 let residentPeople = await loadActiveArtists();
 const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
@@ -59,8 +59,11 @@ const people = [
         return {
             event: undefined,
             id: person.id,
-            data: person.data,
-            variant: "resident"
+            data: {
+                ...person.data,
+                eventImage: undefined,
+            },
+            variant: "resident",
         }
     })
 ];
@@ -215,10 +218,16 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                 aria-hidden="true"
         >
         </div>
+        <!--<div-->
+        <!--        class="wallpaper wallpaper-flash-animated hidden md:block"-->
+        <!--        aria-hidden="true"-->
+        <!--        style={`background-image: url(${sickleDataUrl})`}-->
+        <!--&gt;-->
+        <!--</div>-->
         <div
                 class="wallpaper wallpaper-flash-animated hidden md:block"
                 aria-hidden="true"
-                style={`background-image: url(${sickleDataUrl})`}
+                style={`background-image: url(/uploads/misc_images/storeflash2.svg)`}
         >
         </div>
         <!--<div id="booking-content" class="relative bg-amber-400 bg-gradient-to-b from-stone-500 to-stone-700 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">-->
@@ -300,7 +309,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                         >
                             <img src={logoDark} alt={`${siteName} Homepage`}/>
                         </a>
-                        <ShareModal siteName={siteName} logo={logoDark}/>
+                        <ShareModal shareTitle={siteName} shareHero={logoDark}/>
                         <SocialRow links={siteSocials} variant="thin" class="text-white" iconClass="h-8 w-8"/>
                         <div class="overflow-hidden overflow-x-auto">
                             <div class="flex flex-nowrap">
@@ -388,7 +397,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                             const isGuest = person.variant === "guest" && person.event && person.hrefId;
 
                             const ogImage = person.data.ogPhotoTextless ?? person.data.ogPhotoTexted ?? person.data.eventImage ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
-                            const ogImageSrc = getOgImageSrc(ogImage);
+                            const ogImageSrc = getImageSrc(ogImage);
 
                             return (
                                 csb &&

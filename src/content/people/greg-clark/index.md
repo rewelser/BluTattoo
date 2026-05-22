@@ -2,7 +2,7 @@
 name: Greggiesonner
 active: true
 order: 4
-pagePhoto: /assets/images/xenomorph_profile_2.jpg
+pagePhoto: assets/images/xenomorph_profile_4.jpg
 runwayPhotoFrame: archedframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:

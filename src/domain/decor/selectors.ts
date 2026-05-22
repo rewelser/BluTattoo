@@ -1,7 +1,7 @@
-import type {OgImage} from "./types.ts";
+import type {ImageSourceOrMetadata} from "./types.ts";
 
-export const getOgImageSrc = (ogImage: OgImage): string => {
-    return typeof ogImage === "string"
-        ? ogImage
-        : ogImage.src;
+export const getImageSrc = (image: ImageSourceOrMetadata): string => {
+    return typeof image === "string"
+        ? image
+        : image.src;
 }
