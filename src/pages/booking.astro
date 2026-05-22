@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 // import "../styles/global.css";
 import {iconRegistry, getIconEntry} from "../components/graphics/icons/registry";
 import DesktopTopLogo from "../components/header/DesktopTopLogo.astro";
-import branding from "../content/branding.json";
+const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
 import {defaults} from "../config/site";
 
@@ -193,9 +193,11 @@ const flashSvg = `<?xml version="1.0" encoding="UTF-8"?>
 
 const sickleDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(flashSvg)}`;
 const siteName = site?.data?.siteName ?? defaults.siteName;
-const logoDark = branding?.logoDark ?? defaults.siteLogo;
-const bookingHeroPhoto = branding?.hero.bookingHeroPhoto ?? defaults.bookingHeroPhoto;
-const bookingShareOGPhoto = branding?.bookingShareOGPhoto ?? defaults.ogPhoto;
+const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
+const bookingHeroPhoto = getImageSrc(branding?.data.hero?.bookingHeroPhoto ?? defaults.bookingHeroPhoto);
+const bookingShareOGPhoto = getImageSrc(branding?.data.bookingShareOGPhoto ?? defaults.ogPhoto);
+const bookingFlashLight = branding?.data.bookingFlashLight;
+const bookingFlashDark = branding?.data.bookingFlashDark;
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const siteSocials = site && siteInfoSocialsToItems(site.data.socials);
 const title = "Booking";
@@ -224,12 +226,17 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
         <!--        style={`background-image: url(${sickleDataUrl})`}-->
         <!--&gt;-->
         <!--</div>-->
-        <div
-                class="wallpaper wallpaper-flash-animated hidden md:block"
-                aria-hidden="true"
-                style={`background-image: url(/uploads/misc_images/storeflash2.svg)`}
-        >
-        </div>
+        {
+            bookingFlashDark && (
+                        <div
+                                class="wallpaper wallpaper-flash-animated hidden md:block"
+                                aria-hidden="true"
+                                style={`background-image: url(${bookingFlashDark.src})`}
+                        >
+                        </div>
+            )
+        }
+
         <!--<div id="booking-content" class="relative bg-amber-400 bg-gradient-to-b from-stone-500 to-stone-700 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">-->
         <!-- <div id="booking-content" class="relative bg-gradient-to-b from-pink-200 to-violet-200 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">-->
         <!-- <div id="booking-content" class="relative bg-gradient-to-b from-sky-500 to-indigo-900 md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">-->
@@ -241,12 +248,16 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
         <!--<div id="booking-content" class="relative bg-gradient-to-b from-[#04005c] to-[#193cb8] md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">-->
         <div id="booking-content"
              class="relative bg-gradient-to-b from-[#04005c] via-[#193cb8] to-[#3F1782] md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">
-            <div
-                    class="wallpaper wallpaper-flash-animated block md:hidden"
-                    aria-hidden="true"
-                    style={`background-image: url(${sickleDataUrl})`}
-            >
-            </div>
+            {
+                bookingFlashLight && (
+                            <div
+                                    class="wallpaper wallpaper-flash-animated block md:hidden"
+                                    aria-hidden="true"
+                                    style={`background-image: url(${bookingFlashLight.src})`}
+                            >
+                            </div>
+                )
+            }
             <header
                     id="booking-header"
                     class="relative flex flex-col justify-center"
@@ -396,7 +407,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
 
                             const isGuest = person.variant === "guest" && person.event && person.hrefId;
 
-                            const ogImage = person.data.ogPhotoTextless ?? person.data.ogPhotoTexted ?? person.data.eventImage ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
+                            const ogImage = person.data.ogPhotoTextless ?? person.data.ogPhotoTexted ?? person.data.eventImage ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
                             const ogImageSrc = getImageSrc(ogImage);
 
                             return (
@@ -949,9 +960,10 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
             background-size: 72px 72px;
             background-size: 827px 1121px;
             background-size: 827px 827px;
+            background-size: 900px 900px;
             background-position: 0 0;
-            animation: driftX 24s ease-in-out infinite,
-            driftY 12s linear infinite;
+            animation: driftX 120s ease-in-out infinite,
+            driftY 60s linear infinite;
             /* animation: driftWeave2 10s linear infinite; */
             opacity: 0.9;
             transform: translateY(0);
@@ -1045,7 +1057,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                 background-position-y: 0;
             }
             to {
-                background-position-y: 72px;
+                background-position-y: 900px;
             }
         }
 
@@ -1055,7 +1067,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                 animation-timing-function: ease-out;
             }
             25% {
-                background-position-x: 72px;
+                background-position-x: 900px;
                 animation-timing-function: ease-in;
             }
             50% {
@@ -1063,7 +1075,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                 animation-timing-function: ease-out;
             }
             75% {
-                background-position: -72px;
+                background-position: -900px;
                 animation-timing-function: ease-in;
             }
             100% {

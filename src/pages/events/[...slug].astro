@@ -8,10 +8,11 @@ import HrDivider from "../../components/decor/HrDivider.astro";
 import {getTransformedEventBySlug, loadTransformedEvents} from "../../domain/events/server.ts";
 import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
-import branding from "../../content/branding.json";
 import {defaults} from "../../config/site.ts";
 import {getImageSrc} from "../../domain/decor/selectors.ts";
 import ShareModal from "../../components/ShareModal.astro";
+
+const branding = await getEntry("branding", "main");
 
 export async function getStaticPaths() {
     const entries = await loadTransformedEvents();
@@ -30,7 +31,7 @@ const ev = entry.data;
 // console.log("ev.image", ev.image);
 // console.log("ev.href");
 const description = `Learn more about the following event: ${ev.title}`;
-const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
+const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
 ---
 
 <Layout title={ev.title} description={description} ogImage={ogImage}>

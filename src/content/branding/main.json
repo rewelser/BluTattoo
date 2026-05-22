@@ -2,6 +2,8 @@
   "logoDark": "assets/images/blutattoo-trimmed-black.svg",
   "logoLight": "assets/images/blutattoo-trimmed-light(orange100-fdecd8).svg",
   "sitewideOGPhoto": "assets/images/blutattoo_sitewide_og.png",
+  "bookingFlashLight": "assets/images/bookingFlashLight.svg",
+  "bookingFlashDark": "assets/images/testtesttest.svg",
   "bookingShareOGPhoto": "assets/images/blutattoo_booking_og.png",
   "hero": {
     "video": {

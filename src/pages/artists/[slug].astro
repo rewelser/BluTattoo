@@ -2,16 +2,16 @@
 import Layout from "../../layouts/Layout.astro";
 import {Image} from "astro:assets";
 import {loadActiveArtists} from "../../domain/people/server.ts";
-import {render, getCollection, type CollectionEntry} from "astro:content";
+import {render, getCollection, type CollectionEntry, getEntry} from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
 // import { ArtistGallery } from "../../components/ArtistGallery.tsx";
 import {ArtistGallery} from "../../components/ArtistGalleryNoThumbs.tsx";
 import {Picture} from "astro:assets";
 import SocialRow from "../../components/SocialRow.astro";
 import ShareModal from "../../components/ShareModal.astro";
-import branding from "../../content/branding.json";
 import {defaults} from "../../config/site.ts";
 
+const branding = await getEntry("branding", "main");
 
 const isAsset = (v: unknown) =>
     typeof v === "object" && v !== null && "src" in (v as any);
@@ -49,7 +49,8 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 );
 
 const description = `Learn more about ${entry.data.name}, view tattoo style information, and find booking details at BluTattoo.`;
-const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? branding.sitewideOGPhoto ?? defaults.ogPhoto;
+const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
+console.log("ogImage", ogImage);
 ---
 
 <script>
@@ -62,6 +63,7 @@ const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? brandi
 <Layout
         title={entry.data.name}
         description={description}
+        ogImage={ogImage}
         preloadImage={entry.data.pagePhoto?.src}
 >
     <article class="space-y-6">

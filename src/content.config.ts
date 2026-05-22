@@ -319,6 +319,8 @@ const branding = defineCollection({
         z.object({
             logoDark: image(),
             logoLight: image(),
+            bookingFlashLight: image().optional(),
+            bookingFlashDark: image().optional(),
             sitewideOGPhoto: image(),
             bookingShareOGPhoto: image(),
             hero: z.object({
