@@ -305,6 +305,7 @@ const siteInfo = defineCollection({
         phone: z.preprocess(emptyStrToUndef, z.string().optional()),
         email: z.preprocess(emptyStrToUndef, z.string().optional()),
         hours: z.array(z.object({label: z.string(), value: z.string()})).optional(),
+        hoursShortline: z.string(),
         socials: siteInfoSocialsSchema,
     }),
 });

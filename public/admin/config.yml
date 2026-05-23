@@ -356,6 +356,11 @@ collections:
               - { name: label, label: "Day", widget: string }
               - { name: value, label: "Hours", widget: string }
 
+          - name: hoursShortline
+            label: "Hours Shortline"
+            widget: text
+            hint: "A short description of the hours of availability."
+
           - name: socials
             label: "Socials"
             widget: "object"
