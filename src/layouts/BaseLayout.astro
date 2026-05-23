@@ -46,10 +46,10 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 ---
 
 <!doctype html>
-<html lang={htmlLang}>
+<html lang={htmlLang} style="overscroll-behavior-x: none;">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
         <title>{pageTitleUsed}</title>
         <meta name="description" content={pageDescriptionUsed} />

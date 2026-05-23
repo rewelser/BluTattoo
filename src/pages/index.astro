@@ -66,8 +66,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <div class="pt-6">
                 <a
                         href="/booking"
-                        class="inline-block px-8 py-3 border border-orange-100/30 rounded-full text-sm tracking-wide uppercase
-               hover:bg-orange-100 hover:text-black transition duration-300 js-fade-up"
+                        class="inline-block px-8 py-3 border border-blue-500/30 rounded-full text-sm tracking-wide uppercase
+               hover:bg-blue-100 hover:text-black transition duration-300 js-fade-up"
                 >
                     BOOKING
                 </a>
@@ -81,17 +81,20 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
     <!-- /////////////////////////////////////////// -->
     <!-- <ParallaxWindow src="/uploads/misc_images/bigroom.webp" windowHeight="35vh" strength={0.35}> -->
-    <ParallaxWindow
-            src="/uploads/misc_images/bigroom.webp"
-            kind="image"
-            windowHeight="35vh"
-            strength={0.55}
-    >
-        <!-- optional overlay -->
-        <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
-            A window into the scene
-        </h2>
-    </ParallaxWindow>
+    <div class="m-2 rounded-xl overflow-hidden">
+        <ParallaxWindow
+                src="/uploads/misc_images/blutattoo_exterior.jpg"
+                kind="image"
+                windowHeight="65vh"
+                strength={.95}
+        >
+            <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
+            <h2 class=" backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                Our Location
+            </h2>
+        </ParallaxWindow>
+    </div>
+
 
     <!-- <ParallaxWindow
     src="/uploads/misc_videos/hero-720.mp4"
@@ -103,26 +106,26 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
     playsinline={true}
   /> -->
 
-    <ScrollPeelStack
-            id="beforeafter-test"
-            heightVh={800}
-            images={[
-                "/uploads/people/zirk1.jpeg",
-                "/uploads/misc_images/hero-poster.jpg",
-                "/uploads/misc_images/hero-poster-red.jpg",
-            ]}
-            sideImages={{
-                left: [
-                    {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A"},
-                    {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B"},
-                ],
-                right: [
-                    {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C"},
-                    {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D"},
-                ],
-            }}
-            openStartVh={2}
-    />
+    <!--<ScrollPeelStack-->
+    <!--        id="beforeafter-test"-->
+    <!--        heightVh={800}-->
+    <!--        images={[-->
+    <!--            "/uploads/people/zirk1.jpeg",-->
+    <!--            "/uploads/misc_images/hero-poster.jpg",-->
+    <!--            "/uploads/misc_images/hero-poster-red.jpg",-->
+    <!--        ]}-->
+    <!--        sideImages={{-->
+    <!--            left: [-->
+    <!--                {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A"},-->
+    <!--                {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B"},-->
+    <!--            ],-->
+    <!--            right: [-->
+    <!--                {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C"},-->
+    <!--                {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D"},-->
+    <!--            ],-->
+    <!--        }}-->
+    <!--        openStartVh={2}-->
+    <!--/>-->
     <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
     <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">

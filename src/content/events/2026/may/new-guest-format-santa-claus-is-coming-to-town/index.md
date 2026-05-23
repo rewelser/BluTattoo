@@ -34,7 +34,8 @@ guestSpot:
             label: Book an appointment
 title: 'new guest format: Santa Claus is coming to town!'
 image: santa-hero.jpg
-ogPhotoTexted: santaog_texted.png
+ogPhotoTextless: /uploads/ogimages/santaog.webp
+ogPhotoTexted: /uploads/ogimages/santaog_texted.png
 published: true
 featured: false
 archived: false
