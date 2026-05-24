@@ -97,13 +97,13 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                 </h2>
             </ParallaxWindow>
         </div>
-        <div class="relative max-w-4xl mx-auto text-center flex flex-col items-center gap-8 py-32 js-fade-up">
+        <div class="relative max-w-4xl mx-auto text-center flex flex-col items-center gap-8 pt-32 js-fade-up">
             <p class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl">
                 Nestled in the heart of Uptown Martinsville, Virginia:
             </p>
             <div class="grid grid-cols-1 md:grid-cols-3">
                 <div class="pt-6">
-                    <h3 class="text-3xl sm:text-4xl pb-4">Address</h3>
+                    <h3 class="text-3xl sm:text-4xl pb-4">ADDRESS</h3>
                     <a
                             class="underline hover:no-underline"
                             href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
@@ -115,7 +115,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     </a>
                 </div>
                 <div class="pt-6 flex flex-col">
-                    <h3 class="text-3xl sm:text-4xl pb-4">Contact</h3>
+                    <h3 class="text-3xl sm:text-4xl pb-4">CONTACT</h3>
                     <a class="underline hover:no-underline" href={phoneHref} aria-label={`Call ${shopName}`}>
                         {phone}
                     </a>
@@ -129,7 +129,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     </a>
                 </div>
                 <div class="pt-6">
-                    <h3 class="text-3xl sm:text-4xl pb-4">Hours</h3>
+                    <h3 class="text-3xl sm:text-4xl pb-4">HOURS</h3>
                     <p class="whitespace-pre-line">{hoursShortline}</p>
                 </div>
             </div>
@@ -138,26 +138,26 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             </p>
         </div>
     </section>
-    <div class="h-[120vh] w-full bg-linear-to-b from-transparent to-neutral-700">
-        <div class="relative overflow-hidden
-                    aspect-video
-                    md:aspect-auto md:flex-1
-                    md:min-h-100">
-            <iframe
-                    title={`${shopName} location on Google Maps`}
-                    src={mapSrc}
-                    loading="lazy"
-                    class="max-w-3xl absolute left-0 top-0 h-full w-full border-0"
-            ></iframe>
-        </div>
+    <div class="h-[50vh] w-full bg-repeat-x bg-size-[auto_100%]" style="background-image: url('/uploads/misc_images/scalloped_bg_to_gray.svg');">
+        <!--<div class="relative overflow-hidden-->
+        <!--            aspect-video-->
+        <!--            md:aspect-auto md:flex-1-->
+        <!--            md:min-h-100">-->
+        <!--    <iframe-->
+        <!--            title={`${shopName} location on Google Maps`}-->
+        <!--            src={mapSrc}-->
+        <!--            loading="lazy"-->
+        <!--            class="max-w-3xl absolute left-0 top-0 h-full w-full border-0"-->
+        <!--    ></iframe>-->
+        <!--</div>-->
     </div>
-    <section class="bg-neutral-700 px-6 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
+    <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
         <div class="m-2 rounded-xl overflow-hidden">
             <ParallaxWindow
-                    src="/uploads/misc_images/blutattoo_exterior.jpg"
-                    kind="image"
+                    src="/uploads/misc_videos/sierra7.mp4"
+                    kind="video"
                     windowHeight="65vh"
-                    strength={.95}
+                    strength={.85}
             >
                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                 <h2 id="artists-heading"
@@ -166,8 +166,9 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                 </h2>
             </ParallaxWindow>
         </div>
-        <ArtistRunway/>
-
+        <div class=" pt-16 md:pt-24 px-6">
+            <ArtistRunway/>
+        </div>
     </section>
 
 

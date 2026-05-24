@@ -5,24 +5,33 @@ import type {ImageMetadata} from "astro";
 import {defaults} from "../config/site.ts";
 
 import GuestSpotCardInfoBanner from "./decor/GuestSpotCardInfoBanner.astro";
+import {b} from "unstorage/dist/shared/unstorage.DqlWKU2I";
 
 interface Props {
+    anchorHref: string;
     personPhoto: ImageMetadata | undefined;
     personName: string;
+    personBio?: string;
     primaryRole?: string;
     photoAlt: string;
     frameType?: FrameKey;
+    hasBookables: boolean;
+    bookingToggleId: string;
     isGuestSpot?: boolean;
     guestSpotDateRange?: string;
     class?: string;
 }
 
 const {
+    anchorHref,
     personPhoto,
     personName,
+    personBio,
     primaryRole = "Tattoo Artist",
     photoAlt,
     frameType,
+    hasBookables,
+    bookingToggleId,
     isGuestSpot,
     guestSpotDateRange,
     class: className = "",
@@ -31,105 +40,145 @@ const {
 const frameConfig = frameType ? frameRegistry[frameType] : undefined;
 
 const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
+
+const previewLength = 100;
+const truncated = personBio?.length > previewLength;
+const previewBio = truncated
+    ? personBio?.slice(0, previewLength).trim().concat("...")
+    : personBio;
+const bioOrDetailsVerbiage = isGuestSpot ? "details" : "bio";
+const bioOrDetailsAnchorTag = isGuestSpot ? "event-info" : "artist-bio";
 ---
 <div
         class="person-card-container"
         data-person-card-container
 >
-    {isGuestSpot &&
-            <GuestSpotCardInfoBanner
-                    primaryRole={primaryRole}
-                    dateRange={guestSpotDateRange}
-            />
-    }
-    <div class="relative">
-        <div
-                class={`person-card group relative overflow-hidden rounded-2xl ${className}`}
-        >
-            {!frameConfig ?
-                (
-                        <>
-                            <img
-                                    src={personPhoto?.src ?? defaultPersonRunwayPhoto}
-                                    alt={photoAlt}
-                                    data-person-card-photo
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                        </>
-                ) : (
+    <a href={anchorHref}>
+        {isGuestSpot &&
+                <GuestSpotCardInfoBanner
+                        primaryRole={primaryRole}
+                        dateRange={guestSpotDateRange}
+                />
+        }
+        <div class="relative">
+            <div
+                    class={`person-card group relative overflow-hidden rounded-2xl ${className}`}
+            >
+                {!frameConfig ?
+                    (
                             <>
-                                <div
-                                        class="applied-mask--frameclip h-full w-full"
-                                        style={`mask-image: url("${frameConfig.mask.src}"); -webkit-mask-image: url("${frameConfig.mask.src}");`}
-                                >
-                                    <img
-                                            src={personPhoto?.src ?? defaultPersonRunwayPhoto}
-                                            alt={photoAlt}
-                                            data-person-card-photo
-                                            loading="lazy"
-                                            decoding="async"
-                                            class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                </div>
-
                                 <img
-                                        alt=""
-                                        data-frame
-                                        data-person-card-frame
-                                        data-person-card-frame-src={frameConfig.frame.src}
+                                        src={personPhoto?.src ?? defaultPersonRunwayPhoto}
+                                        alt={photoAlt}
+                                        data-person-card-photo
                                         loading="lazy"
                                         decoding="async"
-                                        class="absolute inset-0 h-full w-full pointer-events-none"
-                                        aria-hidden="true"
+                                        class="object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
-                                <frameConfig.FrameClipComponent/>
-
-                                <script is:inline>
-                                    (() => {
-                                        const root = document.currentScript.parentElement;
-                                        const shape = root.querySelector("[data-frame-window]");
-                                        const photo = root.querySelector("[data-person-card-photo]");
-
-                                        function syncPhotoToWindow() {
-                                            const shapeRect = shape.getBoundingClientRect();
-                                            const wrapperRect = root.getBoundingClientRect();
-
-                                            photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
-                                            photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
-                                            photo.style.width = `${shapeRect.width}px`;
-                                            photo.style.height = `${shapeRect.height}px`;
-                                        }
-
-                                        const ro = new ResizeObserver(syncPhotoToWindow);
-                                        ro.observe(root);
-
-                                        if (photo.complete) {
-                                            syncPhotoToWindow();
-                                        } else {
-                                            photo.addEventListener("load", syncPhotoToWindow, {once: true});
-                                        }
-
-                                        window.addEventListener("load", syncPhotoToWindow, {once: true});
-                                    })()
-                                </script>
                             </>
+                    ) : (
+                                <>
+                                    <div
+                                            class="applied-mask--frameclip h-full w-full"
+                                            style={`mask-image: url("${frameConfig.mask.src}"); -webkit-mask-image: url("${frameConfig.mask.src}");`}
+                                    >
+                                        <img
+                                                src={personPhoto?.src ?? defaultPersonRunwayPhoto}
+                                                alt={photoAlt}
+                                                data-person-card-photo
+                                                loading="lazy"
+                                                decoding="async"
+                                                class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
 
+                                    <img
+                                            alt=""
+                                            data-frame
+                                            data-person-card-frame
+                                            data-person-card-frame-src={frameConfig.frame.src}
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="absolute inset-0 h-full w-full pointer-events-none"
+                                            aria-hidden="true"
+                                    />
+                                    <frameConfig.FrameClipComponent/>
+
+                                    <script is:inline>
+                                        (() => {
+                                            const root = document.currentScript.parentElement;
+                                            const shape = root.querySelector("[data-frame-window]");
+                                            const photo = root.querySelector("[data-person-card-photo]");
+
+                                            function syncPhotoToWindow() {
+                                                const shapeRect = shape.getBoundingClientRect();
+                                                const wrapperRect = root.getBoundingClientRect();
+
+                                                photo.style.top = `${shapeRect.top - wrapperRect.top}px`;
+                                                photo.style.left = `${shapeRect.left - wrapperRect.left}px`;
+                                                photo.style.width = `${shapeRect.width}px`;
+                                                photo.style.height = `${shapeRect.height}px`;
+                                            }
+
+                                            const ro = new ResizeObserver(syncPhotoToWindow);
+                                            ro.observe(root);
+
+                                            if (photo.complete) {
+                                                syncPhotoToWindow();
+                                            } else {
+                                                photo.addEventListener("load", syncPhotoToWindow, {once: true});
+                                            }
+
+                                            window.addEventListener("load", syncPhotoToWindow, {once: true});
+                                        })()
+                                    </script>
+                                </>
+
+                    )
+                }
+            </div>
+            {isGuestSpot && (
+                    <SparkleCorners
+                            color="black"
+                            fillColor="gold"
+                            size={24}
+                            gap={16}
+                            offset={-40}
+                    />
+            )}
+        </div>
+        <p class="text-3xl mt-3 text-center font-medium tracking-wide line-clamp-3">
+            {personName}
+        </p>
+    </a>
+    <div class="flex place-content-center">
+        <div class="flex flex-col w-max items-stretch text-center">
+            {!isGuestSpot && (
+                    <a href={`${anchorHref}#gallery-heading`}
+                       class="m-2 py-1 px-2 border border-solid border-seashell shadow-[1px_1px_0_seashell]">
+                        View Gallery
+                    </a>
+            )}
+            {
+                hasBookables && (
+                            <a href={`/booking#${bookingToggleId}`}
+                               class="m-2 py-1 px-2 border border-solid border-white shadow-[1px_1px_0_white]">
+                                Book now
+                            </a>
                 )
             }
         </div>
-        {isGuestSpot && (
-                <SparkleCorners
-                        color="black"
-                        fillColor="gold"
-                        size={24}
-                        gap={16}
-                        offset={-40}
-                />
-        )}
     </div>
-    <p class="mt-3 text-center text-base font-medium tracking-wide">
-        {personName}
-    </p>
+
+    {
+        personBio && (
+                    <p class="pl-4 mt-3 text-base font-light tracking-wide whitespace-pre-line opacity-75">
+                        {previewBio}
+                        {truncated && (<a href={`${anchorHref}#${bioOrDetailsAnchorTag}`}
+                                          class="px-1 underline hover:no-underline whitespace-nowrap">view
+                            full {bioOrDetailsVerbiage}</a>)}
+                    </p>
+        )
+    }
+
 </div>

@@ -84,4 +84,4 @@ contactSocialsBooking:
           label: Book an appointment
 ---
 
-Zoe is the shop apprentice. Check out her work and book below:
+Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below:

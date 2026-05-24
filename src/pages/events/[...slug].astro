@@ -55,7 +55,7 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?
                 <ShareModal shareTitle={ev.title} shareHero={ogImage} variant={2} shellClass="inline-block" cardButtonClass="mx-2" cardRadius="0.375rem" variant2ShareText="share event" heroFullBleed={true} />
             </div>
 
-            <div data-section="event-info" class="prose mt-4 max-w-none">
+            <div id="event-info" data-section="event-info" class="prose mt-4 max-w-none">
                 <Content/>
             </div>
             {

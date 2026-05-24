@@ -37,7 +37,7 @@ export async function getTransformedEventItems(): Promise<EventItem[]> {
     const entries = await loadTransformedEvents();
 
     return entries
-        .map((e) => ({id: e.id, ...e.data}));
+        .map((e) => ({id: e.id, body: e.body, ...e.data}));
 }
 
 let transformedEventItemsPromise: Promise<EventItem[]> | undefined;

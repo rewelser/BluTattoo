@@ -4,6 +4,7 @@ import {loadActiveArtists} from "../domain/people/server.ts";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
 import ArtistCard from "./ArtistCard.astro";
 import {fmtDateRange} from "../domain/events/format.ts";
+import {getBookables} from "../domain/contact/utlis.ts";
 
 
 let artists = await loadActiveArtists();
@@ -20,7 +21,6 @@ const guestArtists = guestSpotEvents
         return true;
     });
 
-
 // Same visual width as:
 // grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3
 const cardSlotClass =
@@ -33,20 +33,24 @@ const cardSlotClass =
                     {guestArtists.map((guest) => {
                         const spot = guest.guestSpot;
                         const dateRange = fmtDateRange(guest);
+                        const hasBookables = (getBookables(spot.contactSocialsBooking)?.length ?? 0) > 0;
                         return (
-                                <a
-                                        href={`/events/${guest.id}`}
-                                        class={`relative block ${cardSlotClass}`}
-                                >
-                                    <ArtistCard
-                                            personPhoto={spot.runwayPhoto}
-                                            personName={spot.guestName}
-                                            photoAlt={spot.guestName}
-                                            frameType={spot.runwayPhotoFrame}
-                                            isGuestSpot={true}
-                                            guestSpotDateRange={dateRange}
-                                    />
-                                </a>
+                                <>
+                                    <div class={`relative block ${cardSlotClass}`}>
+                                        <ArtistCard
+                                                anchorHref={`/events/${guest.id}`}
+                                                personPhoto={spot.runwayPhoto}
+                                                personName={spot.guestName}
+                                                personBio={spot.detailsShort ?? guest.body}
+                                                photoAlt={spot.guestName}
+                                                frameType={spot.runwayPhotoFrame}
+                                                hasBookables={hasBookables}
+                                                bookingToggleId={`person-guest-${guest.id.replaceAll("/", "-")}-toggle`}
+                                                isGuestSpot={true}
+                                                guestSpotDateRange={dateRange}
+                                        />
+                                    </div>
+                                </>
                         );
                     })}
                 </div>
@@ -56,18 +60,20 @@ const cardSlotClass =
     <section class="mt-8">
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {artists.map((artist) => {
+                const hasBookables = (getBookables(artist.data.contactSocialsBooking)?.length ?? 0) > 0;
                 return (
-                        <a
-                                href={`/artists/${artist.id}`}
-                                class="relative overflow-visible"
-                        >
+                        <div class="relative overflow-visible">
                             <ArtistCard
+                                    anchorHref={`/artists/${artist.id}`}
                                     personPhoto={artist.data.runwayPhoto}
                                     personName={artist.data.name}
+                                    personBio={artist.data.shortBio ?? artist.body}
                                     photoAlt={artist.data.name}
                                     frameType={artist.data.runwayPhotoFrame}
+                                    hasBookables={hasBookables}
+                                    bookingToggleId={`person-${artist.id}-toggle`}
                             />
-                        </a>
+                        </div>
                 );
             })}
         </div>

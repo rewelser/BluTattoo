@@ -21,6 +21,7 @@ import ShareModal from "../components/ShareModal.astro";
 import ScrollXContainer from "../components/scaffolding/ScrollXContainer.astro";
 import ShareMeta from "../components/ShareMeta.astro";
 import {getImageSrc} from "../domain/decor/selectors.ts";
+import {getBookables} from "../domain/contact/utlis.ts";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
@@ -172,31 +173,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
 
                             const hasNonbookableSocials = nonbookableSocials && nonbookableSocials.length > 0;
 
-                            const bookables = [
-                                ...(contacts ?? []).map((item) => ({
-                                    ...item,
-                                    category: "contact" as const,
-                                })),
-                                ...(socials ?? []).map((item) => ({
-                                    ...item,
-                                    category: "social" as const,
-                                })),
-                                ...(platforms ?? []).flatMap((platform) =>
-                                    (platform.linkOrModuleInfo ?? []).map(
-                                        (entry) => ({
-                                            ...entry,
-                                            category: "platform" as const,
-                                            preferred: platform.preferred,
-                                            type: platform.type,
-                                            platformEnabled: platform.enabled,
-                                        }),
-                                    ),
-                                ),
-                            ].sort(
-                                (a, b) =>
-                                    Number(b.preferred ?? false) -
-                                    Number(a.preferred ?? false),
-                            );
+                            const bookables = getBookables(csb);
 
                             const hasBookables = (bookables?.length ?? 0) > 0;
 
@@ -1012,6 +989,44 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                 // but when their parent person closes, they will be closed first.
                 await animatePanel(btn, panel, nextExpanded);
             });
+
+            const openFromHash = async () => {
+                const rawHash = window.location.hash.slice(1);
+                if (!rawHash) return;
+
+                const target = document.getElementById(rawHash);
+                if (!target) return;
+
+                const btn = target.matches("[data-accordion-toggle]")
+                    ? target
+                    : document.querySelector(`[aria-controls="${CSS.escape(rawHash)}"]`);
+                if (!btn) return;
+
+                const panel = getPanel(btn);
+                if (!panel) return;
+
+                if (!isExpanded(btn)) {
+                    if (btn.getAttribute("data-accordion-level") === "root") {
+                        for (const openRootBtn of getRootButtons()) {
+                            if (openRootBtn !== btn && isExpanded(openRootBtn)) {
+                                await closeBranch(openRootBtn);
+                            }
+                        }
+                    }
+
+                    await animatePanel(btn, panel, true);
+                }
+
+                requestAnimationFrame(() => {
+                    btn.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                });
+            };
+
+            window.addEventListener("hashchange", openFromHash);
+            openFromHash();
 
             document.addEventListener("keydown", async (event) => {
                 if (event.key !== "Escape") return;

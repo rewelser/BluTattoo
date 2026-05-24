@@ -292,6 +292,7 @@ collections:
         widget: image
         multiple: true
 
+      - { name: shortBio, label: "Short Bio (excerpt on landing page, eg.)", widget: markdown, required: false }
       - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
 
   - name: "aftercare"
@@ -728,7 +729,7 @@ collections:
 
 
       - { name: title, label: Title, widget: string }
-      - { name: detailsShort, label: Details (short), widget: string, required: false }
+      - { name: detailsShort, label: "Details (short)", widget: string, required: false }
       - name: image
         label: "Event Image"
         widget: image
