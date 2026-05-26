@@ -33,6 +33,7 @@ guestSpot:
             locationId: L6GQX5D0KDS8B
             label: Book an appointment
 title: 'new guest format: Santa Claus is coming to town!'
+detailsShort: short details short details short details
 image: santa-hero.jpg
 ogPhotoTextless: /uploads/ogimages/santaog.webp
 ogPhotoTexted: /uploads/ogimages/santaog_texted.png
