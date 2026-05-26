@@ -1,0 +1,88 @@
+---
+interface Props {
+    speed?: number;
+    direction?: "up" | "down" | "left" | "right";
+    max?: number;
+    disabled?: boolean;
+}
+
+const {
+    speed = 0.15,
+    direction = "up",
+    max = 120,
+    disabled = false,
+} = Astro.props;
+---
+
+<div
+        class="parallax"
+        data-speed={speed}
+        data-direction={direction}
+        data-max={max}
+        data-disabled={disabled}
+>
+    <slot />
+</div>
+
+<script is:inline>
+    (() => {
+        const script = document.currentScript;
+        const root = script?.previousElementSibling;
+        if (!root || root.dataset.disabled === "true") return;
+
+        const speed = Number(root.dataset.speed || 0.15);
+        const max = Number(root.dataset.max || 120);
+        const direction = root.dataset.direction || "up";
+
+        let active = false;
+        let ticking = false;
+
+        const axis = direction === "left" || direction === "right" ? "x" : "y";
+        const sign = direction === "down" || direction === "right" ? 1 : -1;
+
+        const update = () => {
+            ticking = false;
+            if (!active) return;
+
+            const rect = root.getBoundingClientRect();
+            const viewportCenter = window.innerHeight / 2;
+            const elementCenter = rect.top + rect.height / 2;
+            const distance = elementCenter - viewportCenter;
+
+            const offset = Math.max(-max, Math.min(max, distance * speed)) * sign;
+
+            root.style.transform =
+                axis === "x"
+                    ? `translate3d(${offset}px, 0, 0)`
+                    : `translate3d(0, ${offset}px, 0)`;
+        };
+
+        const requestUpdate = () => {
+            if (!active || ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+        };
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                active = entry.isIntersecting;
+                if (active) requestUpdate();
+            },
+            { threshold: 0 }
+        );
+
+        observer.observe(root);
+
+        window.addEventListener("scroll", requestUpdate, { passive: true });
+        window.addEventListener("resize", requestUpdate);
+
+        requestUpdate();
+    })();
+</script>
+
+<style>
+    .parallax {
+        display: inline-block;
+        will-change: transform;
+    }
+</style>

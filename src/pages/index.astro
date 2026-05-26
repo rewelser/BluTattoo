@@ -10,6 +10,8 @@ import HrDivider from "../components/decor/HrDivider.astro";
 import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
 import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
+import ParallaxObject from "../components/decor/ParallaxObject.astro";
+import InkDroplet from "../components/decor/InkDroplet.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -47,14 +49,13 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         >
             <!-- headline -->
             <h1 id="homepage-heading"
-                class="text-5xl sm:text-7xl md:text-9xl leading-[1.1] font-[Fleur_de_Leah] js-fade-up">
+                class="text-5xl px-4 sm:text-7xl md:text-9xl font-[Fleur_de_Leah] overflow-visible js-fade-up">
                 Stories, told by ink
             </h1>
 
             <!-- subheadline -->
             <p class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl js-fade-up">
-                A collaboration between artist and canvas — shaped by story, refined by
-                technique.
+                A collaboration between artist and canvas.
             </p>
 
             <!-- supporting line -->
@@ -67,8 +68,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <div class="pt-6">
                 <a
                         href="/booking"
-                        class="inline-block px-8 py-3 border border-blue-700 rounded-full text-sm tracking-wide uppercase
-               hover:bg-blue-300 hover:text-black transition duration-300 js-fade-up"
+                        class="inline-block px-8 py-3 border border-black shadow-[3px_3px_0_black] text-sm tracking-wide uppercase
+               hover:bg-blue-100 hover:shadow-[2px_2px_0_black] hover:text-black transition duration-300 js-fade-up"
                 >
                     BOOK NOW
                 </a>
@@ -152,14 +153,14 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         <!--</div>-->
     </div>
     <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
-        <div class="m-2 rounded-xl overflow-hidden">
+        <div class="m-2 rounded-xl overflow-hidden grayscale brightness-75">
             <ParallaxWindow
-                    src="/uploads/misc_videos/sierra7-web.mp4"
-                    srcMobile="/uploads/misc_videos/sierra7-mobile-portrait.mp4"
+                    src="/uploads/misc_videos/fartists3-web.mp4"
+                    srcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
                     kind="video"
-                    windowHeight="50vh"
-                    strength={100}
-                    bleedMobile={100}
+                    windowHeight="65vh"
+                    strength={.95}
+                    strengthMobile={.65}
             >
                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                 <h2 id="artists-heading"
@@ -172,6 +173,46 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <ArtistRunway/>
         </div>
     </section>
+
+
+    <div class="scatter-region">
+        <div class="graphic g1">
+            <ParallaxObject speed={0.08} direction="down">
+                <InkDroplet />
+            </ParallaxObject>
+        </div>
+
+        <div class="graphic g2">
+            <ParallaxObject speed={0.18} direction="down">
+                <InkDroplet />
+            </ParallaxObject>
+        </div>
+        <style>
+            .scatter-region {
+                position: relative;
+                min-height: 80vh;
+            }
+
+            .graphic {
+                position: absolute;
+            }
+
+            .g1 {
+                top: 100%;
+                left: 12%;
+                width: 140px;
+            }
+
+            .g2 {
+                top: 90%;
+                right: 18%;
+                width: 220px;
+            }
+        </style>
+    </div>
+
+    <div class="h-[50vh] w-full bg-neutral-700 bg-no-repeat bg-size-[auto_100%] bg-top" style="background-image: url('/uploads/misc_images/lace_to_black.svg');">
+    </div>
 
 
     <!-- <ParallaxWindow
@@ -204,7 +245,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
     <!--        }}-->
     <!--        openStartVh={2}-->
     <!--/>-->
-    <div class="relative top-200px bg-transparent h-[500px] w-full">test</div>
+
+    <div class="relative top-200px bg-black h-[500px] w-full">test</div>
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
     <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
         <ParallaxWindow

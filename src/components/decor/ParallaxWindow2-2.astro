@@ -132,7 +132,7 @@ const {
         width: 100%;
         height: 100%;
         transform: translate3d(-50%, -50%, 0);
-        object-fit: cover;
+        object-fit: contain;
         backface-visibility: hidden;
         -webkit-transform-style: preserve-3d;
     }
@@ -218,7 +218,7 @@ const {
                     if (!isActive) return;
 
                     const rect = root.getBoundingClientRect();
-                    const vh = document.documentElement.clientHeight;
+                    const vh = window.screen.height;
 
                     const start = vh;
                     const end = -rect.height;
@@ -227,9 +227,16 @@ const {
 
                     const maxShift = bleedPx;
                     const shift = (progress - 0.5) * 2 * maxShift * strengthApplied;
-                    const clamped = clamp(shift, -maxShift, maxShift);
+                    // const clamped = clamp(shift, -maxShift, maxShift);
+                    // const clamped = Math.round(clamp(shift, -maxShift, maxShift) * 2) / 2;
+                    const clamped = Math.round(clamp(shift, -maxShift, maxShift));
 
                     layer.style.transform = `translate3d(0, ${clamped}px, 0)`;
+
+                    // targetShift = clamp(shift, -maxShift, maxShift);
+                    // currentShift += (targetShift - currentShift) * 0.18;
+                    //
+                    // layer.style.transform = `translate3d(0, ${currentShift}px, 0)`;
 
                     rafId = requestAnimationFrame(frame);
                 };
@@ -279,42 +286,11 @@ const {
                 window.addEventListener("resize", onResize, {passive: true});
                 mq.addEventListener("change", onBreakpointChange);
 
-                mq.addEventListener("change", () => {
-                    if (media.tagName === "VIDEO") {
-                        console.log(
-                            "[ParallaxWindow] breakpoint changed:",
-                            mq.matches ? "mobile" : "desktop",
-                            media.currentSrc,
-                            "strengthApplied",
-                            strengthApplied,
-                            "bleedPx:",
-                            bleedPx
-                        );
-                    }
-                });
-
                 const ready = () => {
                     updateMotionValues();
                     applySizing();
                     io.observe(root);
                     // no need to start loop until intersecting
-                    if (media.tagName === "VIDEO") {
-                        const vid = media;
-
-                        console.log("[ParallaxWindow]");
-                        console.log("Breakpoint:", mq.matches ? "mobile" : "desktop");
-                        console.log("currentSrc:", vid.currentSrc);
-                        console.log(
-                            "active <source>:",
-                            [...vid.querySelectorAll("source")].find((s) =>
-                                s.src === vid.currentSrc
-                            ),
-                            "strengthApplied",
-                            strengthApplied,
-                            "bleedPx:",
-                            bleedPx
-                        );
-                    }
                 };
 
                 if (media.tagName === "IMG") {

@@ -5,7 +5,6 @@ import type {ImageMetadata} from "astro";
 import {defaults} from "../config/site.ts";
 
 import GuestSpotCardInfoBanner from "./decor/GuestSpotCardInfoBanner.astro";
-import {b} from "unstorage/dist/shared/unstorage.DqlWKU2I";
 
 interface Props {
     anchorHref: string;
@@ -42,7 +41,7 @@ const frameConfig = frameType ? frameRegistry[frameType] : undefined;
 const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
 
 const previewLength = 100;
-const truncated = personBio?.length > previewLength;
+const truncated = (personBio?.length ?? 0) > previewLength;
 const previewBio = truncated
     ? personBio?.slice(0, previewLength).trim().concat("...")
     : personBio;
@@ -155,14 +154,14 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-info" : "artist-bio";
         <div class="flex flex-col w-max items-stretch text-center">
             {!isGuestSpot && (
                     <a href={`${anchorHref}#gallery-heading`}
-                       class="m-2 py-1 px-2 border border-solid border-seashell shadow-[1px_1px_0_seashell]">
+                       class="m-2 py-1 px-2 border border-solid border-seashell shadow-[2px_2px_0_seashell] hover:shadow-[1px_1px_0_seashell] transition">
                         View Gallery
                     </a>
             )}
             {
                 hasBookables && (
                             <a href={`/booking#${bookingToggleId}`}
-                               class="m-2 py-1 px-2 border border-solid border-white shadow-[1px_1px_0_white]">
+                               class="m-2 py-1 px-2 border border-solid border-white shadow-[2px_2px_0_white] hover:shadow-[1px_1px_0_seashell]">
                                 Book now
                             </a>
                 )
