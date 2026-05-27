@@ -91,6 +91,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     kind="image"
                     windowHeight="65vh"
                     strength={.95}
+                    useMinMediaHeight={false}
             >
                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                 <h2 id="our-location-heading"
@@ -141,46 +142,20 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         </div>
     </section>
     <div class="h-[50vh] w-full bg-repeat-x bg-size-[auto_100%]" style="background-image: url('/uploads/misc_images/scalloped_bg_to_gray.svg');">
-        <!--<div class="relative overflow-hidden-->
-        <!--            aspect-video-->
-        <!--            md:aspect-auto md:flex-1-->
-        <!--            md:min-h-100">-->
-        <!--    <iframe-->
-        <!--            title={`${shopName} location on Google Maps`}-->
-        <!--            src={mapSrc}-->
-        <!--            loading="lazy"-->
-        <!--            class="max-w-3xl absolute left-0 top-0 h-full w-full border-0"-->
-        <!--    ></iframe>-->
-        <!--</div>-->
     </div>
     <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
-        <div class="m-2 rounded-xl overflow-hidden">
-            <!--<ParallaxWindow-->
-            <!--        src="/uploads/misc_videos/just_sierra-web.mp4"-->
-            <!--        srcMobile="/uploads/misc_videos/just_sierra-mobile-portrait.mp4"-->
-            <!--        kind="video"-->
-            <!--        windowHeight="65vh"-->
-            <!--        strength={.95}-->
-            <!--        strengthMobile={0.95}-->
-            <!--&gt;-->
+        <div class="mx-8 rounded-xl overflow-hidden">
             <ParallaxWindow
                     src="/uploads/misc_videos/fartists3-web.mp4"
                     srcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
                     kind="video"
                     windowHeight="65vh"
+                    mediaHeightMult={1}
                     mediaHeightMultMobile={.5}
                     strength={.95}
                     strengthMobile={1}
                     layerClass="grayscale brightness-75"
             >
-            <!--    <ParallaxWindow-->
-            <!--            src="/uploads/misc_images/squarrel.png"-->
-            <!--            srcMobile="/uploads/misc_images/squarrel.png"-->
-            <!--            kind="image"-->
-            <!--            windowHeight="500px"-->
-            <!--            strength={.95}-->
-            <!--            strengthMobile={1}-->
-            <!--    >-->
                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                 <h2 id="artists-heading"
                     class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
