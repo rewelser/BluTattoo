@@ -1,0 +1,51 @@
+---
+// src/components/Scatter.astro
+
+interface Props {
+    count?: number;
+}
+
+const {count = 10} = Astro.props;
+
+const slotHtml = Astro.slots.has('default')
+    ? await Astro.slots.render('default')
+    : '';
+
+function randomBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
+
+const items = Array.from({length: count}, () => ({
+    top: randomBetween(0, 90),
+    left: randomBetween(0, 90),
+    rotate: randomBetween(-25, 25),
+    scale: randomBetween(0.75, 1.25),
+}));
+---
+
+<div class="scatter">
+    {items.map((item) => (
+            <div
+                    class="scatter-item"
+                    style={`
+        top: ${item.top}%;
+        left: ${item.left}%;
+        transform: rotate(${item.rotate}deg) scale(${item.scale});
+      `}
+                    set:html={slotHtml}
+            />
+    ))}
+</div>
+
+<style>
+    .scatter {
+        position: relative;
+        width: 100%;
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    .scatter-item {
+        position: absolute;
+    }
+</style>

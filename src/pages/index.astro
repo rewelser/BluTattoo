@@ -13,6 +13,7 @@ import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
 import ParallaxObject from "../components/decor/ParallaxObject.astro";
 import InkDroplet from "../components/decor/InkDroplet.astro";
+import ObjectScatterField from "../components/decor/ObjectScatterField.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -141,7 +142,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             </p>
         </div>
     </section>
-    <div class="h-[50vh] w-full bg-repeat-x bg-size-[auto_100%]" style="background-image: url('/uploads/misc_images/scalloped_bg_to_gray.svg');">
+    <div class="h-[50vh] w-full bg-repeat-x bg-size-[auto_100%]"
+         style="background-image: url('/uploads/misc_images/scalloped_bg_to_gray.svg');">
     </div>
     <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
         <div class="mx-8 rounded-xl overflow-hidden">
@@ -170,43 +172,31 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
 
     <div class="scatter-region">
-        <div class="graphic g1">
+        <ObjectScatterField count={10} class="layer">
             <ParallaxObject speed={0.08} direction="down">
-                <InkDroplet />
+                <InkDroplet class="h-5 w-5"/>
             </ParallaxObject>
-        </div>
-
-        <div class="graphic g2">
+        </ObjectScatterField>
+        <ObjectScatterField count={6} class="layer">
             <ParallaxObject speed={0.18} direction="down">
-                <InkDroplet />
+                <InkDroplet class="h-10 w-10"/>
             </ParallaxObject>
-        </div>
+        </ObjectScatterField>
+        <ObjectScatterField count={3} class="layer">
+            <ParallaxObject speed={0.28} direction="down">
+                <InkDroplet/>
+            </ParallaxObject>
+        </ObjectScatterField>
+
         <style>
             .scatter-region {
                 position: relative;
                 min-height: 80vh;
-            }
-
-            .graphic {
-                position: absolute;
-            }
-
-            .g1 {
-                top: 100%;
-                left: 12%;
-                width: 140px;
-            }
-
-            .g2 {
-                top: 90%;
-                right: 18%;
-                width: 220px;
+                background: linear-gradient(to bottom, oklch(37.1% 0 0), #231f20);
             }
         </style>
     </div>
-
-    <div class="h-[50vh] w-full bg-neutral-700 bg-no-repeat bg-size-[auto_100%] bg-top" style="background-image: url('/uploads/misc_images/lace_to_black.svg');">
-    </div>
+    <div class="relative top-200px bg-[#231f20] h-[500px] w-full">test</div>
 
 
     <!-- <ParallaxWindow
@@ -240,7 +230,6 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
     <!--        openStartVh={2}-->
     <!--/>-->
 
-    <div class="relative top-200px bg-black h-[500px] w-full">test</div>
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
     <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
         <ParallaxWindow

@@ -44,6 +44,7 @@ const {
             ticking = false;
             if (!active) return;
 
+            console.log("ticking", ticking);
             const rect = root.getBoundingClientRect();
             const viewportCenter = window.innerHeight / 2;
             const elementCenter = rect.top + rect.height / 2;

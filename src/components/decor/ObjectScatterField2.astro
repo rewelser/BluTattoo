@@ -1,0 +1,96 @@
+---
+// src/components/Scatter.astro
+
+interface Props {
+    count?: number;
+    class?: string;
+    minDistance?: number;
+    attemptsPerItem?: number;
+}
+
+const {
+    count = 10,
+    class: className = '',
+    minDistance = 18,
+    attemptsPerItem = 80,
+} = Astro.props;
+
+const slotHtml = Astro.slots.has('default')
+    ? await Astro.slots.render('default')
+    : '';
+
+function randomBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
+
+function distance(a: { top: number; left: number }, b: { top: number; left: number }) {
+    const dx = a.left - b.left;
+    const dy = a.top - b.top;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function generateScatterItems(count: number) {
+    const items: { top: number; left: number }[] = [];
+
+    for (let i = 0; i < count; i++) {
+        let bestCandidate: { top: number; left: number } | null = null;
+        let bestDistance = -Infinity;
+
+        for (let attempt = 0; attempt < attemptsPerItem; attempt++) {
+            const candidate = {
+                top: randomBetween(5, 85),
+                left: randomBetween(5, 85),
+            };
+
+            const nearestDistance =
+                items.length === 0
+                    ? Infinity
+                    : Math.min(...items.map((item) => distance(candidate, item)));
+
+            if (nearestDistance >= minDistance) {
+                bestCandidate = candidate;
+                break;
+            }
+
+            // Fallback: keep the least-bad candidate in case spacing is impossible.
+            if (nearestDistance > bestDistance) {
+                bestDistance = nearestDistance;
+                bestCandidate = candidate;
+            }
+        }
+
+        if (bestCandidate) {
+            items.push(bestCandidate);
+        }
+    }
+
+    return items;
+}
+
+const items = generateScatterItems(count);
+---
+
+<div class={`scatter ${className}`}>
+    {items.map((item) => (
+            <div
+                    class="scatter-item"
+                    style={`
+                top: ${item.top}%;
+                left: ${item.left}%;
+            `}
+                    set:html={slotHtml}
+            />
+    ))}
+</div>
+
+<style>
+    .scatter {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .scatter-item {
+        position: absolute;
+    }
+</style>
