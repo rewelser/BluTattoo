@@ -1,10 +1,8 @@
 ---
 const {
-    class: className = "",
+    class: className = "h-[60px] w-[60px]",
     style = "",
     id = "",
-    speed = 0.3, // parallax factor
-    offset = 0, // extra starting offset in px
 } = Astro.props;
 ---
 
@@ -14,12 +12,9 @@ const {
     <svg
             style={style}
             class={`parallax-svg ink-droplet ${className} absolute`}
-            data-speed={speed}
             data-name="Layer 2"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 517.14 690.44"
-            width="60"
-            height="40"
     >
         <defs>
             <style>
@@ -93,7 +88,7 @@ const {
             </path>
         </g>
     </svg>
-    <script define:vars={{speed, offset}}>
+    <script is:inline>
         (() => {
             const script = document.currentScript;
             const root = script?.parentElement;
@@ -106,7 +101,6 @@ const {
 
             const begin = (morphID) => {
                 const anim = root.querySelector(`#${morphID}`);
-                console.log("anim", anim);
                 anim.beginElement();
             };
 
@@ -129,17 +123,15 @@ const {
                     morph(dir);
                 }
                 lastY = window.scrollY;
-
-                // requestAnimationFrame(() => {
-                //     svg.style.transform = `translate3d(0, ${-(window.scrollY * speed) + offset}px, 0)`;
-                //     ticking = false;
-                // });
+                ticking = false;
             }
 
             const onScrollEnd = () => {
                 dir = "rest";
                 morph(dir);
             }
+
+            onScrollEnd();
 
             window.addEventListener("scroll", onScroll, {passive: true});
             window.addEventListener("scrollend", onScrollEnd);

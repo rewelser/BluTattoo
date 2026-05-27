@@ -272,6 +272,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                         };
                                                                         const hasHref = (item: any): item is {
                                                                             href: string;
+                                                                            type: string;
                                                                         } => {
                                                                             return ("href" in item && typeof item.href === "string");
                                                                         };

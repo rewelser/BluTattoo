@@ -7,7 +7,8 @@ import HrDivider from "../components/decor/HrDivider.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow 2.astro";
 // import ParallaxWindow from "../components/decor/ParallaxWindow1-2.astro";
-import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+// import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+import ParallaxWindow from "../components/decor/ParallaxWindow2-3-3.astro";
 import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
 import ParallaxObject from "../components/decor/ParallaxObject.astro";
@@ -153,15 +154,33 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         <!--</div>-->
     </div>
     <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
-        <div class="m-2 rounded-xl overflow-hidden grayscale brightness-75">
+        <div class="m-2 rounded-xl overflow-hidden">
+            <!--<ParallaxWindow-->
+            <!--        src="/uploads/misc_videos/just_sierra-web.mp4"-->
+            <!--        srcMobile="/uploads/misc_videos/just_sierra-mobile-portrait.mp4"-->
+            <!--        kind="video"-->
+            <!--        windowHeight="65vh"-->
+            <!--        strength={.95}-->
+            <!--        strengthMobile={0.95}-->
+            <!--&gt;-->
             <ParallaxWindow
                     src="/uploads/misc_videos/fartists3-web.mp4"
                     srcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
                     kind="video"
                     windowHeight="65vh"
+                    mediaHeightMultMobile={.5}
                     strength={.95}
-                    strengthMobile={.65}
+                    strengthMobile={1}
+                    layerClass="grayscale brightness-75"
             >
+            <!--    <ParallaxWindow-->
+            <!--            src="/uploads/misc_images/squarrel.png"-->
+            <!--            srcMobile="/uploads/misc_images/squarrel.png"-->
+            <!--            kind="image"-->
+            <!--            windowHeight="500px"-->
+            <!--            strength={.95}-->
+            <!--            strengthMobile={1}-->
+            <!--    >-->
                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                 <h2 id="artists-heading"
                     class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
