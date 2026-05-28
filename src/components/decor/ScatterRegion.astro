@@ -1,0 +1,30 @@
+---
+import ParallaxObject from "./ParallaxObject.astro";
+import ObjectScatterField from "./ObjectScatterField.astro";
+import InkDroplet from "./InkDroplet.astro";
+---
+
+<div class="scatter-region">
+    <ObjectScatterField count={20}>
+        <ParallaxObject speed={0.08} direction="down">
+            <InkDroplet sizeClass="h-5 w-5"/>
+        </ParallaxObject>
+    </ObjectScatterField>
+    <ObjectScatterField count={15}>
+        <ParallaxObject speed={0.18} direction="down">
+            <InkDroplet sizeClass="h-10 w-10"/>
+        </ParallaxObject>
+    </ObjectScatterField>
+    <ObjectScatterField count={8}>
+        <ParallaxObject speed={0.28} direction="down">
+            <InkDroplet/>
+        </ParallaxObject>
+    </ObjectScatterField>
+    <style>
+        .scatter-region {
+            position: relative;
+            min-height: 80vh;
+            background: linear-gradient(to bottom, oklch(37.1% 0 0), #231f20);
+        }
+    </style>
+</div>

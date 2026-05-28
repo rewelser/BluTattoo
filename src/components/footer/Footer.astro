@@ -17,13 +17,13 @@ const links = siteInfoSocialsToItems(site.data.socials);
       site?.data?.socials && (
         <SocialRow
           links={links}
-          class="justify-center"
+          justificationClass="justify-center md:justify-start"
           anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
         />
       )
     }
 
-    <div class="text-sm text-orange-100/70 text-center">
+    <div class="text-sm text-orange-100/70 text-center text-nowrap">
       <span class="font-semibold text-orange-100">{siteName}</span>
       <span class="block sm:inline sm:ml-2">© {year}. All rights reserved.</span
       >

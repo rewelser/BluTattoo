@@ -38,7 +38,6 @@ const {
             if (!active) return;
 
             const rect = root.getBoundingClientRect();
-            console.log("root", root);
             const viewportCenter = window.innerHeight / 2;
             const elementCenter = rect.top + rect.height / 2;
             const distance = elementCenter - viewportCenter;

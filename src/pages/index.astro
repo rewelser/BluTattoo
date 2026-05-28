@@ -14,6 +14,7 @@ import ArtistRunway from "../components/ArtistRunway.astro";
 import ParallaxObject from "../components/decor/ParallaxObject.astro";
 import InkDroplet from "../components/decor/InkDroplet.astro";
 import ObjectScatterField from "../components/decor/ObjectScatterField.astro";
+import ScatterRegion from "../components/decor/ScatterRegion.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -105,7 +106,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <p class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl">
                 Nestled in the heart of Uptown Martinsville, Virginia:
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-3">
+            <!--<div class="grid grid-cols-1 md:grid-cols-3">-->
+            <div class="flex flex-col md:flex-row justify-around gap-8 w-full">
                 <div class="pt-6">
                     <h3 class="text-3xl sm:text-4xl pb-4">ADDRESS</h3>
                     <a
@@ -170,42 +172,74 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         </div>
     </section>
 
+    <!-- /////////////////////////////////////////// -->
 
-    <div class="scatter-region">
-        <ObjectScatterField count={10} class="layer">
-            <ParallaxObject speed={0.08} direction="down">
-                <InkDroplet sizeClass="h-5 w-5"/>
-            </ParallaxObject>
-        </ObjectScatterField>
-        <ObjectScatterField count={6} class="layer">
-            <ParallaxObject speed={0.18} direction="down">
-                <InkDroplet sizeClass="h-10 w-10"/>
-            </ParallaxObject>
-        </ObjectScatterField>
-        <ObjectScatterField count={3} class="layer">
-            <ParallaxObject speed={0.28} direction="down">
-                <InkDroplet/>
-            </ParallaxObject>
-        </ObjectScatterField>
-        <!--<ParallaxObject speed={0.18} direction="down">-->
-        <!--    <InkDroplet sizeClass="h-5 w-5"/>-->
-        <!--</ParallaxObject>-->
-        <!--<ParallaxObject speed={0.28} direction="down">-->
-        <!--    <InkDroplet sizeClass="h-10 w-10"/>-->
-        <!--</ParallaxObject>-->
-        <!--<ParallaxObject speed={0.48} direction="down">-->
-        <!--    <InkDroplet sizeClass="h-20 w-20"/>-->
-        <!--</ParallaxObject>-->
+    <ScatterRegion/>
 
-        <style>
-            .scatter-region {
-                position: relative;
-                min-height: 80vh;
-                background: linear-gradient(to bottom, oklch(37.1% 0 0), #231f20);
-            }
-        </style>
-    </div>
-    <div class="relative top-200px bg-[#231f20] h-[500px] w-full">test</div>
+    <!-- /////////////////////////////////////////// -->
+
+    <section class="bg-[#231f20] py-64 md:py-80" aria-labelledby="our-process-heading" data-section-theme="neutraldark">
+        <div class="mx-8 rounded-xl overflow-hidden">
+            <ParallaxWindow
+                    src="/uploads/misc_videos/ourprocess-web.mp4"
+                    srcMobile="/uploads/misc_videos/ourprocess-mobile-portrait11.mp4"
+                    kind="video"
+                    windowHeight="65vh"
+                    mediaHeightMult={1}
+                    mediaHeightMultMobile={.5}
+                    strength={.95}
+                    strengthMobile={1}
+                    layerClass="grayscale brightness-75"
+            >
+                <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
+                <h2 id="our-process-heading"
+                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                    Our Process
+                </h2>
+            </ParallaxWindow>
+        </div>
+        <div class="px-6 mx-auto mt-20 max-w-3xl text-center leading-relaxed apply-themed-prose">
+            <h1 class="text-8xl font-light">
+                Sure! Here are some eye-catching blurbs to put on your tattoo shop website that stress both ease of process and adherence to compliance standards:
+            </h1>
+
+            <p>
+                Getting tattooed should feel exciting from the first idea to the final heal. Explore our artists' work
+                and pick a vibe, or come talk to us and we'll brainstorm.
+            </p>
+            <p>
+                Once you’re ready, book directly with your artist, or just walk on in! We’ll take care of
+                the rest: a clean, licensed studio environment and guidance for keeping your
+                tattoo looking great long after you leave the chair.
+            </p>
+            <p>
+                Ready to start your next piece? Browse our artists, choose your fit, and let’s make something permanent.
+            </p>
+
+            <HrDivider color="seashell"/>
+        </div>
+        <div class=" pt-16 md:pt-24">
+            <ScrollPeelStack
+                    heightVh={800}
+                    images={[
+                        "/uploads/people/zirk1.jpeg",
+                        "/uploads/misc_images/hero-poster.jpg",
+                        "/uploads/misc_images/hero-poster-red.jpg",
+                    ]}
+                    sideImages={{
+                        left: [
+                            {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A"},
+                            {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B"},
+                        ],
+                        right: [
+                            {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C"},
+                            {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D"},
+                        ],
+                    }}
+                    openStartVh={2}
+            />
+        </div>
+    </section>
 
 
     <!-- <ParallaxWindow
@@ -218,26 +252,6 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
     playsinline={true}
   /> -->
 
-    <!--<ScrollPeelStack-->
-    <!--        id="beforeafter-test"-->
-    <!--        heightVh={800}-->
-    <!--        images={[-->
-    <!--            "/uploads/people/zirk1.jpeg",-->
-    <!--            "/uploads/misc_images/hero-poster.jpg",-->
-    <!--            "/uploads/misc_images/hero-poster-red.jpg",-->
-    <!--        ]}-->
-    <!--        sideImages={{-->
-    <!--            left: [-->
-    <!--                {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side A"},-->
-    <!--                {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side B"},-->
-    <!--            ],-->
-    <!--            right: [-->
-    <!--                {src: "/uploads/misc_images/hero-poster.jpg", alt: "Side C"},-->
-    <!--                {src: "/uploads/misc_images/hero-poster-red.jpg", alt: "Side D"},-->
-    <!--            ],-->
-    <!--        }}-->
-    <!--        openStartVh={2}-->
-    <!--/>-->
 
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
     <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
