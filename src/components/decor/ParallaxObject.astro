@@ -16,46 +16,37 @@ const {
 
 <div
         class="parallax"
-        data-speed={speed}
-        data-direction={direction}
-        data-max={max}
         data-disabled={disabled}
 >
     <slot />
 </div>
 
-<script is:inline>
+<script define:vars={{speed, direction, max, disabled}}>
     (() => {
         const script = document.currentScript;
         const root = script?.previousElementSibling;
+        const scrollPosition = window.scrollY;
         if (!root || root.dataset.disabled === "true") return;
-
-        const speed = Number(root.dataset.speed || 0.15);
-        const max = Number(root.dataset.max || 120);
-        const direction = root.dataset.direction || "up";
 
         let active = false;
         let ticking = false;
 
-        const axis = direction === "left" || direction === "right" ? "x" : "y";
         const sign = direction === "down" || direction === "right" ? 1 : -1;
 
         const update = () => {
             ticking = false;
             if (!active) return;
 
-            console.log("ticking", ticking);
             const rect = root.getBoundingClientRect();
+            console.log("root", root);
             const viewportCenter = window.innerHeight / 2;
             const elementCenter = rect.top + rect.height / 2;
             const distance = elementCenter - viewportCenter;
 
-            const offset = Math.max(-max, Math.min(max, distance * speed)) * sign;
+            // const offset = Math.max(-max, Math.min(max, distance * speed)) * sign;
 
-            root.style.transform =
-                axis === "x"
-                    ? `translate3d(${offset}px, 0, 0)`
-                    : `translate3d(0, ${offset}px, 0)`;
+            root.style.transform = `translateY(${distance * speed * sign}px)`;
+
         };
 
         const requestUpdate = () => {

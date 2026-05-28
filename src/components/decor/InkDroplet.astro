@@ -1,6 +1,7 @@
 ---
 const {
-    class: className = "h-[60px] w-[60px]",
+    class: className = "",
+    sizeClass = "h-[60px] w-[60px]",
     style = "",
     color = "#231f20",
     id = "",
@@ -9,10 +10,10 @@ const {
 
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <!-- parallax-svg -->
-<div>
+<div class={sizeClass}>
     <svg
             style={style}
-            class={`parallax-svg ink-droplet ${className} absolute`}
+            class={`parallax-svg ink-droplet ${className} ${sizeClass} absolute`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 517.14 690.44"
     >
