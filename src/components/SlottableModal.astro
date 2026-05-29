@@ -205,7 +205,17 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             }
 
             .shell[data-vt-active] .card {
+                //visibility: hidden;
+            }
+            .shell[data-vt-active].is-open .card {
+                //visibility: hidden;
+            }
+
+            .shell.is-open .card {
                 visibility: hidden;
+            }
+            :global(html[data-vt-direction="close"]) .shell[data-vt-active] .card {
+                visibility: visible;
             }
 
             :global(::view-transition-group(.slottable-modal)) {
@@ -217,6 +227,14 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 
             :global(html[data-vt-direction="close"]::view-transition-group(.slottable-modal)) {
                 animation-direction: normal, reverse;
+            }
+
+            :global(html[data-vt-direction="close"]::view-transition-old(.slottable-modal)) {
+                z-index: 2;
+            }
+
+            :global(html[data-vt-direction="close"]::view-transition-new(.slottable-modal)) {
+                z-index: 1;
             }
 
             :global(html::view-transition-old(.slottable-modal)),
