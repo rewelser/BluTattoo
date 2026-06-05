@@ -116,7 +116,6 @@ const posterUsed = poster?.src ?? image?.src;
             const observer = new IntersectionObserver(
                 async ([entry]) => {
                     if (entry.isIntersecting) {
-                        // observer.unobserve(entry.target);
                         await loadMedia(entry.target);
                         if (kind === "video") {
                             media.play?.().catch(() => {});
