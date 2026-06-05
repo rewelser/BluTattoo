@@ -15,7 +15,7 @@ import ParallaxObject from "../components/decor/ParallaxObject.astro";
 import InkDroplet from "../components/decor/InkDroplet.astro";
 import ObjectScatterField from "../components/decor/ObjectScatterField.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
-import FramedImage from "../components/decor/FramedImage.astro";
+import FramedImage from "../components/decor/FramedImage2.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -261,84 +261,23 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
     {
         ourStory && (
                     <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
-                        <ParallaxWindow
-                                src="/uploads/misc_images/bigroom.webp"
-                                kind="image"
-                                windowHeight="71vh"
-                                strength={0.55}
-                                class="applied-mask--heart"
-                        >
-                            <!-- optional overlay -->
-                            <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
-                                A window into the scene
-                            </h2>
-                        </ParallaxWindow>
-                        <style>
-                            :global(.applied-mask--heart) {
-                                mask-image: url("/uploads/misc_images/frameclip.svg");
-                                /* mask-size: 220px 220px; */
-                                mask-size: contain;
-                                mask-position: center;
-                                mask-repeat: no-repeat;
-                            }
-                        </style>
-
-                        <svg
-                                class="framed"
-                                viewBox="0 0 738.39 738.39"
-                                xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <defs>
-                                <clipPath id="frame-opening">
-                                    <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
-                                    ></circle>
-                                </clipPath>
-                            </defs>
-
-                            <image
-                                    id="photo"
-                                    href="/uploads/people/lara_headshot.jpg"
-                                    preserveAspectRatio="xMidYMin slice"
-                                    clip-path="url(#frame-opening)"
-                            />
-
-                            <image
-                                    href="/uploads/misc_images/roundframe.png"
-                                    x="0"
-                                    y="0"
-                                    width="738.39"
-                                    height="738.39"
-                                    preserveAspectRatio="none"
-                            />
-                        </svg>
-
-                        <script is:inline>
-                            (() => {
-                                const shape = document.getElementById("opening-shape");
-                                const photo = document.getElementById("photo");
-                                const box = shape.getBBox();
-
-                                photo.setAttribute("x", box.x);
-                                photo.setAttribute("y", box.y);
-                                photo.setAttribute("width", box.width);
-                                photo.setAttribute("height", box.height);
-                            })();
-                        </script>
-
                         <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
-                            <!--<FramedImage-->
-                            <!--        class="w-[80vw] lg:w-[40vw]"-->
-                            <!--        frame={ourStory?.frameImage}-->
-                            <!--        framedImage={ourStory?.image}-->
-                            <!--        frameMask={ourStory?.frameWindowSvg}-->
-                            <!--        photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}-->
-                            <!--/>-->
-                            <!--<style>-->
-                            <!--    .fade-bottom-40 {-->
-                            <!--        -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);-->
-                            <!--        mask-image: linear-gradient(to bottom, black 80%, transparent 95%);-->
-                            <!--    }-->
-                            <!--</style>-->
+                            <FramedImage
+                                    kind="video"
+                                    class="w-[80vw] lg:w-[40vw]"
+                                    frame={ourStory?.frameImage}
+                                    framedImage={ourStory?.image}
+                                    videoSrc="/uploads/misc_videos/fartists3-web.mp4"
+                                    videoSrcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
+                                    frameMask={ourStory?.frameWindowSvg}
+                                    photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
+                            />
+                            <style>
+                                .fade-bottom-40 {
+                                    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                    mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                }
+                            </style>
                         </div>
 
                         <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->

@@ -1,3 +1,138 @@
 ---
-$END$
+import type {ImageMetadata} from "astro";
+import type {SvgComponent} from "astro/types";
+interface Props {
+    kind?: "image" | "video";
+    image?: ImageMetadata;
+    videoSrc?: string;
+    videoSrcMobile?: string;
+    photoAlt: string;
+    class?: string;
+
+    autoplay?: boolean;
+    muted?: boolean;
+    loop?: boolean;
+    playsinline?: boolean;
+    controls?: boolean;
+    preload?: "none" | "metadata" | "auto";
+    poster?: ImageMetadata;
+}
+const {
+    kind = "image",
+    image,
+    videoSrc,
+    videoSrcMobile,
+    photoAlt,
+    class: className = "",
+
+    autoplay = false,
+    muted = true,
+    loop = true,
+    playsinline = true,
+    controls = false,
+    preload = "metadata",
+    poster,
+    ...rest
+} = Astro.props;
+
+const posterUsed = poster?.src ?? image?.src;
 ---
+<>
+    {
+        kind === "video" ? (
+                <video
+                        data-media
+                        {...rest}
+                        class="absolute object-cover transition-transform duration-300"
+                        autoplay={autoplay}
+                        muted={muted}
+                        loop={loop}
+                        playsinline={playsinline}
+                        controls={controls}
+                        preload={preload}
+                        poster={posterUsed}
+                >
+                    {videoSrcMobile && (
+                            <source
+                                    src={videoSrcMobile}
+                                    media="(max-width: 640px)"
+                                    type="video/mp4"
+                            />
+                    )}
+
+                    {videoSrc && (
+                            <source
+                                    src={videoSrc}
+                                    type="video/mp4"
+                            />
+                    )}
+                </video>
+        ) : (
+                <img
+                        data-media
+                        {...rest}
+                        src={image.src}
+                        alt={photoAlt}
+                        loading="lazy"
+                        decoding="async"
+                        class="absolute object-cover transition-transform duration-300"
+                />
+        )
+    }
+    <script define:vars={{kind}}>
+        (() => {
+            const root = document.currentScript.parentElement;
+            const media = root.querySelector("[data-media]");
+            let hasLoaded = false;
+
+            const loadMedia = async () => {
+                if (hasLoaded) return;
+                hasLoaded = true;
+
+                const mediaReady = !media
+                    ? Promise.resolve()
+                    : kind === "video"
+                        ? (
+                            media.readyState >= 1
+                                ? Promise.resolve()
+                                : new Promise((resolve) => {
+                                    media.addEventListener("loadedmetadata", resolve, {once: true});
+                                    media.addEventListener("canplay", resolve, {once: true});
+                                    media.addEventListener("error", resolve, {once: true});
+                                })
+                        )
+                        :
+                        media.complete ? Promise.resolve()
+                            : new Promise((resolve) => {
+                                media.addEventListener("load", resolve, {once: true});
+                                media.addEventListener("error", resolve, {once: true});
+                            });
+
+                await mediaReady;
+
+                root.dataset.ready = "true";
+            };
+
+            const observer = new IntersectionObserver(
+                async ([entry]) => {
+                    if (entry.isIntersecting) {
+                        // observer.unobserve(entry.target);
+                        await loadMedia(entry.target);
+                        if (kind === "video") {
+                            media.play?.().catch(() => {});
+                        }
+                    } else {
+                        if (kind === "video") {
+                            media.pause?.();
+                        }
+                    }
+                },
+                {
+                    threshold: 0.1,
+                }
+            );
+
+            observer.observe(root);
+        })()
+    </script>
+</>
