@@ -12,7 +12,7 @@ interface Props {
     videoSrc?: string;
     videoSrcMobile?: string;
     frameMask: SvgComponent;
-    frameMaskImgMetadata: ImageMetadata;
+    frameMaskImageMetadata: ImageMetadata;
     photoAlt: string;
     class?: string;
 
@@ -32,7 +32,7 @@ const {
     videoSrc,
     videoSrcMobile,
     frameMask: FrameMask,
-    frameMaskImgMetadata,
+    frameMaskImageMetadata,
     photoAlt,
     class: className = "",
 
@@ -55,7 +55,7 @@ const posterUsed = poster?.src ?? framedImage.src;
     <div  data-framed-media-container class={`relative overflow-hidden rounded-2xl ${className}`}>
         <div
                 class="frame-mask h-full w-full"
-                style={`mask-image: url("${frameMaskImgMetadata.src}"); -webkit-mask-image: url("${frameMaskImgMetadata.src}");`}
+                style={`mask-image: url("${frameMaskImageMetadata.src}"); -webkit-mask-image: url("${frameMaskImageMetadata.src}");`}
         >
             <!--{-->
             <!--    kind === "video" ? (-->
