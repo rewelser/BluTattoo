@@ -21,7 +21,6 @@ const {
 } = Astro.props;
 
 const frameUsed = getImageSrc(frame);
-const framedImageUsed = getImageSrc(framedImage);
 
 const frameAspectRatio = typeof frame === "object" && "width" in frame && "height" in frame ? `${frame.width} / ${frame.height}` : undefined;
 ---
@@ -32,7 +31,7 @@ const frameAspectRatio = typeof frame === "object" && "width" in frame && "heigh
                 style={`mask-image: url("${FrameMask.src}"); -webkit-mask-image: url("${FrameMask.src}");`}
         >
             <img
-                    src={framedImageUsed}
+                    src={framedImage.src}
                     alt={photoAlt}
                     data-framed-image
                     loading="lazy"
@@ -42,7 +41,6 @@ const frameAspectRatio = typeof frame === "object" && "width" in frame && "heigh
         </div>
 
         <img
-                src={frameUsed}
                 alt=""
                 data-frame
                 data-frame-src={frameUsed}
@@ -51,25 +49,6 @@ const frameAspectRatio = typeof frame === "object" && "width" in frame && "heigh
                 class="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 aria-hidden="true"
         />
-
-        <!--<svg-->
-        <!--        class="absolute inset-0 h-full w-full opacity-0 pointer-events-none"-->
-        <!--        xmlns="http://www.w3.org/2000/svg"-->
-        <!--        viewBox="0 0 1000 1510.93"-->
-        <!--&gt;-->
-        <!--    <path data-frame-window-->
-        <!--          d="M966.25,814.67v566.63H201.91v-566.63c0-3.14.03-6.24.12-9.35,4.94-206.75,174.12-372.83,382.05-372.83s377.11,166.08,382.05,372.83c.09,3.1.12,6.21.12,9.35Z"-->
-        <!--          style="fill: none;"/>-->
-        <!--</svg>-->
-
-        <!--<svg-->
-        <!--        class="absolute inset-0 h-full w-full opacity-0 pointer-events-none"-->
-        <!--        xmlns="http://www.w3.org/2000/svg"-->
-        <!--        viewBox="0 0 1000 1544.23"-->
-        <!--&gt;-->
-        <!--    <path data-frame-window-->
-        <!--          d="M966.53,687.78v839.45H193.55v-728.03c0-209.57,176.92-379.47,395.15-379.47,177.86,0,328.27,112.85,377.83,268.05Z"/>-->
-        <!--</svg>-->
 
         <FrameMask class="absolute inset-0 h-full w-full opacity-0 pointer-events-none" data-frame-window />
 
@@ -83,13 +62,6 @@ const frameAspectRatio = typeof frame === "object" && "width" in frame && "heigh
 
                 const loadFrameAndImage = async () => {
 
-                    // const photoReady =
-                    //     photo?.complete ||
-                    //     new Promise((resolve) => {
-                    //         photo?.addEventListener("load", resolve, {once: true});
-                    //         photo?.addEventListener("error", resolve, {once: true});
-                    //     });
-
                     const photoReady = !photo || photo.complete
                         ? Promise.resolve()
                         : new Promise((resolve) => {
@@ -97,24 +69,18 @@ const frameAspectRatio = typeof frame === "object" && "width" in frame && "heigh
                             photo.addEventListener("error", resolve, {once: true});
                         });
 
-                    // const frameReady = new Promise((resolve) => {
-                    //
-                    //     if (frame) {
-                    //         const frameSrc = frame.dataset.frameSrc;
-                    //         frame.addEventListener("load", resolve, {once: true});
-                    //         frame.addEventListener("error", resolve, {once: true});
-                    //         frame.src = frameSrc;
-                    //     } else {
-                    //         resolve();
-                    //     }
-                    // });
+                    const frameReady = new Promise((resolve) => {
+                        const frameSrc = frame?.dataset.frameSrc;
 
-                    const frameReady = frame?.complete
-                        ? Promise.resolve()
-                        : new Promise((resolve) => {
-                            frame?.addEventListener("load", resolve, {once: true});
-                            frame?.addEventListener("error", resolve, {once: true});
-                        });
+                        if (!frame || !frameSrc) {
+                            resolve();
+                            return;
+                        }
+
+                        frame.addEventListener("load", resolve, { once: true });
+                        frame.addEventListener("error", resolve, { once: true });
+                        frame.src = frameSrc;
+                    });
 
                     await Promise.all([photoReady, frameReady]);
 

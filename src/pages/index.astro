@@ -37,7 +37,6 @@ const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 const hoursShortline = site?.data.hoursShortline;
 
 const ourStory = branding?.data.ourStory;
-import FrameWindow from "../content/branding/assets/images/ourstoryframe_opening1.svg";
 
 const title = "Home";
 const description = "BluTattoo is a tattoo and piercing studio offering custom tattoos, guest artist events, piercing services, booking, aftercare, and artist information.";
@@ -327,19 +326,19 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                         </script>
 
                         <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
-                            <FramedImage
-                                    class="w-[80vw] lg:w-[40vw]"
-                                    frame={ourStory?.frameImage}
-                                    framedImage={ourStory?.image}
-                                    frameMask={ourStory?.frameWindowSvg}
-                                    photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
-                            />
-                            <style>
-                                .fade-bottom-40 {
-                                    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
-                                    mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
-                                }
-                            </style>
+                            <!--<FramedImage-->
+                            <!--        class="w-[80vw] lg:w-[40vw]"-->
+                            <!--        frame={ourStory?.frameImage}-->
+                            <!--        framedImage={ourStory?.image}-->
+                            <!--        frameMask={ourStory?.frameWindowSvg}-->
+                            <!--        photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}-->
+                            <!--/>-->
+                            <!--<style>-->
+                            <!--    .fade-bottom-40 {-->
+                            <!--        -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);-->
+                            <!--        mask-image: linear-gradient(to bottom, black 80%, transparent 95%);-->
+                            <!--    }-->
+                            <!--</style>-->
                         </div>
 
                         <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
