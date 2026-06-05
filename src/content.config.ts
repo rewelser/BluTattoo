@@ -170,6 +170,15 @@ const branding = defineCollection({
             bookingFlashDark: image().optional(),
             sitewideOGPhoto: z.string(),
             bookingShareOGPhoto: z.string(),
+
+            ourStory: z.object({
+                frameImage: image(),
+                frameWindowSvg: image(),
+                image: image(),
+                imgAltText: optionalText,
+                storyText: z.string(),
+            }).optional(),
+
             hero: z.object({
                 video: z.object({
                     mp4: z.string(),

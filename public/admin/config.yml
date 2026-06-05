@@ -427,6 +427,37 @@ collections:
             required: false
             hint: "The moving background design that will appear on the booking page behind the link sheet (desktop)."
 
+          - name: ourStory
+            label: "Our Story"
+            widget: object
+            required: false
+            fields:
+              - name: frameImage
+                label: "Frame Image"
+                widget: image
+                required: true
+
+              - name: frameWindowSvg
+                label: "Frame window SVG"
+                widget: image
+                required: true
+                hint: "This image is an SVG with one path that represents the opening through which the image is framed. Must be SVG--otherwise, the world will explode."
+
+              - name: image
+                label: "Image to be framed"
+                widget: image
+                required: true
+
+              - name: imgAltText
+                label: "alt text for image"
+                widget: string
+                required: false
+
+              - name: storyText
+                label: "Text for Our Story"
+                widget: text
+                required: true
+
           - name: hero
             label: "Hero"
             widget: object

@@ -15,9 +15,11 @@ import ParallaxObject from "../components/decor/ParallaxObject.astro";
 import InkDroplet from "../components/decor/InkDroplet.astro";
 import ObjectScatterField from "../components/decor/ObjectScatterField.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
+import FramedImage from "../components/decor/FramedImage.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
+const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
 const shopName = site?.data.siteName ?? defaults.siteName;
 const addressObj = site?.data.address ?? defaults.address;
@@ -33,6 +35,9 @@ const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
 const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 const hoursShortline = site?.data.hoursShortline;
+
+const ourStory = branding?.data.ourStory;
+import FrameWindow from "../content/branding/assets/images/ourstoryframe_opening1.svg";
 
 const title = "Home";
 const description = "BluTattoo is a tattoo and piercing studio offering custom tattoos, guest artist events, piercing services, booking, aftercare, and artist information.";
@@ -199,9 +204,9 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             </ParallaxWindow>
         </div>
         <div class="px-6 mx-auto mt-20 max-w-3xl text-center leading-relaxed apply-themed-prose">
-            <h1 class="text-8xl font-light">
-                Sure! Here are some eye-catching blurbs to put on your tattoo shop website that stress both ease of process and adherence to compliance standards:
-            </h1>
+            <!--<h1 class="text-8xl font-light">-->
+            <!--    Sure! Here are some eye-catching blurbs to put on your tattoo shop website that stress both ease of process and adherence to compliance standards:-->
+            <!--</h1>-->
 
             <p>
                 Getting tattooed should feel exciting from the first idea to the final heal. Explore our artists' work
@@ -254,103 +259,100 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
 
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
-    <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
-        <ParallaxWindow
-                src="/uploads/misc_images/bigroom.webp"
-                kind="image"
-                windowHeight="71vh"
-                strength={0.55}
-                class="applied-mask--heart"
-        >
-            <!-- optional overlay -->
-            <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
-                A window into the scene
-            </h2>
-        </ParallaxWindow>
-        <style>
-            :global(.applied-mask--heart) {
-                mask-image: url("/uploads/misc_images/frameclip.svg");
-                /* mask-size: 220px 220px; */
-                mask-size: contain;
-                mask-position: center;
-                mask-repeat: no-repeat;
-            }
-        </style>
+    {
+        ourStory && (
+                    <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
+                        <ParallaxWindow
+                                src="/uploads/misc_images/bigroom.webp"
+                                kind="image"
+                                windowHeight="71vh"
+                                strength={0.55}
+                                class="applied-mask--heart"
+                        >
+                            <!-- optional overlay -->
+                            <h2 style="color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);">
+                                A window into the scene
+                            </h2>
+                        </ParallaxWindow>
+                        <style>
+                            :global(.applied-mask--heart) {
+                                mask-image: url("/uploads/misc_images/frameclip.svg");
+                                /* mask-size: 220px 220px; */
+                                mask-size: contain;
+                                mask-position: center;
+                                mask-repeat: no-repeat;
+                            }
+                        </style>
 
-        <svg
-                class="framed"
-                viewBox="0 0 738.39 738.39"
-                xmlns="http://www.w3.org/2000/svg"
-        >
-            <defs>
-                <clipPath id="frame-opening">
-                    <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
-                    ></circle>
-                </clipPath>
-            </defs>
+                        <svg
+                                class="framed"
+                                viewBox="0 0 738.39 738.39"
+                                xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <defs>
+                                <clipPath id="frame-opening">
+                                    <circle id="opening-shape" cx="368.99" cy="369.19" r="256.87"
+                                    ></circle>
+                                </clipPath>
+                            </defs>
 
-            <image
-                    id="photo"
-                    href="/uploads/people/lara_headshot.jpg"
-                    preserveAspectRatio="xMidYMin slice"
-                    clip-path="url(#frame-opening)"
-            />
+                            <image
+                                    id="photo"
+                                    href="/uploads/people/lara_headshot.jpg"
+                                    preserveAspectRatio="xMidYMin slice"
+                                    clip-path="url(#frame-opening)"
+                            />
 
-            <image
-                    href="/uploads/misc_images/roundframe.png"
-                    x="0"
-                    y="0"
-                    width="738.39"
-                    height="738.39"
-                    preserveAspectRatio="none"
-            />
-        </svg>
+                            <image
+                                    href="/uploads/misc_images/roundframe.png"
+                                    x="0"
+                                    y="0"
+                                    width="738.39"
+                                    height="738.39"
+                                    preserveAspectRatio="none"
+                            />
+                        </svg>
 
-        <script is:inline>
-            (() => {
-                const shape = document.getElementById("opening-shape");
-                const photo = document.getElementById("photo");
-                const box = shape.getBBox();
+                        <script is:inline>
+                            (() => {
+                                const shape = document.getElementById("opening-shape");
+                                const photo = document.getElementById("photo");
+                                const box = shape.getBBox();
 
-                photo.setAttribute("x", box.x);
-                photo.setAttribute("y", box.y);
-                photo.setAttribute("width", box.width);
-                photo.setAttribute("height", box.height);
-            })();
-        </script>
-        <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
-        <div
-                class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose"
-        >
-            <h2
-                    class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]"
-            >
-                Our Story
-            </h2>
+                                photo.setAttribute("x", box.x);
+                                photo.setAttribute("y", box.y);
+                                photo.setAttribute("width", box.width);
+                                photo.setAttribute("height", box.height);
+                            })();
+                        </script>
 
-            <p>
-                Establishing and running a professional tattoo studio in the heart of
-                Uptown Martinsville, VA would be daunting for any new business owner. At
-                five months pregnant, local native Lara Blair did not at first feel up
-                to the task. “No one can be a mother and run a tattoo shop.” But with
-                family nearby and more on the way, she couldn’t move. With the
-                encouragement of Laurna, a veteran shop owner and tattoo artist who
-                joined BluTattoo early on, it became clear that there was no use living
-                a life ruled by fear of the unknown.
-            </p>
-            <p>
-                Making waves against the tide of male-dominated industry, Lara has built
-                BluTattoo into a thriving studio serving not only Martinsville, but
-                people across the region who are seeking hand-crafted art.
-            </p>
-            <p>
-                Not long after, the shop would welcome Sierra Davis, and later bring Zoe
-                Kirk under its wing as its first apprentice (now a licensed artist).
-                BluTattoo is proud to serve its community, and change the tide along the
-                way.
-            </p>
+                        <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
+                            <FramedImage
+                                    class="w-[80vw] lg:w-[40vw]"
+                                    frame={ourStory?.frameImage}
+                                    framedImage={ourStory?.image}
+                                    frameMask={ourStory?.frameWindowSvg}
+                                    photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
+                            />
+                            <style>
+                                .fade-bottom-40 {
+                                    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                    mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                }
+                            </style>
+                        </div>
 
-            <HrDivider color="seashell"/>
-        </div>
-    </section>
+                        <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
+                        <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
+                            <h2 class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]">
+                                Our Story
+                            </h2>
+                            <p class="whitespace-pre-line">
+                                {ourStory?.storyText}
+                            </p>
+                            <HrDivider color="seashell"/>
+                        </div>
+                    </section>
+        )
+    }
 </Layout>

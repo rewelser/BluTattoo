@@ -54,7 +54,7 @@ const {
     class: className = "",
     layerClass,
 
-    autoplay = true,
+    autoplay = false,
     muted = true,
     loop = true,
     playsinline = true,
@@ -285,6 +285,9 @@ const {
                     (entries) => {
                         const entry = entries[0];
                         const nowActive = !!entry?.isIntersecting;
+                        const isVideo = media.tagName === "VIDEO";
+                        const video = isVideo ? media : null;
+
                         if (nowActive === isActive) return;
 
                         isActive = nowActive;
@@ -292,11 +295,18 @@ const {
                         if (isActive) {
                             applySizing();
                             startLoop();
+
+                            if (video) {
+                                video.play().catch(() => {});
+                            }
                         } else {
                             stopLoop();
+
+                            video && video.pause();
                         }
                     },
-                    {root: null, threshold: 0, rootMargin: "100px 0px 100px 0px"},
+                    // had rootMargin: "100px 0px 100px 0px"--changed it to 0 for tighter video playback toggling
+                    {root: null, threshold: 0, rootMargin: "0px"},
                 );
 
                 // attach once; cheap and avoids rebind churn
@@ -329,6 +339,7 @@ const {
         }
     })();
 </script>
+<!--debug js -->
 <script is:inline>
     (() => {
         const SELECTORS = [".pw", ".pw__layer", ".pw__media"];
