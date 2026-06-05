@@ -17,6 +17,9 @@ import ObjectScatterField from "../components/decor/ObjectScatterField.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
 import FramedImage from "../components/decor/FramedImage2.astro";
 import CopyButton from "../components/CopyButton.astro";
+import ParallaxScene from "../components/decor/ParallaxScene.astro";
+import ParallaxLayer from "../components/decor/ParallaxLayer.astro";
+import EdgeParallaxLayer from "../components/decor/EdgeParallaxLayer.astro";
 
 // const home = await getEntry("home", "main"); // reads src/content/home/main.json
 // const h = home?.data?.promoMain;
@@ -210,7 +213,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
     <!-- /////////////////////////////////////////// -->
 
-    <section class="bg-[#231f20] py-64 md:py-80" aria-labelledby="our-process-heading" data-section-theme="neutraldark">
+    <section class="bg-[#231f20] pt-64 md:pt-80" aria-labelledby="our-process-heading" data-section-theme="neutraldark">
         <div class="mx-8 rounded-xl overflow-hidden">
             <ParallaxWindow
                     src="/uploads/misc_videos/ourprocess-web.mp4"
@@ -271,6 +274,17 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     openStartVh={2}
             />
         </div>
+        <div class="relative overflow-hidden min-h-[40vh] sm:min-h-[80vh]">
+            <EdgeParallaxLayer
+                    placement="bottom"
+                    direction="up"
+                    heightSm="254px"
+                    travel={40}
+                    zIndex={2}
+            >
+                <img src="/uploads/misc_images/upplayer1.svg" alt=""/>
+            </EdgeParallaxLayer>
+        </div>
     </section>
 
 
@@ -286,38 +300,73 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
 
     <!-- <section id="our-story" class="px-6 py-16 md:py-24 bg-neutral-50"> -->
+    <!--<ParallaxScene class="min-h-screen bg-[#231f20]">-->
+    <!--    <ParallaxScene class="min-h-[500px] bg-[#231f20]">-->
+    <!--<ParallaxLayer speed={0.50} direction="down" src=/uploads/misc_images/player1.svg" >-->
+    <!--    <img src="/uploads/misc_images/player1.svg" alt="" />-->
+    <!--</ParallaxLayer>-->
+
+    <!--<ParallaxLayer speed={0.15} direction="down" max={120} >-->
+    <!--    <img src="/uploads/misc_images/player2.svg" alt="" />-->
+    <!--</ParallaxLayer>-->
+    <!--<ParallaxLayer speed={0.10} direction="up" initialOffset={100} >-->
+    <!--    <img src="/uploads/misc_images/player3-2.svg" alt="" />-->
+    <!--</ParallaxLayer>-->
+    <!--<ParallaxLayer speed={0.00} direction="down" initialOffset={100} >-->
+    <!--    <img src="/uploads/misc_images/player4.svg" alt="" />-->
+    <!--</ParallaxLayer>-->
+
+    <!--<div class="relative z-10 px-6 py-32 text-white">-->
+    <!--    <h2>Content here</h2>-->
+    <!--</div>-->
+    <!--</ParallaxScene>-->
     {
         ourStory && (
-                    <section id="our-story" class="px-6 py-16 md:py-24" data-section-theme="neutraldark">
-                        <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
-                            <FramedImage
-                                    kind="video"
-                                    class="w-[80vw] lg:w-[40vw]"
-                                    frame={ourStory?.frameImage}
-                                    framedImage={ourStory?.image}
-                                    videoSrc="/uploads/misc_videos/fartists3-web.mp4"
-                                    videoSrcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
-                                    frameMask={ourStory?.frameWindowSvg}
-                                    frameMaskImgMetadata={ourStory?.frameWindowSvg}
-                                    photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
-                            />
-                            <style>
-                                .fade-bottom-40 {
-                                    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
-                                    mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
-                                }
-                            </style>
+                    <section id="our-story" data-section-theme="neutraldark">
+                        <div class="relative overflow-hidden min-h-[40vh] sm:min-h-[80vh]">
+                            <EdgeParallaxLayer
+                                    placement="top"
+                                    direction="down"
+                                    heightSm="254px"
+                                    travel={40}
+                                    zIndex={2}
+                            >
+                                <img src="/uploads/misc_images/downplayer1.svg" alt=""/>
+                            </EdgeParallaxLayer>
                         </div>
-
-                        <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
                         <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
-                            <h2 class="text-5xl sm:text-7xl md:text-9xl font-normal font-[Fleur_de_Leah]">
+                            <h2 class="text-5xl sm:text-7xl md:text-9xl m-1 font-normal font-[Fleur_de_Leah]">
                                 Our Story
                             </h2>
-                            <p class="whitespace-pre-line">
-                                {ourStory?.storyText}
-                            </p>
-                            <HrDivider color="seashell"/>
+                        </div>
+                        <div class="px-6 py-16 md:py-24">
+                            <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
+                                <FramedImage
+                                        kind="video"
+                                        class="w-[80vw] lg:w-[40vw]"
+                                        frame={ourStory?.frameImage}
+                                        framedImage={ourStory?.image}
+                                        videoSrc="/uploads/misc_videos/fartists3-web.mp4"
+                                        videoSrcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
+                                        frameMask={ourStory?.frameWindowSvg}
+                                        frameMaskImgMetadata={ourStory?.frameWindowSvg}
+                                        photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
+                                />
+                                <style>
+                                    .fade-bottom-40 {
+                                        -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                        mask-image: linear-gradient(to bottom, black 80%, transparent 95%);
+                                    }
+                                </style>
+                            </div>
+
+                            <!-- <div class="mx-auto max-w-3xl prose prose-lg text-center leading-relaxed text-neutral-700"> -->
+                            <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
+                                <p class="whitespace-pre-line mt-20">
+                                    {ourStory?.storyText}
+                                </p>
+                                <HrDivider color="seashell"/>
+                            </div>
                         </div>
                     </section>
         )

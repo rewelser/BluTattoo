@@ -22,7 +22,7 @@ const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
 <button
         type="button"
         class:list={[
-            "copy-link-btn inline-flex items-center gap-1.5 p-1 m-1 rounded-md shadow-md transition-colors cursor-pointer",
+            "copy-link-btn inline-flex items-center gap-1.5 p-2 m-2 rounded-md shadow-md transition-colors cursor-pointer",
             className,
         ]}
         aria-live="polite"
@@ -30,9 +30,9 @@ const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
         data-label={defaultLabel}
         data-copied-label={defaultCopiedLabel}
 >
-    <span class="relative inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center">
+    <span class="relative inline-flex h-[1.25em] w-[1.25em] shrink-0 items-center justify-center">
         <svg
-                class="copy-icon h-[1em] w-[1em]"
+                class="copy-icon h-[1.25em] w-[1.25em]"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 aria-hidden="true"
@@ -67,7 +67,7 @@ const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
         </svg>
 
         <svg
-                class="check-icon hidden h-[1em] w-[1em]"
+                class="check-icon hidden h-[1.25em] w-[1.25em]"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 aria-hidden="true"
@@ -99,6 +99,51 @@ const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
 
     <span class={`label ${hideLabel ? "hidden" : ""}`}>{defaultLabel}</span>
 </button>
+
+<!--<script is:inline>-->
+<!--    (() => {-->
+<!--        const button = document.currentScript?.previousElementSibling;-->
+
+<!--        if (button.dataset.copyButtonReady === "true") return;-->
+<!--        button.dataset.copyButtonReady = "true";-->
+
+<!--        const label = button.querySelector(".label");-->
+<!--        const copyIcon = button.querySelector(".copy-icon");-->
+<!--        const checkIcon = button.querySelector(".check-icon");-->
+
+<!--        const copyText = button.dataset.copyText ?? "";-->
+<!--        const defaultLabel = button.dataset.label ?? "Copy";-->
+<!--        const copiedLabel = button.dataset.copiedLabel ?? "Copied!";-->
+
+<!--        let timeout;-->
+
+<!--        button.addEventListener("click", async () => {-->
+<!--            try {-->
+<!--                await navigator.clipboard.writeText(copyText);-->
+
+<!--                if (label) label.textContent = copiedLabel;-->
+
+<!--                copyIcon?.classList.add("hidden");-->
+<!--                checkIcon?.classList.remove("hidden");-->
+
+<!--                button.classList.add("text-green-600");-->
+
+<!--                clearTimeout(timeout);-->
+
+<!--                timeout = setTimeout(() => {-->
+<!--                    if (label) label.textContent = defaultLabel;-->
+
+<!--                    copyIcon?.classList.remove("hidden");-->
+<!--                    checkIcon?.classList.add("hidden");-->
+
+<!--                    button.classList.remove("text-green-600");-->
+<!--                }, 2000);-->
+<!--            } catch (err) {-->
+<!--                console.error("Failed to copy", err);-->
+<!--            }-->
+<!--        });-->
+<!--    })();-->
+<!--</script>-->
 
 <script>
     const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-link-btn");

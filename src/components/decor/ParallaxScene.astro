@@ -1,0 +1,21 @@
+---
+interface Props {
+    class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<section class={`parallax-scene ${className}`}>
+    <slot />
+</section>
+
+<style>
+    .parallax-scene {
+        position: relative;
+        overflow: hidden;
+        //isolation: isolate;
+        overflow-x: clip;
+        overflow-y: visible;
+    }
+</style>

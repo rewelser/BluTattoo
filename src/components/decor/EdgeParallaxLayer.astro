@@ -1,0 +1,232 @@
+---
+interface Props {
+    placement?: "top" | "bottom";
+    direction?: "up" | "down";
+
+    /**
+     * Visual height of the image/layer itself.
+     * Example: "180px", "25vh", "clamp(120px, 20vw, 320px)"
+     */
+    height?: string;
+    heightSm?: string;
+    heightMd?: string;
+
+    /**
+     * Maximum travel distance in px.
+     */
+    travel?: number;
+
+    /**
+     * Optional manual override for the starting offset.
+     * If omitted, it is inferred from placement + direction.
+     */
+    fromOffset?: number;
+
+    /**
+     * Optional manual override for the ending offset.
+     * If omitted, it is inferred from placement + direction.
+     */
+    toOffset?: number;
+
+    disabled?: boolean;
+    class?: string;
+    layerClass?: string;
+    zIndex?: number;
+}
+
+const {
+    placement = "top",
+    direction = "up",
+    height = "100px",
+    heightSm = "220px",
+    heightMd = "253px",
+    travel = 120,
+    fromOffset,
+    toOffset,
+    disabled = false,
+    class: className = "",
+    layerClass = "",
+    zIndex = 1,
+} = Astro.props;
+
+const outwardOffset =
+    placement === "top"
+        ? -travel
+        : travel;
+
+const movesOutward =
+    (placement === "top" && direction === "up") ||
+    (placement === "bottom" && direction === "down");
+
+/**
+ * Examples:
+ *
+ * placement="top" direction="up"
+ *   flush at top -> moves upward out of view
+ *
+ * placement="top" direction="down"
+ *   starts above -> emerges downward until flush with top
+ *
+ * placement="bottom" direction="down"
+ *   flush at bottom -> moves downward out of view
+ *
+ * placement="bottom" direction="up"
+ *   starts below -> emerges upward until flush with bottom
+ */
+const resolvedFromOffset =
+    fromOffset ?? (movesOutward ? 0 : outwardOffset);
+
+const resolvedToOffset =
+    toOffset ?? (movesOutward ? outwardOffset : 0);
+
+const travelPx = `${travel}px`;
+---
+
+<div
+        class={`edge-parallax ${className}`}
+        data-placement={placement}
+        data-disabled={disabled}
+>
+    <div class={`edge-parallax__layer ${layerClass}`}>
+        <slot />
+    </div>
+</div>
+
+<script define:vars={{
+    disabled,
+    resolvedFromOffset,
+    resolvedToOffset,
+}}>
+    (() => {
+        const script = document.currentScript;
+        const root = script?.previousElementSibling;
+        const layer = root?.querySelector(".edge-parallax__layer");
+
+        if (!root || !layer || root.dataset.disabled === "true" || disabled) return;
+
+        let active = false;
+        let ticking = false;
+
+        const clamp = (value, min, max) => {
+            return Math.max(min, Math.min(max, value));
+        };
+
+        const lerp = (a, b, t) => {
+            return a + (b - a) * t;
+        };
+
+        const update = () => {
+            ticking = false;
+            if (!active) return;
+
+            const rect = root.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            /**
+             * 0 when the layer area is entering from the bottom,
+             * 1 when it has passed out the top.
+             */
+            const progress = clamp(
+                (viewportHeight - rect.top) / (viewportHeight + rect.height),
+                0,
+                1
+            );
+
+            const offset = lerp(resolvedFromOffset, resolvedToOffset, progress);
+
+            layer.style.transform = `translate3d(0, ${offset}px, 0)`;
+        };
+
+        const requestUpdate = () => {
+            if (!active || ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+        };
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                active = entry.isIntersecting;
+                if (active) requestUpdate();
+            },
+            {
+                rootMargin: "800px 0px",
+                threshold: 0,
+            }
+        );
+
+        observer.observe(root);
+
+        window.addEventListener("scroll", requestUpdate, { passive: true });
+        window.addEventListener("resize", requestUpdate);
+
+        requestUpdate();
+    })();
+</script>
+
+<style define:vars={{height: height, heightSm, heightMd, travelPx, zIndex}}>
+    .edge-parallax {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: calc(var(--height) + var(--travelPx));
+        overflow: hidden;
+        pointer-events: none;
+        z-index: var(--zIndex);
+    }
+
+    .edge-parallax[data-placement="top"] {
+        top: calc(var(--travelPx) * -1);
+    }
+
+    .edge-parallax[data-placement="bottom"] {
+        bottom: calc(var(--travelPx) * -1);
+    }
+
+    .edge-parallax__layer {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: var(--height);
+        will-change: transform;
+    }
+
+    @media (min-width: 640px) {
+        .edge-parallax {
+            height: calc(var(--heightSm) + var(--travelPx));
+        }
+        .edge-parallax__layer {
+            height: var(--heightSm);
+        }
+        /* sm */
+    }
+
+    @media (min-width: 768px) {
+        .edge-parallax {
+            height: calc(var(--heightMd) + var(--travelPx));
+        }
+        .edge-parallax__layer {
+            height: var(--heightMd);
+        }
+        /* md */
+    }
+
+    .edge-parallax[data-placement="top"] .edge-parallax__layer {
+        bottom: 0;
+    }
+
+    .edge-parallax[data-placement="bottom"] .edge-parallax__layer {
+        top: 0;
+    }
+
+    .edge-parallax__layer :global(img),
+    .edge-parallax__layer :global(svg),
+    .edge-parallax__layer :global(picture) {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .edge-parallax__layer :global(img) {
+        object-fit: cover;
+    }
+</style>

@@ -1,0 +1,121 @@
+---
+interface Props {
+    // src: string,
+    speed?: number;
+    initialOffset?: number;
+    direction?: "up" | "down" | "left" | "right";
+    max?: number;
+    disabled?: boolean;
+    class?: string;
+}
+
+const {
+    // src,
+    speed = 0.15,
+    initialOffset = 0,
+    direction = "up",
+    max = 120,
+    disabled = false,
+    class: className = "",
+} = Astro.props;
+
+const isHorizontal = direction === "left" || direction === "right";
+---
+
+<!--<div class={`parallax-layer w-full bg-repeat-x bg-size-[auto_100%] ${className}`} data-disabled={disabled} style={`background-image: url(${src});`}>-->
+<div class={`parallax-layer ${className}`} data-disabled={disabled} >
+    <slot/>
+</div>
+
+<script define:vars={{speed, direction, max, disabled, isHorizontal, initialOffset}}>
+    (() => {
+        const script = document.currentScript;
+        const root = script?.previousElementSibling;
+
+        if (!root || root.dataset.disabled === "true") return;
+
+        let active = false;
+        let ticking = false;
+
+        const sign =
+            direction === "up" || direction === "right"
+                ? 1
+                : -1;
+
+        const clamp = (value, min, max) => {
+            return Math.max(min, Math.min(max, value));
+        };
+
+        const update = () => {
+            ticking = false;
+            if (!active) return;
+
+            const rect = root.getBoundingClientRect();
+
+            const viewportCenterY = window.innerHeight / 2;
+            const viewportCenterX = window.innerWidth / 2;
+
+            const elementCenterY = rect.top + rect.height / 2;
+            const elementCenterX = rect.left + rect.width / 2;
+
+            const distance = isHorizontal
+                ? elementCenterX - viewportCenterX
+                : elementCenterY - viewportCenterY;
+
+            // const parallaxOffset = clamp(distance * speed * sign, -max, max);
+            // const parallaxOffset = distance * speed * sign;
+            const parallaxOffset = (distance * speed * sign) + initialOffset;
+
+            root.style.transform = isHorizontal
+                ? `translate3d(${parallaxOffset}px, 0, 0)`
+                : `translate3d(0, ${parallaxOffset}px, 0)`;
+        };
+
+        const requestUpdate = () => {
+            if (!active || ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+        };
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                active = entry.isIntersecting;
+                if (active) requestUpdate();
+            },
+            {
+                rootMargin: "800px 0px",
+                threshold: 0,
+            }
+        );
+
+        observer.observe(root);
+
+        window.addEventListener("scroll", requestUpdate, {passive: true});
+        window.addEventListener("resize", requestUpdate);
+
+        requestUpdate();
+    })();
+</script>
+
+<style>
+    .parallax-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: fit-content;
+        height: 100%;
+        will-change: transform;
+    }
+
+    .parallax-layer :global(img),
+    .parallax-layer :global(svg),
+    .parallax-layer :global(picture) {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .parallax-layer :global(img) {
+        object-fit: cover;
+    }
+</style>
