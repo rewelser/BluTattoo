@@ -115,104 +115,52 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <div class="flex flex-col md:flex-row justify-around gap-8 w-full">
                 <div class="pt-6">
                     <h3 class="text-3xl sm:text-4xl pb-4">ADDRESS</h3>
-                    <span class="inline-flex align-middle">
+                    <div class="flex items-center justify-center gap-2">
                         <a
-                                class="underline hover:no-underline"
+                                class="underline hover:no-underline text-left not-italic"
                                 href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
                                 target="_blank"
                                 rel="noopener"
                         >
-                            <p>{addressObj.streetAddress}</p>
-                            <p>{addressObj.addressLocality} {addressObj.addressRegion}</p>
+                            <span class="block">{addressObj.streetAddress}</span>
+                            <span class="block">
+                                {addressObj.addressLocality} {addressObj.addressRegion}
+                            </span>
                         </a>
-                    </span>
-
-                    <!--<div class="">-->
-                    <!--    <button-->
-                    <!--            type="button"-->
-                    <!--            class={`copy-link-btn flex flex-row`}-->
-                    <!--            aria-live="polite"-->
-                    <!--    >-->
-                    <!--        <span>-->
-                    <!--            <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">-->
-                    <!--              <path d="M325.79,373.05l-89.29,89.29c-37.45,37.45-98.76,37.45-136.23-.03l-50.6-50.6c-37.45-37.45-37.45-98.76,0-136.21l89.29-89.29"-->
-                    <!--                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>-->
-                    <!--              <path d="M186.22,138.96l89.29-89.29c37.45-37.45,98.76-37.45,136.21,0l50.6,50.6c37.47,37.47,37.47,98.79.03,136.23l-89.29,89.29"-->
-                    <!--                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>-->
-                    <!--              <line x1="377.29" y1="134.72" x2="131.4" y2="380.6"-->
-                    <!--                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>-->
-                    <!--            </svg>-->
-
-                    <!--            <svg class="check-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">-->
-                    <!--              <line x1="453.38" y1="133.06" x2="207.49" y2="378.94"-->
-                    <!--                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>-->
-                    <!--              <line x1="205.19" y1="377.28" x2="58.62" y2="230.71"-->
-                    <!--                    style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-miterlimit: 10; stroke-width: 30px;"/>-->
-                    <!--            </svg>-->
-                    <!--        </span>-->
-
-                    <!--        <span class={`label`}>Copy Address</span>-->
-                    <!--    </button>-->
-
-                    <!--    <script define:vars={{addressObj}}>-->
-                    <!--        (() => {-->
-                    <!--            const button = document.currentScript?.previousElementSibling;-->
-
-                    <!--            if (!(button instanceof HTMLButtonElement)) return;-->
-
-                    <!--            const label = button.querySelector(".label");-->
-                    <!--            const copyIcon = button.querySelector(".copy-icon");-->
-                    <!--            const checkIcon = button.querySelector(".check-icon");-->
-
-                    <!--            let timeout;-->
-
-                    <!--            button.addEventListener("click", async () => {-->
-                    <!--                try {-->
-                    <!--                    await navigator.clipboard.writeText(addressObj.streetAddress + " " + addressObj.addressLocality + " " + addressObj.addressRegion);-->
-
-                    <!--                    label.textContent = "Address Copied!";-->
-
-                    <!--                    copyIcon?.classList.add("hidden");-->
-                    <!--                    checkIcon?.classList.remove("hidden");-->
-
-                    <!--                    button.classList.add("text-green-600");-->
-
-                    <!--                    clearTimeout(timeout);-->
-
-                    <!--                    timeout = setTimeout(() => {-->
-                    <!--                        label.textContent = "Copy Address";-->
-
-                    <!--                        copyIcon?.classList.remove("hidden");-->
-                    <!--                        checkIcon?.classList.add("hidden");-->
-
-                    <!--                        button.classList.remove("text-green-600");-->
-                    <!--                    }, 2000);-->
-                    <!--                } catch (err) {-->
-                    <!--                    console.error("Failed to copy", err);-->
-                    <!--                }-->
-                    <!--            });-->
-                    <!--        })();-->
-                    <!--    </script>-->
-                    <!--</div>-->
-                    <CopyButton
-                            copyText={[
-                                addressObj.streetAddress,
-                                addressObj.addressLocality,
-                                addressObj.addressRegion,
-                            ].filter(Boolean).join(" ")}
-                            thing="Address"
-                            hideLabel={true}
-                    />
+                        <CopyButton
+                                copyText={[
+                                    addressObj.streetAddress,
+                                    addressObj.addressLocality,
+                                    addressObj.addressRegion,
+                                ].filter(Boolean).join(" ")}
+                                thing="Address"
+                                hideLabel={true}
+                        />
+                    </div>
                 </div>
                 <div class="pt-6 flex flex-col">
                     <h3 class="text-3xl sm:text-4xl pb-4">CONTACT</h3>
-                    <a class="underline hover:no-underline" href={phoneHref} aria-label={`Call ${shopName}`}>
-                        {phone}
-                    </a>
+                    <div class="flex items-center justify-center gap-2">
+                        <a class="underline hover:no-underline" href={phoneHref} aria-label={`Call ${shopName}`}>
+                            {phone}
+                        </a>
+                        <CopyButton
+                                copyText={phone}
+                                thing="Phone Number"
+                                hideLabel={true}
+                        />
+                    </div>
 
-                    <a class="underline hover:no-underline" href={emailHref} aria-label={`Email ${shopName}`}>
-                        {email}
-                    </a>
+                    <div class="flex items-center justify-center gap-2">
+                        <a class="underline hover:no-underline" href={emailHref} aria-label={`Email ${shopName}`}>
+                            {email}
+                        </a>
+                        <CopyButton
+                                copyText={email}
+                                thing="Email"
+                                hideLabel={true}
+                        />
+                    </div>
 
                     <a class="underline hover:no-underline" href="/booking">
                         Schedule an appointment

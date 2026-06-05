@@ -100,51 +100,6 @@ const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
     <span class={`label ${hideLabel ? "hidden" : ""}`}>{defaultLabel}</span>
 </button>
 
-<!--<script is:inline>-->
-<!--    (() => {-->
-<!--        const button = document.currentScript?.previousElementSibling;-->
-
-<!--        if (button.dataset.copyButtonReady === "true") return;-->
-<!--        button.dataset.copyButtonReady = "true";-->
-
-<!--        const label = button.querySelector(".label");-->
-<!--        const copyIcon = button.querySelector(".copy-icon");-->
-<!--        const checkIcon = button.querySelector(".check-icon");-->
-
-<!--        const copyText = button.dataset.copyText ?? "";-->
-<!--        const defaultLabel = button.dataset.label ?? "Copy";-->
-<!--        const copiedLabel = button.dataset.copiedLabel ?? "Copied!";-->
-
-<!--        let timeout;-->
-
-<!--        button.addEventListener("click", async () => {-->
-<!--            try {-->
-<!--                await navigator.clipboard.writeText(copyText);-->
-
-<!--                if (label) label.textContent = copiedLabel;-->
-
-<!--                copyIcon?.classList.add("hidden");-->
-<!--                checkIcon?.classList.remove("hidden");-->
-
-<!--                button.classList.add("text-green-600");-->
-
-<!--                clearTimeout(timeout);-->
-
-<!--                timeout = setTimeout(() => {-->
-<!--                    if (label) label.textContent = defaultLabel;-->
-
-<!--                    copyIcon?.classList.remove("hidden");-->
-<!--                    checkIcon?.classList.add("hidden");-->
-
-<!--                    button.classList.remove("text-green-600");-->
-<!--                }, 2000);-->
-<!--            } catch (err) {-->
-<!--                console.error("Failed to copy", err);-->
-<!--            }-->
-<!--        });-->
-<!--    })();-->
-<!--</script>-->
-
 <script>
     const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-link-btn");
 
