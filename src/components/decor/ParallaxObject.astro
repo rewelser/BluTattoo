@@ -59,7 +59,7 @@ const {
                 active = entry.isIntersecting;
                 if (active) requestUpdate();
             },
-            { threshold: 0 }
+            { rootMargin: "400px 0px",threshold: 0, }
         );
 
         observer.observe(root);
