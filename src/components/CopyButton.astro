@@ -1,0 +1,191 @@
+---
+const {
+    copyText,
+    thing = "Text",
+    label,
+    copiedLabel,
+    hideLabel = false,
+    class: className = "",
+} = Astro.props as {
+    copyText: string;
+    thing?: string;
+    label?: string;
+    copiedLabel?: string;
+    hideLabel?: boolean;
+    class?: string;
+};
+
+const defaultLabel = label ?? `Copy ${thing}`;
+const defaultCopiedLabel = copiedLabel ?? `${thing} Copied!`;
+---
+
+<button
+        type="button"
+        class:list={[
+            "copy-link-btn inline-flex items-center gap-1.5 p-1 m-1 rounded-md shadow-md transition-colors cursor-pointer",
+            className,
+        ]}
+        aria-live="polite"
+        data-copy-text={copyText}
+        data-label={defaultLabel}
+        data-copied-label={defaultCopiedLabel}
+>
+    <span class="relative inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center">
+        <svg
+                class="copy-icon h-[1em] w-[1em]"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                aria-hidden="true"
+        >
+            <path
+                    d="M325.79,373.05l-89.29,89.29c-37.45,37.45-98.76,37.45-136.23-.03l-50.6-50.6c-37.45-37.45-37.45-98.76,0-136.21l89.29-89.29"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="30"
+            />
+            <path
+                    d="M186.22,138.96l89.29-89.29c37.45-37.45,98.76-37.45,136.21,0l50.6,50.6c37.47,37.47,37.47,98.79.03,136.23l-89.29,89.29"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="30"
+            />
+            <line
+                    x1="377.29"
+                    y1="134.72"
+                    x2="131.4"
+                    y2="380.6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="30"
+            />
+        </svg>
+
+        <svg
+                class="check-icon hidden h-[1em] w-[1em]"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                aria-hidden="true"
+        >
+            <line
+                    x1="453.38"
+                    y1="133.06"
+                    x2="207.49"
+                    y2="378.94"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="30"
+            />
+            <line
+                    x1="205.19"
+                    y1="377.28"
+                    x2="58.62"
+                    y2="230.71"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    stroke-width="30"
+            />
+        </svg>
+    </span>
+
+    <span class={`label ${hideLabel ? "hidden" : ""}`}>{defaultLabel}</span>
+</button>
+
+<!--<script is:inline>-->
+<!--    (() => {-->
+<!--        const button = document.currentScript?.previousElementSibling;-->
+
+<!--        if (button.dataset.copyButtonReady === "true") return;-->
+<!--        button.dataset.copyButtonReady = "true";-->
+
+<!--        const label = button.querySelector(".label");-->
+<!--        const copyIcon = button.querySelector(".copy-icon");-->
+<!--        const checkIcon = button.querySelector(".check-icon");-->
+
+<!--        const copyText = button.dataset.copyText ?? "";-->
+<!--        const defaultLabel = button.dataset.label ?? "Copy";-->
+<!--        const copiedLabel = button.dataset.copiedLabel ?? "Copied!";-->
+
+<!--        let timeout;-->
+
+<!--        button.addEventListener("click", async () => {-->
+<!--            try {-->
+<!--                await navigator.clipboard.writeText(copyText);-->
+
+<!--                if (label) label.textContent = copiedLabel;-->
+
+<!--                copyIcon?.classList.add("hidden");-->
+<!--                checkIcon?.classList.remove("hidden");-->
+
+<!--                button.classList.add("text-green-600");-->
+
+<!--                clearTimeout(timeout);-->
+
+<!--                timeout = setTimeout(() => {-->
+<!--                    if (label) label.textContent = defaultLabel;-->
+
+<!--                    copyIcon?.classList.remove("hidden");-->
+<!--                    checkIcon?.classList.add("hidden");-->
+
+<!--                    button.classList.remove("text-green-600");-->
+<!--                }, 2000);-->
+<!--            } catch (err) {-->
+<!--                console.error("Failed to copy", err);-->
+<!--            }-->
+<!--        });-->
+<!--    })();-->
+<!--</script>-->
+
+<script>
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".copy-link-btn");
+
+    buttons.forEach((button) => {
+        if (button.dataset.copyButtonReady === "true") return;
+        button.dataset.copyButtonReady = "true";
+
+        const label = button.querySelector<HTMLElement>(".label");
+        const copyIcon = button.querySelector<SVGElement>(".copy-icon");
+        const checkIcon = button.querySelector<SVGElement>(".check-icon");
+
+        const copyText = button.dataset.copyText ?? "";
+        const defaultLabel = button.dataset.label ?? "Copy";
+        const copiedLabel = button.dataset.copiedLabel ?? "Copied!";
+
+        let timeout: ReturnType<typeof setTimeout>;
+
+        button.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(copyText);
+
+                if (label) label.textContent = copiedLabel;
+
+                copyIcon?.classList.add("hidden");
+                checkIcon?.classList.remove("hidden");
+
+                button.classList.add("text-green-600");
+
+                clearTimeout(timeout);
+
+                timeout = setTimeout(() => {
+                    if (label) label.textContent = defaultLabel;
+
+                    copyIcon?.classList.remove("hidden");
+                    checkIcon?.classList.add("hidden");
+
+                    button.classList.remove("text-green-600");
+                }, 2000);
+            } catch (err) {
+                console.error("Failed to copy", err);
+            }
+        });
+    });
+</script>
