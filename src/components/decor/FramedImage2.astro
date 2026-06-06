@@ -57,40 +57,6 @@ const posterUsed = poster?.src ?? framedImage.src;
                 class="frame-mask h-full w-full"
                 style={`mask-image: url("${frameMaskImgMetadata.src}"); -webkit-mask-image: url("${frameMaskImgMetadata.src}");`}
         >
-            <!--{-->
-            <!--    kind === "video" ? (-->
-            <!--            <video-->
-            <!--                     data-framed-media-->
-            <!--                    class="absolute object-cover transition-transform duration-300"-->
-            <!--                    autoplay={autoplay}-->
-            <!--                    muted={muted}-->
-            <!--                    loop={loop}-->
-            <!--                    playsinline={playsinline}-->
-            <!--                    controls={controls}-->
-            <!--                    preload={preload}-->
-            <!--                    poster={posterUsed}-->
-            <!--            >-->
-            <!--                <source-->
-            <!--                        src={videoSrcMobile}-->
-            <!--                        media="(max-width: 640px)"-->
-            <!--                        type="video/mp4"-->
-            <!--                />-->
-            <!--                <source-->
-            <!--                        src={videoSrc}-->
-            <!--                        type="video/mp4"-->
-            <!--                />-->
-            <!--            </video>-->
-            <!--    ) : (-->
-            <!--            <img-->
-            <!--                    src={framedImage.src}-->
-            <!--                    alt={photoAlt}-->
-            <!--                     data-framed-media-->
-            <!--                    loading="lazy"-->
-            <!--                    decoding="async"-->
-            <!--                    class="absolute object-cover transition-transform duration-300"-->
-            <!--            />-->
-            <!--    )-->
-            <!--}-->
             <SmartMedia
                     data-framed-media
                     kind={kind}

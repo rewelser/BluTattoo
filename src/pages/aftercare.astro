@@ -1,23 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getEntry, render } from "astro:content";
+import {getEntry, render} from "astro:content";
+import PiercingPageHeadingSvg from "../components/decor/PiercingPageHeadingSvg.astro";
 
 const entry = await getEntry("aftercare", "main");
 if (!entry) {
-  throw new Error("Missing content file: src/content/aftercare/main.md");
+    throw new Error("Missing content file: src/content/aftercare/main.md");
 }
-const { Content } = await render(entry);
+const {Content} = await render(entry);
 const title = entry.data.title ?? "Aftercare";
 const description = "Read BluTattoo aftercare instructions for tattoos and piercings, including cleaning, healing, and what to avoid."
 ---
 
 <Layout title={title} description={description}>
-  <article
-    class="page-article page-article--stack prose
-           prose-headings:tracking-tight prose-p:leading-relaxed"
-  >
-    <h1 class="page-title">{title}</h1>
-
-    <Content />
-  </article>
+    <article
+            class="page-article page-article--stack page-article--bleed"
+    >
+        <h1 class="page-title">
+            <span class="sr-only">{title}</span>
+            <PiercingPageHeadingSvg/>
+        </h1>
+        <div class="content-rail prose prose-headings:tracking-tight prose-p:leading-relaxed">
+            <Content/>
+        </div>
+    </article>
 </Layout>
