@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import {getEntry, render} from "astro:content";
-import PiercingPageHeadingSvg from "../components/decor/PiercingPageHeadingSvg.astro";
+import AftercarePageHeadingSvg from "../components/decor/AftercarePageHeadingSvg.astro";
 
 const entry = await getEntry("aftercare", "main");
 if (!entry) {
@@ -18,7 +18,107 @@ const description = "Read BluTattoo aftercare instructions for tattoos and pierc
     >
         <h1 class="page-title">
             <span class="sr-only">{title}</span>
-            <PiercingPageHeadingSvg/>
+            <!--<AftercarePageHeadingSvg/>-->
+            <div class="aftercare-page-heading h-[60vh] sm:h-[80vh] bg-red-500 flex justify-center items-center">
+                <div class="aftercare-page-heading-decor-container relative h-[min(60vh,calc(100vw-.5rem))] sm:h-[min(60vh,calc(100vw-2rem))] aspect-square box-border p-2 sm:p-5">
+                    <div class="aftercare-page-heading-beveled-outer p-5">
+                        <div class="aftercare-page-heading-beveled-inner h-full w-full">
+                            <div class="aftercare-page-heading-decor">
+                                <!-- graphic goes here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+
+                .aftercare-page-heading {
+                    mask: linear-gradient(0, #0000 100vw, #000 0),
+                    radial-gradient(100vw, #000 calc(100% - 1px), #0000) bottom/185vw 200vw;
+                }
+
+                .aftercare-page-heading-decor-container {
+                    container-type: size;
+                    --bevelSize: 22cqh;
+                    --bevelSizeBorder: 2.5cqh;
+
+                }
+
+                @media (width < 640px) {
+                    .aftercare-page-heading-decor-container {
+                        --bevelSize: 15cqh;
+                    }
+                }
+
+                .aftercare-page-heading-beveled-outer {
+
+                    width: 100%;
+                    height: 100%;
+                    background: white;
+                    clip-path: polygon(
+                            0 var(--bevelSize),
+                            var(--bevelSize) var(--bevelSize),
+                            var(--bevelSize) 0,
+                            calc(100% - var(--bevelSize)) 0,
+                            calc(100% - var(--bevelSize)) var(--bevelSize),
+                            100% var(--bevelSize),
+                            100% calc(100% - var(--bevelSize)),
+                            calc(100% - var(--bevelSize)) calc(100% - var(--bevelSize)),
+                            calc(100% - var(--bevelSize)) 100%,
+                            var(--bevelSize) 100%,
+                            var(--bevelSize) calc(100% - var(--bevelSize)),
+                            0 calc(100% - var(--bevelSize))
+                    );
+                }
+
+                .aftercare-page-heading-beveled-inner {
+                    position: relative;
+                    filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5));
+                }
+
+                .aftercare-page-heading-beveled-inner:before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: red;
+                    clip-path: polygon(
+                            0 var(--bevelSize),
+                            var(--bevelSize) var(--bevelSize),
+                            var(--bevelSize) 0,
+                            calc(100% - var(--bevelSize)) 0,
+                            calc(100% - var(--bevelSize)) var(--bevelSize),
+                            100% var(--bevelSize),
+                            100% calc(100% - var(--bevelSize)),
+                            calc(100% - var(--bevelSize)) calc(100% - var(--bevelSize)),
+                            calc(100% - var(--bevelSize)) 100%,
+                            var(--bevelSize) 100%, var(--bevelSize) calc(100% - var(--bevelSize)),
+                            0 calc(100% - var(--bevelSize)),
+                            0 var(--bevelSize),
+                            var(--bevelSizeBorder) calc(var(--bevelSize) + var(--bevelSizeBorder)),
+                            var(--bevelSizeBorder) calc(100% - var(--bevelSize) - var(--bevelSizeBorder)),
+                            calc(var(--bevelSize) + var(--bevelSizeBorder)) calc(100% - var(--bevelSize) - var(--bevelSizeBorder)),
+                            calc(var(--bevelSize) + var(--bevelSizeBorder)) calc(100% - var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSize) - var(--bevelSizeBorder)) calc(100% - var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSize) - var(--bevelSizeBorder)) calc(100% - var(--bevelSize) - var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSizeBorder)) calc(100% - var(--bevelSize) - var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSizeBorder)) calc(var(--bevelSize) + var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSize) - var(--bevelSizeBorder)) calc(var(--bevelSize) + var(--bevelSizeBorder)),
+                            calc(100% - var(--bevelSize) - var(--bevelSizeBorder)) var(--bevelSizeBorder),
+                            calc(var(--bevelSize) + var(--bevelSizeBorder)) var(--bevelSizeBorder),
+                            calc(var(--bevelSize) + var(--bevelSizeBorder)) calc(var(--bevelSize) + var(--bevelSizeBorder)),
+                            var(--bevelSizeBorder) calc(var(--bevelSize) + var(--bevelSizeBorder))
+                    );
+                }
+
+                .aftercare-page-heading-decor {
+                    position: relative;
+                    top: calc(var(--bevelSize) + var(--bevelSizeBorder));
+                    left: calc(var(--bevelSize) + var(--bevelSizeBorder));
+                    height: calc(100% - 2 * (var(--bevelSize) + var(--bevelSizeBorder)));
+                    width: calc(100% - 2 * (var(--bevelSize) + var(--bevelSizeBorder)));
+                    outline: 1px solid red;
+                }
+            </style>
         </h1>
         <div class="content-rail prose prose-headings:tracking-tight prose-p:leading-relaxed">
             <Content/>
