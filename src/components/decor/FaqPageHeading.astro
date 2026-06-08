@@ -19,13 +19,6 @@ const {
     title: string,
 };
 const chars = Array.from(title.toUpperCase());
-// 6397CC (light ceil blue)
-// 384F66 (dark ceil blue)
-
-// 003366 (navy)
-
-// 80393d (light red)B55156
-// 541114 (dark red)
 const questionMarks = data as QuestionMarkMeta[];
 
 const bottomLetters = Array.from("Frequently Asked Questions");
@@ -134,29 +127,9 @@ const dur = 0.2;
 
         </script>
     </div>
-
-
-    <!--<div class="faq-page-heading-decor-text text-8xl" aria-hidden="true">-->
-    <!--    {chars.map((char, i) => (-->
-    <!--            <span-->
-    <!--                    class="animated-heading__char"-->
-    <!--                    style={`animation-delay: calc(${i} * 95ms)`}-->
-    <!--                    aria-hidden="true"-->
-    <!--            >-->
-    <!--                                      {char === " " ? "\u00A0" : char}-->
-    <!--                                    </span>-->
-    <!--    ))}-->
-    <!--</div>-->
     <style>
         .faq-page-heading {
             position: relative;
-
-            //background-image: radial-gradient(
-            //        ellipse farthest-corner at 50% 70%,
-            //        black 0%,
-            //        black 70%,
-            //        #6397CC 100%
-            //);
             mask: radial-gradient(7px at 25% 0, #0000 98%, #000) 50% 7px/28px 51% repeat-x,
             radial-gradient(7px at 75% 50%, #000 99%, #0000 101%) top/28px 14px repeat-x,
             radial-gradient(7px at 75% 100%, #0000 98%, #000) calc(50% + 14px) calc(100% - 7px)/28px 51% repeat-x,
@@ -165,8 +138,67 @@ const dur = 0.2;
             mask: radial-gradient(16px at 75% 100%, #0000 98%, #000) 50% calc(100% - 16px)/64px 100% repeat-x,
             radial-gradient(16px at 25% 50%, #000 99%, #0000 101%) bottom/64px 32px repeat-x;
 
-            mask: linear-gradient(0, #0000 100vw, #000 0),
-            radial-gradient(100vw, #000 calc(100% - 1px), #0000) bottom/185vw 200vw;
+            //mask: linear-gradient(0, #0000 100vw, #000 0),
+            //radial-gradient(100vw, #000 calc(100% - 1px), #0000) bottom/185vw 200vw;
+                --s: 100px; /* control the size*/
+                --c1: #314d68;
+                --c2: #355c7d;
+
+                --_g:
+                        var(--c2) 6%  14%,var(--c1) 16% 24%,var(--c2) 26% 34%,var(--c1) 36% 44%,
+                        var(--c2) 46% 54%,var(--c1) 56% 64%,var(--c2) 66% 74%,var(--c1) 76% 84%,var(--c2) 86% 94%;
+                background:
+                        radial-gradient(100% 100% at 100% 0,var(--c1) 4%,var(--_g),#0008 96%,#0000),
+                        radial-gradient(100% 100% at 0 100%,#0000, #0008 4%,var(--_g),var(--c1) 96%)
+                        var(--c1);
+                background-size: var(--s) var(--s);
+                --s: 220px; /* control the size*/
+                --c1: #001547;
+                --c2: #000000;
+
+                --_g:radial-gradient(#0000 60%,var(--c1) 61% 63%,#0000 64% 77%,var(--c1) 78% 80%,#0000 81%);
+                --_c:,#0000 75%,var(--c2) 0;
+                background:
+                        conic-gradient(at 12% 20% var(--_c)) calc(var(--s)* .44) calc(.9*var(--s)),
+                        conic-gradient(at 12% 20% var(--_c)) calc(var(--s)*-.06) calc(.4*var(--s)),
+                        conic-gradient(at 20% 12% var(--_c)) calc(.9*var(--s)) calc(var(--s)* .44),
+                        conic-gradient(at 20% 12% var(--_c)) calc(.4*var(--s)) calc(var(--s)*-.06),
+                        var(--_g),var(--_g) calc(var(--s)/2) calc(var(--s)/2) var(--c2);
+                background-size: var(--s) var(--s);
+
+                --s: 246px; /* control the size*/
+                --c1: #2a4acb;
+                --c2: #35377e;
+
+                --_g: #0000 24%,
+                var(--c2) 26% 34%,var(--c1) 36% 44%,
+                var(--c2) 46% 54%,var(--c1) 56% 64%,
+                var(--c2) 66% 74%,#0000 76%;
+                background:
+                        radial-gradient(100% 100% at 100% 0,var(--_g)),
+                        radial-gradient(100% 100% at 0 100%,var(--_g)),
+                        radial-gradient(var(--c2) 14%,var(--c1) 16%)
+                        calc(var(--s)/2) calc(var(--s)/2);
+                background-size: var(--s) var(--s);
+
+                --s: 194px; /* control the size*/
+                --c1: #262055;
+                --c2: #18205d;
+                --c3: #120d49;
+
+                --_l:#0000 calc(25%/3),var(--c1) 0 25%,#0000 0;
+                --_g:conic-gradient(from 120deg at 50% 87.5%,var(--c1) 120deg,#0000 0);
+                background:
+                        var(--_g),var(--_g) 0 calc(var(--s)/2),
+                        conic-gradient(from 180deg at 75%,var(--c2) 60deg,#0000 0),
+                        conic-gradient(from 60deg at 75% 75%,var(--c1) 0 60deg,#0000 0),
+                        linear-gradient(150deg,var(--_l)) 0 calc(var(--s)/2),
+                        conic-gradient(at 25% 25%,#0000 50%,var(--c2) 0 240deg,var(--c1) 0 300deg,var(--c2) 0),
+                        linear-gradient(-150deg,var(--_l)) var(--c3);
+                background-size: calc(0.866*var(--s)) var(--s);
+
+            //background-image: url("/uploads/misc_images/paper.jpg");
+            //background-size: cover;
 
         }
 
@@ -197,42 +229,12 @@ const dur = 0.2;
         }
 
         .faq-page-heading-decor-text {
-            //display: flex;
-            //justify-content: center;
-            //align-items: center;
-            //overflow: hidden;
-            //background: whitesmoke;
-            //padding: 5px;
-            //border-radius: 20px;
-            //
-            //
-            //white-space: nowrap;
-        }
-
-        .faq-page-heading-decor-text {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             //pointer-events: none;
             overflow: visible;
-        }
-
-        .animated-heading__char {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(0.6em);
-            animation: heading-char-in 600ms cubic-bezier(.2, .8, .2, 1) forwards;
-            //background: linear-gradient(to bottom, transparent 50%, whitesmoke 50%);
-            //background: linear-gradient(to bottom, transparent 0%, whitesmoke 0%);
-
-        }
-
-        @keyframes heading-char-in {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         @media (prefers-reduced-motion: reduce) {
