@@ -5,6 +5,9 @@ import {getCollection, type CollectionEntry} from "astro:content";
 import AftercarePageHeading from "../components/decor/AftercarePageHeading.astro";
 import FaqPageHeading from "../components/decor/FaqPageHeading.astro";
 import questions from "../domain/decor/assets/questions.svg";
+import { Image } from 'astro:assets';
+import bunny from "/src/domain/decor/assets/bunny.png";
+
 
 const entries = (await getCollection("faqs")) as CollectionEntry<"faqs">[];
 
@@ -59,7 +62,7 @@ const description = "Find answers to common BluTattoo questions about booking, d
 
             <div class="faq-page-questions-svg h-[50vh] sm:h-[60vh] flex flex-col justify-end">
                 <img src={`${questionsSrc}`} class="h-full w-full min-h-0 object-contain"/>
-                <p class="mt-6 text-xl text-center">
+                <p class="mt-6 text-sm sm:text-xl text-center">
                     Still have questions? <a href="/contact" class="underline hover:no-underline">Contact us</a> or see
                     our <a href="/aftercare" class="underline hover:no-underline">Aftercare</a> guide.
                 </p>
@@ -75,7 +78,7 @@ const description = "Find answers to common BluTattoo questions about booking, d
                 background-position: center center;
             }
         </style>
-        <img src="/uploads/misc_images/bunny.png" class="absolute bottom-0 right-0 h-10 w-10"/>
+        <Image src={bunny} width={80} height={80} class="absolute bottom-0 right-0 h-5 w-5" alt="bunny" />
     </article>
 
     {/* SEO structured data */}
