@@ -16,16 +16,46 @@ output:
   omit_empty_optional_fields: true
 
 collections:
+  - name: "faqSections"
+    label: "FAQ Sections"
+    folder: "src/content/faq-sections"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{name}}"
+    reorder:
+      key: sort
+    sortable_fields:
+      fields: [ sort ]
+      default:
+        field: sort
+        direction: descending
+    fields:
+      - { name: name, label: "Section name", widget: string }
+      - { name: sort, label: "Sort", widget: number, required: true, default: 0 }
+
   - name: "faqs"
     label: "FAQs"
     folder: "src/content/faqs"
-    format: "json"
     create: true
     slug: "{{slug}}"
+    summary: "{{name}}"
+    view_groups:
+      - field: section
+        label: Sections
     fields:
-      - { name: q, label: "Question", widget: string }
-      - { name: a, label: "Answer", widget: text }
-      - { name: sort, label: "Sort", widget: number, required: false }
+      - { name: name, label: "Question", widget: string }
+
+      - name: section
+        label: "Section"
+        widget: relation
+        collection: faqSections
+        value_field: "{{slug}}"
+        search_fields: ["name"]
+        display_fields: ["name"]
+
+      - { name: sort, label: "Sort", widget: number, required: false, default: 0 }
+
+      - { name: body, label: "Answer", widget: markdown }
 
   - name: "people"
     label: "Team Members"

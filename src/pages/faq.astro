@@ -1,34 +1,56 @@
 ---
 // src/pages/faq.astro
 import Layout from "../layouts/Layout.astro";
-import {getCollection, type CollectionEntry} from "astro:content";
+import {getCollection, render, type CollectionEntry} from "astro:content";
 import AftercarePageHeading from "../components/decor/AftercarePageHeading.astro";
 import FaqPageHeading from "../components/decor/FaqPageHeading.astro";
 import questions from "../domain/decor/assets/questions.svg";
-import { Image } from 'astro:assets';
+import {Image} from 'astro:assets';
 import bunny from "/src/domain/decor/assets/bunny.png";
 
 
-const entries = (await getCollection("faqs")) as CollectionEntry<"faqs">[];
+const sectionEntries = (await getCollection("faqSections")) as CollectionEntry<"faqSections">[];
+const faqEntries = (await getCollection("faqs")) as CollectionEntry<"faqs">[];
 
-const faqs = entries
+const faqs = await Promise.all(faqEntries
     .sort((a, b) => (a.data.sort ?? 9999) - (b.data.sort ?? 9999))
-    .map((e) => e.data);
+    .map(async (faq) => {
+        const rendered = await render(faq);
+        return {
+            ...faq,
+            Content: rendered.Content,
+        };
+    })
+);
+
+const faqSections = sectionEntries
+    .sort((a, b) => (a.data.sort ?? 9999) - (b.data.sort ?? 9999))
+    .map((section) => ({
+        section: section,
+        faqs: faqs.filter((faq) => faq.data.section === section.id),
+    }));
+
+const markdownToJsonLdText = (markdown: string) =>
+    markdown
+        .replace(/!\[[^\]]*]\([^)]*\)/g, "") // remove images
+        .replace(/\[([^\]]+)]\(([^)]+)\)/g, "$1") // link text only
+        .replace(/[#*_>`~-]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
 
 const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqs.map(({q, a}) => ({
+    "mainEntity": faqs.map((faq) => ({
         "@type": "Question",
-        "name": q,
-        "acceptedAnswer": {"@type": "Answer", "text": a}
+        "name": faq.data.name,
+        "acceptedAnswer": {"@type": "Answer", "text": markdownToJsonLdText(faq.body)}
     }))
 };
 
-const questionsSrc = questions?.src;
-
 const title = "FAQ";
 const description = "Find answers to common BluTattoo questions about booking, deposits, pricing, appointments, tattoos, piercings, and aftercare.";
+const questionsSrc = questions?.src;
 ---
 
 <Layout title={title} description={description}>
@@ -40,25 +62,59 @@ const description = "Find answers to common BluTattoo questions about booking, d
         </header>
 
         <div class="content-rail">
-            <div class="divide-y divide-black/10 border border-black/10">
-                {faqs.map(({q, a}) => (
-                        <details class="group open:bg-black/5">
-                            <summary
-                                    class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-black/5">
-                                <span>{q}</span>
-                                <svg viewBox="0 0 24 24"
-                                     class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
-                                     aria-hidden="true">
-                                    <path d="M7 10l5 5 5-5H7z"/>
-                                </svg>
-                            </summary>
+            {
+                faqSections.map((faqSection) => {
+                    return (
+                            <section class="space-y-3">
+                                <h2 class="mb-3 mt-8 text-2xl font-bold tracking-tight text-black sm:text-3xl">{faqSection.section.data.name}</h2>
+                                <div class="divide-y divide-black/10 border border-black/10">
+                                    {faqSection.faqs.map((faq) => (
+                                            <details class="group open:bg-black/5">
+                                                <summary
+                                                        class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-black/5 group-open:bg-black/5">
+                                                    <span class="font-semibold">{faq.data.name}</span>
+                                                    <svg viewBox="0 0 24 24"
+                                                         class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
+                                                         aria-hidden="true">
+                                                        <path d="M7 10l5 5 5-5H7z"/>
+                                                    </svg>
+                                                </summary>
 
-                            <div class="px-4 pb-4">
-                                <p class="leading-relaxed">{a}</p>
-                            </div>
-                        </details>
-                ))}
-            </div>
+                                                <div class="faq-answer p-4 leading-relaxed">
+                                                    <faq.Content/>
+                                                </div>
+                                            </details>
+                                    ))}
+                                </div>
+
+                            </section>
+                    )
+                })
+            }
+            <style is:global>
+                .faq-answer > * + * {
+                    margin-top: 0.75rem;
+                }
+
+                .faq-answer img {
+                    display: block;
+                    max-width: 20rem;
+                    height: auto;
+                    margin: 1rem auto;
+                }
+
+                .faq-answer p {
+                    line-height: 1.7;
+                }
+
+                .faq-answer a {
+                    text-decoration: underline;
+                }
+
+                .faq-answer a:hover {
+                    text-decoration: none;
+                }
+            </style>
 
             <div class="faq-page-questions-svg h-[50vh] sm:h-[60vh] flex flex-col justify-end">
                 <img src={`${questionsSrc}`} class="h-full w-full min-h-0 object-contain"/>
@@ -78,7 +134,7 @@ const description = "Find answers to common BluTattoo questions about booking, d
                 background-position: center center;
             }
         </style>
-        <Image src={bunny} width={80} height={80} class="absolute bottom-0 right-0 h-5 w-5" alt="bunny" />
+        <Image src={bunny} width={80} height={80} class="absolute bottom-0 right-0 h-2 w-2" alt="bunny"/>
     </article>
 
     {/* SEO structured data */}

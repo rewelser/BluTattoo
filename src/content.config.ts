@@ -123,12 +123,23 @@ const aftercare = defineCollection({
 
 /*** region *** FAQs Collection ****/
 
+const faqSections = defineCollection({
+    loader: glob({
+        pattern: "**/*.{md,mdx}",
+        base: "./src/content/faq-sections",
+    }),
+    schema: z.object({
+        name: z.string(),
+        sort: z.number().optional().default(0),
+    }),
+});
+
 // 1-file-per-FAQ item
 const faqs = defineCollection({
-    loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/faqs"}),
+    loader: glob({pattern: "**/*.{md,mdx}", base: "./src/content/faqs"}),
     schema: z.object({
-        q: z.string(),
-        a: z.string(),
+        name: z.string(),
+        section: z.string().default("General"),
         sort: z.number().optional(),
     }),
 });
@@ -192,4 +203,4 @@ const branding = defineCollection({
 
 /*** endregion ***/
 
-export const collections = {people, faqs, siteInfo, aftercare, events, branding}; // & home?
+export const collections = {people, faqSections, faqs, siteInfo, aftercare, events, branding}; // & home?
