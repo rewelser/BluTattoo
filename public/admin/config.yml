@@ -367,10 +367,10 @@ collections:
               default: "US"
               hint: "ISO 3166-1 alpha-2 country code (eg., US)"
               pattern: ["^[A-Z]{2}$", "Must be a 2-letter ISO 3166-1 alpha-2 country code (eg., US)"]
-            - name: mapHref
-              label: "Google Maps business profile share link"
+            - name: placeId
+              label: "Google Maps business place ID"
               widget: string
-              hint: "The link you get when you click 'share' on the google maps business profile."
+              hint: "The place ID for the business (google 'how do I get the place ID' if you don't know)"
           - name: phone
             label: "Phone Number"
             widget: string

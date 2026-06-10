@@ -25,8 +25,11 @@ const hours = site?.data.hours ?? [];
 
 const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
 // https://maps.app.goo.gl/pPgGXftTkxHse6BL7
-// const mapQuery = encodeURIComponent(addressString);
-const mapQuery = site?.data.address.mapHref;
+const mapQuery = encodeURIComponent(`${shopName}, ${addressString}`);
+const placeId = site?.data.address.placeId;
+const mapHref = placeId
+    ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}&query_place_id=${encodeURIComponent(placeId)}`
+    : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 const phoneDigits = phone.replace(/[^\d+]/g, ""); // keep + and digits
 const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
@@ -120,7 +123,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                         <!--&gt;-->
                         <a
                                 class="underline hover:no-underline text-left not-italic"
-                                href={mapQuery}
+                                href={mapHref}
                                 target="_blank"
                                 rel="noopener"
                         >

@@ -17,17 +17,14 @@ const email = site?.data.email ?? defaults.siteEmail;
 const hours = site?.data.hours ?? [];
 
 const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
-// https://maps.app.goo.gl/pPgGXftTkxHse6BL7
-// const mapQuery = encodeURIComponent(addressString);
-const mapQuery = site?.data.address.mapHref;
+const mapQuery = encodeURIComponent(`${shopName}, ${addressString}`);
+const placeId = site?.data.address.placeId;
+const mapHref = placeId
+    ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}&query_place_id=${encodeURIComponent(placeId)}`
+    : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 const phoneDigits = phone.replace(/[^\d+]/g, ""); // keep + and digits
 const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
-
-// If you prefer the old embed with place_id, keep yours;
-// otherwise a simple query-based embed (no key) works too:
-// const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
-
 const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 
 const contactJsonLd = {
@@ -83,7 +80,7 @@ const description = "Contact BluTattoo for questions about tattoos, piercings, a
                                     <!--&gt;-->
                                     <a
                                             class="underline hover:no-underline"
-                                            href={mapQuery}
+                                            href={mapHref}
                                             target="_blank"
                                             rel="noopener"
                                     >
@@ -175,7 +172,7 @@ const description = "Contact BluTattoo for questions about tattoos, piercings, a
 
                 <div class="mt-2 text-right">
                     <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                            href={mapHref}
                             target="_blank"
                             rel="noopener"
                             class="text-sm underline hover:no-underline"
