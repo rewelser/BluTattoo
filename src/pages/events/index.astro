@@ -9,6 +9,8 @@ import UpcomingEvents from "../../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../../components/UpcomingEventsFallback.astro";
 import { getTransformedEventItemsCached } from "../../domain/events/server.ts";
 import type {EventItem} from "../../domain/events/types.ts";
+import ContactPageHeading from "../../components/decor/ContactPageHeading.astro";
+import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
 
 const events: EventItem[] = await getTransformedEventItemsCached();
 const title = "Events";
@@ -17,7 +19,11 @@ const description = "View upcoming guest spots, events, and special appearances 
 
 <Layout title={title} description={description}>
     <article class="page-article page-article--stack space-y-6">
-        <h1 class="page-title">{title}</h1>
+        <header>
+            <h1 class="page-title sr-only">{title}</h1>
+            <EventsPageHeading title={title} />
+
+        </header>
 
         <UpcomingEvents events={events} server:defer>
             <UpcomingEventsFallback slot="fallback" />

@@ -1,4 +1,7 @@
 ---
+import aftercareSymbol from "../../domain/decor/assets/aftercare-lightred.png";
+
+
 const {
     class: className,
     title,
@@ -15,12 +18,13 @@ const chars = Array.from(title.toUpperCase());
 
 // 80393d (light red)B55156
 // 541114 (dark red)
+const aftercareImageSrc = aftercareSymbol.src;
 ---
 <div class="aftercare-page-heading h-[80vh] sm:h-[80vh] flex justify-center items-center bg-radial from-black to-[#541114]">
     <div class="aftercare-page-heading-decor-container relative h-[min(60vh,calc(100vw-.5rem))] sm:h-[min(60vh,calc(100vw-2rem))] aspect-square box-border p-2 sm:p-5">
         <div class="aftercare-page-heading-beveled-outer p-5">
             <div class="aftercare-page-heading-beveled-inner h-full w-full">
-                <div class="aftercare-page-heading-decor">
+                <div class="aftercare-page-heading-decor" style={`background-image: url(${aftercareImageSrc})`}>
                     <!-- graphic goes here -->
                 </div>
                 <div class="aftercare-page-heading-decor-text" aria-hidden="true">
@@ -142,7 +146,6 @@ const chars = Array.from(title.toUpperCase());
             left: calc(var(--bevelSize) + var(--bevelSizeBorder));
             height: calc(100% - 2 * (var(--bevelSize) + var(--bevelSizeBorder)));
             width: calc(100% - 2 * (var(--bevelSize) + var(--bevelSizeBorder)));
-            background-image: url('/uploads/misc_images/medical-lightestred.png');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;

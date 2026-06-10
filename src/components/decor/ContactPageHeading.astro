@@ -1,0 +1,131 @@
+---
+import contactusImage from "../../domain/decor/assets/birdmail.png"
+import contactusImageBg from "../../domain/decor/assets/birdmail-bg.svg"
+import mailbg from "../../domain/decor/assets/mail.jpg";
+import {Image} from "astro:assets";
+
+const {
+    class: className,
+    title,
+
+} = Astro.props as {
+    class?: string,
+    title: string,
+};
+const chars = Array.from(title.toUpperCase());
+// 6397CC (light ceil blue)
+// 384F66 (dark ceil blue)
+
+// 003366 (navy)
+
+// 80393d (light red)B55156
+// 541114 (dark red)
+const contactusImageBgSrc = contactusImageBg.src;
+---
+<div class="contactus-page-heading flex justify-between items-center bg-radial from-black to-blue-950">
+    <div class="flank-graphic h-full flex flex-1 justify-center -scale-x-100">
+        <div class="contactus-page-heading-decor-container w-fit relative p-2 sm:p-5">
+            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat" style={`background-image: url(${contactusImageBg.src})`}>
+                <div class="contactus-page-heading-inner">
+                    <div class="contactus-page-heading-decor">
+                        <Image src={contactusImage} alt="bird carrying letter" class="object-contain aspect-square w-full max-w-[300px]" width="600" height="600" priority></Image>
+                        <!-- graphic goes here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="contactus-page-heading-text flex-1 sm:text-3xl md:text-4xl lg:text-5xl text-white" aria-hidden="true">
+        {chars.map((char, i) => (
+                <span
+                        class="animated-heading__char"
+                        style={`animation-delay: calc(${i} * 45ms)`}
+                        aria-hidden="true"
+                >
+                                          {char === " " ? "\u00A0" : char}
+                                        </span>
+        ))}
+    </div>
+    <div class="flank-graphic h-full flex flex-1 justify-center">
+        <div class="contactus-page-heading-decor-container w-fit relative p-2 sm:p-5">
+            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat" style={`background-image: url(${contactusImageBg.src})`}>
+                <div class="contactus-page-heading-inner">
+                    <div class="contactus-page-heading-decor">
+                        <Image src={contactusImage} alt="bird carrying letter" class="object-contain aspect-square w-full max-w-[300px]" width="600" height="600" priority></Image>
+                        <!-- graphic goes here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .contactus-page-heading {
+            aspect-ratio: 126/59;
+            //background-image: radial-gradient(
+            //        ellipse farthest-corner at 50% 70%,
+            //        black 0%,
+            //        black 70%,
+            //        #6397CC 100%
+            //);
+            //mask: linear-gradient(0, #0000 100vw, #000 0),
+            //radial-gradient(100vw, #000 calc(100% - 1px), #0000) bottom/185vw 200vw;
+            mask: radial-gradient(7px at 75% 100%, #0000 98%, #000) 50% calc(100% - 7px)/28px 100% repeat-x,
+            radial-gradient(7px at 25% 50%, #000 99%, #0000 101%) bottom/28px 14px repeat-x;
+
+        }
+
+        .contactus-page-heading-inner {
+            position: relative;
+            filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5));
+            border-radius: 9999px;
+
+        }
+
+        .contactus-page-heading-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+
+
+
+            /*
+              clamp(min, preferred, max)
+
+              min: 2rem  — readable floor on small containers
+              preferred: 12cqw — scales with the component; 12% of container width
+              max: 8rem — visual ceiling on large containers
+
+              The 12cqw value was tuned for the word "Aftercare": it makes the
+              font-size roughly containerWidth / 8.33, which gives this title a
+              good visual width inside the decorative frame.
+            */
+            /* bounds by container height. Unstable, but keeping comment for posterity */
+            //font-size: min(18cqw, 28cqh);
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .animated-heading__char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.6em);
+            animation: heading-char-in 600ms cubic-bezier(.2, .8, .2, 1) forwards;
+        }
+
+        @keyframes heading-char-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animated-heading__char {
+                opacity: 1;
+                transform: none;
+                animation: none;
+            }
+        }
+    </style>
+</div>

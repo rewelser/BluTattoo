@@ -3,6 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import {getEntry} from "astro:content";
 import {defaults} from "../config/site";
 import CopyButton from "../components/CopyButton.astro";
+import AftercarePageHeading from "../components/decor/AftercarePageHeading.astro";
+import ContactPageHeading from "../components/decor/ContactPageHeading.astro";
 
 const site = await getEntry("siteInfo", "main");
 
@@ -49,12 +51,16 @@ const description = "Contact BluTattoo for questions about tattoos, piercings, a
 
 <Layout title={title} description={description}>
 
-    <article class="page-article">
-        <h1 class="page-title">{title}</h1>
-        <div class="grid md:grid-cols-2 md:items-stretch">
+    <article class="page-article page-article--bleed">
+        <header>
+            <h1 class="page-title sr-only">{title}</h1>
+            <ContactPageHeading title={title} />
+
+        </header>
+        <div class="content-rail grid md:grid-cols-2 md:items-stretch">
             {/* Left: Contact + Hours */}
-            <section class="border border-black/10 p-5 md:p-6" aria-labelledby="contact-info-heading">
-                <h2 id="contact-info-heading" class="mb-4 text-xl font-semibold">
+            <section class="border border-black/10 p-3 md:p-6" aria-labelledby="contact-info-heading">
+                <h2 id="contact-info-heading" class="mb-2 text-xl font-semibold">
                     Visit or reach out
                 </h2>
 
