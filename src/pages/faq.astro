@@ -9,8 +9,8 @@ import {Image} from 'astro:assets';
 import bunny from "/src/domain/decor/assets/bunny.png";
 
 
-const sectionEntries = (await getCollection("faqSections")) as CollectionEntry<"faqSections">[];
-const faqEntries = (await getCollection("faqs")) as CollectionEntry<"faqs">[];
+const sectionEntries = (await getCollection("faqSections"));
+const faqEntries = (await getCollection("faqs"));
 
 const faqs = await Promise.all(faqEntries
     .sort((a, b) => (a.data.sort ?? 9999) - (b.data.sort ?? 9999))
@@ -44,7 +44,7 @@ const faqJsonLd = {
     "mainEntity": faqs.map((faq) => ({
         "@type": "Question",
         "name": faq.data.name,
-        "acceptedAnswer": {"@type": "Answer", "text": markdownToJsonLdText(faq.body)}
+        "acceptedAnswer": {"@type": "Answer", "text": markdownToJsonLdText(faq.body!)}
     }))
 };
 

@@ -40,6 +40,7 @@ const dur = 0.5;
 
                                 root.style.backgroundImage = `url(${selectedQuestionMarkImage.src})`;
                                 root.style.backgroundSize = selectedQuestionMark.backgroundSize ?? "contain";
+                                root.classList.add("is-ready");
 
                             })();
                         </script>
@@ -152,6 +153,16 @@ const dur = 0.5;
                 /* padding not really necessary on larger screens, due to sizing of graphic */
                 padding-bottom: 0;
             }
+        }
+
+        .faq-page-heading-decor-container {
+            opacity: 0;
+            transition: opacity 150ms;
+        }
+
+
+        .faq-page-heading-decor-container:has(.faq-page-heading-decor.is-ready) {
+            opacity: 1;
         }
 
         .faq-page-heading-outer {
