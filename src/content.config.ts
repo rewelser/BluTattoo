@@ -157,7 +157,8 @@ const siteInfo = defineCollection({
             addressLocality: z.string(),
             addressRegion: z.string().length(2),
             postalCode: z.string(),
-            addressCountry: z.string().length(2).default("US")
+            addressCountry: z.string().length(2).default("US"),
+            mapHref: z.string().url(),
         }),
         phone: z.preprocess(emptyStrToUndef, z.string().optional()),
         email: z.preprocess(emptyStrToUndef, z.string().optional()),

@@ -17,7 +17,9 @@ const email = site?.data.email ?? defaults.siteEmail;
 const hours = site?.data.hours ?? [];
 
 const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
-const mapQuery = encodeURIComponent(addressString);
+// https://maps.app.goo.gl/pPgGXftTkxHse6BL7
+// const mapQuery = encodeURIComponent(addressString);
+const mapQuery = site?.data.address.mapHref;
 const phoneDigits = phone.replace(/[^\d+]/g, ""); // keep + and digits
 const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
@@ -73,9 +75,15 @@ const description = "Contact BluTattoo for questions about tattoos, piercings, a
                             <div>
                                 <div class="font-medium">{shopName}</div>
                                 <div class="flex items-center justify-center gap-2">
+                                    <!--<a-->
+                                    <!--        class="underline hover:no-underline"-->
+                                    <!--        href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}-->
+                                    <!--        target="_blank"-->
+                                    <!--        rel="noopener"-->
+                                    <!--&gt;-->
                                     <a
                                             class="underline hover:no-underline"
-                                            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                                            href={`https://maps.app.goo.gl/pPgGXftTkxHse6BL7`}
                                             target="_blank"
                                             rel="noopener"
                                     >
