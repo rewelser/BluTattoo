@@ -18,23 +18,21 @@ const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
 const shopName = site?.data.siteName ?? defaults.siteName;
 const addressObj = site?.data.address ?? defaults.address;
+const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
+const mapQuery = encodeURIComponent(`${shopName}, ${addressString}`);
+const placeId = site?.data.address.placeId ?? defaults.placeId;
+const mapHref = placeId
+    ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}&query_place_id=${encodeURIComponent(placeId)}`
+    : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 
 const phone = site?.data.phone ?? defaults.sitePhone;
 const email = site?.data.email ?? defaults.siteEmail;
 const hours = site?.data.hours ?? [];
-
-const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
-// https://maps.app.goo.gl/pPgGXftTkxHse6BL7
-const mapQuery = encodeURIComponent(`${shopName}, ${addressString}`);
-const placeId = site?.data.address.placeId;
-const mapHref = placeId
-    ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}&query_place_id=${encodeURIComponent(placeId)}`
-    : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 const phoneDigits = phone.replace(/[^\d+]/g, ""); // keep + and digits
 const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
-const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
-const hoursShortline = site?.data.hoursShortline;
+const hoursShortline = site?.data.hoursShortline ?? defaults.hoursShortline;
 
 const ourStory = branding?.data.ourStory;
 

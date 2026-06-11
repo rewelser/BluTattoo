@@ -14,5 +14,7 @@ export const defaults = {
     },
     sitePhone: "(555) 555-5555",
     siteEmail: "info@company.com",
+    hoursShortline: "12a to 8p | Tuesday - Sunday\nClosed Monday",
+    placeId: "ChIJvcRSeifOUIgRg4YB5KITZ90"
 
 }

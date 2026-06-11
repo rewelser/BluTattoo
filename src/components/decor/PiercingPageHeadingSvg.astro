@@ -1,4 +1,5 @@
 ---
+import piercingImage from "../../domain/decor/assets/piercing.png"
 const {
     class: className = "",
 } = Astro.props;
@@ -26,7 +27,7 @@ const dur = 0.5;
                         focusable="false"
                 >
                     <image
-                            href="uploads/misc_images/001498 copy.png"
+                            href={`${piercingImage.src}`}
                             x="55"
                             y="55"
                             width="190"

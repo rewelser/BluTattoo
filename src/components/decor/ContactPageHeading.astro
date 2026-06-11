@@ -25,10 +25,13 @@ const contactusImageBgSrc = contactusImageBg.src;
 <div class="contactus-page-heading flex justify-between items-center bg-radial from-black to-blue-950">
     <div class="flank-graphic h-full flex flex-1 justify-center -scale-x-100">
         <div class="contactus-page-heading-decor-container w-fit relative p-2 sm:p-5">
-            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat" style={`background-image: url(${contactusImageBg.src})`}>
+            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat aspect-square"
+                 style={`background-image: url(${contactusImageBgSrc}); mask-image: url(${contactusImageBgSrc}); mask-size: contain; mask-position: center; mask-repeat: no-repeat;`}>
                 <div class="contactus-page-heading-inner">
                     <div class="contactus-page-heading-decor">
-                        <Image src={contactusImage} alt="bird carrying letter" class="object-contain aspect-square w-full max-w-[300px]" width="600" height="600" priority></Image>
+                        <Image src={contactusImage} alt="bird carrying letter"
+                               class="bird-fly-in object-contain aspect-square w-full max-w-[300px]"
+                               width="600" height="600" priority></Image>
                         <!-- graphic goes here -->
                     </div>
                 </div>
@@ -48,10 +51,13 @@ const contactusImageBgSrc = contactusImageBg.src;
     </div>
     <div class="flank-graphic h-full flex flex-1 justify-center">
         <div class="contactus-page-heading-decor-container w-fit relative p-2 sm:p-5">
-            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat" style={`background-image: url(${contactusImageBg.src})`}>
+            <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat"
+                 style={`background-image: url(${contactusImageBgSrc}); mask-image: url(${contactusImageBgSrc}); mask-size: contain; mask-position: center; mask-repeat: no-repeat;`}>
                 <div class="contactus-page-heading-inner">
                     <div class="contactus-page-heading-decor">
-                        <Image src={contactusImage} alt="bird carrying letter" class="object-contain aspect-square w-full max-w-[300px]" width="600" height="600" priority></Image>
+                        <Image src={contactusImage} alt="bird carrying letter"
+                               class="bird-fly-in object-contain aspect-square w-full max-w-[300px]" width="600"
+                               height="600" priority></Image>
                         <!-- graphic goes here -->
                     </div>
                 </div>
@@ -77,8 +83,14 @@ const contactusImageBgSrc = contactusImageBg.src;
         .contactus-page-heading-inner {
             position: relative;
             filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5));
-            border-radius: 9999px;
+        }
 
+        .bird-fly-in {
+            transform: translate(0%, 0%);
+            transition: transform 500ms ease-in-out;
+            @starting-style {
+                transform: translate(125%, -25%);
+            }
         }
 
         .contactus-page-heading-text {
@@ -86,7 +98,6 @@ const contactusImageBgSrc = contactusImageBg.src;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-
 
 
             /*

@@ -18,7 +18,7 @@ const hours = site?.data.hours ?? [];
 
 const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;
 const mapQuery = encodeURIComponent(`${shopName}, ${addressString}`);
-const placeId = site?.data.address.placeId;
+const placeId = site?.data.address.placeId ?? defaults.placeId;
 const mapHref = placeId
     ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}&query_place_id=${encodeURIComponent(placeId)}`
     : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
