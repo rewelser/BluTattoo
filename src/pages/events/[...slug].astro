@@ -44,7 +44,7 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?
             )
         }
 
-        <div class="border border-black/10 p-5 md:p-6">
+        <div id="event-details" data-section="event-details" class="border border-black/10 p-5 md:p-6">
             <div class="text-sm opacity-80">
                 <!--{fmtDateRange(ev)}-->
                 <EventDateRange ev={ev}/>

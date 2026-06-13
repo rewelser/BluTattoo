@@ -17,7 +17,7 @@
 
 /* this does nothing yet */
 .calendar-day.closed {
-    background-image: url("/assets/closed.png");
+    /*background-image: url("/assets/closed.png");*/
 }
 
 .daily-events {

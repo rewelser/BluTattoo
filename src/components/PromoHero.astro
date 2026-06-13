@@ -32,7 +32,7 @@ const {isEventPage = false, href = "/events/", image, alt = "", className = ""} 
     ) : (
             <button
                     type="button"
-                    data-scroll-to-event-btn data-destination="event-info"
+                    data-scroll-to-event-btn data-destination="event-details"
                     class="cursor-pointer w-full"
             >
                 <img
@@ -91,7 +91,7 @@ const {isEventPage = false, href = "/events/", image, alt = "", className = ""} 
                 const target = document.querySelector(`[data-section="${destinationValue}"]`);
 
                 if (target) {
-                    target.scrollIntoView({behavior: 'smooth'});
+                    target.scrollIntoView({block: "nearest", behavior: 'smooth'});
                 }
             })
         }

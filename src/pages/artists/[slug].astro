@@ -56,7 +56,7 @@ console.log("ogImage", ogImage);
 <script>
     import {bootFadeUp} from "../../scripts/fade-up";
 
-    bootFadeUp({observeMutations: true});
+    bootFadeUp({observeMutations: true, threshold: .01, rootMargin: "500px 00px",});
     //js-fade-up
 </script>
 
@@ -133,17 +133,20 @@ console.log("ogImage", ogImage);
                             <h1 id="artist-name" class="text-3xl font-bold inline-block">
                                 {entry.data.name}
                             </h1>
-                            <ShareModal shareTitle={entry.data.name} shareHero={ogImage} shellClass="inline-block" cardButtonClass="m-2" cardButtonColorClass="bg-white/10 border-1 border-solid border-orange-100/40" heroFullBleed={true} />
+                            <ShareModal shareTitle={entry.data.name} shareHero={ogImage} shellClass="inline-block"
+                                        cardButtonClass="m-2"
+                                        cardButtonColorClass="bg-white/10 border-1 border-solid border-orange-100/40"
+                                        heroFullBleed={true}/>
 
                             {
                                 entry.data.contactSocialsBooking?.socials && (
-                                                <SocialRow
-                                                        links={entry.data.contactSocialsBooking.socials}
-                                                        class="my-3"
-                                                        justificationClass="justify-start"
-                                                        anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
-                                                        scrollBtnClass="h-10 w-10 p-3 m-1 rounded-full bg-black/70 border-1 border-solid border-orange-100"
-                                                />
+                                            <SocialRow
+                                                    links={entry.data.contactSocialsBooking.socials}
+                                                    class="my-3"
+                                                    justificationClass="justify-start"
+                                                    anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                                                    scrollBtnClass="h-10 w-10 p-3 m-1 rounded-full bg-black/70 border-1 border-solid border-orange-100"
+                                            />
                                 )
                             }
                             <div class="js-fade-up">
@@ -173,7 +176,8 @@ console.log("ogImage", ogImage);
                             <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
                                 <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
                                     <div>
-                                        <h2 id="gallery-heading" class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
+                                        <h2 id="gallery-heading"
+                                            class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
                                             Gallery
                                         </h2>
                                         <p class="text-sm text-gray-600 js-fade-up">
@@ -187,27 +191,27 @@ console.log("ogImage", ogImage);
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                          <!--          {entry.data.images.map((img, idx) => (-->
-                          <!--                  <button-->
-                          <!--                          type="button"-->
-                          <!--                          class="group overflow-hidden rounded-md text-left cursor-pointer"-->
-                          <!--                          data-idx={idx}-->
-                          <!--                          onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}-->
-                          <!--                  >-->
-                          <!--                      <img-->
-                          <!--                              src={thumb(img as string, 360)}-->
-                          <!--                              srcset={`${thumb(img as string, 240)} 240w,-->
-                          <!--${thumb(img as string, 360)} 360w,-->
-                          <!--${thumb(img as string, 480)} 480w,-->
-                          <!--${thumb(img as string, 720)} 720w`}-->
-                          <!--                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"-->
-                          <!--                              alt={`${entry.data.name} gallery image ${idx}`}-->
-                          <!--                              loading="lazy"-->
-                          <!--                              decoding="async"-->
-                          <!--                              class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"-->
-                          <!--                      />-->
-                          <!--                  </button>-->
-                          <!--          ))}-->
+                                    <!--          {entry.data.images.map((img, idx) => (-->
+                                    <!--                  <button-->
+                                    <!--                          type="button"-->
+                                    <!--                          class="group overflow-hidden rounded-md text-left cursor-pointer"-->
+                                    <!--                          data-idx={idx}-->
+                                    <!--                          onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}-->
+                                    <!--                  >-->
+                                    <!--                      <img-->
+                                    <!--                              src={thumb(img as string, 360)}-->
+                                    <!--                              srcset={`${thumb(img as string, 240)} 240w,-->
+                                    <!--${thumb(img as string, 360)} 360w,-->
+                                    <!--${thumb(img as string, 480)} 480w,-->
+                                    <!--${thumb(img as string, 720)} 720w`}-->
+                                    <!--                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"-->
+                                    <!--                              alt={`${entry.data.name} gallery image ${idx}`}-->
+                                    <!--                              loading="lazy"-->
+                                    <!--                              decoding="async"-->
+                                    <!--                              class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"-->
+                                    <!--                      />-->
+                                    <!--                  </button>-->
+                                    <!--          ))}-->
                                     {entry.data.images.map((img, idx) => (
                                             <button
                                                     type="button"
@@ -240,17 +244,17 @@ console.log("ogImage", ogImage);
         }
 
         {/* Preferred: Square embed if present */}
-        {
-            square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (
-                        <div class="p-5 mx-auto max-w-6xl">
-                            <SquareAppointments
-                                    merchantSlug={moduleInfo.merchantId}
-                                    locationSlug={moduleInfo.locationId}
-                                    label={moduleInfo.label}
-                                    className="mt-2"
-                            />
-                        </div>
-            )
-        }
+        <!--{-->
+        <!--    square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (-->
+        <!--                <div class="p-5 mx-auto max-w-6xl">-->
+        <!--                    <SquareAppointments-->
+        <!--                            merchantSlug={moduleInfo.merchantId}-->
+        <!--                            locationSlug={moduleInfo.locationId}-->
+        <!--                            label={moduleInfo.label}-->
+        <!--                            className="mt-2"-->
+        <!--                    />-->
+        <!--                </div>-->
+        <!--    )-->
+        <!--}-->
     </article>
 </Layout>

@@ -10,7 +10,7 @@
 }
 
 .js-fade-up.is-in {
-  animation: fadeUp 5000ms cubic-bezier(.2,.8,.2,1) both;
+  animation: fadeUp 2000ms cubic-bezier(.2,.8,.2,1) both;
 }
 
 /* Respect reduced motion */

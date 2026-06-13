@@ -204,7 +204,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         return (
                             <div
                                 key={dateKey}
-                                className={`calendar-day ${isToday ? "today" : ""}${needsSingleEventImageVariant ? "bg-img bg-cover bg-center" : ""}`}
+                                className={`calendar-day ${isToday ? "today" : ""} ${needsSingleEventImageVariant ? "bg-img bg-cover bg-center" : ""}`}
                                 onClick={() => {
                                     if (!canHover) {
                                         setOpenDateKey((prev) =>
@@ -219,6 +219,11 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     })
                                 }}
                             >
+                                {
+                                    needsSingleEventImageVariant && (
+                                        <a className="absolute top-0 left-0 z-20 h-full w-full" href={`/events/${dailyEvents[0].id}`}></a>
+                                    )
+                                }
                                 <div className="date-num">{dateNum}</div>
                                 <div className="daily-events text-sm leading-none">
                                     {!needsSingleEventImageVariant && dailyEvents.map((ev, index) => (

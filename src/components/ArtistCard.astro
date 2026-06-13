@@ -46,7 +46,7 @@ const previewBio = truncated
     ? personBio?.slice(0, previewLength).trim().concat("...")
     : personBio;
 const bioOrDetailsVerbiage = isGuestSpot ? "details" : "bio";
-const bioOrDetailsAnchorTag = isGuestSpot ? "event-info" : "artist-bio";
+const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
 ---
 <div
         class="person-card-container"

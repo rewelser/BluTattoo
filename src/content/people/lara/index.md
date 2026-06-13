@@ -2,8 +2,9 @@
 name: Lara
 active: true
 order: 1
-pagePhoto: assets/images/teamstock.jpg
-runwayPhoto: lara-runway.jpg
+pagePhoto: assets/images/lara_transparent.png
+ogPhotoTextless: /uploads/ogimages/lara_ogimage_textless.png
+runwayPhoto: assets/images/lara-runway.jpg
 runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:
@@ -17,6 +18,25 @@ contactSocialsBooking:
           enabled: true
           merchantId: qwerty
           locationId: QWERTY
+images:
+  - assets/images/PXL_20241130_235653755~2.jpg
+  - assets/images/PXL_20241215_000119860.PORTRAIT~2.jpg
+  - assets/images/PXL_20241221_230048310~2.jpg
+  - assets/images/PXL_20250114_230554793.PORTRAIT~2.jpg
+  - assets/images/PXL_20250221_002049722.PORTRAIT~2.jpg
+  - assets/images/PXL_20250315_210811823.PORTRAIT.ORIGINAL~2.jpg
+  - assets/images/PXL_20250404_180833342~2.jpg
+  - assets/images/PXL_20250510_190748660.PORTRAIT-1.jpg
+  - assets/images/PXL_20250524_193002414.PORTRAIT-1.jpg
+  - assets/images/PXL_20250530_231515941.PORTRAIT~2.jpg
+  - assets/images/PXL_20250604_231244471.PORTRAIT~2.jpg
+  - assets/images/PXL_20250614_011959789.PORTRAIT~2.jpg
+  - assets/images/PXL_20251112_011522013.PORTRAIT~2.jpg
+  - assets/images/PXL_20251129_234007182.PORTRAIT~2.jpg
+  - assets/images/PXL_20260307_000147084~2.jpg
+  - assets/images/PXL_20260315_222606969~2.jpg
+  - assets/images/PXL_20260329_205634415~2.jpg
+  - assets/images/PXL_20260508_232945423~2.jpg
 ---
 
 Lara focuses on bold blackwork and delicate florals. 8+ years experience.
