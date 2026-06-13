@@ -70,6 +70,7 @@ const people = [
 
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
+const artistPageShopLogo = branding?.data.logoDarkBold ?? logoDark;
 const bookingHeroPhoto = getImageSrc(branding?.data.hero?.bookingHeroPhoto ?? defaults.bookingHeroPhoto);
 const bookingShareOGPhoto = getImageSrc(branding?.data.bookingShareOGPhoto ?? defaults.ogPhoto);
 const bookingFlashLight = branding?.data.bookingFlashLight;
@@ -277,6 +278,8 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                             return ("href" in item && typeof item.href === "string");
                                                                         };
 
+                                                                        const isTextPreferred = item.type === "phone" && item.callOrTextPreferred === "text";
+
                                                                         const resolvedHref =
                                                                             hasHref(item)
                                                                                 ? item.type ===
@@ -288,14 +291,47 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                                         : item.href
                                                                                 : null;
 
+                                                                        const getResolveHref = (item: any) => {
+                                                                            if (item.type === "phone") {
+                                                                                if (isTextPreferred) {
+                                                                                    const message = item.textMessageDefaultInquiry?.trim();
+
+                                                                                    return message
+                                                                                        ? `sms:${item.href}?&body=${encodeURIComponent(message)}`
+                                                                                        : `sms:${item.href}`;
+                                                                                }
+
+                                                                                return `tel:${item.href}`;
+                                                                            }
+
+                                                                            if (item.type === "email") {
+                                                                                /**
+                                                                                * In a future update, either abstract up textMessageDefaultInquiry, or config a dedicated email subject/body field:
+                                                                                * const href = `mailto:${email}?subject=${encodeURIComponent(item.emailSubject)}&body=${encodeURIComponent(item.emailBody)}`;
+                                                                                */
+                                                                                return `mailto:${item.href}?subject=${encodeURIComponent("Booking inquiry")}`;
+                                                                            }
+
+                                                                            return item.href;
+                                                                        }
+
                                                                         const merchantId = "merchantId" in item && item.merchantId;
                                                                         const locationId = "locationId" in item && item.locationId;
 
                                                                         const isPreferred = item.preferred;
 
                                                                         const formatItem = (item: any) => {
-                                                                            if (item.category === "contact")
+                                                                            if (item.category === "contact") {
+                                                                                if (item.type === "phone") {
+                                                                                    if (isTextPreferred) {
+                                                                                        return `text: ${item.href}`;
+                                                                                    } else {
+                                                                                        return `call: ${item.href}`;
+                                                                                    }
+                                                                                }
                                                                                 return item.href;
+
+                                                                            }
                                                                             if (item.category === "social") {
                                                                                 return item.handle
                                                                                     ? `${item.handle} | ${item.type}`
@@ -310,12 +346,12 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
 
                                                                         return (
                                                                                 <li class="link-card-li">
-                                                                                    {hasHref(item) && resolvedHref ? (
+                                                                                    {hasHref(item) ? (
                                                                                             <>
                                                                                                 <div class={`link-card ${isPreferred ? "preferred" : "bookable"} not-first:mt-2`}>
                                                                                                     <a
                                                                                                             class="font-semibold break-words"
-                                                                                                            href={resolvedHref}
+                                                                                                            href={getResolveHref(item)}
                                                                                                             target={item.href.startsWith("http") ? "_blank" : undefined}
                                                                                                             rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
                                                                                                     >

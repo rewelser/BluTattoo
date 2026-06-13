@@ -130,6 +130,18 @@ collections:
                       ]
                   - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                   - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                  - name: callOrTextPreferred
+                    label: "Call or text this number?"
+                    widget: select
+                    default: "text"
+                    options:
+                      - "text"
+                      - "call"
+                  - name: textMessageDefaultInquiry
+                    label: "Text Message Default Inquiry"
+                    hint: "The message that will appear as a default inquiry in a user's SMS app before they send it."
+                    widget: text
+                    default: "Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!"
                   - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc" }
 
               - name: "email"
@@ -427,11 +439,23 @@ collections:
             required: true
             hint: "Header logo (dark-on-light version)."
 
+          - name: logoDarkBold
+            label: "Logo (SVG or PNG, dark version - bold)"
+            widget: image
+            required: false
+            hint: "A bold version of the dark logo; useful if the logo is faint at small sizes."
+
           - name: logoLight
             label: "Logo (SVG or PNG, light version)"
             widget: image
             required: true
             hint: "Header logo (light-on-dark version)."
+
+          - name: logoLightBold
+            label: "Logo (SVG or PNG, light version - bold)"
+            widget: image
+            required: false
+            hint: "A bold version of the light logo; useful if the logo is faint at small sizes."
 
           - name: sitewideOGPhoto
             label: "Sitewide OG image fallback"
@@ -460,6 +484,69 @@ collections:
             widget: image
             required: false
             hint: "The moving background design that will appear on the booking page behind the link sheet (desktop)."
+
+          - name: ourLocation
+            label: "Our Location"
+            widget: object
+            required: false
+            fields:
+              - name: shopImage
+                label: "Image of Shop"
+                widget: image
+                hint: "A picture that represents the business location. Can be interior or exterior."
+                required: true
+
+          - name: ourProcess
+            label: "Our Process"
+            widget: object
+            required: false
+            fields:
+              - name: processText
+                label: "Text for Our Process"
+                widget: text
+                required: true
+
+              - name: scrollPeelStackImage1
+                label: "Scroll Peel Stack - First Image"
+                widget: image
+                hint: "It's the first image in a before - middle - after visual effect."
+                required: true
+
+              - name: scrollPeelStackImage2
+                label: "Scroll Peel Stack - Second Image"
+                widget: image
+                hint: "It's the second image in a before - middle - after visual effect."
+                required: true
+
+              - name: scrollPeelStackImage3
+                label: "Scroll Peel Stack - Third Image"
+                widget: image
+                hint: "It's the third image in a before - middle - after visual effect."
+                required: true
+
+              - name: scrollPeelStackSideImage1
+                label: "Scroll Peel Stack - 1st side Image"
+                widget: image
+                hint: "Top left side image in the shrunken 'after' stage of the effect."
+                required: true
+
+              - name: scrollPeelStackSideImage2
+                label: "Scroll Peel Stack - 2nd side Image"
+                widget: image
+                hint: "Bottom left side image in the shrunken 'after' stage of the effect."
+                required: true
+
+              - name: scrollPeelStackSideImage3
+                label: "Scroll Peel Stack - 3rd side Image"
+                widget: image
+                hint: "Top right side image in the shrunken 'after' stage of the effect."
+                required: true
+
+              - name: scrollPeelStackSideImage4
+                label: "Scroll Peel Stack - 4th side Image"
+                widget: image
+                hint: "Bottom right side image in the shrunken 'after' stage of the effect."
+                required: true
 
           - name: ourStory
             label: "Our Story"
@@ -495,31 +582,36 @@ collections:
           - name: hero
             label: "Hero"
             widget: object
-            required: false
             fields:
               - name: video
                 label: "Video"
                 widget: object
                 required: false
                 fields:
-                  - name: mp4
-                    label: "MP4"
+                  - name: videoMobile
+                    label: "Mobile Video"
                     widget: file
                     required: true
-                    hint: "Fallback format for most browsers."
+                    hint: "Video that will show up on mobile devices (max-width: 640px)"
                     media_folder: "/public/uploads/misc_videos"
                     public_folder: "/uploads/misc_videos"
 
-                  - name: webm
-                    label: "WebM"
+                  - name: videoDesktop
+                    label: "Desktop Video"
                     widget: file
                     required: false
-                    hint: "Smaller/faster in supported browsers."
+                    hint: "Video that will show up on wider devices (>640px)"
                     media_folder: "/public/uploads/misc_videos"
                     public_folder: "/uploads/misc_videos"
 
-                  - name: poster
-                    label: "Poster image"
+                  - name: posterMobile
+                    label: "Poster image (mobile)"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
+                  - name: posterDesktop
+                    label: "Poster image (desktop)"
                     widget: image
                     required: true
                     hint: "Shown before video loads / if autoplay fails."
@@ -544,13 +636,13 @@ collections:
     summary: "{{date}} — {{title}}"
     sortable_fields: [ "date", "title", "guestSpot", "commit_date" ]
     description: "Create events for guest spots, flash days, and other shop happenings."
-    view_filters:
-      - field: guestSpot.guestName
-        label: "Guest Spot"
-        pattern: ".+"
-      - label: Featured Status
-        field: featured
-        pattern: true
+#    view_filters:
+#      - field: guestSpot.guestName
+#        label: "Guest Spot"
+#        pattern: ".+"
+#      - label: Featured Status
+#        field: featured
+#        pattern: true
     fields:
       - name: guestSpot
         label: "Guest Spot"
@@ -605,6 +697,18 @@ collections:
                           ]
                       - { name: enabled, label: "Enabled?", widget: boolean, default: true, required: true }
                       - { name: preferred, label: "Is this the preferred contact/booking method?", widget: boolean, required: false }
+                      - name: callOrTextPreferred
+                        label: "Call or text this number?"
+                        widget: select
+                        default: "text"
+                        options:
+                          - "text"
+                          - "call"
+                      - name: textMessageDefaultInquiry
+                        label: "Text Message Default Inquiry"
+                        hint: "The message that will appear as a default inquiry in a user's SMS app before they send it."
+                        widget: text
+                        default: "Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!"
                       - { name: notes, label: Notes, widget: text, required: false, hint: "number type, text or call, times available, etc" }
 
                   - name: "email"

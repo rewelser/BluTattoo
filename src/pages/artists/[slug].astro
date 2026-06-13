@@ -130,7 +130,7 @@ console.log("ogImage", ogImage);
                     </style>
                     <div id="artist-bio" class="flex items-center p-5 js-fade-up">
                         <div class="w-full">
-                            <h1 class="text-3xl font-bold inline-block">
+                            <h1 id="artist-name" class="text-3xl font-bold inline-block">
                                 {entry.data.name}
                             </h1>
                             <ShareModal shareTitle={entry.data.name} shareHero={ogImage} shellClass="inline-block" cardButtonClass="m-2" cardButtonColorClass="bg-white/10 border-1 border-solid border-orange-100/40" heroFullBleed={true} />
@@ -146,12 +146,12 @@ console.log("ogImage", ogImage);
                                                 />
                                 )
                             }
-                            <section class="js-fade-up">
+                            <div class="js-fade-up">
                                 <h2 class="sr-only">Bio</h2>
-                                <p class="whitespace-pre-line">
+                                <div class="whitespace-pre-line">
                                     <Content/>
-                                </p>
-                            </section>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

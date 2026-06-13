@@ -1,6 +1,6 @@
 ---
 name: Woe
-active: true
+active: false
 order: 999
 runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist
@@ -9,7 +9,10 @@ contactSocialsBooking:
   booksClosedNote: Books are currently closed.
   contact:
     - type: phone
+      href: '8288675309'
       enabled: true
-      href: "8288675309"
+      callOrTextPreferred: text
+      textMessageDefaultInquiry: Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!
 ---
+
 WOE IS ETERNAL

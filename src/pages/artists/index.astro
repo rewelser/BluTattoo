@@ -1,13 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ArtistRunway from "../../components/ArtistRunway.astro";
+import ContactPageHeading from "../../components/decor/ContactPageHeading.astro";
+import ArtistsPageHeading from "../../components/decor/ArtistsPageHeading.astro";
 
 const title = "Artists";
 const description = "Meet the resident and guest tattoo artists at BluTattoo, explore their styles, and find the right artist for your next tattoo.";
 ---
 <Layout title={title} description={description} pageTheme="neutraldark">
     <article class="page-article page-article--grid">
-        <h1 class="page-title mb-30">{title}</h1>
+        <!--<h1 class="page-title mb-30">{title}</h1>-->
+        <header>
+            <h1 class="page-title sr-only">{title}</h1>
+            <ArtistsPageHeading title={title} />
+        </header>
         <ArtistRunway  />
     </article>
 </Layout>

@@ -13,6 +13,8 @@ contactSocialsBooking:
   contact:
     - type: phone
       href: '4444444444'
+      callOrTextPreferred: text
+      textMessageDefaultInquiry: Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!
       enabled: true
     - type: email
       href: zmail@yahoo.com

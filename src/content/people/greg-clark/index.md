@@ -1,5 +1,5 @@
 ---
-name: Greggiesonner
+name: Greg
 active: true
 order: 4
 pagePhoto: assets/images/xenomorph_profile_4.jpg
@@ -20,8 +20,4 @@ contactSocialsBooking:
         - type: platformUrl
           enabled: false
           href: https://example.com
-images:
-  - assets/images/download.jpeg
-  - assets/images/1BB42A31-CC0B-42BB-B71D-BD67BC318395.png
-  - assets/images/roundframe.png
 ---

@@ -42,7 +42,11 @@ const contactBuilder = <T extends string, S extends z.ZodRawShape>(type: T, shap
 
 const contactSchema = z.array(
     z.discriminatedUnion('type', [
-        contactBuilder('phone', {href: usPhoneSchema}),
+        contactBuilder('phone', {
+            href: usPhoneSchema,
+            callOrTextPreferred: z.enum(["text", "call"]).default("text"),
+            textMessageDefaultInquiry: z.string()
+        }),
         contactBuilder('email', {href: z.string().email()}),
         contactBuilder('website', {href: websiteSchema})
     ])

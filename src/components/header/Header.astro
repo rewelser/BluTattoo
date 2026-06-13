@@ -3,8 +3,7 @@ import PromoBarLoader from "./PromoBarLoader.astro";
 import PromoBarFallback from "./PromoBarFallback.astro";
 import MobileMenu from "./MobileMenu.astro";
 import DesktopMenu from "./DesktopMenu.astro";
-// import HeroBackdrop from "./HeroBackdrop.astro";
-import HeroParallaxBackdrop from "./HeroParallaxBackdrop2.astro";
+import HeroParallaxBackdrop from "./HeroParallaxBackdrop.astro";
 import DesktopTopLogo from "./DesktopTopLogo.astro";
 import {navItems as menuItems} from "../../domain/navigation/defs.ts";
 import {getEntry} from "astro:content";
@@ -17,7 +16,10 @@ const {variant = "default", defaults, site} = Astro.props;
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
 const logoLight = getImageSrc(branding?.data.logoLight ?? defaults.siteLogo);
-const heroVideo = branding?.data.hero?.video;
+const heroVideoMobile = branding?.data.hero?.video?.videoMobile;
+const heroVideoDesktop = branding?.data.hero?.video?.videoDesktop;
+const heroPosterMobile = branding?.data.hero?.video?.posterMobile;
+const heroPosterDesktop = branding?.data.hero?.video?.posterDesktop
 ---
 
 <!-- Promo announcement bar -->
@@ -36,9 +38,12 @@ const heroVideo = branding?.data.hero?.video;
 {
     variant === "home" ? (
     <HeroParallaxBackdrop
-            logoDark={logoDark}
+            logoDark={logoLight}
             siteName={siteName}
-            video={heroVideo}
+            srcMobile={heroVideoMobile}
+            srcDesktop={heroVideoDesktop}
+            posterMobile={heroPosterMobile}
+            posterDesktop={heroPosterDesktop}
             strength={0.9}
     />
         ) : (

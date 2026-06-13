@@ -1,7 +1,6 @@
 ---
 import contactusImage from "../../domain/decor/assets/birdmail.png"
 import contactusImageBg from "../../domain/decor/assets/birdmail-bg.svg"
-import mailbg from "../../domain/decor/assets/mail.jpg";
 import {Image} from "astro:assets";
 
 const {
@@ -22,7 +21,7 @@ const chars = Array.from(title.toUpperCase());
 // 541114 (dark red)
 const contactusImageBgSrc = contactusImageBg.src;
 ---
-<div class="contactus-page-heading flex justify-between items-center bg-radial from-black to-blue-950">
+<div class="contactus-page-heading flex justify-between items-center bg-radial from-black to-blue-950 overflow-hidden">
     <div class="flank-graphic h-full flex flex-1 justify-center -scale-x-100">
         <div class="contactus-page-heading-decor-container w-fit relative p-2 sm:p-5">
             <div class="contactus-page-heading-outer p-1 sm:p-5 bg-center bg-contain bg-no-repeat aspect-square"

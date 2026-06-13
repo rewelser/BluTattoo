@@ -9,7 +9,7 @@ type SideImages = {
 type Props = {
     id?: string;
     images: string[]; // top -> bottom
-    sideImages?: SideImages;
+    sideImages: SideImages;
     heightVh?: number;
     class?: string;
     imgClass?: string;
@@ -20,7 +20,7 @@ type Props = {
 const {
     id = "scroll-peel",
     images,
-    sideImages,
+    sideImages: sides,
     heightVh = 400,
     class: className = "",
     imgClass = "",
@@ -41,23 +41,6 @@ const bottomIndex = images.length - 1;
 const bottomSrc = images[bottomIndex];
 const peelLayers = images.slice(0, bottomIndex);
 const phases = peelLayers.length;
-
-const sides: SideImages = sideImages ?? {
-    left: [
-        {src: "/uploads/misc_images/hero-poster.jpg", alt: "Left image 1"},
-        {
-            src: "/uploads/misc_images/hero-poster-red.jpg",
-            alt: "Left image 2",
-        },
-    ],
-    right: [
-        {src: "/uploads/misc_images/hero-poster.jpg", alt: "Right image 1"},
-        {
-            src: "/uploads/misc_images/hero-poster-red.jpg",
-            alt: "Right image 2",
-        },
-    ],
-};
 ---
 
 <section id={id} class="relative" style={`height:${heightVh}vh;`}>

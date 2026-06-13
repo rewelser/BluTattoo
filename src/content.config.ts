@@ -177,11 +177,28 @@ const branding = defineCollection({
     schema: ({image}) =>
         z.object({
             logoDark: image(),
+            logoDarkBold: image().optional(),
             logoLight: image(),
+            logoLightBold: image().optional(),
             bookingFlashLight: image().optional(),
             bookingFlashDark: image().optional(),
             sitewideOGPhoto: z.string(),
             bookingShareOGPhoto: z.string(),
+
+            ourLocation: z.object({
+                shopImage: image(),
+            }).optional(),
+
+            ourProcess: z.object({
+                processText: z.string(),
+                scrollPeelStackImage1: image(),
+                scrollPeelStackImage2: image(),
+                scrollPeelStackImage3: image(),
+                scrollPeelStackSideImage1: image(),
+                scrollPeelStackSideImage2: image(),
+                scrollPeelStackSideImage3: image(),
+                scrollPeelStackSideImage4: image(),
+            }).optional(),
 
             ourStory: z.object({
                 frameImage: image(),
@@ -193,9 +210,10 @@ const branding = defineCollection({
 
             hero: z.object({
                 video: z.object({
-                    mp4: z.string(),
-                    webm: z.string().optional(),
-                    poster: image(),
+                    videoMobile: z.string(),
+                    videoDesktop: z.string(),
+                    posterMobile: image(),
+                    posterDesktop: image(),
                 }).optional(),
                 bookingHeroPhoto: image(),
             }).optional(),

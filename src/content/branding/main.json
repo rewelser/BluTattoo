@@ -1,10 +1,24 @@
 {
   "logoDark": "assets/images/blutattoo-trimmed-black.svg",
+  "logoDarkBold": "assets/images/blutattoo-trimmed-black-stroke.svg",
   "logoLight": "assets/images/blutattoo-trimmed-light(orange100-fdecd8).svg",
   "sitewideOGPhoto": "/uploads/ogimages/blutattoo_sitewide_og.png",
   "bookingShareOGPhoto": "/uploads/ogimages/blutattoo_booking_og.png",
   "bookingFlashLight": "assets/images/bookingFlashLight.svg",
-  "bookingFlashDark": "assets/images/testtesttest.svg",
+  "bookingFlashDark": "assets/images/bookingFlashDark.svg",
+  "ourLocation": {
+    "shopImage": "assets/images/blutattoo_exterior.jpg"
+  },
+  "ourProcess": {
+    "processText": "Getting tattooed should feel exciting from the first idea to the final heal. Explore our artists' work and pick a vibe, or come talk to us and we'll brainstorm.\n\nOnce you’re ready, book directly with your artist, or just walk on in! We’ll take care of the rest: a clean, licensed studio environment and guidance for keeping your tattoo looking great long after you leave the chair.\n\nReady to start your next piece? Browse our artists, choose your fit, and let’s make something permanent.",
+    "scrollPeelStackImage1": "assets/images/zirk1.jpeg",
+    "scrollPeelStackImage2": "assets/images/hero-poster.jpg",
+    "scrollPeelStackImage3": "assets/images/hero-poster-red.jpg",
+    "scrollPeelStackSideImage1": "assets/images/zirk1.jpeg",
+    "scrollPeelStackSideImage2": "assets/images/hero-poster.jpg",
+    "scrollPeelStackSideImage3": "assets/images/hero-poster-red.jpg",
+    "scrollPeelStackSideImage4": "assets/images/zirk1.jpeg"
+  },
   "ourStory": {
     "frameImage": "assets/images/ourstoryframe1.png",
     "frameWindowSvg": "assets/images/ourstoryframe_opening1.svg",
@@ -14,9 +28,10 @@
   },
   "hero": {
     "video": {
-      "mp4": "/uploads/misc_videos/hero-720.mp4",
-      "webm": "/uploads/misc_videos/hero-720.webm",
-      "poster": "assets/images/hero-poster.jpg"
+      "videoMobile": "/uploads/misc_videos/hero-mobile.mp4",
+      "videoDesktop": "/uploads/misc_videos/hero-web.mp4",
+      "posterMobile": "assets/images/poster-mobile.jpg",
+      "posterDesktop": "assets/images/poster-desktop.jpg"
     },
     "bookingHeroPhoto": "assets/images/DSC02546.jpg"
   }

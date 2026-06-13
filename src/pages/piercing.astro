@@ -2,6 +2,9 @@
 // src/pages/piercing.astro
 import Layout from "../layouts/Layout.astro";
 import PiercingPageHeadingSvg from "../components/decor/PiercingPageHeadingSvg.astro";
+import nail from "../domain/decor/assets/nail.png";
+
+const nailSrc = nail.src;
 const title = "Piercing";
 const description = "Learn about piercing services at BluTattoo, including appointment information, jewelry, healing, and aftercare guidance.";
 
@@ -37,7 +40,7 @@ const dur = 0.5;
                     <div class="square">
 
                     </div>
-                    <div class="square"></div>
+                    <div class="square" style={`background-image: url(${nailSrc});`}></div>
                     <div class="square"></div>
                     <div class="square"></div>
                     <div class="square"></div>
@@ -58,7 +61,6 @@ const dur = 0.5;
                     }
 
                     .square {
-                        background-image: url("/uploads/misc_images/nail.png");
                         background-size: contain;
                         background-repeat: no-repeat;
                         aspect-ratio: 1 / 1;                   /* Forces each grid cell to be a perfect square */

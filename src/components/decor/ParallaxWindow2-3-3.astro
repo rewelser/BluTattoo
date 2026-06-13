@@ -178,6 +178,11 @@ const {
             if (!(layer instanceof HTMLElement) || !(media instanceof HTMLElement)) {
                 // no-op
             } else {
+                const prefersReduced = window.matchMedia?.(
+                    "(prefers-reduced-motion: reduce)",
+                )?.matches;
+                if (prefersReduced) return;
+
                 const mq = window.matchMedia("(max-width: 640px)");
                 let strengthApplied = desktopStr; // fallback
                 let bleedPx = 0;
@@ -234,11 +239,11 @@ const {
                 };
 
                 let rafId = 0;
-                let isActive = false;
+                let nowActive = false;
 
                 const frame = () => {
                     rafId = 0;
-                    if (!isActive) return;
+                    if (!nowActive) return;
 
                     const rect = root.getBoundingClientRect();
                     const vh = window.screen.height;
@@ -284,15 +289,11 @@ const {
                 const io = new IntersectionObserver(
                     (entries) => {
                         const entry = entries[0];
-                        const nowActive = !!entry?.isIntersecting;
+                        nowActive = !!entry?.isIntersecting;
                         const isVideo = media.tagName === "VIDEO";
                         const video = isVideo ? media : null;
 
-                        if (nowActive === isActive) return;
-
-                        isActive = nowActive;
-
-                        if (isActive) {
+                        if (nowActive) {
                             applySizing();
                             startLoop();
 
