@@ -31,7 +31,7 @@ const ev = entry.data;
 // console.log("ev.image", ev.image);
 // console.log("ev.href");
 const description = `Learn more about the following event: ${ev.title}`;
-const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
+const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ?? ev.image ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
 ---
 
 <Layout title={ev.title} description={description} ogImage={ogImage}>
@@ -52,7 +52,9 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?
                 <!--{fmtTimeWindow(ev)}-->
                 <EventTimeWindow ev={ev}/>
                 {ev.location ? ` • ${ev.location}` : ""}
-                <ShareModal shareTitle={ev.title} shareHero={ogImage} variant={2} shellClass="inline-block" cardButtonClass="mx-2" cardRadius="0.375rem" variant2ShareText="share event" heroFullBleed={true} />
+                <ShareModal shareTitle={ev.title} shareHero={ogImage} variant={2} shellClass="inline-block"
+                            cardButtonClass="mx-2" cardRadius="0.375rem" variant2ShareText="share event"
+                            heroFullBleed={true}/>
             </div>
 
             <div id="event-info" data-section="event-info" class="prose mt-4 max-w-none">
@@ -87,6 +89,68 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ??  ev.image ?? branding?
                     )
                 })
             }
+        </div>
+
+        <!--//////////////-->
+        <div class="gallery">
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/600?1">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/300?2">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/700?3">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/500?4">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/350?5">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/800?6">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/450?7">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/650?8">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/550?9">
+            </div>
+
+            <div class="gallery-item">
+                <img src="https://picsum.photos/400/400?10">
+            </div>
+            <style>
+                .gallery {
+                    columns: 4 250px;
+                    column-gap: 1rem;
+                }
+
+                .gallery-item {
+                    break-inside: avoid;
+                    margin-bottom: 1rem;
+                }
+
+                .gallery-item img {
+                    width: 100%;
+                    display: block;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+                }
+            </style>
         </div>
 
         <p class="text-sm">

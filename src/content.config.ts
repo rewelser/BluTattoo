@@ -39,6 +39,7 @@ const events = defineCollection({
         startTime: z.preprocess(toHm, timeHM.optional()).optional(),
         endTime: z.preprocess(toHm, timeHM.optional()).optional(),
         location: z.preprocess(emptyStrToUndef, z.string().optional()),
+        images: z.array(image()).optional(),
 
         recurrenceRule: z.union([
             z.object({

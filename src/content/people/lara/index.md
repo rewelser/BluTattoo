@@ -2,8 +2,8 @@
 name: Lara
 active: true
 order: 1
-pagePhoto: assets/images/lara_transparent.png
-ogPhotoTextless: /uploads/ogimages/lara_ogimage_textless.png
+pagePhoto: assets/images/lara_transparent2.png
+ogPhotoTextless: /uploads/ogimages/lara_ogimage_textless2.png
 runwayPhoto: assets/images/lara-runway.jpg
 runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist
@@ -39,4 +39,8 @@ images:
   - assets/images/PXL_20260508_232945423~2.jpg
 ---
 
-Lara focuses on bold blackwork and delicate florals. 8+ years experience.
+Now nearing a decade, Lara's early years in the tattoo industry seem like a series of tales better left to her memoirs than a quick bio.
+
+In so focusing on her ultimate creation of the Studio; BluTattoo was born shortly before her third child, five years ago. Lara takes pride in her career, as well as her role as a mother, an artist, a business owner, and active member of the local community. 
+
+She's always been an artist, drawing all over her math tests in grade school to later dropping out of college for Graphic Design. It's no wonder she's settled comfortably into specializing in custom tattoos, cover-ups, full color illustrative style and delicately detailed blackwork... a wide variety of styles and designs that that may be hardly recognizable as having come from the same person.

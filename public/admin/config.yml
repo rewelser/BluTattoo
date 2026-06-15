@@ -953,6 +953,12 @@ collections:
 
       - { name: location, label: "Location", widget: string, required: false }
 
+      - name: images
+        label: "Event Images"
+        widget: image
+        required: false
+        multiple: true
+
       - name: recurrenceRule
         label: "Recurrence"
         hint: "to keep things simple, only one rule can be used here."

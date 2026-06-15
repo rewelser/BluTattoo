@@ -10,71 +10,6 @@ primaryRole: Tattoo Artist
 contactSocialsBooking:
   booksOpen: true
   booksClosedNote: Books are currently closed.
-  contact:
-    - type: phone
-      href: '4444444444'
-      callOrTextPreferred: text
-      textMessageDefaultInquiry: Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!
-      enabled: true
-    - type: email
-      href: zmail@yahoo.com
-      enabled: true
-    - type: website
-      href: https://www.example.com
-      enabled: true
-      notes: help help help help help
-  socials:
-    - type: instagram
-      href: https://www.instagram.com/example/
-      enabled: true
-      bookable: false
-      preferred: true
-      handle: ztheghost
-    - type: facebook
-      href: https://www.facebook.com/example/
-      enabled: true
-      bookable: false
-      handle: ztheghost
-    - type: facebookMessenger
-      href: https://www.facebook.com/example/
-      enabled: true
-      bookable: true
-      handle: ztheghost
-    - type: whatsapp
-      href: https://www.facebook.com/example/
-      enabled: true
-      bookable: true
-      handle: ztheghost
-    - type: snapchat
-      href: https://www.facebook.com/example/
-      enabled: true
-      bookable: true
-      handle: ztheghost
-    - type: tiktok
-      href: https://www.facebook.com/example/
-      enabled: true
-      bookable: false
-      handle: ztheghost
-    - type: threads
-      href: https://www.threads.net/@example
-      enabled: true
-      bookable: false
-    - type: x
-      href: https://www.threads.net/@example
-      enabled: true
-      bookable: false
-    - type: tumblr
-      href: https://www.threads.net/@example
-      enabled: true
-      bookable: false
-    - type: youtube
-      href: https://www.threads.net/@example
-      enabled: true
-      bookable: false
-    - type: pinterest
-      href: https://www.threads.net/@example
-      enabled: true
-      bookable: false
   platforms:
     - type: square
       enabled: true
@@ -86,4 +21,8 @@ contactSocialsBooking:
           label: Book an appointment
 ---
 
-Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below: Zoe is the shop apprentice. Check out her work and book below:
+Zoe Kirk started her tattoo journey in 2025 with BluTattoo Studio, apprenticing under Laurna Marika.
+
+With her apprenticeship completed, she is excited and determined to continue her tattoo journey and broaden her experience.
+
+She excels in fine line and loves to experiment with color.
