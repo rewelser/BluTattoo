@@ -4,9 +4,8 @@ import {Image} from "astro:assets";
 import {loadActiveArtists} from "../../domain/people/server.ts";
 import {render, getCollection, type CollectionEntry, getEntry} from "astro:content";
 import SquareAppointments from "../../components/SquareAppointments.astro";
-// import { ArtistGallery } from "../../components/ArtistGallery.tsx";
-import {ArtistGallery} from "../../components/ArtistGalleryNoThumbs.tsx";
-import {Picture} from "astro:assets";
+import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
+import { getImage } from "astro:assets";
 import SocialRow from "../../components/SocialRow.astro";
 import ShareModal from "../../components/ShareModal.astro";
 import {defaults} from "../../config/site.ts";
@@ -50,7 +49,37 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 
 const description = `Learn more about ${entry.data.name}, view tattoo style information, and find booking details at BluTattoo.`;
 const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
-console.log("ogImage", ogImage);
+
+const lightboxImages = await Promise.all(
+    (entry.data.images ?? []).map(async (img, idx) => {
+        const lightbox = await getImage({
+            src: img,
+            // widths: [720, 960, 1280, 1600],
+            widths: [720, 1080, 1440, 1920, 2400, 2880],
+            sizes: "100vw",
+            format: "webp",
+            quality: 80,
+        });
+
+        // currently not using this, but keeping for posterity:
+        const thumb = await getImage({
+            src: img,
+            width: 640,
+            format: "webp",
+            quality: 70,
+        });
+
+        return {
+            src: lightbox.src,
+            thumbSrc: thumb.src,
+            srcSet: lightbox.srcSet.attribute,
+            sizes: "100vw",
+            width: Number(lightbox.attributes.width),
+            height: Number(lightbox.attributes.height),
+            alt: `${entry.data.name} gallery image ${idx + 1}`,
+        };
+    })
+);
 ---
 
 <script>
@@ -174,7 +203,7 @@ console.log("ogImage", ogImage);
 
         <!-- Artist Gallery -->
         {
-            entry.data.images?.length && (
+            entry.data.images?.length && lightboxImages && (
                         <section class="js-fade-up" aria-labelledby="gallery-heading">
                             <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 lg:pb-14">
                                 <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
@@ -194,27 +223,6 @@ console.log("ogImage", ogImage);
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                                    <!--          {entry.data.images.map((img, idx) => (-->
-                                    <!--                  <button-->
-                                    <!--                          type="button"-->
-                                    <!--                          class="group overflow-hidden rounded-md text-left cursor-pointer"-->
-                                    <!--                          data-idx={idx}-->
-                                    <!--                          onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}-->
-                                    <!--                  >-->
-                                    <!--                      <img-->
-                                    <!--                              src={thumb(img as string, 360)}-->
-                                    <!--                              srcset={`${thumb(img as string, 240)} 240w,-->
-                                    <!--${thumb(img as string, 360)} 360w,-->
-                                    <!--${thumb(img as string, 480)} 480w,-->
-                                    <!--${thumb(img as string, 720)} 720w`}-->
-                                    <!--                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"-->
-                                    <!--                              alt={`${entry.data.name} gallery image ${idx}`}-->
-                                    <!--                              loading="lazy"-->
-                                    <!--                              decoding="async"-->
-                                    <!--                              class="block w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.03]"-->
-                                    <!--                      />-->
-                                    <!--                  </button>-->
-                                    <!--          ))}-->
                                     {entry.data.images.map((img, idx) => (
                                             <button
                                                     type="button"
@@ -234,12 +242,16 @@ console.log("ogImage", ogImage);
                                             </button>
                                     ))}
                                 </div>
-                                <ArtistGallery
+                                <!--<ImageGallery-->
+                                <!--        client:load-->
+                                <!--        images={entry.data.images.map((img, idx) => ({-->
+                                <!--            src: img.src,-->
+                                <!--            alt: `${entry.data.name} gallery image ${idx + 1}`,-->
+                                <!--        }))}-->
+                                <!--/>-->
+                                <ImageGallery
                                         client:load
-                                        images={entry.data.images.map((img, idx) => ({
-                                            src: img.src,
-                                            alt: `${entry.data.name} gallery image ${idx + 1}`,
-                                        }))}
+                                        images={lightboxImages}
                                 />
                             </div>
                         </section>

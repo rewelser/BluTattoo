@@ -9,8 +9,9 @@ import {getTransformedEventBySlug, loadTransformedEvents} from "../../domain/eve
 import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
 import {defaults} from "../../config/site.ts";
-import {getImageSrc} from "../../domain/decor/selectors.ts";
 import ShareModal from "../../components/ShareModal.astro";
+import {getImage, Image} from "astro:assets";
+import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
 
 const branding = await getEntry("branding", "main");
 
@@ -32,6 +33,38 @@ const ev = entry.data;
 // console.log("ev.href");
 const description = `Learn more about the following event: ${ev.title}`;
 const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ?? ev.image ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
+
+
+const lightboxImages = await Promise.all(
+    (entry.data.images ?? []).map(async (img, idx) => {
+        const lightbox = await getImage({
+            src: img,
+            // widths: [720, 960, 1280, 1600],
+            widths: [720, 1080, 1440, 1920, 2400, 2880],
+            sizes: "100vw",
+            format: "webp",
+            quality: 80,
+        });
+
+        // currently not using this, but keeping for posterity:
+        const thumb = await getImage({
+            src: img,
+            width: 640,
+            format: "webp",
+            quality: 70,
+        });
+
+        return {
+            src: lightbox.src,
+            thumbSrc: thumb.src,
+            srcSet: lightbox.srcSet.attribute,
+            sizes: "100vw",
+            width: Number(lightbox.attributes.width),
+            height: Number(lightbox.attributes.height),
+            alt: `${entry.data.title} gallery image ${idx + 1}`,
+        };
+    })
+);
 ---
 
 <Layout title={ev.title} description={description} ogImage={ogImage}>
@@ -92,66 +125,81 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ?? ev.image ?? branding?.
         </div>
 
         <!--//////////////-->
-        <div class="gallery">
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/600?1">
-            </div>
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/300?2">
-            </div>
+        {
+            entry.data.images?.length && lightboxImages && (
+                        <section aria-labelledby="gallery-heading" class="my-5">
+                            <h2 id="gallery-heading"
+                                class="text-6xl text-center">
+                                Event Gallery
+                            </h2>
+                            <div class="flex items-end justify-between gap-4 lg:mb-7">
+                                <p class="text-sm text-gray-600">
+                                    Tap/click to view full size.
+                                </p>
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/700?3">
-            </div>
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/500?4">
-            </div>
+                                <p class="text-xs text-gray-500">
+                                    {entry.data.images.length} photos
+                                </p>
+                            </div>
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/350?5">
-            </div>
+                            <div class="gallery">
+                                {entry.data.images.map((img, idx) => (
+                                        <button
+                                                type="button"
+                                                class="gallery-item cursor-pointer"
+                                                data-idx={idx}
+                                                onclick={`window.dispatchEvent(new CustomEvent("open-lightbox", { detail: { index: ${idx} } }))`}
+                                        >
+                                            <Image
+                                                    src={img}
+                                                    widths={[240, 360, 480, 512, 720]}
+                                                    sizes="auto, 100vw"
+                                                    alt={`${entry.data.title} gallery image ${idx + 1}`}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    class="block w-full h-auto rounded-2xl shadow-md"
+                                            />
+                                        </button>
+                                ))}
+                                <style>
+                                    .gallery {
+                                        columns: 4 250px;
+                                        column-gap: 1rem;
+                                    }
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/800?6">
-            </div>
+                                    .gallery-item {
+                                        display: block;
+                                        width: 100%;
+                                        break-inside: avoid;
+                                        margin-bottom: 1rem;
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/450?7">
-            </div>
+                                        padding: 0;
+                                        border: 0;
+                                        background: transparent;
+                                    }
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/650?8">
-            </div>
+                                    .gallery-item img {
+                                        display: block;
+                                        width: 100%;
+                                        max-width: none;
+                                        height: auto;
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/550?9">
-            </div>
+                                        border-radius: 16px;
+                                        box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+                                    }
+                                </style>
+                            </div>
 
-            <div class="gallery-item">
-                <img src="https://picsum.photos/400/400?10">
-            </div>
-            <style>
-                .gallery {
-                    columns: 4 250px;
-                    column-gap: 1rem;
-                }
-
-                .gallery-item {
-                    break-inside: avoid;
-                    margin-bottom: 1rem;
-                }
-
-                .gallery-item img {
-                    width: 100%;
-                    display: block;
-                    border-radius: 16px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
-                }
-            </style>
-        </div>
+                            <ImageGallery
+                                    client:load
+                                    images={lightboxImages}
+                            />
+                        </section>
+            )
+        }
 
         <p class="text-sm">
             <a class="underline hover:no-underline" href="/events">← Back to Events</a

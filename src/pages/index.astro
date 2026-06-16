@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import {getEntry} from "astro:content";
-import ScrollPeelStack from "../components/decor/ScrollPeelStack.astro";
+import ScrollPeelStack, {type SideImages} from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 import HrDivider from "../components/decor/HrDivider.astro";
-import ParallaxWindow from "../components/decor/ParallaxWindow2-3-3.astro";
+import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
 import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
@@ -245,7 +245,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     {src: ourProcess.scrollPeelStackSideImage3.src, alt: "Side C"},
                     {src: ourProcess.scrollPeelStackSideImage4.src, alt: "Side D"},
                 ],
-            };
+            } satisfies SideImages;
 
             return (
                     <section class="scalloped-border-bottom bg-[#231f20] py-64 md:pt-80"

@@ -1,14 +1,10 @@
 ---
-import {getCollection, getEntry} from "astro:content";
-import {Image} from "astro:assets";
-import ParallaxWindow from "../components/decor/ParallaxWindow2-2.astro";
+import {getEntry} from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import {iconRegistry, getIconEntry} from "../components/graphics/icons/registry";
-import DesktopTopLogo from "../components/header/DesktopTopLogo.astro";
+import {getIconEntry} from "../components/graphics/icons/registry";
 import {defaults} from "../config/site";
 import {loadActiveArtists} from "../domain/people/server.ts";
 import type {IconType} from "../domain/contact/types.ts";
-import SquareAppointments from "../components/SquareAppointments.astro";
 import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland.tsx";
 import SlottableModal from "../components/SlottableModal.astro";
 import SocialRow from "../components/SocialRow.astro";
@@ -16,10 +12,7 @@ import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
 import {fmtDateRange} from "../domain/events/format.ts";
 import SparkleCorners from "../components/decor/SparkleCorners.astro";
 import {siteInfoSocialsToItems} from "../domain/contact/adapters.ts";
-import ShareRow from "../components/ShareRow.astro";
 import ShareModal from "../components/ShareModal.astro";
-import ScrollXContainer from "../components/scaffolding/ScrollXContainer.astro";
-import ShareMeta from "../components/ShareMeta.astro";
 import {getImageSrc} from "../domain/decor/selectors.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
 
@@ -70,6 +63,7 @@ const people = [
 
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
+const logoDarkBold = getImageSrc(branding?.data.logoDarkBold ?? defaults.siteLogo);
 const artistPageShopLogo = branding?.data.logoDarkBold ?? logoDark;
 const bookingHeroPhoto = getImageSrc(branding?.data.hero?.bookingHeroPhoto ?? defaults.bookingHeroPhoto);
 const bookingShareOGPhoto = getImageSrc(branding?.data.bookingShareOGPhoto ?? defaults.ogPhoto);
@@ -474,7 +468,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                                                                             aria-hidden="true"
                                                                                             class="flex h-[3.5rem] w-[3.5rem] bg-white rounded-full p-1 outline-2 outline-dotted outline-slate-300"
                                                                                     >
-                                                                                        <img src="/uploads/misc_images/logos/blutattoo-trimmed-black-stroke.svg"
+                                                                                        <img src={logoDarkBold}
                                                                                              alt={`${siteName} page for ${person.data.name}`}/>
                                                                                     </div>
                                                                                 </div>

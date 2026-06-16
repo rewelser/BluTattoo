@@ -11,6 +11,23 @@ date: 2026-06-13
 startTime: 12:00
 endTime: 19:00
 location: BluTattoo Studio
+images:
+  - att.DsUbXZEHggaKRimHaOYzOT9rvkTduMXcOza4Pei9Kg8.jpg
+  - att.YfBp0bBdD_qfs7hzo0VeGllnBbpCacdl1xihlEekgTo.jpg
+  - Gothic.jpg
+  - IMG_0384_jpg.jpg
+  - IMG_1464.jpg
+  - IMG_1623_jpg.jpg
+  - IMG_1853_jpg.jpg
+  - IMG_2152.JPG
+  - IMG_2721.jpg
+  - IMG_3143.jpg
+  - IMG_4368_jpg.jpg
+  - IMG_5976.JPG
+  - IMG_6450.JPG
+  - IMG_8298.JPG
+  - IMG_8801_jpg.jpg
+  - IMG_9074_jpg.jpg
 promoBar:
   enabled: true
   message: Bring your whimsy to our Midsummer's Flash Event! June 13th, 12-7pm

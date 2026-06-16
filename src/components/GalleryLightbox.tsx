@@ -2,16 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { LoadingSpinner } from "./graphics/LoadingSpinner";
 import { ErrorSpinner } from "./graphics/ErrorSpinner";
-
-
-interface ArtistImage {
-    src: string;
-    thumbSrc?: string;
-    alt?: string;
-}
+import type {GalleryImage} from "./ImageGalleryNoThumbs.tsx";
 
 interface GalleryLightboxProps {
-    images: ArtistImage[];
+    images: GalleryImage[];
     isOpen: boolean;
     startIndex: number;     // which image to show when opening
     onClose: () => void;
@@ -412,8 +406,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         return resetInFlightRef.current;
     };
 
+    const isSwipeAnimatingRef = useRef(false);
     const requestSwipe = async (dir: "prev" | "next") => {
         if (isClosing) return;
+        if (isSwipeAnimatingRef.current) return;
+
+        isSwipeAnimatingRef.current = true;
+
 
         // redundant protections to cancel any drag-driven transform path
         pendingRef.current.swipeX = 0;
@@ -432,6 +431,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         setSwipeDirection(null);
         pendingRef.current.swipeX = 0;
         scheduleFlush();
+        isSwipeAnimatingRef.current = false;
     };
 
     const showNext = () => {
@@ -439,6 +439,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         setSwipeDirection(null);
         pendingRef.current.swipeX = 0;
         scheduleFlush();
+        isSwipeAnimatingRef.current = false;
     };
 
     // Used for manual double-tap detection
@@ -454,6 +455,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing) return;
+        if (isSwipeAnimatingRef.current) return;
         e.preventDefault();
 
         // Manual double-tap to zoom
@@ -1035,6 +1037,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 key={currentImage.src}
                                 ref={imageRef}
                                 src={currentImage.src}
+                                srcSet={currentImage.srcSet}
+                                sizes={currentImage.sizes ?? "100vw"}
+                                width={currentImage.width}
+                                height={currentImage.height}
                                 alt={currentImage.alt ?? ""}
                                 data-src={currentImage.src}
                                 loading="eager"
@@ -1051,11 +1057,13 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                         : `transform ${RESET_DURATION}ms ease-out, opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                                 }}
                                 onLoad={(e) => {
-                                    const img = imageRef.current;
-                                    if (!img) return;
+                                    // const img = imageRef.current;
+                                    // if (!img) return;
                                     // possible alternative in case of bugs:
                                     // const img = e.currentTarget;
                                     // if (img.dataset.src !== currentImage.src) return;
+                                    const img = e.currentTarget;
+                                    if (img.dataset.src !== currentImage.src) return;
 
                                     const r = img.getBoundingClientRect();
                                     const effectiveScale = (exitScale * zoomScale) || 1;
@@ -1132,6 +1140,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
                                     <img
                                         src={images[prevIndex].src}
+                                        srcSet={images[prevIndex].srcSet}
+                                        sizes={images[prevIndex].sizes ?? "100vw"}
+                                        width={images[prevIndex].width}
+                                        height={images[prevIndex].height}
                                         alt={images[prevIndex].alt ?? ""}
                                         data-src={images[prevIndex].src}
                                         loading="lazy"
@@ -1199,6 +1211,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     key={currentImage.src}
                                     ref={imageRef}
                                     src={currentImage.src}
+                                    srcSet={currentImage.srcSet}
+                                    sizes={currentImage.sizes ?? "100vw"}
+                                    width={currentImage.width}
+                                    height={currentImage.height}
                                     alt={currentImage.alt ?? ""}
                                     data-src={currentImage.src}
                                     loading="eager"
@@ -1268,6 +1284,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
                                     <img
                                         src={images[nextIndex].src}
+                                        srcSet={images[nextIndex].srcSet}
+                                        sizes={images[nextIndex].sizes ?? "100vw"}
+                                        width={images[nextIndex].width}
+                                        height={images[nextIndex].height}
                                         alt={images[nextIndex].alt ?? ""}
                                         data-src={images[nextIndex].src}
                                         loading="lazy"

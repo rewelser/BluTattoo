@@ -1,7 +1,7 @@
 ---
 type SideImage = { src: string; alt: string };
 
-type SideImages = {
+export type SideImages = {
     left: [SideImage, SideImage];
     right: [SideImage, SideImage];
 };
@@ -69,7 +69,7 @@ const phases = peelLayers.length;
                 <div data-copy="bottom" class="w-full flex justify-end text-right"
                      style="filter: blur(50px); will-change: filter, opacity;">
                     <p class="text-white text-lg md:text-2xl lg:text-3xl font-light tracking-wide max-w-xl">
-                        ...Your canvas.
+                        ...Your artwork.
                     </p>
                 </div>
             </div>
