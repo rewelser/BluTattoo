@@ -86,9 +86,23 @@ const artistsImageBgSrc = artistsImageBg.src;
 
         .bird-fly-in {
             transform: translate(0%, 0%);
-            transition: transform 1500ms ease-in-out;
-            @starting-style {
+            animation: bird-fly-in 1000ms ease-in-out both;
+        }
+
+        @keyframes bird-fly-in {
+            from {
                 transform: translate(-125%, 25%);
+            }
+
+            to {
+                transform: translate(0%, 0%);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bird-fly-in {
+                animation: none;
+                transform: translate(0%, 0%);
             }
         }
 
