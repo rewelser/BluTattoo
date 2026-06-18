@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import ReactDOM from "react-dom";
-import { LoadingSpinner } from "./graphics/LoadingSpinner";
-import { ErrorSpinner } from "./graphics/ErrorSpinner";
+import {LoadingSpinner} from "./graphics/LoadingSpinner";
+import {ErrorSpinner} from "./graphics/ErrorSpinner";
 import type {GalleryImage} from "./ImageGalleryNoThumbs.tsx";
 
 interface GalleryLightboxProps {
@@ -29,7 +29,7 @@ const clamp = (value: number, min: number, max: number) =>
 
 const MAX_TOUCH_POINTS = 2;
 
-const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const LightboxPortal: React.FC<{ children: React.ReactNode }> = ({children}) => {
     if (typeof document === "undefined") return null; // SSR guard
     return ReactDOM.createPortal(children, document.body);
 };
@@ -61,11 +61,11 @@ const upsertCachedPointer = (cache: CachedPointer[], e: React.PointerEvent) => {
 };
 
 export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
-    images,
-    isOpen,
-    startIndex,
-    onClose,
-}) => {
+                                                                    images,
+                                                                    isOpen,
+                                                                    startIndex,
+                                                                    onClose,
+                                                                }) => {
     const [isClosing, setIsClosing] = useState(false);
     const [currentIndex, setCurrentIndex] = useState<number>(startIndex);
 
@@ -107,6 +107,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const pinchPrevCenterRef = useRef<{ x: number; y: number } | null>(null);
     const currentImgContainerRef = useRef<HTMLDivElement | null>(null);
     const resetInFlightRef = useRef<Promise<void> | null>(null);
+    const longPressTimer = useRef<number | null>(null);
 
     const lastTapRef = useRef<{
         time: number;
@@ -185,10 +186,10 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     }, [isOpen]);
 
     const markLoaded = (src: string) =>
-        setLoadedBySrc((p) => ({ ...p, [src]: true }));
+        setLoadedBySrc((p) => ({...p, [src]: true}));
 
     const markErrored = (src: string) =>
-        setErroredBySrc((p) => ({ ...p, [src]: true }));
+        setErroredBySrc((p) => ({...p, [src]: true}));
 
 
     // reset internal animation state when opening
@@ -237,7 +238,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         let minPanX = 0, maxPanX = 0, minPanY = 0, maxPanY = 0;
 
         if (container && baseW && baseH && nextZoomClamped > 1) {
-            const { width: viewportW, height: viewportH } = container.getBoundingClientRect();
+            const {width: viewportW, height: viewportH} = container.getBoundingClientRect();
             const scaledW = baseW * nextZoomClamped;
             const scaledH = baseH * nextZoomClamped;
 
@@ -453,10 +454,18 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         pinchPrevCenterRef.current = null;
     };
 
+    function clearLongPressTimer() {
+        if (longPressTimer.current !== null) {
+            window.clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+    }
+
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing) return;
         if (isSwipeAnimatingRef.current) return;
         e.preventDefault();
+        clearLongPressTimer();
 
         // Manual double-tap to zoom
         // Would be made redundant by onDoubleClick, except for the hold-swipe bug (see zoom() for details)
@@ -481,7 +490,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
         }
 
         // Not a double tap yet: record this tap as the "first"
-        lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+        lastTapRef.current = {time: now, x: e.clientX, y: e.clientY};
 
         const evCache = evCacheRef.current;
         evCache.push(toCachedPointer(e));
@@ -510,7 +519,23 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             panYStartRef.current = pendingRef.current.panY;
         }
 
-        if (isPinching) pinchingRef.current = true;
+        if (isPinching) {
+            pinchingRef.current = true;
+        } else {
+            /**
+             * Likely long press: treat this as a cancelled gesture
+             * - we have this inside the not-pinching branch, because otherwise, the second touch of a pinch gesture
+             * would leave the first touch's timeout intact, and thus it will still trigger, incorrectly cancelling a
+             * pinch/zoom gesture as though it were a long press
+             */
+            longPressTimer.current = window.setTimeout(() => {
+                lastTapRef.current = null;
+                clearGestureState();
+                pendingRef.current.swipeX = 0;
+                pendingRef.current.swipeY = 0;
+                scheduleFlush();
+            }, 500);
+        }
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
@@ -520,13 +545,18 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
         const isPinching = pinchingRef.current;
         const isZoomedIn = pendingRef.current.zoomScale > 1;
+        const deltaX = e.clientX - startXRef.current;
+        const deltaY = e.clientY - startYRef.current;
+
+        console.log("Math.hypot(deltaX, deltaY) > DRAG_LOCK_THRESHOLD", Math.hypot(deltaX, deltaY) > DRAG_LOCK_THRESHOLD);
+        if (Math.hypot(deltaX, deltaY) > DRAG_LOCK_THRESHOLD) {
+            clearLongPressTimer();
+        }
 
         if (noLongerPinchingRef.current) return;
 
         if (!isPinching && isZoomedIn) {
             // Panning a zoomed image
-            const deltaX = e.clientX - startXRef.current;
-            const deltaY = e.clientY - startYRef.current;
             pendingRef.current.panX = panXStartRef.current + deltaX;
             pendingRef.current.panY = panYStartRef.current + deltaY;
             scheduleFlush();
@@ -535,8 +565,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
         if (!isPinching && !isZoomedIn) {
             // Swiping (x to swipe next/prev, or y to close)
-            const deltaX = e.clientX - startXRef.current;
-            const deltaY = e.clientY - startYRef.current;
             const absX = Math.abs(deltaX);
             const absY = Math.abs(deltaY);
 
@@ -626,7 +654,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
 
             const prevDist = pinchPrevDistanceRef.current;
             const prevCenter = pinchPrevCenterRef.current;
-            const prevPan = { x: pendingRef.current.panX, y: pendingRef.current.panY };
+            const prevPan = {x: pendingRef.current.panX, y: pendingRef.current.panY};
             const prevZoom = pendingRef.current.zoomScale;
 
             // Incremental scale step for this frame
@@ -698,7 +726,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             pendingRef.current.panX = nextPanXUnclamped;
             pendingRef.current.panY = nextPanYUnclamped;
             pinchPrevDistanceRef.current = curDist;
-            pinchPrevCenterRef.current = { x: curCenter.x, y: curCenter.y };
+            pinchPrevCenterRef.current = {x: curCenter.x, y: curCenter.y};
 
             scheduleFlush();
         }
@@ -707,6 +735,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
     const handlePointerUp = (e: React.PointerEvent) => {
         if (isClosing || evCacheRef.current.length === 0) return;
         e.preventDefault();
+
+        clearLongPressTimer();
 
         const evCache = evCacheRef.current;
         const wasPinching =
@@ -834,7 +864,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             className="h-6 w-6 fill-current"
             aria-hidden="true"
         >
-            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Zm-40-60v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+            <path
+                d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Zm-40-60v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z"/>
         </svg>
     );
 
@@ -844,7 +875,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             className="h-6 w-6 fill-current"
             aria-hidden="true"
         >
-            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z" />
+            <path
+                d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400ZM280-540v-80h200v80H280Z"/>
         </svg>
     );
 
@@ -900,7 +932,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                     : `opacity ${BACKDROP_FADE_DURATION}ms ease-out`,
                             }}
                         >
-                            {isZoomedIn ? <ZoomOutIcon /> : <ZoomInIcon />}
+                            {isZoomedIn ? <ZoomOutIcon/> : <ZoomInIcon/>}
                         </button>
                     </div>
 
@@ -922,7 +954,8 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 viewBox="0 -960 960 960"
                                 className="h-6 w-6 fill-current"
                             >
-                                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+                                <path
+                                    d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                             </svg>
                         </button>
                     </div>
@@ -952,7 +985,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 viewBox="0 -960 960 960"
                                 className="h-6 w-6 fill-current"
                             >
-                                <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z" />
+                                <path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/>
                             </svg>
                         </button>
 
@@ -977,7 +1010,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                 viewBox="0 -960 960 960"
                                 className="h-6 w-6 fill-current"
                             >
-                                <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+                                <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/>
                             </svg>
                         </button>
                     </>
@@ -1013,7 +1046,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                 "visible",
                                     }}
                                 >
-                                    <LoadingSpinner color="currentColor" width="100" height="100" />
+                                    <LoadingSpinner color="currentColor" width="100" height="100"/>
                                 </div>
                             )}
 
@@ -1028,7 +1061,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                 "visible",
                                     }}
                                 >
-                                    <ErrorSpinner color="currentColor" width="100" height="100" />
+                                    <ErrorSpinner color="currentColor" width="100" height="100"/>
                                 </div>
                             )}
 
@@ -1119,7 +1152,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                         "visible",
                                             }}
                                         >
-                                            <LoadingSpinner color="currentColor" width="100" height="100" />
+                                            <LoadingSpinner color="currentColor" width="100" height="100"/>
                                         </div>
                                     )}
 
@@ -1134,7 +1167,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                         "visible",
                                             }}
                                         >
-                                            <ErrorSpinner color="currentColor" width="100" height="100" />
+                                            <ErrorSpinner color="currentColor" width="100" height="100"/>
                                         </div>
                                     )}
 
@@ -1187,7 +1220,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                     "visible",
                                         }}
                                     >
-                                        <LoadingSpinner color="currentColor" width="100" height="100" />
+                                        <LoadingSpinner color="currentColor" width="100" height="100"/>
                                     </div>
                                 )}
 
@@ -1202,7 +1235,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                     "visible",
                                         }}
                                     >
-                                        <ErrorSpinner color="currentColor" width="100" height="100" />
+                                        <ErrorSpinner color="currentColor" width="100" height="100"/>
                                     </div>
                                 )}
 
@@ -1263,7 +1296,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                         "visible",
                                             }}
                                         >
-                                            <LoadingSpinner color="currentColor" width="100" height="100" />
+                                            <LoadingSpinner color="currentColor" width="100" height="100"/>
                                         </div>
                                     )}
 
@@ -1278,7 +1311,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                                                         "visible",
                                             }}
                                         >
-                                            <ErrorSpinner color="currentColor" width="100" height="100" />
+                                            <ErrorSpinner color="currentColor" width="100" height="100"/>
                                         </div>
                                     )}
 
@@ -1336,6 +1369,6 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
                     {currentIndex + 1} / {images.length}
                 </div>
             </div>
-        </LightboxPortal >
+        </LightboxPortal>
     );
 };

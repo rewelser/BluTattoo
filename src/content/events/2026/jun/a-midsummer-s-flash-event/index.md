@@ -12,22 +12,49 @@ startTime: 12:00
 endTime: 19:00
 location: BluTattoo Studio
 images:
-  - att.DsUbXZEHggaKRimHaOYzOT9rvkTduMXcOza4Pei9Kg8.jpg
-  - att.YfBp0bBdD_qfs7hzo0VeGllnBbpCacdl1xihlEekgTo.jpg
-  - Gothic.jpg
-  - IMG_0384_jpg.jpg
-  - IMG_1464.jpg
-  - IMG_1623_jpg.jpg
-  - IMG_1853_jpg.jpg
-  - IMG_2152.JPG
-  - IMG_2721.jpg
-  - IMG_3143.jpg
-  - IMG_4368_jpg.jpg
-  - IMG_5976.JPG
-  - IMG_6450.JPG
-  - IMG_8298.JPG
-  - IMG_8801_jpg.jpg
-  - IMG_9074_jpg.jpg
+  - DSC02759.jpg
+  - DSC02788.jpg
+  - DSC02721.jpg
+  - DSC02702.jpg
+  - DSC02736.jpg
+  - DSC02792.jpg
+  - DSC02818.jpg
+  - DSC02852.jpg
+  - DSC02734.jpg
+  - DSC02859.jpg
+  - DSC02805.jpg
+  - DSC02809.jpg
+  - DSC02876.jpg
+  - DSC02906.jpg
+  - DSC02943.jpg
+  - DSC02956.jpg
+  - DSC02948.jpg
+  - DSC03118.jpg
+  - DSC03124.jpg
+  - DSC03061.jpg
+  - DSC02985.jpg
+  - DSC02999.jpg
+  - DSC03002.jpg
+  - DSC03008.jpg
+  - DSC03052-2.jpg
+  - DSC03088.jpg
+  - DSC03107-2.jpg
+  - DSC03110.jpg
+  - DSC02978.jpg
+  - DSC03132.jpg
+  - DSC03133.jpg
+  - DSC03141.jpg
+  - DSC02737.jpg
+  - DSC03143.jpg
+  - DSC03146.jpg
+  - DSC03158-2.jpg
+  - DSC03166.jpg
+  - DSC03175.jpg
+  - DSC03186.jpg
+  - DSC03193.jpg
+  - DSC03205.jpg
+  - DSC03220.jpg
+  - DSC03239.jpg
 promoBar:
   enabled: true
   message: Bring your whimsy to our Midsummer's Flash Event! June 13th, 12-7pm

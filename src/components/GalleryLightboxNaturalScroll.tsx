@@ -723,6 +723,19 @@ export const GalleryLightboxNaturalScroll: React.FC<GalleryLightboxProps> = ({
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isClosing || scrollingRef.current || programmaticScrollingRef.current) return;
+
+        /**
+         * Do not start a drag/swipe gesture for right-click / middle-click.
+         * This preserves native image context-menu behavior.
+         * The mobile equivalent of this is the long press logic in GalleryLightbox -- a bug was happening in both
+         * versions where a button/touch that was intended to result in a context menu, though doesn't reliably
+         * produce a context menu event, was causing an unaccounted-for pointer down to be captured which was not
+         * "uppable" or "cancellable".
+         */
+        if (e.pointerType === "mouse" && e.button !== 0) {
+            return;
+        }
+
         e.preventDefault();
 
         /**
