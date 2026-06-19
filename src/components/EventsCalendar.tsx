@@ -221,7 +221,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                             >
                                 {
                                     needsSingleEventImageVariant && (
-                                        <a className="absolute top-0 left-0 z-20 h-full w-full" href={`/events/${dailyEvents[0].id}`}></a>
+                                        <a className="single-event-anchor absolute top-0 left-0 z-20 h-full w-full" href={`/events/${dailyEvents[0].id}`}></a>
                                     )
                                 }
                                 <div className="date-num">{dateNum}</div>

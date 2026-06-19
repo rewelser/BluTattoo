@@ -1,14 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import {Image} from "astro:assets";
 import {loadActiveArtists} from "../../domain/people/server.ts";
 import {render, getCollection, type CollectionEntry, getEntry} from "astro:content";
-import SquareAppointments from "../../components/SquareAppointments.astro";
 import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
-import { getImage } from "astro:assets";
+import {getImage, Image} from "astro:assets";
 import SocialRow from "../../components/SocialRow.astro";
 import ShareModal from "../../components/ShareModal.astro";
 import {defaults} from "../../config/site.ts";
+import {getBookables} from "../../domain/contact/utlis.ts";
 
 const branding = await getEntry("branding", "main");
 
@@ -49,6 +48,9 @@ const moduleInfo = square?.linkOrModuleInfo.find(
 
 const description = `Learn more about ${entry.data.name}, view tattoo style information, and find booking details at BluTattoo.`;
 const ogImage = entry.data.ogPhotoTexted ?? entry.data.ogPhotoTextless ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
+const bookingToggleId = `person-${entry.id}-toggle`;
+const artistBookingHref = `/booking#${bookingToggleId}`;
+const hasBookables = (getBookables(entry.data.contactSocialsBooking)?.length ?? 0) > 0;
 
 const lightboxImages = await Promise.all(
     (entry.data.images ?? []).map(async (img, idx) => {
@@ -102,18 +104,16 @@ const lightboxImages = await Promise.all(
                     {
                         entry.data.pagePhoto && (
                                     <div class="portrait fade-in-left-and-glow-anim">
-                                        <div>
-                                            <img
-                                                    src={entry.data.pagePhoto.src}
-                                                    alt={`Portrait of ${entry.data.name}`}
-                                                    width="400"
-                                                    height="400"
-                                                    decoding="async"
-                                                    loading="eager"
-                                                    fetchpriority="high"
-                                                    class="mask-b-from-60% mask-b-to-100%"
-                                            />
-                                        </div>
+                                        <Image
+                                                src={entry.data.pagePhoto}
+                                                alt={`Portrait of ${entry.data.name}`}
+                                                widths={[320, 480, 640, 768, 960, 1100, 1280]}
+                                                sizes="(max-width: 639px) 100vw, (max-width: 1152px) calc((100vw - 1rem) / 2), 568px"
+                                                decoding="async"
+                                                loading="eager"
+                                                fetchpriority="high"
+                                                class="mask-b-from-60% mask-b-to-100%"
+                                        />
                                     </div>
                         )
                     }
@@ -169,7 +169,6 @@ const lightboxImages = await Promise.all(
                                         cardButtonClass="m-2"
                                         cardButtonColorClass="bg-white/10 border-1 border-solid border-orange-100/40"
                                         heroFullBleed={true}/>
-
                             {
                                 entry.data.contactSocialsBooking?.socials && (
                                             <SocialRow
@@ -181,13 +180,40 @@ const lightboxImages = await Promise.all(
                                             />
                                 )
                             }
+                            {
+                                hasBookables && (
+                                            <div class="my-4">
+                                                <a
+                                                        href={artistBookingHref}
+                                                        class="inline-flex items-center justify-center px-6 py-2 border border-orange-100 text-orange-100 shadow-[3px_3px_0_#ffedd5] text-sm tracking-wide uppercase hover:bg-orange-100 hover:text-black hover:shadow-[2px_2px_0_#ffedd5] transition duration-300"
+                                                        aria-label={`Book an appointment with ${entry.data.name}`}
+                                                >
+                                                    Book with {entry.data.name}
+                                                </a>
+                                            </div>
+                                )
+                            }
                             <div class="js-fade-up">
                                 <h2 class="sr-only">Bio</h2>
-                                <div class="whitespace-pre-line">
+                                <div data-person-bio class="whitespace-pre-line">
                                     <Content/>
                                 </div>
                             </div>
                         </div>
+                        <style is:global>
+                            [data-person-bio] a {
+                                text-decoration: underline;
+                            }
+
+                            [data-person-bio] a:hover {
+                                text-decoration: none;
+                            }
+
+                            [data-person-bio] blockquote {
+                            }
+
+
+                        </style>
                     </div>
                 </div>
             </div>
@@ -209,7 +235,7 @@ const lightboxImages = await Promise.all(
                                 <div class="flex items-end justify-between gap-4 mb-5 lg:mb-7">
                                     <div>
                                         <h2 id="gallery-heading"
-                                            class="text-6xl -mt-20 sm:text-8xl sm:-mt-30 md:text-9xl md:-mt-45 lg:text-9xl lg:-mt-50 xl:-mt-60 xl:-ml-20 font-semibold tracking-tight text-gray-900">
+                                            class="text-6xl sm:text-8xl md:text-9xl lg:text-9xl font-semibold text-gray-900">
                                             Gallery
                                         </h2>
                                         <p class="text-sm text-gray-600 js-fade-up">
@@ -258,18 +284,48 @@ const lightboxImages = await Promise.all(
             )
         }
 
-        {/* Preferred: Square embed if present */}
-        <!--{-->
-        <!--    square?.enabled && moduleInfo?.merchantId && moduleInfo?.locationId && (-->
-        <!--                <div class="p-5 mx-auto max-w-6xl">-->
-        <!--                    <SquareAppointments-->
-        <!--                            merchantSlug={moduleInfo.merchantId}-->
-        <!--                            locationSlug={moduleInfo.locationId}-->
-        <!--                            label={moduleInfo.label}-->
-        <!--                            className="mt-2"-->
-        <!--                    />-->
-        <!--                </div>-->
-        <!--    )-->
-        <!--}-->
+        {hasBookables && (
+                <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 js-fade-up">
+                    <div class="border border-black bg-[seashell] p-5 sm:p-6 shadow-[5px_5px_0_black] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-semibold tracking-tight">
+                                Want to book with {entry.data.name}?
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-700">
+                                View booking details, contact channels, and appointment options.
+                            </p>
+                        </div>
+
+                        <a
+                                href={artistBookingHref}
+                                class="inline-flex justify-center px-6 py-2 border border-black shadow-[3px_3px_0_black] text-sm tracking-wide uppercase hover:bg-blue-100 hover:shadow-[2px_2px_0_black] transition duration-300"
+                        >
+                            Book now
+                        </a>
+                    </div>
+                </section>
+                <aside
+                        class="fixed-cta fixed inset-x-0 bottom-0 z-40 p-2 sm:hidden m-0"
+                        aria-label={`Booking call to action for ${entry.data.name}`}
+                >
+                    <a
+                            href={artistBookingHref}
+                            class="block w-full text-center py-3 border border-orange-100 text-orange-100 shadow-[3px_3px_0_#ffedd5] text-sm tracking-wide uppercase hover:bg-orange-100 hover:text-black transition duration-300 bg-black/85 backdrop-blur"
+                            aria-label={`Book an appointment with ${entry.data.name}`}
+                    >
+                        Book with {entry.data.name}
+                    </a>
+                    <script is:inline>
+                        (() => {
+                            const root = document.documentElement;
+                            const parent = document.currentScript?.parentElement;
+                            if (!root || !parent) return;
+
+                            const measured = `${parent.offsetHeight}px`;
+                            root.style.setProperty("--fixed-booking-button-h", measured);
+                        })();
+                    </script>
+                </aside>
+        )}
     </article>
 </Layout>

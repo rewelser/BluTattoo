@@ -10,7 +10,7 @@ import Footer from "../components/footer/Footer.astro";
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
 
-const {title, description, ogImage, isHome = false, preloadImage, pageTheme = "default"} = Astro.props;
+const {title, description, ogImage, isHome = false, preloadImage, pageTheme = "default", ...rest} = Astro.props;
 import "@fontsource/diplomata-sc";
 import "@fontsource/fleur-de-leah";
 
@@ -28,7 +28,7 @@ import "@fontsource/diplomata-sc/400.css";
 import "@fontsource/fleur-de-leah/400.css";
 ---
 
- <BaseLayout title={title} description={description} ogImage={ogImage} preloadImage={preloadImage} bodyClass={`min-h-screen text-neutral-800 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`}>
+ <BaseLayout title={title} description={description} ogImage={ogImage} preloadImage={preloadImage} bodyClass={`min-h-screen text-neutral-800 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`} {...rest}>
 <!--<BaseLayout title={title} preloadImage={preloadImage} bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative`}>-->
     <Fragment slot="head">
         <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
