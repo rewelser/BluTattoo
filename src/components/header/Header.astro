@@ -14,6 +14,7 @@ const branding = await getEntry("branding", "main");
 const {variant = "default", defaults, site} = Astro.props;
 
 const siteName = site?.data?.siteName ?? defaults.siteName;
+// todo: convert treatment of these to local image assets
 const logoDark = getImageSrc(branding?.data.logoDark ?? defaults.siteLogo);
 const logoLight = getImageSrc(branding?.data.logoLight ?? defaults.siteLogo);
 const heroVideoMobile = branding?.data.hero?.video?.videoMobile;

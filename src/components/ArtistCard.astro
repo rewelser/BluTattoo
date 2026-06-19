@@ -3,6 +3,7 @@ import {frameRegistry, type FrameKey} from "./decor/frameportraits/frameclips/re
 import SparkleCorners from "./decor/SparkleCorners.astro";
 import type {ImageMetadata} from "astro";
 import {defaults} from "../config/site.ts";
+import {Image} from "astro:assets";
 
 import GuestSpotCardInfoBanner from "./decor/GuestSpotCardInfoBanner.astro";
 
@@ -38,7 +39,8 @@ const {
 
 const frameConfig = frameType ? frameRegistry[frameType] : undefined;
 
-const defaultPersonRunwayPhoto = defaults.personRunwayPhoto;
+// todo: convert treatment of these to local image assets
+const defaultPersonRunwayPhoto = defaults.personRunwayPhoto.src;
 
 const previewLength = 100;
 const truncated = (personBio?.length ?? 0) > previewLength;
@@ -66,10 +68,20 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
                 {!frameConfig ?
                     (
                             <>
-                                <img
-                                        src={personPhoto?.src ?? defaultPersonRunwayPhoto}
+                                <!--<img-->
+                                <!--        src={personPhoto?.src ?? defaultPersonRunwayPhoto}-->
+                                <!--        alt={photoAlt}-->
+                                <!--        data-person-card-photo-->
+                                <!--        loading="lazy"-->
+                                <!--        decoding="async"-->
+                                <!--        class="object-cover transition-transform duration-300 group-hover:scale-105"-->
+                                <!--/>-->
+                                <Image
+                                        src={personPhoto ?? defaults.personRunwayPhoto}
                                         alt={photoAlt}
-                                        data-person-card-photo
+                                        data-person-card-photo="true"
+                                        widths={[320, 480, 640, 768]}
+                                        sizes="auto, 100vw"
                                         loading="lazy"
                                         decoding="async"
                                         class="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -81,10 +93,20 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
                                             class="applied-mask--frameclip h-full w-full"
                                             style={`mask-image: url("${frameConfig.mask.src}"); -webkit-mask-image: url("${frameConfig.mask.src}");`}
                                     >
-                                        <img
-                                                src={personPhoto?.src ?? defaultPersonRunwayPhoto}
+                                        <!--<img-->
+                                        <!--        src={personPhoto?.src ?? defaultPersonRunwayPhoto}-->
+                                        <!--        alt={photoAlt}-->
+                                        <!--        data-person-card-photo-->
+                                        <!--        loading="lazy"-->
+                                        <!--        decoding="async"-->
+                                        <!--        class="absolute object-cover transition-transform duration-300 group-hover:scale-105"-->
+                                        <!--/>-->
+                                        <Image
+                                                src={personPhoto ?? defaults.personRunwayPhoto}
                                                 alt={photoAlt}
                                                 data-person-card-photo
+                                                widths={[320, 480, 640, 768]}
+                                                sizes="(max-width: 520px) calc(100vw - 2rem), 500px"
                                                 loading="lazy"
                                                 decoding="async"
                                                 class="absolute object-cover transition-transform duration-300 group-hover:scale-105"
@@ -101,6 +123,17 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
                                             class="absolute inset-0 h-full w-full pointer-events-none"
                                             aria-hidden="true"
                                     />
+                                    <!--<Image-->
+                                    <!--        alt=""-->
+                                    <!--        src={frameConfig.frame}-->
+                                    <!--        data-frame-->
+                                    <!--        data-person-card-frame-->
+                                    <!--        data-person-card-frame-src={frameConfig.frame.src}-->
+                                    <!--        loading="lazy"-->
+                                    <!--        decoding="async"-->
+                                    <!--        class="absolute inset-0 h-full w-full pointer-events-none"-->
+                                    <!--        aria-hidden="true"-->
+                                    <!--/>-->
                                     <frameConfig.FrameClipComponent/>
 
                                     <script is:inline>

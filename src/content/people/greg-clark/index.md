@@ -1,5 +1,5 @@
 ---
-name: Greg Clarke
+name: Greg
 active: true
 order: 4
 pagePhoto: assets/images/greg_transparent.png

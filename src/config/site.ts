@@ -1,9 +1,14 @@
+import siteLogo from "./assets/genericlogo.svg";
+import bookingHeroPhoto from "./assets/default-booking-photo.jpg";
+import personProfilePicture from "./assets/default-booking-profile.jpg";
+import personRunwayPhoto from "./assets/default-runway-photo.svg";
+
 export const defaults = {
     siteName: "Company Name",
-    siteLogo: "/default_media/genericlogo.svg",
-    personProfilePicture: "/default_media/default-booking-profile.jpg",
-    personRunwayPhoto: "/default_media/default-runway-photo.svg",
-    bookingHeroPhoto: "/default_media/default-booking-photo.jpg",
+    siteLogo,
+    personProfilePicture,
+    personRunwayPhoto,
+    bookingHeroPhoto,
     ogPhoto: "/default_media/default-booking-photo.jpg",
     address: {
         streetAddress: "123 Main St",
