@@ -4,11 +4,11 @@ import {getEntry} from "astro:content";
 import ScrollPeelStack, {type SideImages} from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 import HrDivider from "../components/decor/HrDivider.astro";
-import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
+import ParallaxWindow from "../components/decor/ParallaxWindow2.astro";
 import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
-import FramedImage from "../components/decor/FramedImage2.astro";
+import FramedImage from "../components/decor/FramedImage.astro";
 import CopyButton from "../components/CopyButton.astro";
 import EdgeParallaxLayer from "../components/decor/EdgeParallaxLayer.astro";
 import laceLayerDown from "../domain/decor/assets/lace-layer-down.svg";
@@ -37,6 +37,7 @@ const emailHref = `mailto:${email}`;
 const hoursShortline = site?.data.hoursShortline ?? defaults.hoursShortline;
 
 const ourLocation = branding?.data.ourLocation;
+const ourArtists = branding?.data.ourArtists;
 const ourProcess = branding?.data.ourProcess;
 const ourStory = branding?.data.ourStory;
 
@@ -95,7 +96,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     <section class="px-6 py-16 md:py-24" aria-labelledby="our-location-heading">
                         <div class="m-2 rounded-xl overflow-hidden">
                             <ParallaxWindow
-                                    src={ourLocation?.shopImage.src}
+                                    src={ourLocation?.shopImage}
+                                    image={ourLocation?.shopImage}
                                     kind="image"
                                     windowHeight="65vh"
                                     strength={.95}
@@ -197,30 +199,38 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
     <!-- /////////////////////////////////////////// -->
 
-    <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading" data-section-theme="neutraldark">
-        <div class="mx-8 rounded-xl overflow-hidden">
-            <ParallaxWindow
-                    src="/uploads/misc_videos/fartists3-web.mp4"
-                    srcMobile="/uploads/misc_videos/fartists3-mobile-portrait.mp4"
-                    kind="video"
-                    windowHeight="65vh"
-                    mediaHeightMult={1}
-                    mediaHeightMultMobile={.5}
-                    strength={.95}
-                    strengthMobile={1}
-                    layerClass="grayscale brightness-75"
-            >
-                <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
-                <h2 id="artists-heading"
-                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
-                    Our Artists
-                </h2>
-            </ParallaxWindow>
-        </div>
-        <div class=" pt-16 md:pt-24 px-6">
-            <ArtistRunway/>
-        </div>
-    </section>
+    {
+        ourArtists && (
+                    <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading"
+                             data-section-theme="neutraldark">
+                        <div class="mx-8 rounded-xl overflow-hidden">
+                            <ParallaxWindow
+                                    src={ourArtists?.video?.videoDesktop!}
+                                    srcMobile={ourArtists?.video?.videoDesktop}
+                                    vidSrcDesktop={ourArtists?.video?.videoDesktop}
+                                    vidSrcMobile={ourArtists?.video?.videoDesktop}
+                                    kind="video"
+                                    windowHeight="65vh"
+                                    mediaHeightMult={1}
+                                    mediaHeightMultMobile={.5}
+                                    strength={.95}
+                                    strengthMobile={1}
+                                    layerClass="grayscale brightness-75"
+                            >
+                                <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
+                                <h2 id="artists-heading"
+                                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                                    Our Artists
+                                </h2>
+                            </ParallaxWindow>
+                        </div>
+                        <div class=" pt-16 md:pt-24 px-6">
+                            <ArtistRunway/>
+                        </div>
+                    </section>
+
+        )
+    }
 
     <!-- /////////////////////////////////////////// -->
 
@@ -253,8 +263,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                              data-section-theme="neutraldark">
                         <div class="mx-8 rounded-xl overflow-hidden">
                             <ParallaxWindow
-                                    src="/uploads/misc_videos/ourprocess-web.mp4"
-                                    srcMobile="/uploads/misc_videos/ourprocess-mobile-portrait.mp4"
+                                    src={ourProcess.video?.videoDesktop!}
+                                    srcMobile={ourProcess.video?.videoMobile}
                                     kind="video"
                                     windowHeight="65vh"
                                     mediaHeightMult={1}
@@ -331,8 +341,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                         class="w-[80vw] lg:w-[40vw]"
                                         frame={ourStory?.frameImage}
                                         framedImage={ourStory?.image}
-                                        videoSrc="/uploads/misc_videos/ourstory-web.mp4"
-                                        videoSrcMobile="/uploads/misc_videos/ourstory-mobile.mp4"
+                                        videoSrc={ourStory.video?.videoDesktop}
+                                        videoSrcMobile={ourStory.video?.videoMobile}
                                         frameMask={ourStory?.frameWindowSvg}
                                         frameMaskImgMetadata={ourStory?.frameWindowSvg}
                                         photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}

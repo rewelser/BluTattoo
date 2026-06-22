@@ -10,7 +10,7 @@ import {
     weekdayEnum
 } from "./domain/base/schema.ts";
 import {contactSocialsBookingSchema, siteInfoSocialsSchema} from "./domain/contact/schema.ts";
-import {frameSchema} from "./domain/decor/schema.ts";
+import {frameSchema, videoSchema} from "./domain/decor/schema.ts";
 import {primaryRoleSchema} from "./domain/people/schema.ts";
 
 /*** region *** Events Collection ****/
@@ -190,7 +190,12 @@ const branding = defineCollection({
                 shopImage: image(),
             }).optional(),
 
+            ourArtists: z.object({
+                video: videoSchema({image}).optional(),
+            }).optional(),
+
             ourProcess: z.object({
+                video: videoSchema({image}).optional(),
                 processText: z.string(),
                 scrollPeelStackImage1: image(),
                 scrollPeelStackImage2: image(),
@@ -202,6 +207,7 @@ const branding = defineCollection({
             }).optional(),
 
             ourStory: z.object({
+                video: videoSchema({image}).optional(),
                 frameImage: image(),
                 frameWindowSvg: image(),
                 image: image(),
@@ -210,12 +216,7 @@ const branding = defineCollection({
             }).optional(),
 
             hero: z.object({
-                video: z.object({
-                    videoMobile: z.string(),
-                    videoDesktop: z.string(),
-                    posterMobile: image(),
-                    posterDesktop: image(),
-                }).optional(),
+                video: videoSchema({image}).optional(),
                 bookingHeroPhoto: image(),
             }).optional(),
         }),

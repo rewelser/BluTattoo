@@ -60,17 +60,15 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
                     poster={posterMobile?.src}
                     aria-hidden="true"
             >
-                <!--<source src={heroVid.webm} type="video/webm" />-->
                 <source
                         src={srcMobile}
                         media="(max-width: 640px)"
-                        type="video/mp4"
+                        type="video/webm"
                 />
                 <source
                         src={srcDesktop}
-                        type="video/mp4"
+                        type="video/webm"
                 />
-                <!--<source src={heroVid.mp4} type="video/mp4" />-->
             </video>
 
             {/* optional: subtle wash for legibility */}

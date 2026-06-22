@@ -13,11 +13,12 @@ contactSocialsBooking:
   platforms:
     - type: square
       enabled: true
+      preferred: true
       linkOrModuleInfo:
         - type: moduleInfo
           enabled: true
-          merchantId: qwerty
-          locationId: QWERTY
+          merchantId: f4o6w3ehtx5vqg
+          locationId: LGWFJN1QYG58P
 images:
   - assets/images/PXL_20241130_235653755~2.jpg
   - assets/images/PXL_20241215_000119860.PORTRAIT~2.jpg

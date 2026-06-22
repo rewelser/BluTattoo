@@ -1,0 +1,242 @@
+---
+import {Image} from "astro:assets";
+import type {ComponentProps, HTMLAttributes} from "astro/types";
+
+type AstroImageProps = ComponentProps<typeof Image>;
+
+/**
+ * todo: `loading` attribute is not yet recognized by astro types for native video elements, even though it is now
+ * web standard. therefore, we have extended VideoHTMLAttributes to include it.
+ *
+ * @see src/env.d.ts
+ */
+type NativeVideoProps = Omit<HTMLAttributes<"video">, "src">;
+// type NativeVideoProps = Omit<HTMLAttributes<"video">, "src"> & {loading?: "lazy" | "eager"};
+
+type SharedProps = {
+    mediaClass?: string;
+    class?: string;
+    observeTargetSelector?: string;
+};
+
+type ImageCandidateProps = {
+    imageAttrs?: AstroImageProps;
+};
+
+type VideoCandidateProps = {
+    videoAttrs?: NativeVideoProps & {
+        videoSrcMobile?: string;
+        videoSrcDesktop?: string;
+        videoMIMEType?: string;
+        mobileMedia?: string;
+    };
+};
+
+
+type Props = SharedProps &
+    ImageCandidateProps &
+    VideoCandidateProps;
+
+// interface Props extends SharedProps, ImageCandidateProps, VideoCandidateProps {}
+
+const {
+    mediaClass = "default-media-class",
+    class: className,
+    observeTargetSelector,
+    imageAttrs,
+    videoAttrs,
+
+
+    // videoType = "video/webm",
+    // mobileMedia = "(max-width: 640px)",
+    // autoplay = false,
+    // muted = true,
+    // loop = true,
+    // playsinline = true,
+    // controls = false,
+    // preload = "none",
+    // loading = "lazy",
+
+
+    // everything else
+    ...rest
+} = Astro.props as Props;
+
+const hasVideo =
+    typeof videoAttrs?.videoSrcDesktop === "string" &&
+    videoAttrs.videoSrcDesktop.length > 0 &&
+    typeof videoAttrs?.videoSrcMobile === "string" &&
+    videoAttrs.videoSrcMobile.length > 0;
+
+const hasImage = imageAttrs?.src != null;
+
+const kind = hasVideo
+    ? "video"
+    : hasImage
+        ? "image"
+        : undefined;
+
+// console.log("attrs", attrs);
+// if ("video" in attrs) {
+//     console.log("image", attrs.video);
+// }
+console.log("astro props", Astro.props);
+console.log("kind:", kind);
+console.log("----------------");
+---
+<>
+    {
+        kind === "image" && imageAttrs ? ((()=> {
+                const {
+                    loading = "lazy",
+                    decoding = "async",
+                    ...nativeImageAttrs
+                } = imageAttrs ?? {};
+            return (
+                    <Image
+                            data-media
+                            {...rest}
+                            {...nativeImageAttrs}
+                            loading={loading}
+                            decoding={decoding}
+                            class:list={[mediaClass, className]}
+                    />
+            )
+            })()
+
+        ) : kind === "video" ? ((() => {
+                const {
+                    videoSrcMobile,
+                    videoSrcDesktop,
+                    videoMIMEType = "video/webm",
+                    mobileMedia = "(max-width: 640px)",
+                    autoplay = false,
+                    muted = true,
+                    loop = true,
+                    playsinline = true,
+                    controls = false,
+                    preload = "none",
+                    ...nativeVideoAttrs
+                } = videoAttrs ?? {};
+                return (
+                        <video
+                                data-media
+                                {...rest}
+                                {...nativeVideoAttrs}
+                                autoplay={autoplay}
+                                muted={muted}
+                                loop={loop}
+                                playsinline={playsinline}
+                                controls={controls}
+                                preload={preload}
+                                class:list={[mediaClass, className]}
+                        >
+                            <source src={videoSrcMobile} media={mobileMedia} type={videoMIMEType}/>
+                            <source src={videoSrcDesktop} type={videoMIMEType}/>
+                        </video>
+                )
+            })()
+        ) : null
+    }
+
+
+    <style>
+        .default-media-class {
+            position: absolute;
+            object-fit: cover;
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+    </style>
+    <script define:vars={{kind, observeTargetSelector}}>
+        (() => {
+            const host = document.currentScript?.parentElement;
+            if (!host || !kind) return;
+
+            const media = host.querySelector("[data-media]");
+            if (!media) return;
+
+            const observeTarget =
+                observeTargetSelector
+                    ? host.closest(observeTargetSelector)
+                    : host;
+
+            if (!observeTarget) return;
+
+
+            const markReady = () => {
+                observeTarget.dataset.smartmediaReady = "true";
+
+                observeTarget.dispatchEvent(
+                    new CustomEvent("smartmedia:ready", {
+                        bubbles: true,
+                        detail: {
+                            media,
+                            kind,
+                        },
+                    })
+                );
+            };
+
+            let hasLoaded = false;
+
+            const loadMedia = async () => {
+                if (hasLoaded) return;
+                hasLoaded = true;
+
+                const mediaReady = !media
+                    ? Promise.resolve()
+                    : kind === "video"
+                        ? (
+                            media.readyState >= 1
+                                ? Promise.resolve()
+                                : new Promise((resolve) => {
+                                    media.addEventListener("loadedmetadata", resolve, {once: true});
+                                    media.addEventListener("canplay", resolve, {once: true});
+                                    media.addEventListener("error", resolve, {once: true});
+
+                                    media.load?.();
+                                })
+                        )
+                        :
+                        media.complete ? Promise.resolve()
+                            : new Promise((resolve) => {
+                                media.addEventListener("load", resolve, {once: true});
+                                media.addEventListener("error", resolve, {once: true});
+                            });
+
+                await mediaReady;
+
+                observeTarget.dataset.ready = "true";
+                markReady();
+            };
+
+            const observer = new IntersectionObserver(
+                async ([entry]) => {
+                    if (entry.isIntersecting) {
+                        await loadMedia();
+                        if (kind === "video") {
+                            media.play?.().catch(() => {
+                            });
+                            console.log("media playing");
+
+                        }
+                    } else {
+                        if (kind === "video") {
+                            media.pause?.();
+                            console.log("media paused");
+
+                        }
+                    }
+                },
+                {
+                    rootMargin: "400px 0px",
+                    threshold: 0,
+                }
+            );
+
+            observer.observe(observeTarget);
+        })()
+    </script>
+</>

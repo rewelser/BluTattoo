@@ -1,88 +1,224 @@
 ---
-import type {ImageMetadata} from "astro";
-import type {SvgComponent} from "astro/types";
-interface Props {
-    kind?: "image" | "video";
-    image?: ImageMetadata;
-    videoSrc?: string;
+import {Image} from "astro:assets";
+import type {ComponentProps, HTMLAttributes} from "astro/types";
+
+type AstroImageProps = ComponentProps<typeof Image>;
+
+/**
+ * todo: `loading` attribute is not yet recognized by astro types for native video elements, even though it is now
+ * web standard. therefore, we have extended VideoHTMLAttributes to include it.
+ *
+ * @see src/env.d.ts
+ */
+type NativeVideoProps = Omit<HTMLAttributes<"video">, "src">;
+// type NativeVideoProps = Omit<HTMLAttributes<"video">, "src"> & {loading?: "lazy" | "eager"};
+
+type VideoSourceProps = {
     videoSrcMobile?: string;
-    photoAlt: string;
+    videoSrcDesktop?: string;
+    videoType?: string;
+    mobileMedia?: string;
+};
+
+type ClassProps = {
+    mediaClass?: string;
     class?: string;
-
-    autoplay?: boolean;
-    muted?: boolean;
-    loop?: boolean;
-    playsinline?: boolean;
-    controls?: boolean;
-    preload?: "none" | "metadata" | "auto";
-    poster?: ImageMetadata;
 }
+
+type ObserveTargetProps = {
+    observeTargetSelector?: string;
+};
+
+type SharedProps = ClassProps & ObserveTargetProps;
+
+type MediaCandidateProps = {
+    image?: AstroImageProps["src"]
+    imageAlt?: AstroImageProps["alt"]
+} & VideoSourceProps
+
+type Props2 =
+    SharedProps &
+    MediaCandidateProps &
+    Omit<AstroImageProps, "src" | "alt" | "class"> &
+    Omit<NativeVideoProps, "src" | "class">;
+
+type MediaImageProps = {
+    image: AstroImageProps["src"]
+    imageAlt: AstroImageProps["alt"]
+    // videoSrcMobile?: never;
+    // videoSrcDesktop?: never;
+    // videoType?: never;
+    // mobileMedia?: never;
+} & Omit<AstroImageProps, "src" | "alt"> &
+    SharedProps;
+
+type ImageRenderAttrs = Omit<
+    MediaImageProps,
+    | "image"
+    | "imageAlt"
+    | "mediaClass"
+    | "class"
+    | "observeTargetSelector"
+>;
+
+type MediaVideoProps = {
+    // image?: never;
+    // imageAlt?: never;
+} & NativeVideoProps &
+    VideoSourceProps &
+    SharedProps;
+
+type VideoRenderAttrs = Omit<
+    MediaVideoProps,
+    | "videoSrcMobile"
+    | "videoSrcDesktop"
+    | "videoType"
+    | "mobileMedia"
+    | "mediaClass"
+    | "class"
+    | "observeTargetSelector"
+>;
+
+type Props = MediaImageProps | MediaVideoProps;
+
 const {
-    kind = "image",
-    image,
-    videoSrc,
-    videoSrcMobile,
-    photoAlt,
-    class: className = "",
+    mediaClass = "default-media-class",
+    class: className,
+    observeTargetSelector,
+    ...attrs
+} = Astro.props as Props;
 
-    autoplay = false,
-    muted = true,
-    loop = true,
-    playsinline = true,
-    controls = false,
-    preload = "metadata",
-    poster,
-    ...rest
-} = Astro.props;
+const hasVideo = "videoSrcDesktop" in attrs &&
+    "videoSrcMobile" in attrs &&
+    typeof attrs.videoSrcDesktop === "string" &&
+    attrs.videoSrcDesktop.length > 0 &&
+    typeof attrs.videoSrcMobile === "string" &&
+    attrs.videoSrcMobile.length > 0;
 
-const posterUsed = poster?.src ?? image?.src;
+const hasImage = "image" in attrs && attrs.image != null;
+
+const kind = hasVideo
+    ? "video"
+    : hasImage
+        ? "image"
+        : undefined;
+
+// console.log("attrs", attrs);
+// if ("video" in attrs) {
+//     console.log("image", attrs.video);
+// }
+console.log("astro props", Astro.props);
+console.log("kind:", kind);
+console.log("----------------");
 ---
 <>
     {
-        kind === "video" ? (
-                <video
-                        data-media
-                        {...rest}
-                        class="absolute object-cover transition-transform duration-300"
-                        autoplay={autoplay}
-                        muted={muted}
-                        loop={loop}
-                        playsinline={playsinline}
-                        controls={controls}
-                        preload={preload}
-                        poster={posterUsed}
-                >
-                    {videoSrcMobile && (
+        kind === "image" ? (
+            (() => {
+                const {
+                    image,
+                    imageAlt,
+                    ...imageAttrs
+                } = attrs as MediaImageProps;
+
+                const imageProps = {
+                    src: image,
+                    alt: imageAlt,
+                    ...(imageAttrs as ImageRenderAttrs),
+                } as AstroImageProps;
+
+                return (
+                        <Image
+                                data-media
+                                {...imageProps}
+                                class:list={[mediaClass, className]}
+                        />
+                )
+            })()
+        ) : kind === "video" ? (
+            (() => {
+                const {
+                    videoSrcMobile,
+                    videoSrcDesktop,
+                    videoType = "video/webm",
+                    mobileMedia = "(max-width: 640px)",
+                    autoplay = false,
+                    muted = true,
+                    loop = true,
+                    playsinline = true,
+                    controls = false,
+                    preload = "none",
+                    loading = "lazy",
+                    ...videoAttrs
+                } = attrs as MediaVideoProps;
+
+                return (
+                        <video
+                                data-media
+                                {...(videoAttrs as VideoRenderAttrs)}
+                                autoplay={autoplay}
+                                muted={muted}
+                                loop={loop}
+                                playsinline={playsinline}
+                                controls={controls}
+                                preload={preload}
+                                loading={loading}
+                                class:list={[mediaClass, className]}
+                        >
                             <source
                                     src={videoSrcMobile}
-                                    media="(max-width: 640px)"
-                                    type="video/mp4"
+                                    media={mobileMedia}
+                                    type={videoType}
                             />
-                    )}
 
-                    {videoSrc && (
                             <source
-                                    src={videoSrc}
-                                    type="video/mp4"
+                                    src={videoSrcDesktop}
+                                    type={videoType}
                             />
-                    )}
-                </video>
-        ) : (
-                <img
-                        data-media
-                        {...rest}
-                        src={image?.src}
-                        alt={photoAlt}
-                        loading="lazy"
-                        decoding="async"
-                        class="absolute object-cover transition-transform duration-300"
-                />
-        )
+                        </video>
+                );
+            })()
+        ) : null
     }
-    <script define:vars={{kind}}>
+    <style>
+        .default-media-class {
+            position: absolute;
+            object-fit: cover;
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+    </style>
+    <script define:vars={{kind, observeTargetSelector}}>
         (() => {
-            const root = document.currentScript.parentElement;
-            const media = root.querySelector("[data-media]");
+            const host = document.currentScript?.parentElement;
+            if (!host || !kind) return;
+
+            const media = host.querySelector("[data-media]");
+            if (!media) return;
+
+            const observeTarget =
+                observeTargetSelector
+                    ? host.closest(observeTargetSelector)
+                    : host;
+
+            if (!observeTarget) return;
+
+
+            const markReady = () => {
+                observeTarget.dataset.smartmediaReady = "true";
+
+                observeTarget.dispatchEvent(
+                    new CustomEvent("smartmedia:ready", {
+                        bubbles: true,
+                        detail: {
+                            media,
+                            kind,
+                        },
+                    })
+                );
+            };
+
             let hasLoaded = false;
 
             const loadMedia = async () => {
@@ -99,6 +235,8 @@ const posterUsed = poster?.src ?? image?.src;
                                     media.addEventListener("loadedmetadata", resolve, {once: true});
                                     media.addEventListener("canplay", resolve, {once: true});
                                     media.addEventListener("error", resolve, {once: true});
+
+                                    media.load?.();
                                 })
                         )
                         :
@@ -110,29 +248,35 @@ const posterUsed = poster?.src ?? image?.src;
 
                 await mediaReady;
 
-                root.dataset.ready = "true";
+                observeTarget.dataset.ready = "true";
+                markReady();
             };
 
             const observer = new IntersectionObserver(
                 async ([entry]) => {
                     if (entry.isIntersecting) {
-                        await loadMedia(entry.target);
+                        await loadMedia();
                         if (kind === "video") {
-                            media.play?.().catch(() => {});
+                            media.play?.().catch(() => {
+                            });
+                            console.log("media playing");
+
                         }
                     } else {
                         if (kind === "video") {
                             media.pause?.();
+                            console.log("media paused");
+
                         }
                     }
                 },
                 {
                     rootMargin: "400px 0px",
-                    threshold: 0.1,
+                    threshold: 0,
                 }
             );
 
-            observer.observe(root);
+            observer.observe(observeTarget);
         })()
     </script>
 </>

@@ -6,10 +6,33 @@
   "bookingShareOGPhoto": "/uploads/ogimages/blutattoo_booking_og.png",
   "bookingFlashLight": "assets/images/bookingFlashLight.svg",
   "bookingFlashDark": "assets/images/bookingFlashDark.svg",
+  "hero": {
+    "video": {
+      "videoMobile": "/uploads/misc_videos/hero-mobile.webm",
+      "videoDesktop": "/uploads/misc_videos/hero_desktop.webm",
+      "posterMobile": "assets/images/poster-mobile.jpg",
+      "posterDesktop": "assets/images/poster-desktop.jpg"
+    },
+    "bookingHeroPhoto": "assets/images/DSC02546-2.jpg"
+  },
   "ourLocation": {
     "shopImage": "assets/images/blutattoo_exterior.jpg"
   },
+  "ourArtists": {
+    "video": {
+      "videoMobile": "/uploads/misc_videos/ourartists_mobile.webm",
+      "videoDesktop": "/uploads/misc_videos/ourartists_desktop.webm",
+      "posterMobile": "assets/images/ourartists_poster_mobile.jpg",
+      "posterDesktop": "assets/images/ourartists_poster_desktop.jpg"
+    }
+  },
   "ourProcess": {
+    "video": {
+      "videoMobile": "/uploads/misc_videos/ourprocess_mobile.webm",
+      "videoDesktop": "/uploads/misc_videos/ourprocess_desktop.webm",
+      "posterMobile": "assets/images/ourprocess_poster_mobile.jpg",
+      "posterDesktop": "assets/images/ourprocess_poster_desktop.jpg"
+    },
     "processText": "A tattoo should feel exciting from the first idea to the time it's healed. Whether you're new to getting tattooed or a ink veteran, whether your tattoo is a dream you've had for years or a spur of the moment idea, BluTattoo is happy to work with you to realize your vision.\n\nOnce you’re ready, book directly with your artist, or just walk on in! We’ll take care of the rest: a clean, licensed studio environment and guidance for keeping your tattoo looking great long after you leave the chair.\n\nReady to start your next piece? Browse our artists, choose your fit, and let’s make something permanent.",
     "scrollPeelStackImage1": "assets/images/zirk1.jpeg",
     "scrollPeelStackImage2": "assets/images/hero-poster.jpg",
@@ -22,17 +45,14 @@
   "ourStory": {
     "frameImage": "assets/images/ourstoryframe1.png",
     "frameWindowSvg": "assets/images/ourstoryframe_opening1.svg",
+    "video": {
+      "videoMobile": "/uploads/misc_videos/ourstory_mobile.webm",
+      "videoDesktop": "/uploads/misc_videos/ourstory_desktop.webm",
+      "posterMobile": "assets/images/ourstory_poster_mobile.jpg",
+      "posterDesktop": "assets/images/ourstory_poster_desktop.jpg"
+    },
     "image": "assets/images/hero-poster.jpg",
     "imgAltText": "picture of potato head guy",
     "storyText": "Establishing and running a professional tattoo studio in the heart of Uptown Martinsville, VA would be daunting for any new business owner. At five months pregnant, local native Lara Blair did not at first feel up to the task. “No one can be a mother and run a tattoo shop.” But with family nearby and more on the way, she couldn’t move. With the encouragement of Laurna, a veteran shop owner and tattoo artist who joined BluTattoo early on, it became clear that there was no use living a life ruled by fear of the unknown.\n\nMaking waves against the tide of male-dominated industry, Lara has built BluTattoo into a thriving studio serving not only Martinsville, but people across the region who are seeking hand-crafted art.\n\nNot long after, the shop would welcome Sierra Davis, and later bring Zoe Kirk under its wing as its first apprentice (now a licensed artist). As Martinsville's first woman-owned studio, BluTattoo is proud to serve its community, and change the tide along the way."
-  },
-  "hero": {
-    "video": {
-      "videoMobile": "/uploads/misc_videos/hero-mobile.mp4",
-      "videoDesktop": "/uploads/misc_videos/hero-web.mp4",
-      "posterMobile": "assets/images/poster-mobile.jpg",
-      "posterDesktop": "assets/images/poster-desktop.jpg"
-    },
-    "bookingHeroPhoto": "assets/images/DSC02546-2.jpg"
   }
 }

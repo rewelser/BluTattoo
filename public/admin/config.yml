@@ -15,6 +15,40 @@ public_folder: "/uploads"
 output:
   omit_empty_optional_fields: true
 
+_video_field: &responsive_video_field
+  name: video
+  label: "Video"
+  widget: object
+  required: false
+  fields:
+    - name: videoMobile
+      label: "Mobile Video"
+      widget: file
+      required: true
+      hint: "Video that will show up on mobile devices (max-width: 640px)"
+      media_folder: "/public/uploads/misc_videos"
+      public_folder: "/uploads/misc_videos"
+
+    - name: videoDesktop
+      label: "Desktop Video"
+      widget: file
+      required: true
+      hint: "Video that will show up on wider devices (>640px)"
+      media_folder: "/public/uploads/misc_videos"
+      public_folder: "/uploads/misc_videos"
+
+    - name: posterMobile
+      label: "Poster image (mobile)"
+      widget: image
+      required: true
+      hint: "Shown before video loads / if autoplay fails."
+
+    - name: posterDesktop
+      label: "Poster image (desktop)"
+      widget: image
+      required: true
+      hint: "Shown before video loads / if autoplay fails."
+
 collections:
   - name: "faqSections"
     label: "FAQ Sections"
@@ -485,6 +519,49 @@ collections:
             required: false
             hint: "The moving background design that will appear on the booking page behind the link sheet (desktop)."
 
+          - name: hero
+            label: "Hero"
+            widget: object
+            fields:
+              - name: video
+                label: "Video"
+                widget: object
+                required: false
+                fields:
+                  - name: videoMobile
+                    label: "Mobile Video"
+                    widget: file
+                    required: true
+                    hint: "Video that will show up on mobile devices (max-width: 640px)"
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: videoDesktop
+                    label: "Desktop Video"
+                    widget: file
+                    required: true
+                    hint: "Video that will show up on wider devices (>640px)"
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: posterMobile
+                    label: "Poster image (mobile)"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
+                  - name: posterDesktop
+                    label: "Poster image (desktop)"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
+              - name: bookingHeroPhoto
+                label: "Hero image for booking page"
+                widget: image
+                required: true
+                hint: "Group photo, or something like that (don't use site logo -- that will appear overtop)."
+
           - name: ourLocation
             label: "Our Location"
             widget: object
@@ -496,11 +573,51 @@ collections:
                 hint: "A picture that represents the business location. Can be interior or exterior."
                 required: true
 
+          - name: ourArtists
+            label: "Our Artists"
+            widget: object
+            required: false
+            fields:
+              - *responsive_video_field
+
           - name: ourProcess
             label: "Our Process"
             widget: object
             required: false
             fields:
+              - name: video
+                label: "Video"
+                widget: object
+                required: false
+                fields:
+                  - name: videoMobile
+                    label: "Mobile Video"
+                    widget: file
+                    required: true
+                    hint: "Video that will show up on mobile devices (max-width: 640px)"
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: videoDesktop
+                    label: "Desktop Video"
+                    widget: file
+                    required: true
+                    hint: "Video that will show up on wider devices (>640px)"
+                    media_folder: "/public/uploads/misc_videos"
+                    public_folder: "/uploads/misc_videos"
+
+                  - name: posterMobile
+                    label: "Poster image (mobile)"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
+                  - name: posterDesktop
+                    label: "Poster image (desktop)"
+                    widget: image
+                    required: true
+                    hint: "Shown before video loads / if autoplay fails."
+
               - name: processText
                 label: "Text for Our Process"
                 widget: text
@@ -564,25 +681,6 @@ collections:
                 required: true
                 hint: "This image is an SVG with one path that represents the opening through which the image is framed. Must be SVG--otherwise, the world will explode."
 
-              - name: image
-                label: "Image to be framed"
-                widget: image
-                required: true
-
-              - name: imgAltText
-                label: "alt text for image"
-                widget: string
-                required: false
-
-              - name: storyText
-                label: "Text for Our Story"
-                widget: text
-                required: true
-
-          - name: hero
-            label: "Hero"
-            widget: object
-            fields:
               - name: video
                 label: "Video"
                 widget: object
@@ -599,7 +697,7 @@ collections:
                   - name: videoDesktop
                     label: "Desktop Video"
                     widget: file
-                    required: false
+                    required: true
                     hint: "Video that will show up on wider devices (>640px)"
                     media_folder: "/public/uploads/misc_videos"
                     public_folder: "/uploads/misc_videos"
@@ -616,11 +714,20 @@ collections:
                     required: true
                     hint: "Shown before video loads / if autoplay fails."
 
-              - name: bookingHeroPhoto
-                label: "Hero image for booking page"
+              - name: image
+                label: "Image to be framed"
                 widget: image
                 required: true
-                hint: "Group photo, or something like that (don't use site logo -- that will appear overtop)."
+
+              - name: imgAltText
+                label: "alt text for image"
+                widget: string
+                required: false
+
+              - name: storyText
+                label: "Text for Our Story"
+                widget: text
+                required: true
 
   - name: "eventsActive"
     label: "Events (Active)"
