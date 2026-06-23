@@ -5,11 +5,12 @@ import personRunwayPhoto from "./assets/default-runway-photo.svg";
 
 export const defaults = {
     siteName: "Company Name",
+    siteUrl: "https://www.example.com/",
     siteLogo,
     personProfilePicture,
     personRunwayPhoto,
     bookingHeroPhoto,
-    ogPhoto: "/default_media/default-booking-photo.jpg",
+    ogPhoto: "/default_media/ogimages/generic-og-image.jpg",
     address: {
         streetAddress: "123 Main St",
         addressLocality: "Anytown",

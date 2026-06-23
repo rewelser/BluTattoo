@@ -8,8 +8,16 @@ runwayPhoto: assets/images/headshot_final.jpg
 runwayPhotoFrame: roundframe2
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: assets/images/sierra_pfp.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
+  contact:
+    - type: phone
+      href: '8288675309'
+      enabled: true
+      preferred: false
+      callOrTextPreferred: text
+      textMessageDefaultInquiry: Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!
 images:
   - assets/images/att.DsUbXZEHggaKRimHaOYzOT9rvkTduMXcOza4Pei9Kg8.jpg
   - assets/images/att.YfBp0bBdD_qfs7hzo0VeGllnBbpCacdl1xihlEekgTo.jpg

@@ -153,6 +153,7 @@ const siteInfo = defineCollection({
     loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo"}),
     schema: z.object({
         siteName: z.string(),
+        siteUrl: z.string().url(),
         address: z.object({
             streetAddress: z.string(),
             addressLocality: z.string(),

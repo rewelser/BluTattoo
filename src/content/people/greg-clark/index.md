@@ -7,6 +7,7 @@ runwayPhoto: assets/images/greg_runway.jpg
 runwayPhotoFrame: archedframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: assets/images/greg_profile.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
   socials:

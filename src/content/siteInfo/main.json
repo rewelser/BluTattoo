@@ -1,5 +1,6 @@
 {
   "siteName": "BluTattoo Studio",
+  "siteUrl": "https://www.blutattoostudio.com",
   "address": {
     "streetAddress": "50 Church St E #4",
     "addressLocality": "Martinsville",
@@ -30,7 +31,7 @@
     },
     {
       "label": "Fri",
-      "value": "12:00–8:00"
+      "value": "12:00–7:00"
     },
     {
       "label": "Sat",
@@ -38,10 +39,10 @@
     },
     {
       "label": "Sun",
-      "value": "Closed"
+      "value": "12:00–7:00"
     }
   ],
-  "hoursShortline": "12a to 8p | Tuesday - Sunday\nClosed Monday",
+  "hoursShortline": "12p to 7p | Tuesday - Friday, Sunday\n12p to 8p | Saturday\nClosed Monday",
   "socials": {
     "instagram": "https://www.instagram.com/blutattoostudiollc/",
     "facebook": "https://www.facebook.com/profile.php?id=100072946814920"

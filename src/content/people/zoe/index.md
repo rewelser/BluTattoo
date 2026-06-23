@@ -8,6 +8,7 @@ runwayPhoto: assets/images/zoe-runway.jpg
 runwayPhotoFrame: roundframe3
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: assets/images/zoe_pfp.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
   contact:

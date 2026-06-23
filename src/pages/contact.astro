@@ -10,6 +10,9 @@ const site = await getEntry("siteInfo", "main");
 
 // Fallbacks if content isn’t filled yet
 const shopName = site?.data.siteName ?? defaults.siteName;
+const siteUrl = (site?.data.siteUrl ?? defaults.siteUrl).replace(/\/$/, "");
+const businessId = `${siteUrl}/#business`;
+const contactPageUrl = `${siteUrl}/contact/`;
 const addressObj = site?.data.address ?? defaults.address;
 
 const phone = site?.data.phone ?? defaults.sitePhone;
@@ -27,28 +30,51 @@ const phoneHref = `tel:${phoneDigits}`;
 const emailHref = `mailto:${email}`;
 const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 
-const contactJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "TattooParlor",
-    name: shopName,
-    address: {
-        "@type": "PostalAddress",
-        streetAddress: addressObj.streetAddress,
-        addressLocality: addressObj.addressLocality,
-        addressRegion: addressObj.addressRegion,
-        postalCode: addressObj.postalCode,
-        addressCountry: addressObj.addressCountry
-    },
-    telephone: phone,
-    email: email,
-    url: "https://your-domain-here.com/contact"
-};
-
 const title = "Contact Us";
 const description = "Contact BluTattoo for questions about tattoos, piercings, appointments, guest spots, and studio information.";
+const contactPageJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "ContactPage",
+            "@id": `${contactPageUrl}#webpage`,
+            url: contactPageUrl,
+            name: title,
+            description,
+            about: {
+                "@id": businessId
+            },
+            mainEntity: {
+                "@id": businessId
+            }
+        },
+        {
+            "@type": "TattooParlor",
+            "@id": businessId,
+            name: shopName,
+            url: siteUrl,
+            telephone: phone,
+            email,
+            address: {
+                "@type": "PostalAddress",
+                streetAddress: addressObj.streetAddress,
+                addressLocality: addressObj.addressLocality,
+                addressRegion: addressObj.addressRegion,
+                postalCode: addressObj.postalCode,
+                addressCountry: addressObj.addressCountry
+            },
+            hasMap: mapHref
+        }
+    ]
+};
 ---
 
 <Layout title={title} description={description}>
+    <!-- SEO structured data -->
+    <script
+            type="application/ld+json"
+            set:html={JSON.stringify(contactPageJsonLd).replace(/</g, "\\u003c")}
+    />
 
     <article class="page-article page-article--bleed">
         <header>
@@ -182,10 +208,4 @@ const description = "Contact BluTattoo for questions about tattoos, piercings, a
             </section>
         </div>
     </article>
-
-    {/* SEO structured data */}
-    <script
-            type="application/ld+json"
-            set:html={JSON.stringify(contactJsonLd)}
-    />
 </Layout>

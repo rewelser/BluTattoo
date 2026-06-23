@@ -27,116 +27,135 @@ const background =
             ? c1
             : defaultBg;
 ---
-<!-- text-nowrap -->
-<aside
-        id={id}
-        class="promo-bar fixed top-0 left-0 w-full z-[80]"
-        role="region"
-        aria-label="Announcement"
->
-    <div
-            class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-md sm:text-base md:text-2xl"
-            style={`background: ${background};`}
+<>
+    <aside
+            id={id}
+            class="promo-bar fixed top-0 left-0 w-full z-[80]"
+            role="region"
+            aria-label="Announcement"
     >
-        <a
-                class="promo-outline flex items-center justify-center w-full h-full text-center"
-                href={href}
+        <div
+                class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-md sm:text-base md:text-2xl"
+                style={`background: ${background};`}
         >
-            {message}
-        </a>
-        <button
-                type="button"
-                class="ml-auto px-2 py-1 leading-none cursor-pointer"
-                aria-label="Dismiss announcement"
-                data-dismiss
-        >
-            ✕
-        </button>
-    </div>
-</aside>
+            <a
+                    class="promo-outline flex items-center justify-center w-full h-full text-center"
+                    href={href}
+            >
+                {message}
+            </a>
+            <button
+                    type="button"
+                    class="ml-auto px-2 py-1 leading-none cursor-pointer"
+                    aria-label="Dismiss announcement"
+                    data-dismiss
+            >
+                ✕
+            </button>
+        </div>
+    </aside>
 
-<style>
-    .promo-bar {
-        transform: translateY(0);
-        view-transition-name: promo-bar;
-    }
+    <style>
+        .promo-bar {
+            transform: translateY(0);
+            view-transition-name: promo-bar;
+        }
 
-    html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
-        transition: transform var(--promo-bar-duration) ease;
-    }
-
-    @starting-style {
         html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
-            transform: translateY(-100%);
-        }
-    }
-
-    html[data-load="internal"] .promo-bar:not([data-promo-state="dismiss"]) {
-        transform: translateY(0);
-        transition: none;
-    }
-
-    .promo-bar[data-promo-state="dismiss"] {
-        transform: translateY(-100%);
-        transition: transform var(--promo-bar-duration) ease;
-    }
-</style>
-
-<script is:inline define:vars={{storageKey, id, duration}}>
-    (() => {
-        const root = document.documentElement;
-        const promoBar = document.getElementById(id);
-
-        const internalNav =
-            !!navigation.activation?.from &&
-            navigation.activation.from.url &&
-            new URL(navigation.activation.from.url).origin === location.origin;
-
-        const setAnnouncementHeight = (value) => {
-            root.style.setProperty("--promo-bar-h", value);
+            transition: transform var(--promo-bar-duration) ease;
         }
 
-        const show = () => {
-            // root.dataset.load = "internal";
-            root.dataset.load = internalNav ? "internal" : "direct";
-
-            const measured = `${promoBar.offsetHeight}px`;
-            setAnnouncementHeight(measured);
-        }
-
-        const hide = () => {
-            promoBar.setAttribute("data-promo-state", "dismiss");
-            setAnnouncementHeight("0px");
-
-            // window.setTimeout(() => {
-            //     promoBar.hidden = true;
-            // }, duration);
-        }
-
-        console.log("internalNav", internalNav);
-
-        const dismissed = localStorage.getItem(storageKey) === "1" && false;
-
-        if (!dismissed) {
-            show();
-        }
-
-        promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
-            try {
-                // localStorage.setItem(storageKey, "1");
-            } catch {
+        @starting-style {
+            html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
+                transform: translateY(-100%);
             }
-            hide();
-        })
+        }
 
-        window.addEventListener(
-            "resize",
-            () => {
-                if (!dismissed) {
-                    show();
+        html[data-load="internal"] .promo-bar:not([data-promo-state="dismiss"]) {
+            transform: translateY(0);
+            transition: none;
+        }
+
+        .promo-bar[data-promo-state="dismiss"] {
+            transform: translateY(-100%);
+            transition: transform var(--promo-bar-duration) ease;
+        }
+    </style>
+
+    <script is:inline define:vars={{storageKey, id, duration}}>
+        (() => {
+            const root = document.documentElement;
+            const promoBar = document.getElementById(id);
+
+            const navFrom = globalThis.navigation?.activation?.from;
+
+            const internalNav =
+                !!navFrom?.url &&
+                new URL(navFrom.url).origin === location.origin;
+
+            const setAnnouncementHeight = (value) => {
+                root.style.setProperty("--promo-bar-h", value);
+            }
+
+            const show = () => {
+                // root.dataset.load = "internal";
+                root.dataset.load = internalNav ? "internal" : "direct";
+
+                const measured = `${promoBar.offsetHeight}px`;
+                setAnnouncementHeight(measured);
+            }
+
+            const hide = () => {
+                promoBar.setAttribute("data-promo-state", "dismiss");
+                setAnnouncementHeight("0px");
+
+                // window.setTimeout(() => {
+                //     promoBar.hidden = true;
+                // }, duration);
+            }
+
+            // console.log("internalNav", internalNav);
+
+            let dismissed = false;
+
+            try {
+                dismissed = localStorage.getItem(storageKey) === "1";
+            } catch {
+                dismissed = false;
+            }
+
+            if (!dismissed) {
+                show();
+            }
+
+            promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+                try {
+                    localStorage.setItem(storageKey, "1");
+                } catch {
                 }
-            },
-            {passive: true},
-        );
-    })();
-</script>
+                hide();
+            })
+
+            // this is probably fine, but replaced with one after (decide later):
+            // window.addEventListener(
+            //     "resize",
+            //     () => {
+            //         if (!dismissed) {
+            //             show();
+            //         }
+            //     },
+            //     {passive: true},
+            // );
+
+            window.addEventListener(
+                "resize",
+                () => {
+                    if (promoBar.getAttribute("data-promo-state") !== "dismiss") {
+                        show();
+                    }
+                },
+                {passive: true},
+            );
+        })();
+    </script>
+</>

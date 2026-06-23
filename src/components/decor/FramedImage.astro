@@ -95,37 +95,12 @@ const posterUsed = poster?.src ?? framedImage.src;
                 const root = document.currentScript.closest("[ data-framed-media-container]");
                 const shape = root.querySelector("[data-frame-window] path");
                 const media = root.querySelector("[data-framed-media]");
-                console.log("Media", media);
                 const frame = root.querySelector("[data-frame]");
-                let hasLoaded = false;
-
-                const loadFrame = async () => {
-                    if (hasLoaded) return;
-                    hasLoaded = true;
-
-                    const frameReady = new Promise((resolve) => {
-                        const frameSrc = frame?.dataset.frameSrc;
-
-                        if (!frame || !frameSrc) {
-                            resolve();
-                            return;
-                        }
-
-                        frame.addEventListener("load", resolve, {once: true});
-                        frame.addEventListener("error", resolve, {once: true});
-                        frame.src = frameSrc;
-                    });
-
-                    await frameReady;
-
-                    root.dataset.ready = "true";
-                };
 
                 const observer = new IntersectionObserver(
                     async ([entry]) => {
                         if (entry.isIntersecting) {
                             observer.unobserve(entry.target);
-                            // await loadFrame(entry.target);
                             root.dataset.ready = "true";
                         }
                     },

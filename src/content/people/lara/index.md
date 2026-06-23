@@ -8,6 +8,7 @@ runwayPhoto: assets/images/lara-runway.jpg
 runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: assets/images/lara_pfp.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
   platforms:

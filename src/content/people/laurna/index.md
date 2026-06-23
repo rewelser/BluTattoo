@@ -7,6 +7,7 @@ runwayPhoto: assets/images/laurna-runway.jpg
 runwayPhotoFrame: squareframe1
 primaryRole: Tattoo Artist
 contactSocialsBooking:
+  bookingProfilePicture: assets/images/laurna_pfp.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
   contact:

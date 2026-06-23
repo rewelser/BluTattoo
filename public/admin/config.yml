@@ -390,7 +390,8 @@ collections:
         file: "src/content/siteInfo/main.json"
         format: "json"
         fields:
-          - { name: siteName, label: "Site Name", widget: string, default: "BluTattoo Studio" }
+          - { name: siteName, label: "Business Name", widget: string, default: "Example Business Name" }
+          - { name: siteUrl, label: "Full Site URL", widget: string, default: "https://www.example.com" }
           - name: "address"
             label: "Address"
             widget: "object"
