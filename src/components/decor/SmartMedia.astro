@@ -113,7 +113,7 @@ const kind = hasVideo
                     loop = true,
                     playsinline = true,
                     controls = false,
-                    preload = "none",
+                    preload = "metadata",
                     loading = "lazy",
                     ...nativeVideoAttrs
                 } = videoAttrs ?? {};
@@ -215,6 +215,7 @@ const kind = hasVideo
             const observer = new IntersectionObserver(
                 async ([entry]) => {
                     if (entry.isIntersecting) {
+                        console.log("Intersecting");
                         await loadMedia();
                         if (kind === "video") {
                             media.play?.().catch(() => {
@@ -227,8 +228,8 @@ const kind = hasVideo
                     }
                 },
                 {
-                    rootMargin: "400px 0px",
-                    threshold: 0,
+                    rootMargin: "600px 0px",
+                    threshold: 0.1,
                 }
             );
 
