@@ -113,19 +113,8 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
                                         />
                                     </div>
 
-                                    <img
-                                            alt=""
-                                            data-frame
-                                            data-person-card-frame
-                                            data-person-card-frame-src={frameConfig.frame.src}
-                                            loading="lazy"
-                                            decoding="async"
-                                            class="absolute inset-0 h-full w-full pointer-events-none"
-                                            aria-hidden="true"
-                                    />
-                                    <!--<Image-->
+                                    <!--<img-->
                                     <!--        alt=""-->
-                                    <!--        src={frameConfig.frame}-->
                                     <!--        data-frame-->
                                     <!--        data-person-card-frame-->
                                     <!--        data-person-card-frame-src={frameConfig.frame.src}-->
@@ -134,6 +123,17 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
                                     <!--        class="absolute inset-0 h-full w-full pointer-events-none"-->
                                     <!--        aria-hidden="true"-->
                                     <!--/>-->
+                                    <Image
+                                            alt=""
+                                            src={frameConfig.frame}
+                                            data-frame
+                                            data-person-card-frame
+                                            data-person-card-frame-src={frameConfig.frame.src}
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="absolute inset-0 h-full w-full pointer-events-none"
+                                            aria-hidden="true"
+                                    />
                                     <frameConfig.FrameClipComponent/>
 
                                     <script is:inline>

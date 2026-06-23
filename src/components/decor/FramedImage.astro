@@ -9,11 +9,11 @@ interface Props {
     kind?: "image" | "video";
     frame: ImageMetadata;
     framedImage: ImageMetadata;
-    videoSrc?: string;
+    videoSrcDesktop?: string;
     videoSrcMobile?: string;
     frameMask: SvgComponent;
     frameMaskImgMetadata: ImageMetadata;
-    photoAlt: string;
+    imageAlt: string;
     class?: string;
 
     autoplay?: boolean;
@@ -29,11 +29,11 @@ const {
     kind = "image",
     frame,
     framedImage,
-    videoSrc,
+    videoSrcDesktop,
     videoSrcMobile,
     frameMask: FrameMask,
     frameMaskImgMetadata,
-    photoAlt,
+    imageAlt,
     class: className = "",
 
     autoplay = false,
@@ -59,11 +59,18 @@ const posterUsed = poster?.src ?? framedImage.src;
         >
             <SmartMedia
                     data-framed-media
-                    image={framedImage}
-                    imageAlt={photoAlt}
-                    videoSrcDesktop={videoSrc}
-                    videoSrcMobile={videoSrcMobile}
-                    poster={framedImage.src}
+                    imageAttrs={framedImage
+                        ? {
+                            src: framedImage,
+                            alt: imageAlt
+                        } : undefined
+                    }
+
+                    videoAttrs={{
+                        videoSrcDesktop: videoSrcDesktop,
+                        videoSrcMobile: videoSrcMobile,
+                        poster: posterUsed
+                    }}
             />
         </div>
 
@@ -83,7 +90,8 @@ const posterUsed = poster?.src ?? framedImage.src;
             (() => {
                 const root = document.currentScript.closest("[ data-framed-media-container]");
                 const shape = root.querySelector("[data-frame-window] path");
-                const media = root.querySelector("[ data-framed-media]");
+                const media = root.querySelector("[data-framed-media]");
+                console.log("Media", media);
                 const frame = root.querySelector("[data-frame]");
                 let hasLoaded = false;
 
@@ -176,7 +184,7 @@ const posterUsed = poster?.src ?? framedImage.src;
         [ data-framed-media-container] {
             opacity: 0;
             position: relative;
-            transition: opacity 3000ms cubic-bezier(.2, .8, .2, 1);
+            transition: opacity 2000ms cubic-bezier(.2, .8, .2, 1);
         }
 
         [ data-framed-media-container][data-ready="true"] {

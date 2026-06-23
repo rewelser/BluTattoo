@@ -1,7 +1,6 @@
 ---
 /**
     * ParallaxWindow (image OR video)
-    * - kind: "image" | "video"
     * - src: media url
     * - windowHeight: CSS height for the "window" (default 35vh)
     * - strength: how much slower than scroll (0.2 subtle, 0.35 stronger)
@@ -12,17 +11,12 @@
     */
 
 import type {ImageMetadata} from "astro";
-import {Image} from "astro:assets";
-import SmartMedia from "./SmartMedia2.astro";
+import SmartMedia from "./SmartMedia.astro";
 
 export interface Props {
-    kind?: "image" | "video";
-    // this is confusing. I know it is because we are using the src for both the image and the video, but it's annoying, and assumes there's no mobile image variant
-    src: ImageMetadata | string;
     image?: ImageMetadata;
     vidSrcMobile?: string;
     vidSrcDesktop?: string;
-    srcMobile?: string;
     alt?: string; // only used for images
     windowHeight?: string;
     windowHeightMobile?: string;
@@ -47,13 +41,13 @@ export interface Props {
 }
 
 const {
-    kind = "image",
-    src,
-    srcMobile,
     image,
+    alt = "",
+
     vidSrcMobile,
     vidSrcDesktop,
-    alt = "",
+    poster,
+
     windowHeight = "35vh",
     windowHeightMobile,
     mediaHeightMult = 2,
@@ -66,15 +60,7 @@ const {
     class: className = "",
     layerClass,
 
-    autoplay = false,
-    muted = true,
-    loop = true,
-    playsinline = true,
-    controls = false,
-    preload = "metadata",
-    poster,
 } = Astro.props;
-console.log("pw image", image);
 ---
 
 <div
@@ -92,8 +78,7 @@ console.log("pw image", image);
                 observeTargetSelector="[data-pw]"
                 imageAttrs={image
                     ? {
-                        src: image!,
-                        width: 1200,
+                        src: image,
                         sizes: "auto",
                         loading: "lazy",
                         decoding: "async",
@@ -105,7 +90,6 @@ console.log("pw image", image);
                     videoSrcDesktop: vidSrcDesktop,
                     videoSrcMobile: vidSrcMobile,
                     loading: "lazy",
-                    poster,
                 }}
         />
     </div>

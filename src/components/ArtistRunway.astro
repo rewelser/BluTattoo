@@ -104,8 +104,8 @@ const cardSlotClass =
                 }
             });
 
-            await Promise.all([photoReady, frameReady]);
-            // await photoReady;
+            // await Promise.all([photoReady, frameReady]);
+            await photoReady;
 
             card.dataset.ready = "true";
         };
@@ -120,8 +120,8 @@ const cardSlotClass =
                 }
             },
             {
-                rootMargin: "200px 0px",
-                threshold: 0.1,
+                rootMargin: "300px 0px",
+                threshold: 0,
             }
         );
 
@@ -148,7 +148,7 @@ const cardSlotClass =
         [data-person-card-frame] {
             opacity: 0;
             /*transition: opacity 3000ms cubic-bezier(.2, .8, .2, 1);*/
-            transition: opacity 5000ms cubic-bezier(.2, .8, .2, 1);
+            transition: opacity 2000ms cubic-bezier(.2, .8, .2, 1);
         }
 
         .person-card-container[data-ready="true"] [data-person-card-frame] {

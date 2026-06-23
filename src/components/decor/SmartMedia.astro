@@ -6,96 +6,69 @@ type AstroImageProps = ComponentProps<typeof Image>;
 
 /**
  * todo: `loading` attribute is not yet recognized by astro types for native video elements, even though it is now
- * web standard. therefore, we have extended VideoHTMLAttributes to include it.
+ * web standard. therefore, we have extended VideoHTMLAttributes to include it. Can likely remove that extension
+ * after upgrading Astro (check on this).
  *
  * @see src/env.d.ts
  */
 type NativeVideoProps = Omit<HTMLAttributes<"video">, "src">;
 // type NativeVideoProps = Omit<HTMLAttributes<"video">, "src"> & {loading?: "lazy" | "eager"};
 
-type VideoSourceProps = {
-    videoSrcMobile?: string;
-    videoSrcDesktop?: string;
-    videoType?: string;
-    mobileMedia?: string;
-};
-
-type ClassProps = {
+type SharedProps = {
     mediaClass?: string;
     class?: string;
-}
-
-type ObserveTargetProps = {
     observeTargetSelector?: string;
 };
 
-type SharedProps = ClassProps & ObserveTargetProps;
+type ImageCandidateProps = {
+    imageAttrs?: AstroImageProps;
+};
 
-type MediaCandidateProps = {
-    image?: AstroImageProps["src"]
-    imageAlt?: AstroImageProps["alt"]
-} & VideoSourceProps
+type VideoCandidateProps = {
+    videoAttrs?: NativeVideoProps & {
+        videoSrcMobile?: string;
+        videoSrcDesktop?: string;
+        videoMIMEType?: string;
+        mobileMedia?: string;
+    };
+};
 
-type Props2 =
-    SharedProps &
-    MediaCandidateProps &
-    Omit<AstroImageProps, "src" | "alt" | "class"> &
-    Omit<NativeVideoProps, "src" | "class">;
+type Props = SharedProps &
+    ImageCandidateProps &
+    VideoCandidateProps;
 
-type MediaImageProps = {
-    image: AstroImageProps["src"]
-    imageAlt: AstroImageProps["alt"]
-    // videoSrcMobile?: never;
-    // videoSrcDesktop?: never;
-    // videoType?: never;
-    // mobileMedia?: never;
-} & Omit<AstroImageProps, "src" | "alt"> &
-    SharedProps;
-
-type ImageRenderAttrs = Omit<
-    MediaImageProps,
-    | "image"
-    | "imageAlt"
-    | "mediaClass"
-    | "class"
-    | "observeTargetSelector"
->;
-
-type MediaVideoProps = {
-    // image?: never;
-    // imageAlt?: never;
-} & NativeVideoProps &
-    VideoSourceProps &
-    SharedProps;
-
-type VideoRenderAttrs = Omit<
-    MediaVideoProps,
-    | "videoSrcMobile"
-    | "videoSrcDesktop"
-    | "videoType"
-    | "mobileMedia"
-    | "mediaClass"
-    | "class"
-    | "observeTargetSelector"
->;
-
-type Props = MediaImageProps | MediaVideoProps;
+// interface Props extends SharedProps, ImageCandidateProps, VideoCandidateProps {}
 
 const {
     mediaClass = "default-media-class",
     class: className,
     observeTargetSelector,
-    ...attrs
+    imageAttrs,
+    videoAttrs,
+
+
+    // videoType = "video/webm",
+    // mobileMedia = "(max-width: 640px)",
+    // autoplay = false,
+    // muted = true,
+    // loop = true,
+    // playsinline = true,
+    // controls = false,
+    // preload = "none",
+    // loading = "lazy",
+
+
+    // everything else
+    ...rest
 } = Astro.props as Props;
 
-const hasVideo = "videoSrcDesktop" in attrs &&
-    "videoSrcMobile" in attrs &&
-    typeof attrs.videoSrcDesktop === "string" &&
-    attrs.videoSrcDesktop.length > 0 &&
-    typeof attrs.videoSrcMobile === "string" &&
-    attrs.videoSrcMobile.length > 0;
+const hasVideo =
+    typeof videoAttrs?.videoSrcDesktop === "string" &&
+    videoAttrs.videoSrcDesktop.length > 0 &&
+    typeof videoAttrs?.videoSrcMobile === "string" &&
+    videoAttrs.videoSrcMobile.length > 0;
 
-const hasImage = "image" in attrs && attrs.image != null;
+const hasImage = imageAttrs?.src != null;
 
 const kind = hasVideo
     ? "video"
@@ -103,44 +76,37 @@ const kind = hasVideo
         ? "image"
         : undefined;
 
-// console.log("attrs", attrs);
-// if ("video" in attrs) {
-//     console.log("image", attrs.video);
-// }
-console.log("astro props", Astro.props);
-console.log("kind:", kind);
-console.log("----------------");
+// console.log("astro props", Astro.props);
+// console.log("kind:", kind);
+// console.log("hasvideo", hasVideo);
+// console.log("----------------");
 ---
 <>
     {
-        kind === "image" ? (
-            (() => {
-                const {
-                    image,
-                    imageAlt,
-                    ...imageAttrs
-                } = attrs as MediaImageProps;
-
-                const imageProps = {
-                    src: image,
-                    alt: imageAlt,
-                    ...(imageAttrs as ImageRenderAttrs),
+        kind === "image" && imageAttrs ? ((()=> {
+                const resolvedImageAttrs = {
+                    ...imageAttrs,
+                    widths: imageAttrs.widths ?? [640, 768, 960, 1200, 1440, 1920],
+                    sizes: imageAttrs.sizes ?? "auto",
+                    loading: imageAttrs.loading ?? "lazy",
+                    decoding: imageAttrs.decoding ?? "async",
                 } as AstroImageProps;
 
                 return (
                         <Image
                                 data-media
-                                {...imageProps}
+                                {...rest}
+                                {...resolvedImageAttrs}
                                 class:list={[mediaClass, className]}
                         />
-                )
+                );
             })()
-        ) : kind === "video" ? (
-            (() => {
+
+        ) : kind === "video" ? ((() => {
                 const {
                     videoSrcMobile,
                     videoSrcDesktop,
-                    videoType = "video/webm",
+                    videoMIMEType = "video/webm",
                     mobileMedia = "(max-width: 640px)",
                     autoplay = false,
                     muted = true,
@@ -149,13 +115,13 @@ console.log("----------------");
                     controls = false,
                     preload = "none",
                     loading = "lazy",
-                    ...videoAttrs
-                } = attrs as MediaVideoProps;
-
+                    ...nativeVideoAttrs
+                } = videoAttrs ?? {};
                 return (
                         <video
                                 data-media
-                                {...(videoAttrs as VideoRenderAttrs)}
+                                {...rest}
+                                {...nativeVideoAttrs}
                                 autoplay={autoplay}
                                 muted={muted}
                                 loop={loop}
@@ -165,21 +131,15 @@ console.log("----------------");
                                 loading={loading}
                                 class:list={[mediaClass, className]}
                         >
-                            <source
-                                    src={videoSrcMobile}
-                                    media={mobileMedia}
-                                    type={videoType}
-                            />
-
-                            <source
-                                    src={videoSrcDesktop}
-                                    type={videoType}
-                            />
+                            <source src={videoSrcMobile} media={mobileMedia} type={videoMIMEType}/>
+                            <source src={videoSrcDesktop} type={videoMIMEType}/>
                         </video>
-                );
+                )
             })()
         ) : null
     }
+
+
     <style>
         .default-media-class {
             position: absolute;
@@ -259,14 +219,10 @@ console.log("----------------");
                         if (kind === "video") {
                             media.play?.().catch(() => {
                             });
-                            console.log("media playing");
-
                         }
                     } else {
                         if (kind === "video") {
                             media.pause?.();
-                            console.log("media paused");
-
                         }
                     }
                 },

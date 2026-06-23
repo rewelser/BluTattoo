@@ -4,7 +4,7 @@ import {getEntry} from "astro:content";
 import ScrollPeelStack, {type SideImages} from "../components/decor/ScrollPeelStack.astro";
 import DualFlourish from "../components/decor/DualFlourish.astro";
 import HrDivider from "../components/decor/HrDivider.astro";
-import ParallaxWindow from "../components/decor/ParallaxWindow2.astro";
+import ParallaxWindow from "../components/decor/ParallaxWindow.astro";
 import {defaults} from "../config/site.ts";
 import ArtistRunway from "../components/ArtistRunway.astro";
 import ScatterRegion from "../components/decor/ScatterRegion.astro";
@@ -96,9 +96,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                     <section class="px-6 py-16 md:py-24" aria-labelledby="our-location-heading">
                         <div class="m-2 rounded-xl overflow-hidden">
                             <ParallaxWindow
-                                    src={ourLocation?.shopImage}
                                     image={ourLocation?.shopImage}
-                                    kind="image"
                                     windowHeight="65vh"
                                     strength={.95}
                                     useMinMediaHeight={false}
@@ -205,11 +203,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                              data-section-theme="neutraldark">
                         <div class="mx-8 rounded-xl overflow-hidden">
                             <ParallaxWindow
-                                    src={ourArtists?.video?.videoDesktop!}
-                                    srcMobile={ourArtists?.video?.videoDesktop}
                                     vidSrcDesktop={ourArtists?.video?.videoDesktop}
                                     vidSrcMobile={ourArtists?.video?.videoDesktop}
-                                    kind="video"
                                     windowHeight="65vh"
                                     mediaHeightMult={1}
                                     mediaHeightMultMobile={.5}
@@ -242,18 +237,18 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         ourProcess && (() => {
             const ourProcessText = ourProcess.processText;
             const spsImages = [
-                ourProcess.scrollPeelStackImage1.src,
-                ourProcess.scrollPeelStackImage2.src,
-                ourProcess.scrollPeelStackImage3.src,
+                ourProcess.scrollPeelStackImage1,
+                ourProcess.scrollPeelStackImage2,
+                ourProcess.scrollPeelStackImage3,
             ];
             const spsSideImages = {
                 left: [
-                    {src: ourProcess.scrollPeelStackSideImage1.src, alt: "Side A"},
-                    {src: ourProcess.scrollPeelStackSideImage2.src, alt: "Side B"},
+                    {image: ourProcess.scrollPeelStackSideImage1, alt: "Side A"},
+                    {image: ourProcess.scrollPeelStackSideImage2, alt: "Side B"},
                 ],
                 right: [
-                    {src: ourProcess.scrollPeelStackSideImage3.src, alt: "Side C"},
-                    {src: ourProcess.scrollPeelStackSideImage4.src, alt: "Side D"},
+                    {image: ourProcess.scrollPeelStackSideImage3, alt: "Side C"},
+                    {image: ourProcess.scrollPeelStackSideImage4, alt: "Side D"},
                 ],
             } satisfies SideImages;
 
@@ -263,9 +258,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                              data-section-theme="neutraldark">
                         <div class="mx-8 rounded-xl overflow-hidden">
                             <ParallaxWindow
-                                    src={ourProcess.video?.videoDesktop!}
-                                    srcMobile={ourProcess.video?.videoMobile}
-                                    kind="video"
+                                    vidSrcMobile={ourProcess.video?.videoMobile}
+                                    vidSrcDesktop={ourProcess.video?.videoDesktop}
                                     windowHeight="65vh"
                                     mediaHeightMult={1}
                                     mediaHeightMultMobile={.5}
@@ -341,11 +335,12 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                         class="w-[80vw] lg:w-[40vw]"
                                         frame={ourStory?.frameImage}
                                         framedImage={ourStory?.image}
-                                        videoSrc={ourStory.video?.videoDesktop}
+                                        videoSrcDesktop={ourStory.video?.videoDesktop}
                                         videoSrcMobile={ourStory.video?.videoMobile}
+                                        poster={ourStory?.image}
                                         frameMask={ourStory?.frameWindowSvg}
                                         frameMaskImgMetadata={ourStory?.frameWindowSvg}
-                                        photoAlt={`${ourStory?.imgAltText || "image for our story section"}`}
+                                        imageAlt={`${ourStory?.imgAltText || "image for our story section"}`}
                                 />
                                 <style>
                                     .fade-bottom-40 {
