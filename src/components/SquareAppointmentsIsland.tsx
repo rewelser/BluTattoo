@@ -45,14 +45,9 @@ export default function SquareAppointmentsIsland({
 
     useEffect(() => {
         if (!open || loading || initialized || !wrapRef.current) return;
-        console.log("//////");
-        console.log("open", open);
-        console.log("loading", loading);
-
 
         if (countRef.current >= 1) return;
         countRef.current++;
-        console.log("countRef", countRef.current);
 
         setLoading(true);
 
@@ -64,12 +59,10 @@ export default function SquareAppointmentsIsland({
         script.onload = () => {
             setLoading(false);
             setInitialized(true);
-            console.log("should be initialized");
         };
 
         script.onerror = () => {
             setLoading(false);
-            console.log("onerror");
         };
 
         wrapRef.current.appendChild(script);
@@ -82,9 +75,9 @@ export default function SquareAppointmentsIsland({
     return (
         <div ref={rootRef} className={className}>
             {(open || initialized) && (
-                <div className="p-3">
+                <div>
                     {loading && (
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 p-3">
                             Loading booking widget…
                         </div>
                     )}
