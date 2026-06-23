@@ -11,7 +11,6 @@ import Footer from "../components/footer/Footer.astro";
 const site = await getEntry("siteInfo", "main");
 
 const {title, description, ogImage, isHome = false, preloadImage, pageTheme = "default", ...rest} = Astro.props;
-import "@fontsource/diplomata-sc";
 import "@fontsource/fleur-de-leah";
 
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
@@ -20,11 +19,9 @@ import spectral600Url from "@fontsource/spectral/files/spectral-latin-600-normal
 import spectral700Url from "@fontsource/spectral/files/spectral-latin-700-normal.woff2?url";
 import spectral800Url from "@fontsource/spectral/files/spectral-latin-800-normal.woff2?url";
 import spectral900Url from "@fontsource/spectral/files/spectral-latin-900-normal.woff2?url";
-import diplomataUrl from "@fontsource/diplomata-sc/files/diplomata-sc-latin-400-normal.woff2?url";
 import fleurdeleahUrl from "@fontsource/fleur-de-leah/files/fleur-de-leah-latin-400-normal.woff2?url";
 
 // import "@fontsource/spectral/900.css";
-import "@fontsource/diplomata-sc/400.css";
 import "@fontsource/fleur-de-leah/400.css";
 ---
 
@@ -37,13 +34,6 @@ import "@fontsource/fleur-de-leah/400.css";
           /* Paint black immediately to avoid white flash between navigations */
           html, body { background:#000; }
         </style> -->
-        <link
-                rel="preload"
-                href={diplomataUrl}
-                as="font"
-                type="font/woff2"
-                crossorigin
-        />
         <link
                 rel="preload"
                 href={fleurdeleahUrl}
