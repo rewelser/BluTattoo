@@ -4,6 +4,7 @@ import {getImageSrc} from "../../domain/decor/selectors.ts";
 import type {ImageMetadata} from "astro";
 import type {SvgComponent} from "astro/types";
 import SmartMedia from "./SmartMedia.astro";
+import {Image} from "astro:assets";
 
 interface Props {
     kind?: "image" | "video";
@@ -74,8 +75,11 @@ const posterUsed = poster?.src ?? framedImage.src;
             />
         </div>
 
-        <img
+        <Image
+                src={frame}
                 alt=""
+                widths={[640, 768, 960, 1200, 1440, 1920]}
+                sizes="auto"
                 data-frame
                 data-frame-src={frameUsed}
                 loading="lazy"
@@ -121,7 +125,8 @@ const posterUsed = poster?.src ?? framedImage.src;
                     async ([entry]) => {
                         if (entry.isIntersecting) {
                             observer.unobserve(entry.target);
-                            await loadFrame(entry.target);
+                            // await loadFrame(entry.target);
+                            root.dataset.ready = "true";
                         }
                     },
                     {
