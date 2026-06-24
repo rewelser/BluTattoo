@@ -11,13 +11,19 @@ contactSocialsBooking:
   bookingProfilePicture: assets/images/sierra_pfp.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
-  contact:
-    - type: phone
-      href: '8288675309'
+  socials:
+    - type: facebook
+      href: https://www.facebook.com/profile.php?id=61570108319494
       enabled: true
-      preferred: false
-      callOrTextPreferred: text
-      textMessageDefaultInquiry: Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!
+      bookable: true
+      preferred: true
+      handle: Inkby SierraStar
+    - type: instagram
+      href: https://www.instagram.com/inkbys.ierrastar/
+      enabled: true
+      bookable: true
+      preferred: true
+      handle: inkbys.ierrastar
 images:
   - assets/images/att.DsUbXZEHggaKRimHaOYzOT9rvkTduMXcOza4Pei9Kg8.jpg
   - assets/images/att.YfBp0bBdD_qfs7hzo0VeGllnBbpCacdl1xihlEekgTo.jpg

@@ -118,7 +118,7 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                 class="backdrop-opacity-10 object-cover"
                                 src={bookingHeroPhoto}
                                 loading="eager"
-                                decoding="async"
+                                decoding="sync"
                                 fetchpriority="high"
                                 alt=""
                         />
@@ -134,7 +134,15 @@ const description = "Book a tattoo appointment at BluTattoo, view available arti
                                 href="/"
                                 class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
                         >
-                            <Image src={logoDark} alt={`${siteName} Homepage`}/>
+                            <Image
+                                    src={logoDark}
+                                    alt={`${siteName} Homepage`}
+                                    widths={[300, 500]}
+                                    sizes="250px"
+                                    loading="eager"
+                                    decoding="sync"
+                                    fetchpriority="high"
+                            />
                         </a>
                         <ShareModal shareTitle={siteName} shareHero={logoDark}/>
                         <SocialRow links={siteSocials} variant="thin" class="text-white" iconClass="h-8 w-8"/>

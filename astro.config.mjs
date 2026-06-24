@@ -10,9 +10,12 @@ import decapCmsOauth from "astro-decap-cms-oauth";
 
 import react from '@astrojs/react';
 
+import sitemap from "@astrojs/sitemap";
+
 // https://astro.build/config
 export default defineConfig({
-  site: "https://blu-tattoo.vercel.app/",
+  // site: "https://blu-tattoo.vercel.app/",
+  site: "https://www.blutattoostudio.com",
   vite: {
     // @ts-ignore
     plugins: [tailwindcss()]
@@ -20,7 +23,7 @@ export default defineConfig({
 
   integrations: [decapCmsOauth({
     decapCMSSrcUrl: "https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"
-  }), react()],
+  }), react(), sitemap()],
 
   adapter: vercel(),
 });

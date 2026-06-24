@@ -11,6 +11,15 @@ contactSocialsBooking:
   bookingProfilePicture: assets/images/greg_profile.jpg
   booksOpen: true
   booksClosedNote: Books are currently closed.
+  contact:
+    - type: email
+      href: madtattertattoo91@gmail.com
+      enabled: true
+      preferred: false
+    - type: email
+      href: madtattertattoollc@yahoo.com
+      enabled: true
+      preferred: false
   socials:
     - type: tiktok
       href: https://www.tiktok.com/@madtatter91
@@ -18,6 +27,12 @@ contactSocialsBooking:
       bookable: true
       preferred: false
       handle: '@madtatter91'
+    - type: facebook
+      href: https://www.facebook.com/profile.php?id=61572123464381
+      enabled: true
+      bookable: true
+      preferred: true
+      handle: Mad Tatter Tattoo LLC
   platforms:
     - type: square
       enabled: false
