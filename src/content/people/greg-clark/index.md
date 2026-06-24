@@ -3,6 +3,7 @@ name: Greg
 active: true
 order: 4
 pagePhoto: assets/images/greg_transparent.png
+ogPhotoTextless: /uploads/ogimages/greg_ogimage_textless.jpg
 runwayPhoto: assets/images/greg_runway.jpg
 runwayPhotoFrame: archedframe1
 primaryRole: Tattoo Artist

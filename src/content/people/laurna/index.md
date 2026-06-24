@@ -3,6 +3,7 @@ name: Laurna
 active: true
 order: 2
 pagePhoto: assets/images/laurna_transparent.png
+ogPhotoTextless: /uploads/ogimages/laurna_ogimage_textless.jpeg
 runwayPhoto: assets/images/laurna-runway.jpg
 runwayPhotoFrame: squareframe1
 primaryRole: Tattoo Artist

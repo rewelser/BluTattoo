@@ -3,7 +3,7 @@ name: Lara
 active: true
 order: 1
 pagePhoto: assets/images/lara_transparent2.png
-ogPhotoTextless: /uploads/ogimages/lara_ogimage_textless2.png
+ogPhotoTextless: /uploads/ogimages/lara_ogimage_textless2.jpg
 runwayPhoto: assets/images/lara-runway.jpg
 runwayPhotoFrame: roundframe1
 primaryRole: Tattoo Artist

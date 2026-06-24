@@ -3,7 +3,7 @@ name: Sierra
 active: true
 order: 3
 pagePhoto: assets/images/sierra_transparent.png
-ogPhotoTextless: /uploads/ogimages/sierra_ogimage_textless.png
+ogPhotoTextless: /uploads/ogimages/sierra_ogimage_textless.jpg
 runwayPhoto: assets/images/headshot_final.jpg
 runwayPhotoFrame: roundframe2
 primaryRole: Tattoo Artist

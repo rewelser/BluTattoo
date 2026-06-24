@@ -3,7 +3,7 @@ title: A Midsummer's Flash Event
 detailsShort: A Magical Immersive Art Experience...
 image: MidsummerNightEvent2.png
 alt: A Midsummer's Flash Event
-ogPhotoTextless: /uploads/ogimages/midsummerevent_og.png
+ogPhotoTextless: /uploads/ogimages/midsummerevent_og.jpg
 published: true
 featured: false
 archived: false

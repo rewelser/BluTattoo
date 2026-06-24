@@ -2,8 +2,8 @@
   "logoDark": "assets/images/blutattoo-trimmed-black.svg",
   "logoDarkBold": "assets/images/blutattoo-trimmed-black-stroke.svg",
   "logoLight": "assets/images/blutattoo-trimmed-light(orange100-fdecd8).svg",
-  "sitewideOGPhoto": "/uploads/ogimages/blutattoo_sitewide_og.png",
-  "bookingShareOGPhoto": "/uploads/ogimages/blutattoo_booking_og.png",
+  "sitewideOGPhoto": "/uploads/ogimages/blutattoo_sitewide_og.jpg",
+  "bookingShareOGPhoto": "/uploads/ogimages/blutattoo_booking_og.jpg",
   "bookingFlashLight": "assets/images/bookingFlashLight.svg",
   "bookingFlashDark": "assets/images/bookingFlashDark.svg",
   "hero": {
@@ -34,13 +34,13 @@
       "posterDesktop": "assets/images/ourprocess_poster_desktop.jpg"
     },
     "processText": "A tattoo should feel exciting from the first idea to the time it's healed. Whether you're new to getting tattooed or an ink veteran, whether your tattoo is a dream you've had for years or a spur of the moment idea, BluTattoo is happy to work with you to realize your vision.\n\nOnce you’re ready, book directly with your artist, or just walk on in! We’ll take care of the rest: a clean, licensed studio environment and guidance for keeping your tattoo looking great long after you leave the chair.\n\nReady to start your next piece? Browse our artists, choose your fit, and let’s make something permanent.",
-    "scrollPeelStackImage1": "assets/images/DSC02442.jpg",
-    "scrollPeelStackImage2": "assets/images/DSC02441.jpg",
-    "scrollPeelStackImage3": "assets/images/DSC02448.jpg",
-    "scrollPeelStackSideImage1": "assets/images/PXL_20241215_000119860.PORTRAIT~2.jpg",
-    "scrollPeelStackSideImage2": "assets/images/20260430_010340.jpg",
-    "scrollPeelStackSideImage3": "assets/images/Gothic.jpg",
-    "scrollPeelStackSideImage4": "assets/images/IMG_8105 cropped.jpg"
+    "scrollPeelStackImage1": "assets/images/scrollpeelstack1.jpg",
+    "scrollPeelStackImage2": "assets/images/scrollpeelstack2.jpg",
+    "scrollPeelStackImage3": "assets/images/scrollpeelstack3.jpg",
+    "scrollPeelStackSideImage1": "assets/images/sps_s1.jpg",
+    "scrollPeelStackSideImage2": "assets/images/sps_s2.jpg",
+    "scrollPeelStackSideImage3": "assets/images/sps_s3.jpg",
+    "scrollPeelStackSideImage4": "assets/images/sps_s4.jpg"
   },
   "ourStory": {
     "frameImage": "assets/images/ourstoryframe1.png",

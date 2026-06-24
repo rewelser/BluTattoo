@@ -3,7 +3,7 @@ name: Zoe
 active: true
 order: 5
 pagePhoto: assets/images/zoester_transparent_cropped.png
-ogPhotoTextless: /uploads/ogimages/zoe_ogimage_textless.png
+ogPhotoTextless: /uploads/ogimages/zoe_ogimage_textless.jpg
 runwayPhoto: assets/images/zoe-runway.jpg
 runwayPhotoFrame: roundframe3
 primaryRole: Tattoo Artist
