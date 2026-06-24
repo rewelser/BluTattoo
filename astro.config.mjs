@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import {defineConfig} from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 // import tailwind from "@tailwindcss/vite"; // should have this instead? with `tailwind()`?
@@ -14,16 +14,28 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  // site: "https://blu-tattoo.vercel.app/",
-  site: "https://www.blutattoostudio.com",
-  vite: {
-    // @ts-ignore
-    plugins: [tailwindcss()]
-  },
+    site: "https://www.blutattoostudio.com",
+    vite: {
+        // @ts-ignore
+        plugins: [tailwindcss()]
+    },
 
-  integrations: [decapCmsOauth({
-    decapCMSSrcUrl: "https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"
-  }), react(), sitemap()],
+    integrations: [
+        decapCmsOauth({
+            decapCMSSrcUrl: "https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"
+        }),
+        react(),
+        sitemap({
+            filter: (page) => {
+                const pathname = new URL(page).pathname;
 
-  adapter: vercel(),
+                return (
+                    !pathname.startsWith("/admin") &&
+                    !pathname.startsWith("/oauth")
+                );
+            },
+        }),
+    ],
+
+    adapter: vercel(),
 });
