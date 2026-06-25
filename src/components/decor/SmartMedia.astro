@@ -1,6 +1,8 @@
 ---
-import {Image} from "astro:assets";
+import {Image, getImage} from "astro:assets";
 import type {ComponentProps, HTMLAttributes} from "astro/types";
+import type {ImageSourceOrMetadata} from "../../domain/decor/types.ts";
+import type {ImageMetadata} from "astro";
 
 type AstroImageProps = ComponentProps<typeof Image>;
 
@@ -11,7 +13,7 @@ type AstroImageProps = ComponentProps<typeof Image>;
  *
  * @see src/env.d.ts
  */
-type NativeVideoProps = Omit<HTMLAttributes<"video">, "src">;
+type NativeVideoProps = Omit<HTMLAttributes<"video">, "src" | "poster">;
 // type NativeVideoProps = Omit<HTMLAttributes<"video">, "src"> & {loading?: "lazy" | "eager"};
 
 type SharedProps = {
@@ -28,6 +30,8 @@ type VideoCandidateProps = {
     videoAttrs?: NativeVideoProps & {
         videoSrcMobile?: string;
         videoSrcDesktop?: string;
+        posterMobile?: ImageMetadata;
+        posterDesktop?: ImageMetadata;
         videoMIMEType?: string;
         mobileMedia?: string;
     };
@@ -76,6 +80,24 @@ const kind = hasVideo
         ? "image"
         : undefined;
 
+const mobilePoster = videoAttrs?.posterMobile
+    ? await getImage({
+        src: videoAttrs?.posterMobile,
+        width: 960,
+        format: "webp",
+        quality: 80,
+    })
+    : undefined;
+
+const desktopPoster = videoAttrs?.posterDesktop
+    ? await getImage({
+        src: videoAttrs?.posterDesktop,
+        width: 1920,
+        format: "webp",
+        quality: 80,
+    })
+    : undefined;
+
 // console.log("astro props", Astro.props);
 // console.log("kind:", kind);
 // console.log("hasvideo", hasVideo);
@@ -106,6 +128,8 @@ const kind = hasVideo
                 const {
                     videoSrcMobile,
                     videoSrcDesktop,
+                    posterMobile,
+                    posterDesktop,
                     videoMIMEType = "video/webm",
                     mobileMedia = "(max-width: 767px)",
                     autoplay = false,
@@ -149,10 +173,22 @@ const kind = hasVideo
             transition-duration: 300ms;
         }
     </style>
-    <script define:vars={{kind, observeTargetSelector}}>
+    <script define:vars={{kind, observeTargetSelector, mobilePoster, desktopPoster}}>
         (() => {
             const host = document.currentScript?.parentElement;
             if (!host || !kind) return;
+
+            const mobile = window.matchMedia("(max-width: 767px)");
+
+            const setPoster = () => {
+                if (kind === "video" && mobilePoster && desktopPoster) {
+                    const video = host.querySelector("video[data-media]");
+                    video.poster = mobile.matches ? mobilePoster : desktopPoster;
+                }
+            };
+
+            setPoster();
+            mobile.addEventListener("change", setPoster);
 
             const media = host.querySelector("[data-media]");
             if (!media) return;
@@ -215,7 +251,6 @@ const kind = hasVideo
             const observer = new IntersectionObserver(
                 async ([entry]) => {
                     if (entry.isIntersecting) {
-                        console.log("Intersecting");
                         await loadMedia();
                         if (kind === "video") {
                             media.play?.().catch(() => {

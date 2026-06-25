@@ -10,8 +10,8 @@
     "video": {
       "videoMobile": "/uploads/misc_videos/hero-mobile.webm",
       "videoDesktop": "/uploads/misc_videos/hero_desktop.webm",
-      "posterMobile": "assets/images/poster-mobile.jpg",
-      "posterDesktop": "assets/images/poster-desktop.jpg"
+      "posterMobile": "assets/images/hero_poster_mobile.jpg",
+      "posterDesktop": "assets/images/hero_poster_desktop.jpg"
     },
     "bookingHeroPhoto": "assets/images/DSC02546-2.jpg"
   },

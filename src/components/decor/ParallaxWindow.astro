@@ -15,9 +15,8 @@ import SmartMedia from "./SmartMedia.astro";
 
 export interface Props {
     image?: ImageMetadata;
-    vidSrcMobile?: string;
-    vidSrcDesktop?: string;
-    alt?: string; // only used for images
+    alt?: string;
+
     windowHeight?: string;
     windowHeightMobile?: string;
     mediaHeightMult?: number;
@@ -31,13 +30,16 @@ export interface Props {
     layerClass?: string;
 
     // video extras (optional)
+    vidSrcMobile?: string;
+    vidSrcDesktop?: string;
+    posterMobile?: ImageMetadata;
+    posterDesktop?: ImageMetadata;
     autoplay?: boolean;
     muted?: boolean;
     loop?: boolean;
     playsinline?: boolean;
     controls?: boolean;
     preload?: "none" | "metadata" | "auto";
-    poster?: string;
 }
 
 const {
@@ -46,7 +48,8 @@ const {
 
     vidSrcMobile,
     vidSrcDesktop,
-    poster,
+    posterMobile,
+    posterDesktop,
 
     windowHeight = "35vh",
     windowHeightMobile,
@@ -89,6 +92,8 @@ const {
                 videoAttrs={{
                     videoSrcDesktop: vidSrcDesktop,
                     videoSrcMobile: vidSrcMobile,
+                    posterMobile: posterMobile,
+                    posterDesktop: posterDesktop,
                     loading: "lazy",
                 }}
         />

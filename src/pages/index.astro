@@ -230,6 +230,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             <ParallaxWindow
                                     vidSrcDesktop={ourArtists?.video?.videoDesktop}
                                     vidSrcMobile={ourArtists?.video?.videoDesktop}
+                                    posterMobile={ourArtists?.video?.posterMobile}
+                                    posterDesktop={ourArtists?.video?.posterDesktop}
                                     windowHeight="65vh"
                                     mediaHeightMult={1}
                                     mediaHeightMultMobile={.5}
@@ -285,6 +287,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             <ParallaxWindow
                                     vidSrcMobile={ourProcess.video?.videoMobile}
                                     vidSrcDesktop={ourProcess.video?.videoDesktop}
+                                    posterMobile={ourProcess.video?.posterMobile}
+                                    posterDesktop={ourProcess.video?.posterDesktop}
                                     windowHeight="65vh"
                                     mediaHeightMult={1}
                                     mediaHeightMultMobile={.5}
@@ -362,7 +366,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                         framedImage={ourStory?.image}
                                         videoSrcDesktop={ourStory.video?.videoDesktop}
                                         videoSrcMobile={ourStory.video?.videoMobile}
-                                        poster={ourStory?.image}
+                                        posterMobile={ourStory?.video?.posterMobile}
+                                        posterDesktop={ourStory?.video?.posterDesktop}
                                         frameMask={ourStory?.frameWindowSvg}
                                         frameMaskImgMetadata={ourStory?.frameWindowSvg}
                                         imageAlt={`${ourStory?.imgAltText || "image for our story section"}`}

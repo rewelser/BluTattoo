@@ -1,5 +1,4 @@
 ---
-import type {ImageSourceOrMetadata} from "../../domain/decor/types.ts";
 import {getImageSrc} from "../../domain/decor/selectors.ts";
 import type {ImageMetadata} from "astro";
 import type {SvgComponent} from "astro/types";
@@ -10,47 +9,48 @@ interface Props {
     kind?: "image" | "video";
     frame: ImageMetadata;
     framedImage: ImageMetadata;
-    videoSrcDesktop?: string;
-    videoSrcMobile?: string;
+
     frameMask: SvgComponent;
     frameMaskImgMetadata: ImageMetadata;
     imageAlt: string;
     class?: string;
 
+    videoSrcDesktop?: string;
+    videoSrcMobile?: string;
+    posterMobile?: ImageMetadata;
+    posterDesktop?: ImageMetadata;
     autoplay?: boolean;
     muted?: boolean;
     loop?: boolean;
     playsinline?: boolean;
     controls?: boolean;
     preload?: "none" | "metadata" | "auto";
-    poster?: ImageMetadata;
 }
 
 const {
     kind = "image",
     frame,
     framedImage,
-    videoSrcDesktop,
-    videoSrcMobile,
     frameMask: FrameMask,
     frameMaskImgMetadata,
     imageAlt,
     class: className = "",
 
+    videoSrcDesktop,
+    videoSrcMobile,
+    posterMobile,
+    posterDesktop,
     autoplay = false,
     muted = true,
     loop = true,
     playsinline = true,
     controls = false,
     preload = "metadata",
-    poster,
 } = Astro.props;
 
 const frameUsed = getImageSrc(frame);
 
 const frameAspectRatio = typeof frame === "object" && "width" in frame && "height" in frame ? `${frame.width} / ${frame.height}` : undefined;
-
-const posterUsed = poster?.src ?? framedImage.src;
 ---
 <>
     <div  data-framed-media-container class={`relative overflow-hidden rounded-2xl ${className}`}>
@@ -70,7 +70,8 @@ const posterUsed = poster?.src ?? framedImage.src;
                     videoAttrs={{
                         videoSrcDesktop: videoSrcDesktop,
                         videoSrcMobile: videoSrcMobile,
-                        poster: posterUsed
+                        posterMobile: posterMobile,
+                        posterDesktop: posterDesktop,
                     }}
             />
         </div>

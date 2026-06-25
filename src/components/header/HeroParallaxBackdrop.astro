@@ -1,11 +1,6 @@
 ---
-import {getImageSrc} from "../../domain/decor/selectors.ts";
 import type {ImageMetadata} from "astro";
-type VideoSources = {
-    mp4: string;
-    webm?: string;
-    poster: ImageMetadata;
-};
+import {getImage} from "astro:assets";
 
 const {
     logoDark,
@@ -26,14 +21,26 @@ const {
     parallaxStrength?: number;
 };
 
-// const heroVid = {
-//   mp4: video?.mp4,
-//   webm: video?.webm,
-//   poster: video?.poster,
-// };
-
 // Clamp strength to [0, 1]
 const strength = Math.max(0, Math.min(1, parallaxStrength));
+
+const mobilePoster = posterMobile
+    ? await getImage({
+        src: posterMobile,
+        width: 960,
+        format: "webp",
+        quality: 80,
+    })
+    : undefined;
+
+const desktopPoster = posterDesktop
+    ? await getImage({
+        src: posterDesktop,
+        width: 1920,
+        format: "webp",
+        quality: 80,
+    })
+    : undefined;
 ---
 
 <>
@@ -56,13 +63,13 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
                     muted
                     loop
                     playsinline
-                    preload="none"
-                    poster={posterMobile?.src}
+                    preload="metadata"
+                    poster={mobilePoster?.src}
                     aria-hidden="true"
             >
                 <source
                         src={srcMobile}
-                        media="(max-width: 640px)"
+                        media="(max-width: 767px)"
                         type="video/webm"
                 />
                 <source
@@ -98,7 +105,10 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
         </div>
     </div>
 
-    <script define:vars={{ posterMobile, posterDesktop }}>
+    <script define:vars={{
+        mobilePosterSrc: mobilePoster?.src,
+        desktopPosterSrc: desktopPoster?.src,
+    }}>
         (() => {
             const layer = document.querySelector("[data-hero-parallax-layer]");
             const container = document.getElementById("hero-video-container");
@@ -113,11 +123,12 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
             const mobile = window.matchMedia("(max-width: 767px)");
 
             const setPoster = () => {
-                if (posterMobile && posterDesktop) {
-                    video.poster = mobile.matches ? posterMobile.src : posterDesktop.src;
+                if (mobilePosterSrc && desktopPosterSrc) {
+                    video.poster = mobile.matches ? mobilePosterSrc : desktopPosterSrc;
                 }
             };
 
+            setPoster();
             mobile.addEventListener("change", setPoster);
 
             const strength = (() => {
