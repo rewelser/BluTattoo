@@ -98,7 +98,7 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
         </div>
     </div>
 
-    <script is:inline>
+    <script define:vars={{ posterMobile, posterDesktop }}>
         (() => {
             const layer = document.querySelector("[data-hero-parallax-layer]");
             const container = document.getElementById("hero-video-container");
@@ -109,6 +109,16 @@ const strength = Math.max(0, Math.min(1, parallaxStrength));
                 "(prefers-reduced-motion: reduce)",
             )?.matches;
             if (prefersReduced) return;
+
+            const mobile = window.matchMedia("(max-width: 767px)");
+
+            const setPoster = () => {
+                if (posterMobile && posterDesktop) {
+                    video.poster = mobile.matches ? posterMobile.src : posterDesktop.src;
+                }
+            };
+
+            mobile.addEventListener("change", setPoster);
 
             const strength = (() => {
                 const raw = getComputedStyle(container)

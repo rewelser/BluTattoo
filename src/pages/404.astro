@@ -1,0 +1,37 @@
+---
+import Layout from "../layouts/Layout.astro";
+import {error} from "../config/site.ts";
+import {Image} from "astro:assets";
+
+const title = "404";
+const heading = "Page not found";
+const description = "Sorry, that page doesn’t exist or may have moved.";
+---
+
+<Layout title={title}>
+    <article class="page-article page-article--grid">
+        <div class="flex flex-col justify-center items-center">
+            <Image
+                    src={error.errorGraphic404}
+                    alt={title}
+                    class="w-full sm:w-[80vw] md:w-[70vw] lg:w-[60vw] max-w-[1200px] mx-auto"
+                    widths={[640, 768, 960, 1200, 1440]}
+                    sizes="(min-width: 1024px) 60vw, (min-width: 768px) 70vw, (min-width: 640px) 80vw, 100vw"
+                    loading="eager"
+                    decoding="sync"
+                    fetchpriority="high"
+            />
+        </div>
+        <section class=" border border-black/10 p-5 md:p-6 text-center">
+            <h1 class="page-heading">{heading}</h1>
+            <p class="mt-2 leading-relaxed">
+                {description}
+            </p>
+            <p class="mt-4">
+                <a class="underline hover:no-underline" href="/">
+                    Return to the homepage
+                </a>
+            </p>
+        </section>
+    </article>
+</Layout>

@@ -219,7 +219,7 @@
     }
 
     /* Shared h1 */
-    .page-title {
+    .page-heading {
         @apply mb-6 text-center text-4xl font-semibold! tracking-tight;
     }
 

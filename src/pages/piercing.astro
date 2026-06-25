@@ -19,7 +19,7 @@ const dur = 0.5;
 <Layout title={title} description={description}>
     <article class="page-article page-article--stack page-article--bleed space-y-6">
         <header>
-            <h1 class="page-title sr-only">{title}</h1>
+            <h1 class="page-heading sr-only">{title}</h1>
             <PiercingPageHeadingSvg/>
         </header>
 
@@ -29,41 +29,44 @@ const dur = 0.5;
             <section class=" border border-black/10 p-5 md:p-6">
                 <h2 class="text-xl font-semibold tracking-tight">Coming soon!</h2>
                 <p class="mt-2 leading-relaxed">
-                    We don’t currently have a piercer on staff, but we’re actively training one of our own toward licensure! Stay tuned.
+                    We don’t currently have a piercer on staff, but we’re actively training one of our own toward
+                    licensure! Stay tuned.
                 </p>
                 <p class="mt-3 text-sm">
-                    Want updates? <a class="underline hover:no-underline" href="/contact"
-                >Contact us</a
-                > and we’ll point you in the right direction.
+                    Want updates?
+                    <a class="underline hover:no-underline" href="/contact">
+                        Contact us
+                    </a>
+                    and we’ll point you in the right direction.
                 </p>
+                <div class="w-full nail" style={`background-image: url(${nailSrc});`}></div>
                 <div class="grid-container">
                     <div class="square">
 
                     </div>
                     <div class="square" style={`background-image: url(${nailSrc});`}></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
+
                 </div>
                 <style>
                     .grid-container {
                         display: grid;
                         grid-template-columns: repeat(10, 1fr); /* 16 equal-width columns */
-                        grid-auto-flow: column;                /* Forces extra items into the row flow */
-                        grid-auto-rows: 1fr;                   /* Locks row height to 1 fraction */
-                        aspect-ratio: 16 / 1;                  /* Sets overall 16:1 ratio for the 1-row grid */
-                        gap: 5px;                              /* Optional: Adds spacing between squares */
+                        grid-auto-flow: column; /* Forces extra items into the row flow */
+                        grid-auto-rows: 1fr; /* Locks row height to 1 fraction */
+                        aspect-ratio: 16 / 1; /* Sets overall 16:1 ratio for the 1-row grid */
+                        gap: 5px; /* Optional: Adds spacing between squares */
+                    }
+
+                    .nail {
+                        background-size: contain;
+                        background-repeat: repeat;
+                        height: 60px;
                     }
 
                     .square {
                         background-size: contain;
                         background-repeat: no-repeat;
-                        aspect-ratio: 1 / 1;                   /* Forces each grid cell to be a perfect square */
+                        aspect-ratio: 1 / 1; /* Forces each grid cell to be a perfect square */
                         height: 60px;
                     }
                 </style>

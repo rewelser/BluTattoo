@@ -2,6 +2,7 @@ import siteLogo from "./assets/genericlogo.svg";
 import bookingHeroPhoto from "./assets/default-booking-photo.jpg";
 import personProfilePicture from "./assets/default-booking-profile.jpg";
 import personRunwayPhoto from "./assets/default-runway-photo.svg";
+import errorGraphic404 from "./assets/404.webp";
 
 export const defaults = {
     siteName: "Company Name",
@@ -23,4 +24,8 @@ export const defaults = {
     hoursShortline: "12a to 8p | Tuesday - Sunday\nClosed Monday",
     placeId: "ChIJvcRSeifOUIgRg4YB5KITZ90"
 
+}
+
+export const error = {
+    errorGraphic404
 }
