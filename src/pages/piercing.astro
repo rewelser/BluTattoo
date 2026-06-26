@@ -14,6 +14,8 @@ const letters = Array.from(topText);
 const stagger = 0.06;
 const rise = -10;
 const dur = 0.5;
+
+const nailBg = `url("${nailSrc}")`;
 ---
 
 <Layout title={title} description={description}>
@@ -39,35 +41,43 @@ const dur = 0.5;
                     </a>
                     and we’ll point you in the right direction.
                 </p>
-                <div class="w-full nail" style={`background-image: url(${nailSrc});`}></div>
-                <div class="grid-container">
-                    <div class="square">
 
-                    </div>
-                    <div class="square" style={`background-image: url(${nailSrc});`}></div>
-
+                <div class="nail-grid">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div class="hidden md:block"></div>
+                    <div class="hidden md:block"></div>
+                    <div class="hidden sm:block"></div>
+                    <div class="hidden sm:block"></div>
                 </div>
-                <style>
-                    .grid-container {
+                <style define:vars={{nailBg}}>
+                    .nail-grid {
                         display: grid;
-                        grid-template-columns: repeat(10, 1fr); /* 16 equal-width columns */
-                        grid-auto-flow: column; /* Forces extra items into the row flow */
-                        grid-auto-rows: 1fr; /* Locks row height to 1 fraction */
-                        aspect-ratio: 16 / 1; /* Sets overall 16:1 ratio for the 1-row grid */
-                        gap: 5px; /* Optional: Adds spacing between squares */
+                        grid-template-columns: repeat(10, minmax(0, 1fr));
+                        gap: 1rem;
+                        aspect-ratio: 16 / 1;
+                        margin: 1rem 0;
+                        @media (max-width: 767px) {
+                            grid-template-columns: repeat(8, minmax(0, 1fr));
+                            gap: .25rem;
+                        }
+                        @media (max-width: 639px) {
+                            grid-template-columns: repeat(6, minmax(0, 1fr));
+                            gap: .15rem;
+                        }
                     }
 
-                    .nail {
-                        background-size: contain;
-                        background-repeat: repeat;
-                        height: 60px;
-                    }
-
-                    .square {
+                    .nail-grid > * {
+                        min-width: 0;
                         background-size: contain;
                         background-repeat: no-repeat;
-                        aspect-ratio: 1 / 1; /* Forces each grid cell to be a perfect square */
+                        background-image: var(--nailBg);
                         height: 60px;
+                        background-position: center center;
                     }
                 </style>
             </section>

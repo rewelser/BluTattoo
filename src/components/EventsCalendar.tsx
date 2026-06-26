@@ -198,6 +198,10 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
+
+                        // todo - recurrences: remove after implementation of rrules
+                        // console.log("dateNum, dailyEvents", dateNum, dailyEvents);
+
                         const hasEvents = dailyEvents.length > 0;
                         const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
                         const isOpen = openDateKey === dateKey;
@@ -221,7 +225,8 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                             >
                                 {
                                     needsSingleEventImageVariant && (
-                                        <a className="single-event-anchor absolute top-0 left-0 z-20 h-full w-full" href={`/events/${dailyEvents[0].id}`}></a>
+                                        <a className="single-event-anchor absolute top-0 left-0 z-20 h-full w-full"
+                                           href={`/events/${dailyEvents[0].id}`}></a>
                                     )
                                 }
                                 <div className="date-num">{dateNum}</div>

@@ -1,10 +1,20 @@
 import type {EventItem, GuestItem} from "./types.ts";
 import {getTransformedEventItemsCached} from "./server.ts";
 
+// todo - recurrences: if recursive, start at first instance rather than startDate
 export function getEventStartKey(ev: EventItem): string {
     return `${ev.startDate}T${ev.startTime ?? "00:00"}`;
 }
 
+export function getEventStartKey_recurrences(ev: EventItem): string {
+    if (!ev.recurrenceRule) {
+        return `${ev.endDate}T${ev.endTime ?? "00:00"}`;
+    } else {
+        return "event has recurrence rule";
+    }
+}
+
+// todo - recurrences: if recursive, end at last instance rather than startDate
 export function getEventEndKey(ev: EventItem): string {
     const endDate = ev.endDate ?? ev.startDate;
     return `${endDate}T${ev.endTime ?? "23:59"}`;
@@ -55,10 +65,6 @@ export function hasEventEnded(
 
 export const hasEventStarted = (ev: EventItem, nowKey = getNowKey()): boolean => {
     return getEventStartKey(ev) <= nowKey;
-}
-
-export function compareEventsByStartDate(a: EventItem, b: EventItem): number {
-    return getEventStartKey(a).localeCompare(getEventStartKey(b));
 }
 
 /**
