@@ -228,7 +228,6 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     })
                                 }}
                             >
-                                <div className="calendar-day__anchor" aria-hidden="true"></div>
                                 {
                                     needsSingleEventImageVariant && (
                                         <a className="single-event-anchor absolute top-0 left-0 z-20 h-full w-full"
@@ -265,7 +264,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
 
                                 {hasEvents && (
                                     <div
-                                        className={`overlay ${dailyEvents.length === 1 && !dailyEvents[0].detailsShort ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
+                                        className={`overlay ${isOpen && !canHover ? "is-open" : ""}`}
                                         aria-label={`Events for ${fmtDate(isoLike)}`}
                                     >
                                         <div className="overlay-arrow" aria-hidden="true"></div>
@@ -274,8 +273,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                                 <div key={ev.id}>
                                                     <section
                                                         className={`overlay-event p-5 leading-none
-                                                        ${index > 0 ? "scalloped-border-top" : ""}
-                                                        ${!ev.detailsShort ? "no-short-details" : ""}`}
+                                                        ${index > 0 ? "scalloped-border-top" : ""}`}
                                                     >
                                                         <a href={`/events/${ev.id}`}>
                                                             <h3 className="text-xl leading-none">{ev.title} →</h3>
