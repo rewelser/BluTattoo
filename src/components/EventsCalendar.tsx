@@ -195,6 +195,8 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                             year === now.getFullYear() &&
                             month === now.getMonth() &&
                             dateNum === now.getDate();
+                        console.log("---------------");
+                        console.log(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
