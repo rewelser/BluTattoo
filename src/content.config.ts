@@ -18,6 +18,7 @@ import {primaryRoleSchema} from "./domain/people/schema.ts";
 const events = defineCollection({
     loader: glob({pattern: "**/*.{md,mdx}", base: "./src/content/events"}),
     schema: ({image}) => z.object({
+        shopClosed: z.boolean().default(false),
         guestSpot: z.object({
             guestName: z.string(),
             runwayPhoto: image().optional(),

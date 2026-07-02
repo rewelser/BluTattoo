@@ -3,7 +3,7 @@ import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
 import {
     buildEventsByYearMonthDate,
 } from "../domain/events/grouping.ts";
-import "../styles/EventsCalendar.css";
+import "../styles/EventsCalendar2.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
 import {fmtDate, fmtTime} from "../domain/events/format.ts";
 
@@ -195,8 +195,10 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                             year === now.getFullYear() &&
                             month === now.getMonth() &&
                             dateNum === now.getDate();
-                        console.log("---------------");
-                        console.log(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+                        // todo: remove after verifying that client:only="react" works in mitigating SSR initial-load problems
+                        // console.log("---------------");
+                        // console.log(year, month, dateNum);
+                        // console.log(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
@@ -207,6 +209,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         const hasEvents = dailyEvents.length > 0;
                         const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
                         const isOpen = openDateKey === dateKey;
+                        const hasClosedShopEvent = hasEvents && dailyEvents.some((event) => (event.shopClosed));
                         return (
                             <div
                                 key={dateKey}
@@ -225,6 +228,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     })
                                 }}
                             >
+                                <div className="calendar-day__anchor" aria-hidden="true"></div>
                                 {
                                     needsSingleEventImageVariant && (
                                         <a className="single-event-anchor absolute top-0 left-0 z-20 h-full w-full"
@@ -264,6 +268,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                         className={`overlay ${dailyEvents.length === 1 && !dailyEvents[0].detailsShort ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
                                         aria-label={`Events for ${fmtDate(isoLike)}`}
                                     >
+                                        <div className="overlay-arrow" aria-hidden="true"></div>
                                         <div className="overlay-events">
                                             {dailyEvents.map((ev, index) => (
                                                 <div key={ev.id}>

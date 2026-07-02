@@ -31,6 +31,7 @@ const description = "View upcoming guest spots, events, and special appearances 
 
         <!-- <UpcomingEventsFallback slot="fallback" /> -->
 
-        <EventsCalendar client:load events={events} />
+        <!--<EventsCalendar client:load events={events} />-->
+        <EventsCalendar client:only="react" events={events} />
     </article>
 </Layout>

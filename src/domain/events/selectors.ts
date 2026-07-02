@@ -72,7 +72,7 @@ export const hasEventStarted = (ev: EventItem, nowKey = getNowKey()): boolean =>
  * after .filter(isGuestSpot).
  */
 export const isGuestSpot = (ev: EventItem): ev is GuestItem => {
-    return !!ev.guestSpot;
+    return !!ev.guestSpot && !ev.shopClosed;
 };
 
 export function isEventArchived(ev: EventItem): boolean {

@@ -1,4 +1,5 @@
 ---
+shopClosed: false
 title: new test event recurrence rules
 published: true
 featured: false

@@ -1,4 +1,5 @@
 ---
+shopClosed: false
 title: A Midsummer's Flash Event
 detailsShort: A Magical Immersive Art Experience...
 image: MidsummerNightEvent2.png

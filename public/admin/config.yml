@@ -638,7 +638,7 @@ collections:
     filter: { field: "archived", value: false }
     summary: "{{date}} — {{title}}"
     sortable_fields: [ "date", "title", "guestSpot", "commit_date" ]
-    description: "Create events for guest spots, flash days, and other shop happenings."
+    description: "Create events for guest spots, flash days, shop closed days, and other happenings."
 #    view_filters:
 #      - field: guestSpot.guestName
 #        label: "Guest Spot"
@@ -647,6 +647,7 @@ collections:
 #        field: featured
 #        pattern: true
     fields:
+      - { name: shopClosed, label: "Shop Closed", widget: boolean, required: false, default: false, hint: "Mark this if the shop is to be closed during this period. Data in all other optional fields will be ignored, except for announcement bar settings." }
       - name: guestSpot
         label: "Guest Spot"
         summary: "{{guestName}}"
@@ -697,12 +698,12 @@ collections:
       - *recurrence_rule
 
       - name: promoBar
-        label: "Promo Bar"
+        label: "Announcement Bar"
         widget: object
         required: false
         collapsed: true
         fields:
-          - { name: enabled, label: "Enable Promo Bar", widget: boolean, default: false }
+          - { name: enabled, label: "Enable Announcement Bar", widget: boolean, default: false }
           - { name: message, label: "Message", widget: string, required: true }
           - { name: href, label: "Link URL", widget: string, required: false }
           - { name: color1, label: "Color 1", widget: color, required: false, hint: "If only one color is set, bar uses a solid background." }

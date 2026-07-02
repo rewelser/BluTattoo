@@ -1,0 +1,348 @@
+/* multiple events will be listed inside the calendar day box, with the title, time, and short description. Each event will be a link to the event page. */
+.calendar-day {
+    position: relative;
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+    padding: 5px;
+    aspect-ratio: 1 / 1;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.calendar-day.today {
+    background-color: rgba(0, 0, 0, 0);
+    outline: 3px solid rgba(0, 0, 0, 0.05);
+    outline-offset: -3px;
+}
+
+/* this does nothing yet */
+.calendar-day.closed {
+    /*background-image: url("/assets/closed.png");*/
+}
+
+.daily-events {
+    position: relative;
+    /* flex: 1 1 auto; */
+    /* min-height: 0; */
+    width: 100%;
+    overflow: scroll;
+    flex: 1;
+}
+
+.date-num {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* event info tooltip overlay rules for mobile */
+.overlay {
+    position: absolute;
+    /*width: calc(500% + 1rem);*/
+    /*height: calc(200% + 0.25rem);*/
+    /*height: calc(400% + 0.75rem);*/
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 160ms ease;
+    background-color: #B8B8FF;
+    background-color: aliceblue;
+    background-color: #265eac;
+    background-color: #6598e0;
+    background-color: #73adff;
+}
+
+.overlay.short .overlay-events {
+    background: linear-gradient(0.25turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    background: linear-gradient(0.75turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+}
+
+.overlay-event.scalloped-border-top {
+    background: linear-gradient(rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    padding-top: 40px;
+    mask: linear-gradient(180deg, #0000 30px, #000 0),
+    radial-gradient(30px, #000 calc(100% - 1px), #0000) top/55.5px 60px;
+}
+
+
+@media (width < 40rem) {
+    .calendar-day {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .calendar-day.bg-img {
+        background-image: none !important;
+    }
+
+    .daily-events,
+    .single-event-anchor {
+        display: none;
+    }
+
+    .calendar-day:not(:has(.overlay)) {
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    .date-num {
+        height: 50%;
+        width: 50%;
+        height: calc(var(--spacing) * 7);
+        width: calc(var(--spacing) * 7);
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .calendar-day.placeholder .date-num {
+        color: rgba(0, 0, 0, 0.25);
+    }
+
+    .calendar-day:not(:has(.overlay)) .date-num {
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    /*** overlay ***/
+    /*** ::after ***/
+    .overlay::after {
+        bottom: 99%;
+        left: 50%;
+        transform: translateX(-50%);
+        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
+    }
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(1turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+
+    /*** overlay-events ***/
+    .calendar-grid > :nth-child(n + 22) .overlay.short .overlay-events {
+        background: linear-gradient(0.50turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+}
+
+
+@media (width >= 40rem) {
+    .calendar-day.placeholder {
+        background-color: rgba(0, 0, 0, 0.025);
+    }
+
+    .date-num {
+        height: calc(var(--spacing) * 6);
+        width: calc(var(--spacing) * 6);
+        padding: calc(var(--spacing) * 4);
+    }
+
+    .calendar-day.placeholder .date-num {
+        color: rgba(0, 0, 0, 0.25);
+    }
+
+    .calendar-day.bg-img .date-num {
+        background-color: whitesmoke;
+        background-color: gainsboro;
+        background-color: #f2f2f2;
+        outline: 3px solid white;
+    }
+
+    /*** ::before ***/
+    /* left side */
+    .overlay::before {
+        content: "";
+        position: absolute;
+        right: 100%;
+        width: .25rem;
+        height: 100%;
+    }
+
+    /* right side */
+    .calendar-grid > :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay::before {
+        content: "";
+        position: absolute;
+        left: 100%;
+        width: .25rem;
+        height: 100%;
+    }
+
+    .calendar-grid .overlay.short .overlay-events {
+        background: linear-gradient(0.75turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+
+    /*** overlay-events ***/
+    .calendar-grid > :is(:nth-child(7n + 5), :nth-child(7n + 6), :nth-child(7n)) .overlay.short .overlay-events {
+        background: linear-gradient(0.25turn, rgba(217, 217, 253, 0.4), rgba(0, 0, 0, 0));
+    }
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+    .calendar-day:hover .overlay,
+    .calendar-day:focus-within .overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+@media (hover: none),
+(pointer: coarse) {
+    .calendar-day .overlay.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+
+/****************************************/
+
+.calendar-grid {
+    position: relative;
+    contain: layout;
+}
+
+.calendar-day {
+    anchor-scope: --day-anchor;
+    anchor-name: --day-anchor;
+}
+
+.calendar-day .overlay {
+    --overlay-gap: 0.25rem;
+    /*contain: layout;*/
+    position: fixed;
+    position-anchor: --day-anchor;
+    /*noinspection CssInvalidPropertyValue*/
+    container-type: anchored;
+
+    inset: auto;
+    translate: none;
+
+    min-height: calc(anchor-size(height));
+    height: auto;
+    max-height: calc(anchor-size(height) * 3 + (2 * var(--overlay-gap)));
+
+    @media (width >= 40rem) {
+        margin-inline: 0.25rem;
+        width: calc(anchor-size(width) * 2 + var(--overlay-gap));
+        position-area: inline-start span-block-end;
+        position-try-order: most-block-size;
+        position-try-fallbacks: flip-block, flip-inline, flip-inline flip-block;
+    }
+
+    @media (width < 40rem) {
+        margin-block: var(--overlay-gap);
+        width: calc(anchor-size(width) * 3 + (2 * var(--overlay-gap)));
+        position-area: y-start span-x-end;
+        position-try-order: most-inline-size;
+        position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
+    }
+
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 160ms ease;
+    background-color: #73adff;
+}
+
+.overlay .overlay-events {
+    min-height: 0;
+    max-height: inherit;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.overlay-arrow {
+    display: none;
+    position: fixed;
+    position-anchor: --day-anchor;
+    width: 20px;
+    height: 20px;
+    background: red;
+
+    /*left: anchor(center);*/
+    /*right: anchor(center);*/
+    /*bottom: anchor(top);*/
+
+    /*translate: -50% 50%;*/
+
+    position-area: y-start span-x-end;
+
+    inset-inline-start: anchor(center);
+    inset-block-start: 100%;
+
+    /*translate: -50% -50%;*/
+
+
+    top: 100%;
+    bottom: auto;
+    clip-path: polygon(50% 50%, 0 0, 100% 0);
+}
+
+.overlay::after {
+    position-anchor: --day-anchor;
+    content: "";
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: inherit;
+
+    /*position-area: y-start span-x-end;*/
+
+    inset-inline-start: anchor(center);
+    /*inset-block-start: anchor(top);*/
+    /*bottom: anchor(bottom);*/
+    top: calc(anchor(top) - var(--overlay-gap));
+    /*translate: -50% 50%;*/
+    background-color: violet;
+    /*clip-path: polygon(50% 50%, 0% 100%, 100% 100%);*/
+    clip-path: polygon(50% 50%, 0 0, 100% 0);
+
+    z-index: 19;
+}
+
+@container anchored((fallback: flip-block) or (fallback: flip-inline flip-block)) {
+    .overlay::after {
+        background-color: mediumpurple;
+        bottom: calc(anchor(bottom) - var(--overlay-gap));
+        top: auto;
+        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);
+    }
+
+    /*.overlay-arrow {*/
+    /*    background: purple;*/
+    /*    top: auto;*/
+    /*    bottom: 100%;*/
+    /*    clip-path: polygon(50% 50%, 0% 100%, 100% 100%);*/
+    /*}*/
+}
+
+@container anchored(fallback: flip-inline) {
+    .overlay::after {
+        background-color: orange;
+    }
+
+    /*.overlay-arrow {*/
+    /*    background: orange;*/
+    /*    top: 100%;*/
+    /*    bottom: auto;*/
+    /*    clip-path: polygon(50% 50%, 0 0, 100% 0);*/
+    /*}*/
+}
+
+/*@container anchored(fallback: flip-inline flip-block) {*/
+/*    .overlay::after {*/
+/*        background-color: blue;*/
+/*        bottom: anchor(bottom);*/
+/*        top: auto;*/
+/*        clip-path: polygon(50% 50%, 0% 100%, 100% 100%);*/
+
+/*    }*/
+
+/*    !*.overlay-arrow {*!*/
+/*    !*    background: blue;*!*/
+/*    !*    bottom: 100%;*!*/
+/*    !*    top: auto;*!*/
+/*    !*    clip-path: polygon(50% 50%, 0% 100%, 100% 100%);*!*/
+/*    !*}*!*/
+/*}*/
+
+
