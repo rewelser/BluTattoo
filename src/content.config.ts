@@ -225,4 +225,33 @@ const branding = defineCollection({
 
 /*** endregion ***/
 
-export const collections = {people, faqSections, faqs, siteInfo, aftercare, events, branding}; // & home?
+/*** region *** Piercing Collection ****/
+
+const piercing = defineCollection({
+    loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/piercing"}),
+    schema: z.object({
+        note: z.string(),
+        groups: z.array(
+            z.object({
+                heading: z.string(),
+                items: z.array(
+                    z.object({
+                        name: z.string(),
+                        price: z.number(),
+                    }),
+                ),
+            })
+        ),
+        extraItems: z.array(
+            z.object({
+                name: z.string(),
+                price: z.number(),
+                separator: z.boolean().optional(),
+            }),
+        ).default([]),
+    }),
+});
+
+/*** endregion ***/
+
+export const collections = {people, faqSections, faqs, siteInfo, aftercare, events, branding, piercing}; // & home?

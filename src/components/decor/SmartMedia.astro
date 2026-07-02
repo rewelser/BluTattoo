@@ -173,7 +173,12 @@ const desktopPoster = videoAttrs?.posterDesktop
             transition-duration: 300ms;
         }
     </style>
-    <script define:vars={{kind, observeTargetSelector, mobilePoster, desktopPoster}}>
+    <script define:vars={{
+        kind,
+        observeTargetSelector,
+        mobilePosterSrc: mobilePoster?.src,
+        desktopPosterSrc: desktopPoster?.src,
+    }}>
         (() => {
             const host = document.currentScript?.parentElement;
             if (!host || !kind) return;
@@ -181,9 +186,9 @@ const desktopPoster = videoAttrs?.posterDesktop
             const mobile = window.matchMedia("(max-width: 767px)");
 
             const setPoster = () => {
-                if (kind === "video" && mobilePoster && desktopPoster) {
+                if (kind === "video" && mobilePosterSrc && desktopPosterSrc) {
                     const video = host.querySelector("video[data-media]");
-                    video.poster = mobile.matches ? mobilePoster : desktopPoster;
+                    video.poster = mobile.matches ? mobilePosterSrc : desktopPosterSrc;
                 }
             };
 

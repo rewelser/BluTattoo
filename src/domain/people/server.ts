@@ -25,6 +25,17 @@ export async function loadActiveArtists(): Promise<PersonEntry[]> {
         );
 }
 
+export async function loadActivePiercers(): Promise<PersonEntry[]> {
+    const entries = await loadActivePeople();
+
+    return entries
+        .filter((e) => e.data.primaryRole === "Piercer")
+        .sort(
+            (a, b) =>
+                (a.data.order ?? 999) - (b.data.order ?? 999) || a.data.name.localeCompare(b.data.name),
+        );
+}
+
 
 /////
 

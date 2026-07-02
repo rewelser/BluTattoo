@@ -1,0 +1,42 @@
+note: All prices include piercing service & initial jewelry.
+groups:
+  - heading: Ears
+    items:
+      - name: Lobe
+        price: 45
+      - name: Lobes (pair)
+        price: 80
+      - name: Flat
+        price: 50
+      - name: Conch
+        price: 50
+      - name: Helix
+        price: 50
+      - name: Tragus
+        price: 50
+      - name: Rook
+        price: 60
+  - heading: Facial/Torso
+    items:
+      - name: Nostril (single)
+        price: 60
+      - name: Septum
+        price: 60
+      - name: Eyebrow (single)
+        price: 50
+      - name: Navel
+        price: 60
+  - heading: Oral
+    items:
+      - name: Tongue
+        price: 50
+      - name: Labret/Lip
+        price: 60
+      - name: Vertical Labret
+        price: 50
+      - name: Monroe/Medusa
+        price: 60
+extraItems:
+  - name: Jewelry Install/Change
+    price: 10
+    separator: true

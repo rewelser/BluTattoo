@@ -3,11 +3,30 @@
 import Layout from "../layouts/Layout.astro";
 import PiercingPageHeadingSvg from "../components/decor/PiercingPageHeadingSvg.astro";
 import nail from "../domain/decor/assets/nail.png";
+import artistsImage from "../domain/decor/assets/artistsbird.png";
+import piercingPriceListSvg from "../domain/decor/assets/piercing-price-list-heading.svg";
+import {Image} from "astro:assets";
+import {loadActivePiercers} from "../domain/people/server.ts";
+import {getBookables} from "../domain/contact/utlis.ts";
+import {getEntry} from "astro:content";
+
+const piercers = await loadActivePiercers();
+const primaryPiercer = piercers[0];
+const pricingEntry = await getEntry("piercing", "pricing");
+const formatPrice = (price: number) =>
+    new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+    }).format(price);
+
+const bookingToggleId = `person-${primaryPiercer.id}-toggle`;
+const artistBookingHref = `/booking#${bookingToggleId}`;
+const hasBookables = (getBookables(primaryPiercer.data.contactSocialsBooking)?.length ?? 0) > 0;
 
 const nailSrc = nail.src;
 const title = "Piercing";
 const description = "Learn about piercing services at BluTattoo, including appointment information, jewelry, healing, and aftercare guidance.";
-
 
 const topText = "BLUTATTOO";
 const letters = Array.from(topText);
@@ -17,6 +36,11 @@ const dur = 0.5;
 
 const nailBg = `url("${nailSrc}")`;
 ---
+<script>
+    import {bootFadeUp} from "../scripts/fade-up";
+
+    bootFadeUp({observeMutations: true});
+</script>
 
 <Layout title={title} description={description}>
     <article class="page-article page-article--stack page-article--bleed space-y-6">
@@ -28,35 +52,138 @@ const nailBg = `url("${nailSrc}")`;
         <!--<div class="h-[500px]"></div>-->
 
         <div class="content-rail">
-            <section class=" border border-black/10 p-5 md:p-6">
-                <h2 class="text-xl font-semibold tracking-tight">Coming soon!</h2>
-                <p class="mt-2 leading-relaxed">
-                    We don’t currently have a piercer on staff, but we’re actively training one of our own toward
-                    licensure! Stay tuned.
-                </p>
-                <p class="mt-3 text-sm">
-                    Want updates?
-                    <a class="underline hover:no-underline" href="/contact">
-                        Contact us
-                    </a>
-                    and we’ll point you in the right direction.
-                </p>
+            <section class="piercing-price-list flex flex-col max-w-150 m-10 md:m-auto justify-center"
+                     aria-labelledby="piercing-price-list">
+                <h2 id="piercing-price-list" class="flex justify-center">
+                    <Image
+                            src={piercingPriceListSvg}
+                            alt="Price List"
+                            class="w-full mb-10"
+                            width="1200"
+                            height="1200"
+                    />
+                </h2>
 
-                <div class="nail-grid">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div class="hidden md:block"></div>
-                    <div class="hidden md:block"></div>
-                    <div class="hidden sm:block"></div>
-                    <div class="hidden sm:block"></div>
+                <div class="w-full flex justify-end">
+                    <table class="line-items">
+                        <tbody>
+                        {
+                            pricingEntry?.data.groups.map((group) => {
+                                const heading = group.heading.toUpperCase();
+                                return (
+                                        <tr class="group-heading">
+                                            <th>{heading}</th>
+                                            <td aria-hidden="true"></td>
+                                            {
+                                                group.items.map((item) => {
+
+                                                    return (
+                                                            <tr>
+                                                                <td>{item.name}</td>
+                                                                <td>{formatPrice(item.price)}</td>
+                                                            </tr>
+                                                    )
+                                                })}
+                                        </tr>
+                                )
+                            })}
+                        {
+                            pricingEntry?.data.extraItems.map((extraItem) => {
+                                return (
+                                        <tr class={`${extraItem.separator ? "line-break" : ""}`}>
+                                            <td>{extraItem.name}</td>
+                                            <td>{formatPrice(extraItem.price)}</td>
+                                        </tr>
+                                )
+                            })
+                        }
+                        </tbody>
+                    </table>
                 </div>
+                <h3 class="ppl-subheading ppl-nail-surround">
+                    {pricingEntry?.data.note}
+                </h3>
+                <!--<h3 class="ppl-subheading ppl-nail-surround">-->
+                <!--    Questions/Appointments?-->
+                <!--    276-285-0191-->
+                <!--    @WhatAPrick276-->
+                <!--</h3>-->
                 <style define:vars={{nailBg}}>
+                    @font-face {
+                        font-family: "Kumbh Sans";
+                        src: url("../domain/fonts/assets/KumbhSans-VariableFont_YOPQ,wght.woff2") format("woff2");
+                        font-weight: 100 900;
+                        font-style: normal;
+                        font-display: swap;
+                    }
+
+                    .piercing-price-list {
+                        font-family: "Kumbh Sans", sans-serif;
+                    }
+
+                    .line-items {
+                        border-collapse: collapse;
+                    }
+
+                    .line-items td,
+                    .line-items th {
+                        padding: 0.75rem 1rem;
+                    }
+
+                    .line-items td:first-child,
+                    .line-items th:first-child {
+                        text-align: right;
+                    }
+
+                    .line-items td:last-child {
+                        text-align: left;
+                        border-left: 1px solid black;
+                    }
+
+                    .line-items .group-heading th {
+                        padding-top: 1.25rem;
+                        padding-bottom: 0.5rem;
+                        font-size: 1.1rem;
+                        font-weight: 500;
+                        letter-spacing: 3px;
+                    }
+
+                    .line-items tr.line-break {
+                        border-top: 1px solid black;
+                    }
+
+                    .ppl-subheading {
+                        letter-spacing: 3px;
+                        font-weight: 500;
+                        margin: 2rem 0;
+                    }
+
+                    .ppl-nail-surround {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.75rem;
+                        text-align: center;
+                    }
+
+                    .ppl-nail-surround::before,
+                    .ppl-nail-surround::after {
+                        content: "";
+                        display: inline-block;
+                        width: 3rem;
+                        height: 3rem;
+                        background-image: var(--nailBg);
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+
+
+                    /*********/
+
                     .nail-grid {
                         display: grid;
+                        display: none;
                         grid-template-columns: repeat(10, minmax(0, 1fr));
                         gap: 1rem;
                         aspect-ratio: 16 / 1;
@@ -81,6 +208,65 @@ const nailBg = `url("${nailSrc}")`;
                     }
                 </style>
             </section>
+            <div class="nail-grid">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="hidden md:block"></div>
+                <div class="hidden md:block"></div>
+                <div class="hidden sm:block"></div>
+                <div class="hidden sm:block"></div>
+            </div>
+
+            {hasBookables && (
+                    <section class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-10 js-fade-up">
+                        <div class="border border-black bg-[seashell] p-5 sm:p-6 shadow-[5px_5px_0_black] flex flex-col sm:items-center sm:text-center sm:justify-between gap-4">
+                            <div class="ppl-nail-surround">
+                                <div>
+                                    <h2 class="text-xl font-semibold tracking-tight">
+                                        Want to contact {primaryPiercer.data.name}, our piercer?
+                                    </h2>
+                                    <p class="mt-1 text-sm text-gray-700">
+                                        View booking details, contact channels, and appointment options.
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <a
+                                    href={artistBookingHref}
+                                    class="inline-flex justify-center px-6 py-2 border border-black shadow-[3px_3px_0_black] text-sm tracking-wide uppercase hover:bg-blue-100 hover:shadow-[2px_2px_0_black] transition duration-300"
+                            >
+                                Book now
+                            </a>
+                        </div>
+                    </section>
+                    <aside
+                            class="fixed-cta fixed inset-x-0 bottom-0 z-40 p-2 sm:hidden m-0"
+                            aria-label={`Booking call to action for ${primaryPiercer.data.name}`}
+                    >
+                        <a
+                                href={artistBookingHref}
+                                class="block w-full text-center py-3 border border-orange-100 text-orange-100 shadow-[3px_3px_0_#ffedd5] text-sm tracking-wide uppercase hover:bg-orange-100 hover:text-black transition duration-300 bg-black/85 backdrop-blur"
+                                aria-label={`Book an appointment with ${primaryPiercer.data.name}`}
+                        >
+                            Book with {primaryPiercer.data.name}
+                        </a>
+                        <script is:inline>
+                            (() => {
+                                const root = document.documentElement;
+                                const parent = document.currentScript?.parentElement;
+                                if (!root || !parent) return;
+
+                                const measured = `${parent.offsetHeight}px`;
+                                root.style.setProperty("--fixed-booking-button-h", measured);
+                            })();
+                        </script>
+                    </aside>
+            )}
         </div>
     </article>
 </Layout>

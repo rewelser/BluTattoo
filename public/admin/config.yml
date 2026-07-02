@@ -109,7 +109,7 @@ _contact_socials_booking: &contact_socials_booking
 
             - name: textMessageDefaultInquiry
               label: "Text Message Default Inquiry"
-              hint: "The message that will appear as a default inquiry in a user's SMS app before they send it."
+              hint: "Only matters for text: The message that will appear as a default inquiry in a user's SMS app before they send it."
               widget: text
               default: "Hi! I’m interested in learning more. Could you let me know the next steps? Thanks!"
 
@@ -475,7 +475,7 @@ collections:
 
       - *contact_socials_booking
 
-      - { name: images, label: "Portfolio Images", widget: image, multiple: true }
+      - { name: images, label: "Portfolio Images", widget: image, multiple: true, required: false }
       - { name: shortBio, label: "Short Bio (excerpt on landing page, eg.)", widget: markdown, required: false }
       - { name: body, label: "Long Bio (Page Content)", widget: markdown, required: false }
 
@@ -714,3 +714,34 @@ collections:
     name: "eventsArchive"
     label: "Events (Archive)"
     filter: { field: "archived", value: true }
+
+  - name: piercing
+    label: "Piercing"
+    files:
+      - name: pricing
+        label: "Pricing"
+        file: "src/content/piercing/pricing.yml"
+        fields:
+        - { name: note, label: "Footer Note", widget: string }
+
+        - name: groups
+          label: "Pricing Groups"
+          widget: list
+          fields:
+            - { name: heading, label: "Group Heading", widget: string }
+
+            - name: items
+              label: "Items"
+              widget: list
+              fields:
+                - { name: name, label: "Service Name", widget: string }
+                - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
+
+        - name: extraItems
+          label: "Extra Items"
+          widget: list
+          required: false
+          fields:
+            - { name: name, label: "Service Name", widget: string }
+            - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
+            - { name: separator, label: "Add separator line above", widget: boolean, required: false }
