@@ -52,13 +52,13 @@ const nailBg = `url("${nailSrc}")`;
         <!--<div class="h-[500px]"></div>-->
 
         <div class="content-rail">
-            <section class="piercing-price-list flex flex-col max-w-150 m-10 md:m-auto justify-center"
+            <section class="piercing-price-list flex flex-col max-w-150 m-10 md:m-auto justify-center js-fade-up"
                      aria-labelledby="piercing-price-list">
                 <h2 id="piercing-price-list" class="flex justify-center">
                     <Image
                             src={piercingPriceListSvg}
                             alt="Price List"
-                            class="w-full mb-10"
+                            class="w-full mb-10 js-fade-up"
                             width="1200"
                             height="1200"
                     />
@@ -100,14 +100,9 @@ const nailBg = `url("${nailSrc}")`;
                         </tbody>
                     </table>
                 </div>
-                <h3 class="ppl-subheading ppl-nail-surround">
+                <h3 class="ppl-subheading ppl-nail-surround js-fade-up">
                     {pricingEntry?.data.note}
                 </h3>
-                <!--<h3 class="ppl-subheading ppl-nail-surround">-->
-                <!--    Questions/Appointments?-->
-                <!--    276-285-0191-->
-                <!--    @WhatAPrick276-->
-                <!--</h3>-->
                 <style define:vars={{nailBg}}>
                     @font-face {
                         font-family: "Kumbh Sans";
