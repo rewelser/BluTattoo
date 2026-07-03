@@ -1,6 +1,8 @@
 .calendar-grid {
     position: relative;
     contain: layout;
+    /*the following was ultimately unnecessary due to round() but helped with debugging overflow subpixel rounding errors*/
+    /*padding: var(--spacing);*/
 }
 
 .calendar-day {
@@ -125,7 +127,7 @@
 
     .overlay {
         margin-block: var(--spacing);
-        width: calc(anchor-size(width) * 3 + (2 * var(--spacing)));
+        width: round(down, calc(anchor-size(width) * 4 + (3 * var(--spacing))), 1px);
         position-area: y-start span-x-end;
         position-try-order: most-inline-size;
         position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
@@ -179,7 +181,7 @@
 
     .overlay {
         margin-inline: 0.25rem;
-        width: calc(anchor-size(width) * 2 + var(--spacing));
+        width: round(down, calc(anchor-size(width) * 2 + var(--spacing)), 1px);
         position-area: inline-start span-block-end;
         position-try-order: most-block-size;
         position-try-fallbacks: flip-block, flip-inline, flip-inline flip-block;

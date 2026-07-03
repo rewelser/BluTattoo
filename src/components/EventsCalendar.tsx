@@ -3,7 +3,11 @@ import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
 import {
     buildEventsByYearMonthDate,
 } from "../domain/events/grouping.ts";
-import "../styles/EventsCalendar2.css";
+/**
+ * todo: once safari supports @supports at-rules, then we can simply use:
+ * @EventsCalendar.css
+ */
+import "../styles/EventsCalendar-anchor-with-fallback.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
 import {fmtDate, fmtTime} from "../domain/events/format.ts";
 
@@ -264,16 +268,16 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
 
                                 {hasEvents && (
                                     <div
-                                        className={`overlay ${isOpen && !canHover ? "is-open" : ""}`}
+                                        className={`overlay ${dailyEvents.length === 1 && !dailyEvents[0].detailsShort ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
                                         aria-label={`Events for ${fmtDate(isoLike)}`}
                                     >
-                                        <div className="overlay-arrow" aria-hidden="true"></div>
                                         <div className="overlay-events">
                                             {dailyEvents.map((ev, index) => (
                                                 <div key={ev.id}>
                                                     <section
                                                         className={`overlay-event p-5 leading-none
-                                                        ${index > 0 ? "scalloped-border-top" : ""}`}
+                                                        ${index > 0 ? "scalloped-border-top" : ""}
+                                                        ${!ev.detailsShort ? "no-short-details" : ""}`}
                                                     >
                                                         <a href={`/events/${ev.id}`}>
                                                             <h3 className="text-xl leading-none">{ev.title} →</h3>
