@@ -705,7 +705,7 @@ collections:
         fields:
           - { name: enabled, label: "Enable Announcement Bar", widget: boolean, default: false }
           - { name: message, label: "Message", widget: string, required: true }
-          - { name: href, label: "Link URL", widget: string, required: false }
+          - { name: href, label: "Link URL", widget: string, required: false, hint: "if no link is placed, the announcement bar will simply link to the page for this event." }
           - { name: color1, label: "Color 1", widget: color, required: false, hint: "If only one color is set, bar uses a solid background." }
           - { name: color2, label: "Color 2", widget: color, required: false, hint: "If two colors are set, bar uses a left→right gradient." }
 
