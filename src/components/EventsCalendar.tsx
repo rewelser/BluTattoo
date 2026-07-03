@@ -6,6 +6,9 @@ import {
 /**
  * todo: once safari supports @supports at-rules, then we can simply use:
  * @EventsCalendar.css
+ *
+ * Then, once safari supports all the cool stuff, we can just use the anchor version.
+ * In that case, we can delete the medium and small class logic in this component.
  */
 import "../styles/EventsCalendar-anchor-with-fallback.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
