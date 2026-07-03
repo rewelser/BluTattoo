@@ -307,16 +307,14 @@ _contact_socials_booking: &contact_socials_booking
 _recurrence_rule: &recurrence_rule
   name: recurrenceRule
   label: "Recurrence"
-  hint: "to keep things simple, only one rule can be used here."
+  hint: "To keep things simple, only one rule can be used here."
   widget: object
   required: false
+  collapsed: true
   types:
     - name: recurrenceRuleWeekly
       label: "Recurrence - Weekly"
-      widget: object
-      required: false
-      collapsed: true
-      hint: "Repeats on selected weekdays between Start Date and End Date."
+      hint: "Repeats on selected weekdays from Start Date through Repeat Until."
       fields:
         - name: interval
           label: "Interval"
@@ -332,6 +330,8 @@ _recurrence_rule: &recurrence_rule
           widget: select
           multiple: true
           required: true
+          min: 1
+          max: 7
           options:
             - { label: Mon, value: MO }
             - { label: Tue, value: TU }
@@ -341,12 +341,16 @@ _recurrence_rule: &recurrence_rule
             - { label: Sat, value: SA }
             - { label: Sun, value: SU }
 
-    - name: recurrenceRuleMonthly
-      label: "Recurrence - Monthly"
-      widget: object
-      required: false
-      collapsed: true
-      hint: "Repeats monthly between Start Date and End Date."
+        - name: until
+          label: "Repeat Until"
+          widget: datetime
+          type: date
+          required: false
+          hint: "Last date on which an occurrence may start."
+
+    - name: recurrenceRuleMonthlyByDate
+      label: "Recurrence - Monthly by Date"
+      hint: "Repeats on a specific day of the month from Start Date through Repeat Until."
       fields:
         - name: interval
           label: "Interval"
@@ -355,30 +359,38 @@ _recurrence_rule: &recurrence_rule
           default: 1
           value_type: int
           min: 1
-          hint: "Every 1 month, every 2 months, etc."
-
-        - name: monthlyMode
-          label: "Monthly Mode"
-          widget: select
-          required: true
-          default: monthday
-          options:
-            - { label: "Same day of month", value: monthday }
-            - { label: "Ordinal weekday", value: ordinalWeekday }
 
         - name: byMonthDay
-          label: "Day of month"
+          label: "Day of month (1-31)"
           widget: number
-          required: false
+          required: true
           value_type: int
           min: 1
           max: 31
-          hint: "Use for 'Same day of month' mode, e.g. 15"
+
+        - name: until
+          label: "Repeat Until"
+          widget: datetime
+          type: date
+          required: false
+          hint: "Last date on which an occurrence may start."
+
+    - name: recurrenceRuleMonthlyByOrdinalWeekday
+      label: "Recurrence - Monthly by Ordinal Weekday"
+      hint: "Repeats on an ordinal weekday, such as the first Friday or last Monday, through Repeat Until."
+      fields:
+        - name: interval
+          label: "Interval"
+          widget: number
+          required: false
+          default: 1
+          value_type: int
+          min: 1
 
         - name: byWeekday
           label: "Weekday"
           widget: select
-          required: false
+          required: true
           options:
             - { label: "Mon", value: MO }
             - { label: "Tue", value: TU }
@@ -387,19 +399,24 @@ _recurrence_rule: &recurrence_rule
             - { label: "Fri", value: FR }
             - { label: "Sat", value: SA }
             - { label: "Sun", value: SU }
-          hint: "Use for 'Ordinal weekday' mode"
 
         - name: bySetPos
           label: "Position in month"
           widget: select
-          required: false
+          required: true
           options:
             - { label: "First", value: 1 }
             - { label: "Second", value: 2 }
             - { label: "Third", value: 3 }
             - { label: "Fourth", value: 4 }
             - { label: "Last", value: -1 }
-          hint: "Use for 'Ordinal weekday' mode"
+
+        - name: until
+          label: "Repeat Until"
+          widget: datetime
+          type: date
+          required: false
+          hint: "Last date on which an occurrence may start."
 
 collections:
   - name: "faqSections"

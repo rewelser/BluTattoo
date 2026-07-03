@@ -21,6 +21,9 @@ export const toHm = (v: unknown): unknown => {
     return v;
 };
 export const weekdayEnum = z.enum(["MO", "TU", "WE", "TH", "FR", "SA", "SU"]);
+/**
+ * todo: replace circa zod 4, as it apparently has z.iso.date()
+ */
 export const isoDate = z.preprocess((val) => {
     if (val instanceof Date) {
         return val.toISOString().slice(0, 10); // YYYY-MM-DD

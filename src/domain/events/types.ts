@@ -9,3 +9,16 @@ export type DateParts = {
     month: number;
     date: number;
 };
+
+// type Weekday = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+
+type Weekday = "MO" | "TU" | "WE" | "TH" | "FR" | "SA" | "SU";
+type RecurrenceFrequency = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+
+type EventRecurrence = {
+    frequency: RecurrenceFrequency;
+    interval?: number;
+    byDay?: Weekday[];
+    count?: number;
+    until?: string;
+}

@@ -12,6 +12,7 @@ import {
 import {contactSocialsBookingSchema, siteInfoSocialsSchema} from "./domain/contact/schema.ts";
 import {frameSchema, videoSchema} from "./domain/decor/schema.ts";
 import {primaryRoleSchema} from "./domain/people/schema.ts";
+import {recurrenceRuleSchema} from "./domain/events/schema.ts";
 
 /*** region *** Events Collection ****/
 
@@ -42,27 +43,7 @@ const events = defineCollection({
         location: z.preprocess(emptyStrToUndef, z.string().optional()),
         images: z.array(image()).optional(),
 
-        recurrenceRule: z.union([
-            z.object({
-                type: z.literal("recurrenceRuleWeekly"),
-                interval: z.number().int().min(1).default(1).optional(),
-                byWeekday: z.array(weekdayEnum).min(1),
-            }),
-            z.object({
-                type: z.literal("recurrenceRuleMonthly"),
-                interval: z.number().int().min(1).default(1).optional(),
-                monthlyMode: z.enum(["monthday", "ordinalWeekday"]),
-                byMonthDay: z.number().int().min(1).max(31).optional(),
-                byWeekday: weekdayEnum.optional(),
-                bySetPos: z.union([
-                    z.literal(1),
-                    z.literal(2),
-                    z.literal(3),
-                    z.literal(4),
-                    z.literal(-1),
-                ]).optional(),
-            }),
-        ]).optional(),
+        recurrenceRule: recurrenceRuleSchema.optional(),
 
         promoBar: z
             .object({
