@@ -39,10 +39,10 @@
     },
     {
       "label": "Sun",
-      "value": "12:00–7:00"
+      "value": "12:00–5:00"
     }
   ],
-  "hoursShortline": "12p to 7p | Tuesday - Friday, Sunday\n12p to 8p | Saturday\nClosed Monday",
+  "hoursShortline": "12p to 7p | Tuesday - Friday\n12p to 8p | Saturday\n12p to 5p | Sunday\nClosed Monday",
   "socials": {
     "instagram": "https://www.instagram.com/blutattoostudiollc/",
     "facebook": "https://www.facebook.com/profile.php?id=100072946814920"
