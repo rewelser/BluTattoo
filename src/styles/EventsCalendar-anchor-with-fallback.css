@@ -92,6 +92,7 @@
         max-height: inherit;
         overflow-y: auto;
         overflow-x: hidden;
+        scrollbar-width: thin;
     }
 
     .overlay-event.scalloped-border-top {
@@ -327,7 +328,9 @@
 
     .overlay .overlay-events {
         height: 100%;
-        overflow: scroll;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
     }
 
     .overlay.short .overlay-events {
