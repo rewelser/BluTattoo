@@ -13,6 +13,14 @@ import ContactPageHeading from "../../components/decor/ContactPageHeading.astro"
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
 
 const events: EventItem[] = await getTransformedEventItemsCached();
+
+///// recurrence test area /////
+
+import {test_dateInvestigatorFunction} from "../../domain/events/selectors.ts";
+// test_dateInvestigatorFunction(events);
+
+///// recurrence test area /////
+
 const title = "Events";
 const description = "View upcoming guest spots, events, and special appearances at BluTattoo.";
 ---

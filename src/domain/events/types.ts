@@ -22,3 +22,21 @@ type EventRecurrence = {
     count?: number;
     until?: string;
 }
+
+export type EventValidationIssue = {
+    id: string;
+    reason: string;
+}
+
+export type ValidEventResult = {
+    ok: true;
+    entry: EventEntry;
+}
+
+export type InvalidEventResult = {
+    ok: false;
+    id: string;
+    issues: EventValidationIssue[];
+}
+
+export type EventValidationResult = ValidEventResult | InvalidEventResult;

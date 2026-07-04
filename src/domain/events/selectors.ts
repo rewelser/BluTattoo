@@ -6,6 +6,8 @@ export function getEventStartKey(ev: EventItem): string {
     return `${ev.startDate}T${ev.startTime ?? "00:00"}`;
 }
 
+///// vvvvvv recurrence test area vvvvvv /////
+
 export function getEventStartKey_recurrences(ev: EventItem): string {
     if (!ev.recurrenceRule) {
         return `${ev.endDate}T${ev.endTime ?? "00:00"}`;
@@ -13,6 +15,20 @@ export function getEventStartKey_recurrences(ev: EventItem): string {
         return "event has recurrence rule";
     }
 }
+
+// todo - recurrences: remove after implementation of rrules
+export const test_dateInvestigatorFunction = (evItems: EventItem[]) => {
+    for (const ev of evItems) {
+        if (ev.recurrenceRule) {
+            console.log(ev.recurrenceRule);
+            console.log(getEventStartKey_recurrences(ev));
+            console.log(import.meta.env);
+
+        }
+    }
+}
+
+///// ^^^^^^ recurrence test area ^^^^^^ /////
 
 // todo - recurrences: if recursive, end at last instance rather than startDate
 export function getEventEndKey(ev: EventItem): string {

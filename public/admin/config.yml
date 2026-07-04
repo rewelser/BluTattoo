@@ -702,12 +702,12 @@ collections:
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
       # DATE RANGE (inclusive endDate)
-      - { name: date, label: "Start Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false }
-      - { name: endDate, label: "End Date (inclusive, optional)", widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false }
+      - { name: date, label: "Start Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, hint: "If no end date is used, this is treated as a single-day event." }
+      - { name: endDate, label: "End Date (inclusive)", widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, hint: "For multi-day events." }
 
       # OPTIONAL TIME WINDOW (if omitted => all-day)
-      - { name: startTime, label: "Start Time (optional)", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
-      - { name: endTime, label: "End Time (optional)", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
+      - { name: startTime, label: "Start Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
+      - { name: endTime, label: "End Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
 
       - { name: location, label: "Location", widget: string, required: false }
       - { name: images, label: "Event Images", widget: image, required: false, multiple: true }

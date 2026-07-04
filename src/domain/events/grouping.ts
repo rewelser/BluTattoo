@@ -1,5 +1,4 @@
 import type {EventItem, EventsByYearMonthDate} from "./types";
-// import {getEventStartKey_recurrences} from "./selectors.ts";
 
 const getDatesBetweenInclusive = (startDate: string, endDate: string): string[] => {
     const [sy, sm, sd] = startDate.split("-").map(Number);
@@ -22,21 +21,8 @@ const getDatesBetweenInclusive = (startDate: string, endDate: string): string[] 
     return dates;
 }
 
-// todo - recurrences: remove after implementation of rrules
-// const test_dateInvestigatorFunction = (evItems: EventItem[]) => {
-//     for (const ev of evItems) {
-//         if (ev.recurrenceRule) {
-//             console.log(ev.recurrenceRule);
-//             console.log(getEventStartKey_recurrences(ev));
-//
-//         }
-//     }
-// }
-
 export const buildEventsByYearMonthDate = (evItems: EventItem[]) => {
     const eventsByYearMonthDate: EventsByYearMonthDate = {};
-
-    // test_dateInvestigatorFunction(evItems);
 
     for (const ev of evItems) {
         const [startYear, startMonth, startDate] = ev.startDate.split("-");
