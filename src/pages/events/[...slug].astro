@@ -5,7 +5,7 @@ import {getCollection, getEntry, render} from "astro:content";
 // import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
 import SocialRow from "../../components/SocialRow.astro";
 import HrDivider from "../../components/decor/HrDivider.astro";
-import {getTransformedEventBySlug, loadTransformedEvents} from "../../domain/events/server.ts";
+import {getValidatedEventBySlug, loadTransformedEvents, loadValidatedEvents} from "../../domain/events/server.ts";
 import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
 import {defaults} from "../../config/site.ts";
@@ -16,14 +16,15 @@ import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
 const branding = await getEntry("branding", "main");
 
 export async function getStaticPaths() {
-    const entries = await loadTransformedEvents();
+    // const entries = await loadTransformedEvents();
+    const entries = await loadValidatedEvents();
     return entries.map((e) => ({params: {slug: e.id}}));
 }
 
 const {slug} = Astro.params;
 if (!slug) throw new Error("Missing event id param");
 
-const entry = await getTransformedEventBySlug(slug);
+const entry = await getValidatedEventBySlug(slug);
 if (!entry) throw new Error(`Event not found: ${slug}`);
 
 const {Content} = await render(entry);

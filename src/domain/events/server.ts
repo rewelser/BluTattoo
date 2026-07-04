@@ -97,15 +97,16 @@ export async function loadTransformedEvents(): Promise<EventEntry[]> {
         );
 }
 
-export const getTransformedEventBySlug = async (slug: string) => {
-    const entries = await loadTransformedEvents();
+export const getValidatedEventBySlug = async (slug: string) => {
+    // const entries = await loadTransformedEvents();
+    const entries = await loadValidatedEvents();
 
     return entries.find((e) => e.id === slug);
 }
 
-export async function getTransformedEventItems(): Promise<EventItem[]> {
-    const entries = await loadTransformedEvents();
-    const entries2 = await loadValidatedEvents();
+export async function getValidatedEventItems(): Promise<EventItem[]> {
+    // const entries = await loadTransformedEvents();
+    const entries = await loadValidatedEvents();
 
     return entries
         .map((e) => ({id: e.id, body: e.body, ...e.data}));
@@ -113,9 +114,9 @@ export async function getTransformedEventItems(): Promise<EventItem[]> {
 
 let transformedEventItemsPromise: Promise<EventItem[]> | undefined;
 
-export function getTransformedEventItemsCached(): Promise<EventItem[]> {
+export function getValidatedEventItemsCached(): Promise<EventItem[]> {
     if (!transformedEventItemsPromise) {
-        transformedEventItemsPromise = getTransformedEventItems();
+        transformedEventItemsPromise = getValidatedEventItems();
     }
     return transformedEventItemsPromise;
 }

@@ -1,5 +1,5 @@
 import type {EventItem, GuestItem} from "./types.ts";
-import {getTransformedEventItemsCached} from "./server.ts";
+import {getValidatedEventItemsCached} from "./server.ts";
 
 // todo - recurrences: if recursive, start at first instance rather than startDate
 export function getEventStartKey(ev: EventItem): string {
@@ -103,7 +103,7 @@ export async function loadUpcomingGuestSpotCandidates(now = new Date()): Promise
 }
 
 export async function loadUpcomingCandidates(now = new Date()): Promise<EventItem[]> {
-    const events = await getTransformedEventItemsCached();
+    const events = await getValidatedEventItemsCached();
     return getUpcomingCandidates(events, now);
 }
 
