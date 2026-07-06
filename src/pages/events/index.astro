@@ -9,17 +9,9 @@ import UpcomingEvents from "../../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../../components/UpcomingEventsFallback.astro";
 import { getValidatedEventItemsCached } from "../../domain/events/server.ts";
 import type {EventItem} from "../../domain/events/types.ts";
-import ContactPageHeading from "../../components/decor/ContactPageHeading.astro";
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
 
 const events: EventItem[] = await getValidatedEventItemsCached();
-
-///// recurrence test area /////
-
-import {test_dateInvestigatorFunction} from "../../domain/events/selectors.ts";
-// test_dateInvestigatorFunction(events);
-
-///// recurrence test area /////
 
 const title = "Events";
 const description = "View upcoming guest spots, events, and special appearances at BluTattoo.";

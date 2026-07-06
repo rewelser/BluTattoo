@@ -1,57 +1,23 @@
 import type {EventItem, GuestItem} from "./types.ts";
-import {getValidatedEventItemsCached} from "./server.ts";
 
-// todo - recurrences: if recursive, start at first instance rather than startDate
+/**
+ * todo - recurrences: if recursive, start at first instance rather than startDate.
+ *  View the details in @chat - rrule temporary chat about ensuring the startDate *is* first instance for recurrences.
+ */
+
+// todo - recurrences: this logic should be recurrence-agnostic - expansion should occur higher up
 export function getEventStartKey(ev: EventItem): string {
     return `${ev.startDate}T${ev.startTime ?? "00:00"}`;
 }
 
-///// vvvvvv recurrence test area vvvvvv /////
-
-export function getEventStartKey_recurrences(ev: EventItem): string {
-    if (!ev.recurrenceRule) {
-        return `${ev.endDate}T${ev.endTime ?? "00:00"}`;
-    } else {
-        return "event has recurrence rule";
-    }
-}
-
-// todo - recurrences: remove after implementation of rrules
-export const test_dateInvestigatorFunction = (evItems: EventItem[]) => {
-    for (const ev of evItems) {
-        if (ev.recurrenceRule) {
-            console.log(ev.recurrenceRule);
-            console.log(getEventStartKey_recurrences(ev));
-            console.log(import.meta.env);
-
-        }
-    }
-}
-
-///// ^^^^^^ recurrence test area ^^^^^^ /////
-
-// todo - recurrences: if recursive, end at last instance rather than startDate
+// todo - recurrences: this logic should be recurrence-agnostic - expansion should occur higher up
 export function getEventEndKey(ev: EventItem): string {
     const endDate = ev.endDate ?? ev.startDate;
     return `${endDate}T${ev.endTime ?? "23:59"}`;
 }
 
-/**
- * Timezone-agnostic version, which means js Date() decides timezone, which will be local to server: meaningless.
- * That's why we did everything else as string comparisons. Can't wait until js Temporal has support ;)
- */
-// export function getNowKey(now = new Date()): string {
-//     const year = now.getFullYear();
-//     const month = String(now.getMonth() + 1).padStart(2, "0");
-//     const date = String(now.getDate()).padStart(2, "0");
-//     const hours = String(now.getHours()).padStart(2, "0");
-//     const minutes = String(now.getMinutes()).padStart(2, "0");
-//
-//     return `${year}-${month}-${date}T${hours}:${minutes}`;
-// }
-
-export function getNowKey(
-    now = new Date(),
+export function getDateKey(
+    date = new Date(),
     timeZone = "America/New_York",
 ): string {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -62,7 +28,7 @@ export function getNowKey(
         hour: "2-digit",
         minute: "2-digit",
         hourCycle: "h23",
-    }).formatToParts(now);
+    }).formatToParts(date);
     const map = Object.fromEntries(
         parts
             .filter((p) => p.type !== "literal")
@@ -72,14 +38,13 @@ export function getNowKey(
     return `${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}`;
 }
 
-export function hasEventEnded(
-    ev: EventItem,
-    nowKey = getNowKey(),
-): boolean {
+// todo - recurrences: this logic should be recurrence-agnostic - expansion should occur higher up
+export function hasEventEnded(ev: EventItem, nowKey = getDateKey(),): boolean {
     return getEventEndKey(ev) < nowKey;
 }
 
-export const hasEventStarted = (ev: EventItem, nowKey = getNowKey()): boolean => {
+// todo - recurrences: this logic should be recurrence-agnostic - expansion should occur higher up
+export function hasEventStarted(ev: EventItem, nowKey = getDateKey()): boolean {
     return getEventStartKey(ev) <= nowKey;
 }
 
@@ -88,45 +53,10 @@ export const hasEventStarted = (ev: EventItem, nowKey = getNowKey()): boolean =>
  * after .filter(isGuestSpot).
  */
 export const isGuestSpot = (ev: EventItem): ev is GuestItem => {
-    return !!ev.guestSpot && !ev.shopClosed;
+    return !!ev.guestSpot;
 };
 
 export function isEventArchived(ev: EventItem): boolean {
     return ev.archived === true;
 }
 
-export async function loadUpcomingGuestSpotCandidates(now = new Date()): Promise<GuestItem[]> {
-    const events = await loadUpcomingCandidates(now);
-    return events.filter(
-        (ev) => isGuestSpot(ev)
-    );
-}
-
-export async function loadUpcomingCandidates(now = new Date()): Promise<EventItem[]> {
-    const events = await getValidatedEventItemsCached();
-    return getUpcomingCandidates(events, now);
-}
-
-export function getUpcomingCandidates(events: EventItem[], now = new Date()) {
-    return events.filter(
-        (ev) =>
-            !hasEventEnded(ev, getNowKey(now)) &&
-            !isEventArchived(ev)
-    ).sort((a, b) => getEventStartKey(a).localeCompare(getEventStartKey(b)));
-}
-
-export function getPromoCandidates(events: EventItem[]) {
-    return events.filter(
-        (ev) =>
-            ev.promoBar?.enabled &&
-            !!ev.promoBar?.message
-    );
-}
-
-export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
-    return (
-        upcoming.find((ev) => ev.featured && ev.image) ??
-        upcoming.find((ev) => ev.image) ??
-        null
-    );
-}

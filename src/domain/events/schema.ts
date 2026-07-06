@@ -1,5 +1,31 @@
 import {z} from "astro:content";
-import {isoDate, weekdayEnum} from "../base/schema.ts";
+
+import {weekdayTypes} from "./recurrence/defs.ts";
+
+export const timeHM = z.string().regex(/^\d{2}:\d{2}$/, "Use HH:mm");
+
+export const toHm = (v: unknown): unknown => {
+    if (v instanceof Date) return v.toISOString().slice(11, 16); // HH:mm
+    if (typeof v === "string") {
+        const s = v.trim();
+        if (/^\d{2}:\d{2}$/.test(s)) return s;
+        const m = s.match(/T(\d{2}:\d{2})/);
+        if (m?.[1]) return m[1];
+    }
+    return v;
+};
+
+export const weekdayEnum = z.enum(weekdayTypes);
+
+/**
+ * todo: replace circa zod 4, as it apparently has z.iso.date()
+ */
+export const isoDate = z.preprocess((val) => {
+    if (val instanceof Date) {
+        return val.toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+    return val;
+}, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD"));
 
 const bySetPosEnum = z.union([
     z.literal(1),
@@ -14,7 +40,7 @@ export const recurrenceRuleSchema = z
         z.object({
             type: z.literal("recurrenceRuleWeekly"),
             interval: z.number().int().min(1).default(1),
-            byWeekday: z.array(weekdayEnum).min(1).max(7),
+            byDay: z.array(weekdayEnum).min(1).max(7),
             until: isoDate.optional(),
         }),
 
@@ -28,7 +54,7 @@ export const recurrenceRuleSchema = z
         z.object({
             type: z.literal("recurrenceRuleMonthlyByOrdinalWeekday"),
             interval: z.number().int().min(1).default(1),
-            byWeekday: weekdayEnum,
+            byDay: weekdayEnum,
             bySetPos: bySetPosEnum,
             until: isoDate.optional(),
         }),

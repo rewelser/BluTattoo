@@ -2,17 +2,13 @@ import {defineCollection, z} from "astro:content";
 import {glob} from 'astro/loaders';
 import {
     emptyStrToUndef,
-    isoDate,
     optionalString,
-    optionalText,
-    timeHM,
-    toHm,
-    weekdayEnum
+    optionalText
 } from "./domain/base/schema.ts";
 import {contactSocialsBookingSchema, siteInfoSocialsSchema} from "./domain/contact/schema.ts";
 import {frameSchema, videoSchema} from "./domain/decor/schema.ts";
 import {primaryRoleSchema} from "./domain/people/schema.ts";
-import {recurrenceRuleSchema} from "./domain/events/schema.ts";
+import {isoDate, recurrenceRuleSchema, timeHM, toHm, weekdayEnum} from "./domain/events/schema.ts";
 
 /*** region *** Events Collection ****/
 

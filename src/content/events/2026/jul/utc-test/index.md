@@ -1,9 +1,10 @@
 ---
 shopClosed: false
-title: endbeforestart
+title: utc test
+date: 2026-07-03
+startTime: 23:00
+endTime: 23:30
 published: false
 featured: false
 archived: false
-date: 2026-07-17
-endDate: 2026-07-01
 ---

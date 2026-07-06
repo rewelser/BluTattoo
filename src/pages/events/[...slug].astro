@@ -5,7 +5,7 @@ import {getCollection, getEntry, render} from "astro:content";
 // import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
 import SocialRow from "../../components/SocialRow.astro";
 import HrDivider from "../../components/decor/HrDivider.astro";
-import {getValidatedEventBySlug, loadTransformedEvents, loadValidatedEvents} from "../../domain/events/server.ts";
+import {getValidatedEventBySlug, loadValidatedEvents} from "../../domain/events/server.ts";
 import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
 import {defaults} from "../../config/site.ts";
@@ -16,7 +16,6 @@ import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
 const branding = await getEntry("branding", "main");
 
 export async function getStaticPaths() {
-    // const entries = await loadTransformedEvents();
     const entries = await loadValidatedEvents();
     return entries.map((e) => ({params: {slug: e.id}}));
 }

@@ -307,116 +307,35 @@ _contact_socials_booking: &contact_socials_booking
 _recurrence_rule: &recurrence_rule
   name: recurrenceRule
   label: "Recurrence"
-  hint: "To keep things simple, only one rule can be used here."
+  hint: "To keep things simple, only one rule can be used here. For daily or yearly repeating events, create separate event entries manually for now."
   widget: object
   required: false
-  collapsed: true
+  collapsed: false
   types:
     - name: recurrenceRuleWeekly
       label: "Recurrence - Weekly"
       hint: "Repeats on selected weekdays from Start Date through Repeat Until."
       fields:
-        - name: interval
-          label: "Interval"
-          widget: number
-          required: false
-          default: 1
-          value_type: int
-          min: 1
-          hint: "Every 1 week, every 2 weeks, etc."
-
-        - name: byWeekday
-          label: "Weekdays"
-          widget: select
-          multiple: true
-          required: true
-          min: 1
-          max: 7
-          options:
-            - { label: Mon, value: MO }
-            - { label: Tue, value: TU }
-            - { label: Wed, value: WE }
-            - { label: Thu, value: TH }
-            - { label: Fri, value: FR }
-            - { label: Sat, value: SA }
-            - { label: Sun, value: SU }
-
-        - name: until
-          label: "Repeat Until"
-          widget: datetime
-          type: date
-          required: false
-          hint: "Last date on which an occurrence may start."
+        - { name: interval, label: "Interval", widget: number, required: false, default: 1, value_type: int, min: 1, hint: "Every 1 week, every 2 weeks, etc." }
+        - { name: byDay, label: "Weekdays", widget: select, multiple: true, required: true, min: 1, max: 7, options: [ { value: MO, label: "Mon" }, { value: TU, label: "Tue" }, { value: WE, label: "Wed" }, { value: TH, label: "Thu" }, { value: FR, label: "Fri" }, { value: SA, label: "Sat" }, { value: SU, label: "Sun" } ] }
+        - { name: until, label: "Repeat Until", widget: datetime, type: date, required: false, hint: "Last date on which an occurrence may start." }
 
     - name: recurrenceRuleMonthlyByDate
       label: "Recurrence - Monthly by Date"
       hint: "Repeats on a specific day of the month from Start Date through Repeat Until."
       fields:
-        - name: interval
-          label: "Interval"
-          widget: number
-          required: false
-          default: 1
-          value_type: int
-          min: 1
-
-        - name: byMonthDay
-          label: "Day of month (1-31)"
-          widget: number
-          required: true
-          value_type: int
-          min: 1
-          max: 31
-
-        - name: until
-          label: "Repeat Until"
-          widget: datetime
-          type: date
-          required: false
-          hint: "Last date on which an occurrence may start."
+        - { name: interval, label: "Interval", widget: number, required: false, default: 1, value_type: int, min: 1 }
+        - { name: byMonthDay, label: "Day of month (1-31)", widget: number, required: true, value_type: int, min: 1, max: 31 }
+        - { name: until, label: "Repeat Until", widget: datetime, type: date, required: false, hint: "Last date on which an occurrence may start." }
 
     - name: recurrenceRuleMonthlyByOrdinalWeekday
       label: "Recurrence - Monthly by Ordinal Weekday"
       hint: "Repeats on an ordinal weekday, such as the first Friday or last Monday, through Repeat Until."
       fields:
-        - name: interval
-          label: "Interval"
-          widget: number
-          required: false
-          default: 1
-          value_type: int
-          min: 1
-
-        - name: byWeekday
-          label: "Weekday"
-          widget: select
-          required: true
-          options:
-            - { label: "Mon", value: MO }
-            - { label: "Tue", value: TU }
-            - { label: "Wed", value: WE }
-            - { label: "Thu", value: TH }
-            - { label: "Fri", value: FR }
-            - { label: "Sat", value: SA }
-            - { label: "Sun", value: SU }
-
-        - name: bySetPos
-          label: "Position in month"
-          widget: select
-          required: true
-          options:
-            - { label: "First", value: 1 }
-            - { label: "Second", value: 2 }
-            - { label: "Third", value: 3 }
-            - { label: "Fourth", value: 4 }
-            - { label: "Last", value: -1 }
-
-        - name: until
-          label: "Repeat Until"
-          widget: datetime
-          type: date
-          required: false
-          hint: "Last date on which an occurrence may start."
+        - { name: interval, label: "Interval", widget: number, required: false, default: 1, value_type: int, min: 1 }
+        - { name: byDay, label: "Weekday", widget: select, required: true, options: [ { value: MO, label: "Mon" }, { value: TU, label: "Tue" }, { value: WE, label: "Wed" }, { value: TH, label: "Thu" }, { value: FR, label: "Fri" }, { value: SA, label: "Sat" }, { value: SU, label: "Sun" } ] }
+        - { name: bySetPos, label: "Position in month", widget: select, required: true, options: [ { label: "First", value: 1 }, { label: "Second", value: 2 }, { label: "Third", value: 3 }, { label: "Fourth", value: 4 }, { label: "Last", value: -1 } ] }
+        - { name: until, label: "Repeat Until", widget: datetime, type: date, required: false, hint: "Last date on which an occurrence may start." }
 
 collections:
   - name: "faqSections"
@@ -665,6 +584,20 @@ collections:
 #        pattern: true
     fields:
       - { name: shopClosed, label: "Shop Closed", widget: boolean, required: false, default: false, hint: "Mark this if the shop is to be closed during this period. Data in all other optional fields will be ignored, except for announcement bar settings." }
+      - { name: title, label: Title, widget: string }
+      - { name: detailsShort, label: "Details (short)", widget: string, required: false }
+      # DATE RANGE (inclusive endDate)
+      - { name: date, label: "Start Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, hint: "If no end date is used, this is treated as a single-day event." }
+      - { name: endDate, label: "End Date (inclusive)", widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, hint: "For multi-day events." }
+
+      # OPTIONAL TIME WINDOW (if omitted => all-day)
+      - { name: startTime, label: "Start Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
+      - { name: endTime, label: "End Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
+
+      - { name: location, label: "Location", widget: string, required: false, hint: "Nice to display if event is taking place elsewhere than primary business location." }
+      - { name: published, label: "Published", widget: boolean, default: true }
+      - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
+      - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
       - name: guestSpot
         label: "Guest Spot"
         summary: "{{guestName}}"
@@ -688,28 +621,11 @@ collections:
 
           - *contact_socials_booking
 
-      - { name: title, label: Title, widget: string }
-      - { name: detailsShort, label: "Details (short)", widget: string, required: false }
-      - name: image
-        label: "Event Image"
-        widget: image
-        required: false
+      - { name: image, label: "Event Image", widget: image, required: false }
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
       - *og_photo_textless
       - *og_photo_texted
-      - { name: published, label: "Published", widget: boolean, default: true }
-      - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
-      - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
 
-      # DATE RANGE (inclusive endDate)
-      - { name: date, label: "Start Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, hint: "If no end date is used, this is treated as a single-day event." }
-      - { name: endDate, label: "End Date (inclusive)", widget: datetime, required: false, date_format: "YYYY-MM-DD", time_format: false, hint: "For multi-day events." }
-
-      # OPTIONAL TIME WINDOW (if omitted => all-day)
-      - { name: startTime, label: "Start Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
-      - { name: endTime, label: "End Time", widget: datetime, required: false, date_format: false, time_format: "HH:mm" }
-
-      - { name: location, label: "Location", widget: string, required: false }
       - { name: images, label: "Event Images", widget: image, required: false, multiple: true }
 
       - *recurrence_rule

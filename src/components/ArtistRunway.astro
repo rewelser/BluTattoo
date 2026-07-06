@@ -1,10 +1,10 @@
 ---
 import type {ImageMetadata} from "astro";
 import {loadActiveArtists} from "../domain/people/server.ts";
-import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
 import ArtistCard from "./ArtistCard.astro";
 import {fmtDateRange} from "../domain/events/format.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
+import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
 
 
 let artists = await loadActiveArtists();

@@ -13,6 +13,7 @@ import {
 import "../styles/EventsCalendar-anchor-with-fallback.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
 import {fmtDate, fmtTime} from "../domain/events/format.ts";
+import type {RecurrentEventItem} from "../domain/events/recurrence/types.ts";
 
 interface EventsCalendarProps {
     events: EventItem[];
@@ -21,7 +22,12 @@ interface EventsCalendarProps {
 // sherpa thuggin
 export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
     // todo: is there a better place in here to declare this? Maybe not
-    const eventsByYearMonthDate: EventsByYearMonthDate = buildEventsByYearMonthDate(events);
+    // const eventsByYearMonthDate: EventsByYearMonthDate = buildEventsByYearMonthDate(events);
+    // addendum to todo: memoization allows us to only call buildEventsByYearMonthDate when the events prop changes, rather than on every rerender
+    const eventsByYearMonthDate: EventsByYearMonthDate = useMemo(
+        () => buildEventsByYearMonthDate(events),
+        [events]
+    );
     const [traversedDate, setTraversedDate] = useState<Date>(() => {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -29,6 +35,17 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
 
     const [openDateKey, setOpenDateKey] = useState<string | null>(null);
     const calendarRef = useRef<HTMLDivElement>(null);
+
+    // todo - recurrences: this is the main piece of logic needed in this whole component for recurrences to work, I think.
+    const recurrentEventsByMonth = useMemo(() => {
+        const year = traversedDate.getFullYear();
+        const month = traversedDate.getMonth();
+
+        // return buildMonthBoundedRecurrentEvents(events, year, month);
+
+        // return expandRecurrentEventsFromRange({kind: "month", year: year, month: month})
+
+    }, [traversedDate]);
 
     const calendarData = useMemo(() => {
         const year = traversedDate.getFullYear();
@@ -83,6 +100,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
         year: "numeric"
     }).format(traversedDate);
 
+    // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const prev = () => {
         setTraversedDate((prevDate) => {
             const nextDate = new Date(prevDate);
@@ -92,6 +110,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
         setOpenDateKey(null);
     };
 
+    // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const next = () => {
         setTraversedDate((prevDate) => {
             const nextDate = new Date(prevDate);
@@ -208,6 +227,11 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         // console.log(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
+                        /**
+                         * todo - recurrences: here, we will (I think) do the same thing as dailyEventsObj but for recurrences:
+                         *  something like 'dailyRecurrentEventsObj', using a recurrentEventsByMonthDate, which we will
+                         *  then fold into dailyEvents. I think it might truly be that simple.
+                         */
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
 
                         // todo - recurrences: remove after implementation of rrules

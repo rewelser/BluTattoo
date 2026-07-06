@@ -8,7 +8,6 @@ import type {IconType} from "../domain/contact/types.ts";
 import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland.tsx";
 import SlottableModal from "../components/SlottableModal.astro";
 import SocialRow from "../components/SocialRow.astro";
-import {loadUpcomingGuestSpotCandidates} from "../domain/events/selectors.ts";
 import {fmtDateRange} from "../domain/events/format.ts";
 import SparkleCorners from "../components/decor/SparkleCorners.astro";
 import {siteInfoSocialsToItems} from "../domain/contact/adapters.ts";
@@ -16,6 +15,7 @@ import ShareModal from "../components/ShareModal.astro";
 import {getImageSrc} from "../domain/decor/selectors.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
 import {Image} from "astro:assets";
+import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");

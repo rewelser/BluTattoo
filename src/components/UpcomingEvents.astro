@@ -2,8 +2,8 @@
 import PromoHero from "../components/PromoHero.astro";
 import type {EventItem} from "../domain/events/types.ts";
 // import {fmtDateRange} from "../domain/events/format.ts";
-import {getUpcomingCandidates, pickFeaturedHero} from "../domain/events/selectors.ts";
 import EventDateRange from "./EventDateRange.astro";
+import {getUpcomingCandidates, pickFeaturedHero} from "../domain/events/grouping.ts";
 
 export interface Props {
     events: EventItem[];

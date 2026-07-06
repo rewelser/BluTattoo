@@ -1,8 +1,10 @@
 ---
 import PromoBar from "./PromoBar.astro";
 
-import {loadUpcomingGuestSpotCandidates, hasEventStarted, getNowKey} from "../../domain/events/selectors.ts";
+import {hasEventStarted, getDateKey} from "../../domain/events/selectors.ts";
 import {renderGuestLinks} from "../../domain/navigation/grouping.ts";
+import type {MenuLink} from "../../domain/navigation/types.ts";
+import {loadUpcomingGuestSpotCandidates} from "../../domain/events/server.ts";
 
 const {
     roleLabel = "Artists",
@@ -24,12 +26,12 @@ const guests = renderGuestLinks(
             seen.add(ev.guestSpot.guestName);
             return true;
         })
-);
+).filter((item): item is MenuLink => item.type === "link");
 ---
 
 {
     guests.map((guest) => {
-        const prefaceString = hasEventStarted(guest.event, getNowKey(new Date())) ? "guest:" : "upcoming guest:";
+        const prefaceString = guest.event && hasEventStarted(guest.event, getDateKey(new Date())) ? "guest:" : "upcoming guest:";
         return (
         <li class="guest-shine rounded-sm">
             <a

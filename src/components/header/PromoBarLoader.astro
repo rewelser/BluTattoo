@@ -1,7 +1,8 @@
 ---
 import PromoBar from "./PromoBar.astro";
 
-import {getPromoCandidates, loadUpcomingCandidates} from "../../domain/events/selectors.ts";
+import {loadUpcomingCandidates} from "../../domain/events/server.ts";
+import {getPromoCandidates} from "../../domain/events/grouping.ts";
 
 const {
     fallbackHref = "/events",
