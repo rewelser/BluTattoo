@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "release-check": "astro build",
     "predev": "node public/scripts/generate-thumbs.mjs",
     "prebuild": "node public/scripts/generate-thumbs.mjs",
     "dev": "astro dev",
