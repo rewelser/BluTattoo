@@ -39,6 +39,7 @@ const ogImageUsed =
     fallbackOgImage;
 const siteUrl = Astro.site ?? Astro.url.origin;
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const isNoIndex = import.meta.env.PUBLIC_NOINDEX === "true";
 ---
 
 <!doctype html>
@@ -47,6 +48,7 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
+        {isNoIndex && <meta name="robots" content="noindex, nofollow" />}
         <title>{pageTitleUsed}</title>
         <meta name="description" content={pageDescriptionUsed} />
         <link rel="canonical" href={canonical} />
