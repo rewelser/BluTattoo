@@ -18,6 +18,10 @@ import {getUpcomingCandidates} from "./grouping.ts";
 import {getEventRecurrenceUntilKey} from "./recurrence/selectors.ts";
 import type {RecurrentEventItem} from "./recurrence/types.ts";
 
+// Wtf is this? vv
+// import {Temporal} from "temporal-spec";
+import { Temporal } from "temporal-polyfill";
+
 // ----- Loading + sorting -----
 
 function validateEvent(e: EventEntry): EventValidationResult {
@@ -46,6 +50,16 @@ function validateEvent(e: EventEntry): EventValidationResult {
         }
     }
 
+    // console.log("fish");
+    const week = Temporal.PlainDate.from(eventItem.startDate).weekOfYear;
+    const testdatestart =Temporal.PlainDate.from({year: 2026, month: 7, day: 1});
+    const testdateend = testdatestart.with({day: Number.MAX_VALUE});
+    // console.log("testdatestart", testdatestart.toString());
+    // console.log("testdateend", testdateend.toString());
+    // console.log("iscompared", Temporal.PlainDate.compare(testdatestart, testdateend));
+
+
+    // console.log(Temporal.PlainDate.from(eventItem.startDate).toPlainYearMonth().toString() < Temporal.PlainDate.from("2026-07-04").toPlainYearMonth().toString());
     // console.log("startKey", startKey);
     // console.log("new Date(startKey).getDay()", new Date(startKey).getDay());
     // console.log("weekdayTypes[new Date(startKey).getDay()]", weekdayTypes[new Date(startKey).getDay()]);

@@ -3,6 +3,7 @@ import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
 import {
     buildEventsByYearMonthDate,
 } from "../domain/events/grouping.ts";
+import {buildMonthBoundedRecurrentEvents} from "../domain/events/recurrence/grouping.ts";
 /**
  * todo: once safari supports @supports at-rules, then we can simply use:
  * @EventsCalendar.css
@@ -14,6 +15,7 @@ import "../styles/EventsCalendar-anchor-with-fallback.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
 import {fmtDate, fmtTime} from "../domain/events/format.ts";
 import type {RecurrentEventItem} from "../domain/events/recurrence/types.ts";
+import {Temporal} from "temporal-polyfill";
 
 interface EventsCalendarProps {
     events: EventItem[];
@@ -28,95 +30,84 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
         () => buildEventsByYearMonthDate(events),
         [events]
     );
-    const [traversedDate, setTraversedDate] = useState<Date>(() => {
-        const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth(), 1);
-    });
+    const [traversedMonthStartDate, setTraversedMonthStartDate] = useState<Temporal.PlainDate>(() => {
+        return Temporal.Now.plainDateISO().with({day: 1})
+    })
 
     const [openDateKey, setOpenDateKey] = useState<string | null>(null);
     const calendarRef = useRef<HTMLDivElement>(null);
 
     // todo - recurrences: this is the main piece of logic needed in this whole component for recurrences to work, I think.
     const recurrentEventsByMonth = useMemo(() => {
-        const year = traversedDate.getFullYear();
-        const month = traversedDate.getMonth();
+        const year = traversedMonthStartDate.year;
+        const month = traversedMonthStartDate.month;
 
-        // return buildMonthBoundedRecurrentEvents(events, year, month);
+        console.log("-------------------");
+        console.table({
+            year: year,
+            month: month,
+        })
+
+        return buildMonthBoundedRecurrentEvents(events, year, month);
 
         // return expandRecurrentEventsFromRange({kind: "month", year: year, month: month})
 
-    }, [traversedDate]);
+    }, [traversedMonthStartDate]);
 
     const calendarData = useMemo(() => {
-        const year = traversedDate.getFullYear();
-        const month = traversedDate.getMonth();
+        const prevTrailingPlaceholders = traversedMonthStartDate.dayOfWeek % traversedMonthStartDate.daysInWeek;
+        const nextLeadingPlaceholders = traversedMonthStartDate.daysInWeek - (traversedMonthStartDate.with({day: Number.MAX_VALUE}).dayOfWeek % traversedMonthStartDate.daysInWeek) - 1;
 
-        const firstOfMonth = new Date(year, month, 1);
-        const lastOfMonth = new Date(year, month + 1, 0);
+        const prevTrailingDates = Array.from({length: prevTrailingPlaceholders}, (_, i) =>
+            traversedMonthStartDate.subtract({days: prevTrailingPlaceholders - i}).day
+        );
+        const nextLeadingDates = Array.from({length: nextLeadingPlaceholders}, (_, i) =>
+            traversedMonthStartDate.add({months: 1, days: i}).day
+        );
 
-        const firstDayOfWeek = firstOfMonth.getDay() + 1;
-        const lastDayOfWeek = lastOfMonth.getDay() + 1;
-
-        const daysInMonth = lastOfMonth.getDate();
-        const prevTrailingPlaceholders = firstDayOfWeek - 1;
-        const nextLeadingPlaceholders = 7 - lastDayOfWeek;
-
-        const monthDates = Array.from({length: daysInMonth}, (_, i) => {
-            const y = year;
-            const m = month;
+        const monthDates = Array.from({length: traversedMonthStartDate.daysInMonth}, (_, i) => {
             const d = i + 1; // + 1 to increment
-            const rawY = String(y);
-            const rawM = String(m + 1).padStart(2, "0"); // + 1 because js Date was designed by an idiot
+            const rawY = String(traversedMonthStartDate.year);
+            const rawM = String(traversedMonthStartDate.month).padStart(2, "0");
             const rawD = String(d).padStart(2, "0");
 
-            const current = new Date(y, m, d);
-            const day = current.getDay() + 1; // + 1 because js Date was designed by an idiot
+            const temporalCursor = Temporal.PlainDate.from({
+                year: Number(rawY),
+                month: Number(rawM),
+                day: Number(rawD)
+            });
+            const gridColumnStart = temporalCursor.dayOfWeek % temporalCursor.daysInWeek + 1;
             return {
+                temporalCursor,
                 rawYear: rawY,
                 rawMonth: rawM,
                 rawDate: rawD,
-                year: y,
-                month: m,
-                dateNum: d,
-                day,
-                dateKey: `${y}-${m}-${d}`,
-                isoLike: `${y}-${m}-${d}-${String(day).padStart(2, "0")}`,
+                gridColumnStart,
+                dateKey: temporalCursor.toString(),
             };
         });
-
-        const prevTrailingDates = Array.from({length: prevTrailingPlaceholders}, (_, i) => (new Date(year, month, -(prevTrailingPlaceholders - 1) + i).getDate()));
-
-        const nextLeadingDates = Array.from({length: nextLeadingPlaceholders}, (_, i) => (new Date(year, month + 1, i + 1).getDate()));
 
         return {
             monthDates,
             prevTrailingDates: prevTrailingDates,
             nextLeadingDates: nextLeadingDates,
         };
-    }, [traversedDate]);
+    }, [traversedMonthStartDate]);
 
-    const monthYearLabel = new Intl.DateTimeFormat("en-US", {
+    const monthYearLabel = traversedMonthStartDate.toLocaleString("en-US", {
         month: "long",
         year: "numeric"
-    }).format(traversedDate);
+    });
 
     // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const prev = () => {
-        setTraversedDate((prevDate) => {
-            const nextDate = new Date(prevDate);
-            nextDate.setMonth(nextDate.getMonth() - 1);
-            return nextDate;
-        });
+        setTraversedMonthStartDate((prev) => prev.subtract({months: 1}).with({day: 1}));
         setOpenDateKey(null);
     };
 
     // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const next = () => {
-        setTraversedDate((prevDate) => {
-            const nextDate = new Date(prevDate);
-            nextDate.setMonth(nextDate.getMonth() + 1);
-            return nextDate;
-        });
+        setTraversedMonthStartDate((prev) => prev.add({months: 1}).with({day: 1}));
         setOpenDateKey(null);
     };
 
@@ -124,13 +115,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
         locale: string = "en-US",
         options: Intl.DateTimeFormatOptions = {weekday: "short"}
     ) => {
-        const days = [];
-        const date = new Date("1970-01-04T12:00:00.000Z");
-        for (let i = 0; i < 7; i++) {
-            days.push(date.toLocaleDateString(locale, options));
-            date.setDate(date.getDate() + 1);
-        }
-        return days;
+        return Array.from({length: 7}, (_, i) =>
+            Temporal.PlainDate.from("1970-01-04").add({days: i}).toLocaleString(locale, options)
+        );
     };
 
     const canHover =
@@ -186,9 +173,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
             </div>
 
             <div className="grid h-full w-full grid-cols-7 items-center gap-1">
-                {getAllWeekdayNames().map((day) => (
-                    <div key={day} className="calendar-day-header flex justify-center">
-                        {day}
+                {getAllWeekdayNames().map((weekday_short) => (
+                    <div key={weekday_short} className="calendar-day-header flex justify-center">
+                        {weekday_short}
                     </div>
                 ))}
             </div>
@@ -205,26 +192,15 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
 
                 {calendarData.monthDates.map(
                     ({
+                         temporalCursor,
                          rawYear,
                          rawMonth,
                          rawDate,
-                         year,
-                         month,
-                         dateNum,
-                         day,
+                         gridColumnStart,
                          dateKey,
-                         isoLike,
                      }) => {
-                        const now = new Date();
-
-                        const isToday =
-                            year === now.getFullYear() &&
-                            month === now.getMonth() &&
-                            dateNum === now.getDate();
-                        // todo: remove after verifying that client:only="react" works in mitigating SSR initial-load problems
-                        // console.log("---------------");
-                        // console.log(year, month, dateNum);
-                        // console.log(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+                        const now = Temporal.Now.plainDateISO();
+                        const isToday = now.equals(temporalCursor);
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
                         /**
@@ -233,9 +209,6 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                          *  then fold into dailyEvents. I think it might truly be that simple.
                          */
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
-
-                        // todo - recurrences: remove after implementation of rrules
-                        // console.log("dateNum, dailyEvents", dateNum, dailyEvents);
 
                         const hasEvents = dailyEvents.length > 0;
                         const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
@@ -253,7 +226,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     }
                                 }}
                                 style={{
-                                    gridColumnStart: day,
+                                    gridColumnStart: gridColumnStart,
                                     ...(needsSingleEventImageVariant && {
                                         backgroundImage: `url(${dailyEvents[0].image?.src})`
                                     })
@@ -265,7 +238,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                            href={`/events/${dailyEvents[0].id}`}></a>
                                     )
                                 }
-                                <div className="date-num">{dateNum}</div>
+                                <div className="date-num">{temporalCursor.day}</div>
                                 <div className="daily-events text-sm leading-none">
                                     {!needsSingleEventImageVariant && dailyEvents.map((ev, index) => (
                                         <div
@@ -296,7 +269,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                 {hasEvents && (
                                     <div
                                         className={`overlay ${dailyEvents.length === 1 && !dailyEvents[0].detailsShort ? "short" : "medium"} ${isOpen && !canHover ? "is-open" : ""}`}
-                                        aria-label={`Events for ${fmtDate(isoLike)}`}
+                                        aria-label={`Events for ${fmtDate(dateKey)}`}
                                     >
                                         <div className="overlay-events">
                                             {dailyEvents.map((ev, index) => (

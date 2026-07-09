@@ -5,7 +5,7 @@ date: 2026-07-23
 endDate: 2026-12-01
 startTime: 15:00
 endTime: 19:00
-published: false
+published: true
 featured: false
 archived: false
 recurrenceRule:

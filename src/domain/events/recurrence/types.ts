@@ -38,12 +38,12 @@ type EventRecurrence = {
 export type ExpandRangeOptions =
     | {
     kind: "range";
-    rangeStart: Date | string;
-    rangeEnd: Date | string;
+    rangeStart: string;
+    rangeEnd: string;
 }
     | {
     kind: "days";
-    rangeStart: Date | string;
+    rangeStart: string;
     days: number;
 }
     | {
