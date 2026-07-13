@@ -1,9 +1,9 @@
 import type {EventItem} from "../types.ts";
-import type {ExpandRangeOptions, RecurrentEventItem} from "./types.ts";
+import type {BySetPos, ExpandRangeOptions, RecurrentEventItem} from "./types.ts";
 import {Temporal} from "temporal-polyfill";
 import {weekdayTypes} from "./defs.ts";
 import Duration = Temporal.Duration;
-import {inRange, latest, soonest, startOfWeek} from "./selectors.ts";
+import {getBySetPos, inRange, latest, soonest, startOfWeek} from "./selectors.ts";
 
 /**
  * todo - recurrences: perhaps this is used by a buildRecurringEventsByYearMonthDate, and by a getUpcomingCandidates,
@@ -17,7 +17,6 @@ export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem
     const eventOccurrenceDuration: Duration | undefined = revEnd ? revStart.until(revEnd) : undefined;
     let rangeStart: Temporal.PlainDate;
     let rangeEnd: Temporal.PlainDate;
-
 
     if (options.kind === "range") {
         rangeStart = Temporal.PlainDate.from(options.rangeStart);
@@ -90,6 +89,32 @@ export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem
                             endDate: newStartDate.add(eventOccurrenceDuration).toString(),
                         }),
                         occurrenceKey: `${rev.id}-${newStartDate.toString()}-${occurrenceKeyCount++}`,
+                    }
+                    events.push(expandedEvent);
+                }
+                dateCursor = dateCursor.add({days: 1});
+            }
+        }
+
+        if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+            while (inRange(dateCursor, latestStart, soonestEnd)) {
+                const monthsSinceStart = dateCursor.with({day: 1}).since(revStart.with({day: 1}), {largestUnit: "months"}).months;
+                const matchesInterval = monthsSinceStart % rrule.interval === 0;
+                const cursorInBySetPos = rrule.bySetPos.includes(getBySetPos(dateCursor));
+                // const byDayNum = weekdayTypes.indexOf(rrule.byDay) + 1;
+                // const cursorDayInByMonthDay = byDayNum === dateCursor.day;
+                const cursorDayInByDay = rrule.byDay.includes(weekdayTypes[dateCursor.dayOfWeek - 1]);
+
+                if (matchesInterval && cursorDayInByDay && cursorInBySetPos) {
+                    const {recurrenceRule, ...revWithoutRrules} = rev;
+                    const expandedEvent = {
+                        ...revWithoutRrules,
+                        // ...rev,
+                        startDate: dateCursor.toString(),
+                        ...(eventOccurrenceDuration && {
+                            endDate: dateCursor.add(eventOccurrenceDuration).toString(),
+                        }),
+                        occurrenceKey: `${rev.id}-${dateCursor.toString()}-${occurrenceKeyCount++}`,
                     }
                     events.push(expandedEvent);
                 }

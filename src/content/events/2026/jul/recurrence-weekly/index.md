@@ -11,5 +11,7 @@ recurrenceRule:
   byDay:
     - WE
     - SA
+    - TH
+    - FR
   until: 2026-09-15
 ---

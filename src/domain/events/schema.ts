@@ -35,6 +35,8 @@ const bySetPosEnum = z.union([
     z.literal(-1),
 ]);
 
+const bySetPosEnumArray = z.array(bySetPosEnum);
+
 export const recurrenceRuleSchema = z
     .union([
         z.object({
@@ -55,7 +57,7 @@ export const recurrenceRuleSchema = z
             type: z.literal("recurrenceRuleMonthlyByOrdinalWeekday"),
             interval: z.number().int().min(1).default(1),
             byDay: weekdayEnum,
-            bySetPos: bySetPosEnum,
+            bySetPos: bySetPosEnumArray,
             until: isoDate.optional(),
         }),
     ])

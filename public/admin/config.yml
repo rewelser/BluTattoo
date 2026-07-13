@@ -325,7 +325,7 @@ _recurrence_rule: &recurrence_rule
       hint: "Repeats on a specific day of the month from Start Date through Repeat Until."
       fields:
         - { name: interval, label: "Interval", widget: number, required: false, default: 1, value_type: int, min: 1 }
-        - { name: byMonthDay, label: "Day of month (1-31)", widget: number, required: true, value_type: int, min: 1, max: 31 }
+        - { name: byMonthDay, label: "Day of month (1-31)", widget: number, required: true, value_type: int, min: 1, max: 31, hint: "If a month doesn't have the chosen day, then this event won't be displayed that month." }
         - { name: until, label: "Repeat Until", widget: datetime, type: date, required: false, hint: "Last date on which an occurrence may start." }
 
     - name: recurrenceRuleMonthlyByOrdinalWeekday
@@ -334,7 +334,7 @@ _recurrence_rule: &recurrence_rule
       fields:
         - { name: interval, label: "Interval", widget: number, required: false, default: 1, value_type: int, min: 1 }
         - { name: byDay, label: "Weekday", widget: select, required: true, options: [ { value: MO, label: "Mon" }, { value: TU, label: "Tue" }, { value: WE, label: "Wed" }, { value: TH, label: "Thu" }, { value: FR, label: "Fri" }, { value: SA, label: "Sat" }, { value: SU, label: "Sun" } ] }
-        - { name: bySetPos, label: "Position in month", widget: select, required: true, options: [ { label: "First", value: 1 }, { label: "Second", value: 2 }, { label: "Third", value: 3 }, { label: "Fourth", value: 4 }, { label: "Last", value: -1 } ] }
+        - { name: bySetPos, label: "Position in month", widget: select, required: true, multiple: true, options: [ { label: "First", value: 1 }, { label: "Second", value: 2 }, { label: "Third", value: 3 }, { label: "Fourth", value: 4 }, { label: "Last", value: -1 } ] }
         - { name: until, label: "Repeat Until", widget: datetime, type: date, required: false, hint: "Last date on which an occurrence may start." }
 
 collections:

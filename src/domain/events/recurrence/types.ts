@@ -1,19 +1,12 @@
 import type {EventItem} from "../types.ts";
-import {weekdayTypes} from "./defs.ts";
+import {bySetPosTypes, weekdayTypes} from "./defs.ts";
 
 export type RecurrentEventItem = EventItem & { recurrenceRule: NonNullable<EventItem["recurrenceRule"]> }
 
 export type Weekday = typeof weekdayTypes[number];
 
-export const weekdayNames = {
-    SU: "Sunday",
-    MO: "Monday",
-    TU: "Tuesday",
-    WE: "Wednesday",
-    TH: "Thursday",
-    FR: "Friday",
-    SA: "Saturday",
-} as const satisfies Record<Weekday, string>;
+export type BySetPos = typeof bySetPosTypes[number];
+
 
 export type RecurrenceFrequency = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 

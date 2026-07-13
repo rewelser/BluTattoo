@@ -1,25 +1,42 @@
-import {type RecurrentEventItem, type Weekday, weekdayNames} from "./types.ts";
-import {weekdayTypes} from "./defs.ts";
+import {type RecurrentEventItem, type Weekday} from "./types.ts";
+import {bySetPosNames, bySetPosTypes, weekdayNames, weekdayTypes} from "./defs.ts";
 
-function ordinalWord(value: number | string) {
-    const map: Record<string, string> = {
-        "1": "first",
-        "2": "second",
-        "3": "third",
-        "4": "fourth",
-        "5": "fifth",
-        "-1": "last",
+function numberToWords(num: number): string {
+    if (num === 0) return 'zero';
 
-        first: "first",
-        second: "second",
-        third: "third",
-        fourth: "fourth",
-        fifth: "fifth",
-        last: "last",
-    };
+    const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const scales = ['', 'thousand', 'million', 'billion', 'trillion'];
+
+    // Handle negative numbers
+    if (num < 0) return 'minus ' + numberToWords(Math.abs(num));
+
+    // Process numbers under 1000
+    function convertLessThanThousand(n: number): string {
+        if (n === 0) return '';
+        if (n < 20) return ones[n] + ' ';
+        if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? '-' + ones[n % 10] : '') + ' ';
+        return ones[Math.floor(n / 100)] + ' hundred ' + convertLessThanThousand(n % 100);
+    }
+
+    let result = '';
+    let scaleIndex = 0;
+
+    // Split into chunks of three digits (thousands, millions, etc.)
+    while (num > 0) {
+        let chunk = num % 1000;
+        if (chunk !== 0) {
+            let chunkStr = convertLessThanThousand(chunk);
+            result = chunkStr + scales[scaleIndex] + ' ' + result;
+        }
+        num = Math.floor(num / 1000);
+        scaleIndex++;
+    }
+
+    return result.trim().replace(/\s+/g, ' ');
 }
 
-function ordinalDay(n: number) {
+function ordinalNumerical(n: number) {
     const suffix =
         n % 10 === 1 && n % 100 !== 11
             ? "st"
@@ -37,42 +54,58 @@ export function recurrenceText(rev: RecurrentEventItem) {
     const interval = rrule.interval;
 
     if (rrule.type === "recurrenceRuleWeekly") {
+        let weekyString = `Every `;
 
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            weekyString += `${ordinality} `;
+        }
 
-        let everyXDaysString = `Every `;
-        const everyXDays_old = rrule.byDay.map((day) => {
-            return weekdayNames[day];
-        });
-
-        const ordinality = interval === 2 ? `other` : ordinalDay(interval);
-        everyXDaysString += `${ordinality} `;
-
-        const everyXDays = weekdayTypes
+        const byDay = weekdayTypes
             .filter((day) => rrule.byDay.includes(day))
             .map((day, index) => weekdayNames[day]);
 
-        if (everyXDays.length === 1) {
-            everyXDaysString = `${everyXDays[0]}`;
-        } else if (everyXDays.length === 2) {
-            everyXDaysString = `${everyXDays[0]} & ${everyXDays[1]}`;
-        } else {
-            for (let i = 0; i < everyXDays.length; i++) {
-                console.log("everyXDays[" + i + "]", everyXDays[i]);
-                if (i < everyXDays.length - 1) {
-                    console.log("entered i < everyXDays.length - 1");
-                    everyXDaysString += `${everyXDays[i]}, `;
-                } else if (i === everyXDays.length - 1) {
-                    console.log("entered i === everyXDays.length - 1");
-                    everyXDaysString += `and ${everyXDays[i]}`;
-                }
+        weekyString += new Intl.ListFormat("en", {
+            style: "long",
+            type: "conjunction",
+        }).format(byDay);
 
-            }
-        }
-
-        return everyXDaysString;
+        return weekyString;
     }
 
     if (rrule.type === "recurrenceRuleMonthlyByDate") {
+        const byMonthDay = rrule.byMonthDay;
+        const byMonthDayOrdinal = ordinalNumerical(byMonthDay);
+
+        let monthlyByDateString = `The ${byMonthDayOrdinal} of`;
+
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            monthlyByDateString += ` every ${ordinality} month (if applicable)`;
+        } else {
+            monthlyByDateString += ` every month (if applicable)`;
+        }
+        return monthlyByDateString;
+    }
+
+    if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+        const dayName = weekdayNames[rrule.byDay];
+        const bySetPos = bySetPosTypes
+            .filter((setPos) => rrule.bySetPos.includes(setPos))
+            .map((setPos, index) => bySetPosNames[setPos]);
+
+        let monthlyByOrdinalWeekday =`The ` + new Intl.ListFormat("en", {
+            style: "long",
+            type: "conjunction",
+        }).format(bySetPos) + ` ${dayName} of`;
+
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            monthlyByOrdinalWeekday += ` every ${ordinality} month`;
+        } else {
+            monthlyByOrdinalWeekday += ` every month`;
+        }
+        return monthlyByOrdinalWeekday;
 
     }
 }

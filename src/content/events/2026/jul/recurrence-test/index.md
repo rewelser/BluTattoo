@@ -10,7 +10,7 @@ featured: false
 archived: false
 recurrenceRule:
   type: recurrenceRuleMonthlyByDate
-  interval: 1
+  interval: 2
   until: 2026-08-31
-  byMonthDay: 15
+  byMonthDay: 31
 ---

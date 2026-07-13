@@ -1,4 +1,4 @@
-import type {RecurrenceFrequency, RecurrenceRule, RecurrentEventItem} from "./types.ts";
+import type {BySetPos, RecurrenceFrequency, RecurrenceRule, RecurrentEventItem} from "./types.ts";
 import {Temporal} from "temporal-polyfill";
 
 export function getEventRecurrenceUntilKey(rev: RecurrentEventItem): string {
@@ -14,12 +14,34 @@ export function latest(a: Temporal.PlainDate, b: Temporal.PlainDate): Temporal.P
     return Temporal.PlainDate.compare(a, b) >= 0 ? a : b;
 }
 
-export function inRange(cursor: Temporal.PlainDate, rangeStart: Temporal.PlainDate, rangeEnd: Temporal.PlainDate) {
-    return Temporal.PlainDate.compare(cursor, rangeStart) >= 0 && Temporal.PlainDate.compare(cursor, rangeEnd) <= 0;
+export function inRange(date: Temporal.PlainDate, rangeStart: Temporal.PlainDate, rangeEnd: Temporal.PlainDate) {
+    return Temporal.PlainDate.compare(date, rangeStart) >= 0 && Temporal.PlainDate.compare(date, rangeEnd) <= 0;
 }
 
 export function startOfWeek(date: Temporal.PlainDate): Temporal.PlainDate {
     return date.subtract({days: date.dayOfWeek % 7});
+}
+
+export function getBySetPos(date: Temporal.PlainDate): BySetPos {
+    const isLastOccurrence = date.add({days: 7}).month !== date.month;
+
+    if (isLastOccurrence) {
+        return -1;
+    } else {
+        const weekNum = Math.ceil(date.day / 7);
+        switch (weekNum) {
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+            case 3:
+                return 3;
+            case 4:
+                return 4;
+            default:
+                throw new Error(`Unexpected weekday position: ${weekNum}`);
+        }
+    }
 }
 
 // future consideration: full RRULE syntax converter
