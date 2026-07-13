@@ -25,34 +25,29 @@ interface EventsCalendarProps {
 export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
     // todo: is there a better place in here to declare this? Maybe not
     // const eventsByYearMonthDate: EventsByYearMonthDate = buildEventsByYearMonthDate(events);
-    // addendum to todo: memoization allows us to only call buildEventsByYearMonthDate when the events prop changes, rather than on every rerender
-    const eventsByYearMonthDate: EventsByYearMonthDate = useMemo(
-        () => buildEventsByYearMonthDate(events),
-        [events]
-    );
     const [traversedMonthStartDate, setTraversedMonthStartDate] = useState<Temporal.PlainDate>(() => {
         return Temporal.Now.plainDateISO().with({day: 1})
     })
-
-    const [openDateKey, setOpenDateKey] = useState<string | null>(null);
-    const calendarRef = useRef<HTMLDivElement>(null);
-
     // todo - recurrences: this is the main piece of logic needed in this whole component for recurrences to work, I think.
     const recurrentEventsByMonth = useMemo(() => {
         const year = traversedMonthStartDate.year;
         const month = traversedMonthStartDate.month;
-
-        console.log("-------------------");
-        console.table({
-            year: year,
-            month: month,
-        })
-
         return buildMonthBoundedRecurrentEvents(events, year, month);
-
-        // return expandRecurrentEventsFromRange({kind: "month", year: year, month: month})
-
     }, [traversedMonthStartDate]);
+
+    // addendum to todo: memoization allows us to only call buildEventsByYearMonthDate when the events prop changes, rather than on every rerender
+    const eventsByYearMonthDate: EventsByYearMonthDate = useMemo(
+        () => {
+            const eventsWithExpandedRecurrences = events.concat(recurrentEventsByMonth);
+            return buildEventsByYearMonthDate(eventsWithExpandedRecurrences);
+        },
+        [events, recurrentEventsByMonth]
+    );
+
+
+    const [openDateKey, setOpenDateKey] = useState<string | null>(null);
+    const calendarRef = useRef<HTMLDivElement>(null);
+
 
     const calendarData = useMemo(() => {
         const prevTrailingPlaceholders = traversedMonthStartDate.dayOfWeek % traversedMonthStartDate.daysInWeek;
@@ -243,7 +238,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     {!needsSingleEventImageVariant && dailyEvents.map((ev, index) => (
                                         <div
                                             className={`daily-event ${(dailyEvents.length > 1 && index !== dailyEvents.length - 1) ? "pb-2" : ""}`}
-                                            key={`${ev.id}-${dateKey}`}
+                                            key={ev.occurrenceKey ?? `${ev.id}-${dateKey}`}
                                         >
                                             <a href={`/events/${ev.id}`}>
                                                 <span className="italic font-bold">
@@ -273,7 +268,15 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                     >
                                         <div className="overlay-events">
                                             {dailyEvents.map((ev, index) => (
-                                                <div key={ev.id}>
+                                                <div
+                                                    key={ev.occurrenceKey ? (
+                                                            `overlay-events-${ev.occurrenceKey}`
+                                                        ) :
+                                                        (
+                                                            `overlay-events-${ev.id}-${dateKey}`
+                                                        )
+                                                    }
+                                                >
                                                     <section
                                                         className={`overlay-event p-5 leading-none
                                                         ${index > 0 ? "scalloped-border-top" : ""}

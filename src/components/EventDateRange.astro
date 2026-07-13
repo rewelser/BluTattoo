@@ -1,16 +1,22 @@
 ---
 // import type {EventItem} from "../../domain/events/types";
-import type { EventItem } from "../domain/events/types";
+import type {EventItem} from "../domain/events/types";
 import {fmtDate} from "../domain/events/format.ts";
+import {recurrenceText} from "../domain/events/recurrence/format.ts";
+import type {RecurrentEventItem} from "../domain/events/recurrence/types.ts";
 
 interface Props {
-    ev: Pick<EventItem, "startDate" | "endDate">;
+    ev: Pick<EventItem, "startDate" | "endDate" | "recurrenceRule">;
 }
 
 const {ev} = Astro.props;
 ---
 <>
-    {!ev.endDate || ev.startDate === ev.endDate ? (
+    {ev.recurrenceRule ? (
+            <>
+                {recurrenceText(ev as RecurrentEventItem)}
+            </>
+    ) : !ev.endDate || ev.startDate === ev.endDate ? (
             <time datetime={ev.startDate}>{fmtDate(ev.startDate)}</time>
     ) : (
             <>

@@ -44,7 +44,8 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 // const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
 ---
 <>
-    <div class={`shell ${shellClass}`} style={`--transitionName: ${transitionName}; font-family: var(--default-font-family);`}>
+    <div class={`shell ${shellClass}`}
+         style={`--transitionName: ${transitionName}; font-family: var(--default-font-family);`}>
         <button class={`card ${cardButtonClass}`} data-card aria-haspopup="dialog" {...rest}>
             <div class="card-content">
                 <slot name="card"/>
@@ -157,6 +158,10 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
                         closeModal();
                     }
                 });
+                dialog?.addEventListener("cancel", (event) => {
+                    event.preventDefault();
+                    closeModal();
+                });
             })();
         </script>
 
@@ -207,6 +212,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             .shell[data-vt-active] .card {
                 //visibility: hidden;
             }
+
             .shell[data-vt-active].is-open .card {
                 //visibility: hidden;
             }
@@ -214,6 +220,7 @@ const groupAnimationName = `-ua-view-transition-group-anim-${transitionName}`;
             .shell.is-open .card {
                 visibility: hidden;
             }
+
             :global(html[data-vt-direction="close"]) .shell[data-vt-active] .card {
                 visibility: visible;
             }

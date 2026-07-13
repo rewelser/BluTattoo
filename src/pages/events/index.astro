@@ -4,12 +4,13 @@
 
 // src/pages/index.astro
 import Layout from "../../layouts/Layout.astro";
-import { EventsCalendar } from "../../components/EventsCalendar.tsx";
+import {EventsCalendar} from "../../components/EventsCalendar.tsx";
 import UpcomingEvents from "../../components/UpcomingEvents.astro";
 import UpcomingEventsFallback from "../../components/UpcomingEventsFallback.astro";
-import { getValidatedEventItemsCached } from "../../domain/events/server.ts";
+import {getValidatedEventItemsCached} from "../../domain/events/server.ts";
 import type {EventItem} from "../../domain/events/types.ts";
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
+import SimpleSlottableModal from "../../components/SimpleSlottableModal.astro";
 
 const events: EventItem[] = await getValidatedEventItemsCached();
 
@@ -21,17 +22,17 @@ const description = "View upcoming guest spots, events, and special appearances 
     <article class="page-article page-article--stack space-y-6">
         <header>
             <h1 class="page-heading sr-only">{title}</h1>
-            <EventsPageHeading title={title} />
+            <EventsPageHeading title={title}/>
 
         </header>
 
         <UpcomingEvents events={events} server:defer>
-            <UpcomingEventsFallback slot="fallback" />
+            <UpcomingEventsFallback slot="fallback"/>
         </UpcomingEvents>
 
         <!-- <UpcomingEventsFallback slot="fallback" /> -->
 
         <!--<EventsCalendar client:load events={events} />-->
-        <EventsCalendar client:only="react" events={events} />
+        <EventsCalendar client:only="react" events={events}/>
     </article>
 </Layout>

@@ -187,14 +187,14 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
         <div class="flex flex-col w-max items-stretch text-center">
             {!isGuestSpot && (
                     <a href={`${anchorHref}#gallery-heading`}
-                       class="m-2 py-1 px-2 border border-solid border-seashell shadow-[2px_2px_0_seashell] hover:shadow-[1px_1px_0_seashell] transition">
+                       class="button-sharp button-sharp-sub against-neutraldark m-2 py-1 px-2">
                         View Gallery
                     </a>
             )}
             {
                 hasBookables && (
                             <a href={`/booking#${bookingToggleId}`}
-                               class="m-2 py-1 px-2 border border-solid border-white shadow-[2px_2px_0_white] hover:shadow-[1px_1px_0_seashell]">
+                               class="button-sharp button-sharp-sub against-neutraldark m-2 py-1 px-2">
                                 Book now
                             </a>
                 )

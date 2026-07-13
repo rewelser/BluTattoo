@@ -621,14 +621,13 @@ collections:
 
           - *contact_socials_booking
 
+      - *recurrence_rule
       - { name: image, label: "Event Image", widget: image, required: false }
       - { name: alt, label: "Event Image Alt Text", widget: string, required: false }
       - *og_photo_textless
       - *og_photo_texted
 
       - { name: images, label: "Event Images", widget: image, required: false, multiple: true }
-
-      - *recurrence_rule
 
       - name: promoBar
         label: "Announcement Bar"

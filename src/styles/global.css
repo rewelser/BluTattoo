@@ -95,13 +95,147 @@
 
 @layer base {
     :focus {
-        outline: none;
+        outline: transparent;
     }
 
     :focus-visible {
         @apply ring-2 ring-indigo-500 ring-offset-2;
     }
 
+
+    /****/
+    :where(
+        a,
+        button,
+        input,
+        select,
+        textarea,
+        summary,
+        [tabindex]:not([tabindex="-1"])
+    ) {
+        transition-property: box-shadow, background-color;
+        transition-duration: 300ms;
+    }
+
+    input:focus-visible {
+        /*bg-blue-50*/
+        background-color: oklch(97% 0.014 254.604);
+    }
+
+    .button-sharp {
+        display: inline-block;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        letter-spacing: 0.025em;
+        text-transform: uppercase;
+        text-align: center;
+
+        border: 1px solid var(--button-edge-color, currentColor);
+
+        --tw-shadow: 3px 3px 0 var(--button-edge-color, currentColor);
+
+        box-shadow: var(--tw-inset-shadow),
+        var(--tw-inset-ring-shadow),
+        var(--tw-ring-offset-shadow),
+        var(--tw-ring-shadow),
+        var(--tw-shadow);
+
+        transition-property: color,
+        background-color,
+        border-color,
+        box-shadow,
+        transform,
+        opacity;
+        transition-duration: 300ms;
+
+        &:hover {
+            --tw-shadow: 2px 2px 0 var(--button-edge-color, currentColor);
+        }
+    }
+
+    .button-sharp-sub {
+        text-transform: capitalize;
+
+        --tw-shadow: 2px 2px 0 var(--button-edge-color, currentColor);
+
+        &:hover {
+            --tw-shadow: 1px 1px 0 var(--button-edge-color, currentColor);
+        }
+    }
+
+    .button-sharp-sub.against-neutraldark {
+        --button-edge-color: seashell;
+    }
+
+    .button-sharp.against-light {
+        --button-edge-color: black;
+
+        &:hover {
+            background-color: #dbeafe;
+            color: black;
+        }
+    }
+
+    .button-sharp.against-dark {
+        --button-edge-color: #ffedd5;
+
+        color: #ffedd5;
+        background-color: rgb(0 0 0 / 85%);
+
+        &:hover {
+            background-color: #ffedd5;
+            color: black;
+        }
+    }
+
+    .input-sharp {
+        min-width: 0;
+        flex: 1 1 0%;
+        padding: 0.5rem 1rem;
+
+        font-size: 1rem;
+        line-height: 1.5rem;
+
+        border: 1px solid var(--input-edge-color, currentColor);
+
+        --tw-shadow: 3px 3px 0 var(--input-edge-color, currentColor);
+
+        box-shadow: var(--tw-inset-shadow),
+        var(--tw-inset-ring-shadow),
+        var(--tw-ring-offset-shadow),
+        var(--tw-ring-shadow),
+        var(--tw-shadow);
+
+        transition-property: color,
+        background-color,
+        border-color,
+        box-shadow,
+        transform,
+        opacity;
+        transition-duration: 300ms;
+
+        &::placeholder {
+            color: #6b7280;
+        }
+
+        &:hover {
+            --tw-shadow: 2px 2px 0 var(--input-edge-color, currentColor);
+        }
+    }
+
+    .input-sharp.against-light {
+        --input-edge-color: black;
+
+        color: black;
+        background-color: white;
+
+        &:hover {
+            background-color: #dbeafe;
+            color: black;
+        }
+    }
+
+    /****/
     /* not sure where to put this, kinda just want it global, but might want to make it prose-specific later on */
     blockquote {
         position: relative;

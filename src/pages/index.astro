@@ -52,13 +52,13 @@ const businessJsonLd = {
     "telephone": phone,
     "email": email,
     "address": {
-    "@type": "PostalAddress",
+        "@type": "PostalAddress",
         "streetAddress": addressObj.streetAddress,
         "addressLocality": addressObj.addressLocality,
         "addressRegion": addressObj.addressRegion,
         "postalCode": addressObj.postalCode,
         "addressCountry": addressObj.addressCountry
-},
+    },
     "hasMap": mapHref
 }
 
@@ -102,8 +102,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <div class="pt-6">
                 <a
                         href="/booking"
-                        class="inline-block px-8 py-3 border border-black shadow-[3px_3px_0_black] text-sm tracking-wide uppercase
-               hover:bg-blue-100 hover:shadow-[2px_2px_0_black] hover:text-black transition duration-300 js-fade-up"
+                        class="button-sharp against-light px-8 py-3 js-fade-up"
                 >
                     BOOK NOW
                 </a>

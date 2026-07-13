@@ -1,9 +1,9 @@
-import type {DateParts, EventItem} from "../types.ts";
-import {getDateKey, getEventStartKey} from "../selectors.ts";
-import {getEventRecurrenceUntilKey} from "./selectors.ts";
-import {parseDateParts} from "../format.ts";
+import type {EventItem} from "../types.ts";
 import type {ExpandRangeOptions, RecurrentEventItem} from "./types.ts";
 import {Temporal} from "temporal-polyfill";
+import {weekdayTypes} from "./defs.ts";
+import Duration = Temporal.Duration;
+import {inRange, latest, soonest, startOfWeek} from "./selectors.ts";
 
 /**
  * todo - recurrences: perhaps this is used by a buildRecurringEventsByYearMonthDate, and by a getUpcomingCandidates,
@@ -13,6 +13,8 @@ export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem
     let events: EventItem[] = [];
     const rrule = rev.recurrenceRule;
     const revStart: Temporal.PlainDate = Temporal.PlainDate.from(rev.startDate);
+    const revEnd: Temporal.PlainDate | undefined = rev.endDate ? Temporal.PlainDate.from(rev.endDate) : undefined;
+    const eventOccurrenceDuration: Duration | undefined = revEnd ? revStart.until(revEnd) : undefined;
     let rangeStart: Temporal.PlainDate;
     let rangeEnd: Temporal.PlainDate;
 
@@ -28,73 +30,151 @@ export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem
         rangeEnd = rangeStart.with({day: Number.MAX_VALUE});
     }
 
-    const recurrenceStart: Temporal.PlainDate = Temporal.PlainDate.from(rev.startDate);
-    console.log("recurrenceStart",recurrenceStart.toString());
-    console.log("rangeStart",rangeStart.toString());
-    console.log(rangeStart.since(recurrenceStart));
     const revVirtualUntil: Temporal.PlainDate = Temporal.PlainDate.from(rrule.until ?? rangeEnd);
 
 //     const overlaps = revStartKey < rangeEndKey && revUntilKey > rangeStartKey;
 
-    const revStartsBeforeRangeEnd = Temporal.PlainDate.compare(revStart, rangeEnd) === -1;
-    const revEndsAfterRangeStart = Temporal.PlainDate.compare(rangeStart, revVirtualUntil) === -1;
+    const revStartsBeforeRangeEnd = Temporal.PlainDate.compare(revStart, rangeEnd) <= 0;
+    const revEndsAfterRangeStart = Temporal.PlainDate.compare(rangeStart, revVirtualUntil) <= 0;
     const overlaps = revStartsBeforeRangeEnd && revEndsAfterRangeStart;
-    // console.table({
-    //     rangeStart: rangeStart.toString(),
-    //     rangeEnd: rangeEnd.toString(),
-    //     revStart: revStart.toString(),
-    //     revVirtualUntil: revVirtualUntil.toString(),
-    //     overlaps: overlaps.toString(),
-    // });
-
+    console.table({
+        rangeStart: rangeStart.toString(),
+        rangeEnd: rangeEnd.toString(),
+        revStart: revStart.toString(),
+        revVirtualUntil: revVirtualUntil.toString(),
+        overlaps: overlaps.toString(),
+    });
 
     if (overlaps) {
-        let dateCursor = rangeStart;
-        let stillInRange = Temporal.PlainDate.compare(dateCursor, rangeEnd) < 0;
-        // console.table({
-        //     stillInRange: stillInRange.toString(),
-        //     dateCursor: dateCursor.toString(),
-        //     "dateCursor.weekOfYear": dateCursor.weekOfYear,
-        //
-        //
-        // });
+        const latestStart = latest(revStart, rangeStart);
+        const soonestEnd = soonest(revVirtualUntil, rangeEnd);
+        let dateCursor = latestStart;
+        let occurrenceKeyCount = 0;
 
-        const killcount = 60;
-        let count = 0;
+        if (rrule.type === "recurrenceRuleWeekly") {
+            while (inRange(dateCursor, latestStart, soonestEnd)) {
+                const weeksSinceStart = startOfWeek(dateCursor).since(startOfWeek(revStart), {largestUnit: "weeks"}).weeks;
+                const matchesInterval = weeksSinceStart % rrule.interval === 0;
+                const cursorDayInByDay = rrule.byDay.includes(weekdayTypes[dateCursor.dayOfWeek - 1]);
 
-        while (Temporal.PlainDate.compare(dateCursor, rangeEnd) < 0) {
-            // console.table({
-            //     stillInRangeComparison: Temporal.PlainDate.compare(dateCursor, rangeEnd),
-            //     dateCursor: dateCursor.toString(),
-            //     "dateCursor.weekOfYear": dateCursor.weekOfYear,
-            // });
-
-            if (rrule.type === "recurrenceRuleWeekly") {
-                console.log("recurrenceRuleWeekly");
-                if (dateCursor.weekOfYear && dateCursor.weekOfYear % rrule.interval === 0) {
-                    console.log("recurrenceRuleWeekly - event ")
-
-                }
-                dateCursor = dateCursor.add({weeks: 1});
-            } else if (rrule.type === "recurrenceRuleMonthlyByDate" || rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
-                console.log("recurrenceRuleMonthly");
-                // interval means repeat every N months. So, if dateCursor.month % interval === 0 then that is one of the months to expand from.
-                if (dateCursor.month % rrule.interval === 0) {
-                    if (rrule.type === "recurrenceRuleMonthlyByDate") {
-
-                    } else if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
-                        // complex without temporal... hmmmm....
-
+                if (matchesInterval && cursorDayInByDay) {
+                    const {recurrenceRule, ...revWithoutRrules} = rev;
+                    const expandedEvent = {
+                        ...revWithoutRrules,
+                        // ...rev,
+                        startDate: dateCursor.toString(),
+                        ...(eventOccurrenceDuration && {
+                            endDate: dateCursor.add(eventOccurrenceDuration).toString(),
+                        }),
+                        occurrenceKey: `${rev.id}-${dateCursor.toString()}-${occurrenceKeyCount++}`,
                     }
+                    events.push(expandedEvent);
                 }
-                dateCursor = dateCursor.add({months: 1});
+                dateCursor = dateCursor.add({days: 1});
             }
-            stillInRange = Temporal.PlainDate.compare(dateCursor, rangeEnd) ! > 0;
-            console.log("--------------------");
         }
 
+        if (rrule.type === "recurrenceRuleMonthlyByDate") {
+            while (inRange(dateCursor, latestStart, soonestEnd)) {
+                const monthsSinceStart = dateCursor.with({day: 1}).since(revStart.with({day: 1}), {largestUnit: "months"}).months;
+                const matchesInterval = monthsSinceStart % rrule.interval === 0;
+                const cursorDayInByMonthDay = rrule.byMonthDay === dateCursor.day;
+
+                if (matchesInterval && cursorDayInByMonthDay) {
+                    const newStartDate = Temporal.PlainDate.from(dateCursor.with({day: rrule.byMonthDay}));
+                    const {recurrenceRule, ...revWithoutRrule} = rev;
+                    const expandedEvent = {
+                        ...revWithoutRrule,
+                        startDate: newStartDate.toString(),
+                        ...(eventOccurrenceDuration && {
+                            endDate: newStartDate.add(eventOccurrenceDuration).toString(),
+                        }),
+                        occurrenceKey: `${rev.id}-${newStartDate.toString()}-${occurrenceKeyCount++}`,
+                    }
+                    events.push(expandedEvent);
+                }
+                dateCursor = dateCursor.add({days: 1});
+            }
+        }
+
+        // while (cursorStillInRange(dateCursor, latestStart, soonestEnd)) {
+        //     // console.table({
+        //     //     stillInRangeComparison: Temporal.PlainDate.compare(dateCursor, rangeEnd),
+        //     //     dateCursor: dateCursor.toString(),
+        //     //     "dateCursor.weekOfYear": dateCursor.weekOfYear,
+        //     // });
+        //
+        //     if (rrule.type === "recurrenceRuleWeekly") {
+        //         const weeksSinceStart = dateCursor.with({day: 1}).since(revStart.with({day: 1}), {largestUnit: "weeks"}).weeks;
+        //         const matchesInterval = weeksSinceStart % rrule.interval === 0;
+        //         if (matchesInterval) {
+        //             // expand into event(s)
+        //
+        //             rrule.byDay.map((byDay) => {
+        //                 const targetDayOfWeek = weekdayTypes.indexOf(byDay) + 1;
+        //                 const newStartDate = Temporal.PlainDate.from(dateCursor.add({days: targetDayOfWeek - dateCursor.dayOfWeek}));
+        //                 const expandedEvent = {
+        //                     ...rev,
+        //                     startDate: newStartDate.toString(),
+        //                     ...(eventOccurrenceDuration && {
+        //                         endDate: newStartDate.add(eventOccurrenceDuration).toString(),
+        //                     })
+        //                 }
+        //                 events.push(expandedEvent);
+        //             })
+        //         }
+        //         dateCursor = dateCursor.add({weeks: 1});
+        //     } else if (rrule.type === "recurrenceRuleMonthlyByDate" || rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+        //         const monthsSinceStart = dateCursor.with({day: 1}).since(revStart.with({day: 1}), {largestUnit: "months"}).months;
+        //         const matchesInterval = monthsSinceStart % rrule.interval === 0;
+        //
+        //         // interval means repeat every N months. So, if dateCursor.month % interval === 0 then that is one of the months to expand from.
+        //         if (matchesInterval) {
+        //             if (rrule.type === "recurrenceRuleMonthlyByDate") {
+        //                 console.log("recurrenceRuleMonthlyByDate");
+        //                 console.log("rev", rev);
+        //                 const newStartDate = Temporal.PlainDate.from(dateCursor.with({day: rrule.byMonthDay}));
+        //                 console.log("rev newStartDate", newStartDate);
+        //                 const {recurrenceRule, ...revWithoutRrule} = rev;
+        //                 const expandedEvent = {
+        //                     ...revWithoutRrule,
+        //                     startDate: newStartDate.toString(),
+        //                     ...(eventOccurrenceDuration && {
+        //                         endDate: newStartDate.add(eventOccurrenceDuration).toString(),
+        //                     })
+        //                 }
+        //                 console.log("expandedEvent", expandedEvent);
+        //
+        //                 events.push(expandedEvent);
+        //
+        //             } else if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+        //                 const weekdayOrdinal = weekdayTypes.indexOf(rrule.byDay) + 1;
+        //                 console.log("weekdayOrdinal", weekdayOrdinal);
+        //                 // switch (rrule.bySetPos) {
+        //                 //     case 1:
+        //                 //         break;
+        //                 //         case 2:
+        //                 //             break;
+        //                 //             case 3:
+        //                 //                 break;
+        //                 //                 case 4:
+        //                 //                     break;
+        //                 //                 default:
+        //                 // }
+        //                 console.log("recurrenceRuleMonthlyByOrdinalWeekday");
+        //                 console.log("rev.id", rev.id);
+        //
+        //                 // complex without temporal... hmmmm....
+        //
+        //             }
+        //         }
+        //         dateCursor = dateCursor.add({months: 1});
+        //     }
+        //     console.log("--------------------");
+        // }
+
     }
-    return [];
+    return events;
 }
 
 // export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem, options: ExpandRangeOptions): EventItem[] {
@@ -184,8 +264,7 @@ export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem
  *  for this can't be type EventsByYearMonthDate, but must simply be EventItem[].
  */
 export const buildMonthBoundedRecurrentEvents = (evItems: EventItem[], year: number, month: number): EventItem[] => {
-
-    const expandedRecurrentEventOccurrences: EventItem[] = evItems
+    return evItems
         .filter((ev) => ev.recurrenceRule)
         .flatMap(ev => {
                 return expandRecurrentEventOccurrencesFromRange(
@@ -197,6 +276,4 @@ export const buildMonthBoundedRecurrentEvents = (evItems: EventItem[], year: num
                 )
             }
         );
-
-    return expandedRecurrentEventOccurrences;
 };

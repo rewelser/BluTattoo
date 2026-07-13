@@ -5,6 +5,16 @@ export type RecurrentEventItem = EventItem & { recurrenceRule: NonNullable<Event
 
 export type Weekday = typeof weekdayTypes[number];
 
+export const weekdayNames = {
+    SU: "Sunday",
+    MO: "Monday",
+    TU: "Tuesday",
+    WE: "Wednesday",
+    TH: "Thursday",
+    FR: "Friday",
+    SA: "Saturday",
+} as const satisfies Record<Weekday, string>;
+
 export type RecurrenceFrequency = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
 export type RecurrenceRule =
@@ -28,13 +38,6 @@ export type RecurrenceRule =
     until?: string;
 };
 
-type EventRecurrence = {
-    frequency: RecurrenceFrequency;
-    interval?: number;
-    byDay?: Weekday[];
-    count?: number;
-    until?: string;
-}
 export type ExpandRangeOptions =
     | {
     kind: "range";
