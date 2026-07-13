@@ -183,3 +183,19 @@ export function fmtDateRange(
 export function fmtTime(time: string): string {
     return parseTime(time).toLocaleString("en-US", TIME_FORMAT);
 }
+
+// Replaced with concise, almost-readable inline react tsx nested ternary (in order to include <time> semantics)
+export function fmtTimeWindow(
+    ev: Pick<EventItem, "startTime" | "endTime">,
+): string {
+    const { startTime, endTime } = ev;
+
+    if (startTime && endTime) {
+        return `${fmtTime(startTime)}–${fmtTime(endTime)}`;
+    }
+
+    if (startTime) return `Starts ${fmtTime(startTime)}`;
+    if (endTime) return `Until ${fmtTime(endTime)}`;
+
+    return "All day";
+}
