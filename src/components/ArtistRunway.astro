@@ -5,10 +5,16 @@ import ArtistCard from "./ArtistCard.astro";
 import {fmtDateRange} from "../domain/events/format.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
+import {getEntry} from "astro:content";
+import {Temporal} from "temporal-polyfill";
+import {defaults} from "../config/site.ts";
+
+const site = await getEntry("siteInfo", "main");
+const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
 
 
 let artists = await loadActiveArtists();
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.instant(), siteTimeZone);
 const primaryRole = "Tattoo Artist";
 const seen = new Set<string>();
 const guestArtists = guestSpotEvents

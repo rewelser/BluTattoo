@@ -3,27 +3,24 @@ import {getDateKey, getEventStartKey, hasEventEnded, isEventArchived} from "./se
 import {expandRecurrentEventOccurrencesFromRange} from "./recurrence/grouping.ts";
 import type {RecurrentEventItem} from "./recurrence/types.ts";
 import {upcomingEventRecurrenceExpansionRange} from "./recurrence/defs.ts";
+import {Temporal} from "temporal-polyfill";
 
-const getDatesBetweenInclusive = (startDate: string, endDate: string): string[] => {
-    const [sy, sm, sd] = startDate.split("-").map(Number);
-    const [ey, em, ed] = endDate.split("-").map(Number);
-
-    const cur = new Date(sy, sm - 1, sd);
-    const end = new Date(ey, em - 1, ed);
+const getDatesBetweenInclusive = (
+    startDate: string,
+    endDate: string,
+): string[] => {
+    let cur = Temporal.PlainDate.from(startDate);
+    const end = Temporal.PlainDate.from(endDate);
 
     const dates: string[] = [];
 
-    while (cur <= end) {
-        const y = cur.getFullYear();
-        const m = String(cur.getMonth() + 1).padStart(2, "0");
-        const d = String(cur.getDate()).padStart(2, "0");
-
-        dates.push(`${y}-${m}-${d}`);
-
-        cur.setDate(cur.getDate() + 1);
+    while (Temporal.PlainDate.compare(cur, end) <= 0) {
+        dates.push(cur.toString());
+        cur = cur.add({ days: 1 });
     }
+
     return dates;
-}
+};
 
 export const buildEventsByYearMonthDate = (evItems: EventItem[]) => {
     const eventsByYearMonthDate: EventsByYearMonthDate = {};
@@ -67,7 +64,7 @@ export const buildEventsByYearMonthDate = (evItems: EventItem[]) => {
  *  expanded via an expansion range -- meaning that 'upcoming' has to entail a discrete range specifically for recurring events.
  *  one month is a decent idea, or 30 days, or 2 months.
  */
-export function getUpcomingCandidates(events: EventItem[], now = new Date()) {
+export function getUpcomingCandidates(events: EventItem[], now = Temporal.Now.instant(), timeZone = "America/New_York") {
     // todo - recurrences
     // for (const event of events) {
     //     if (event.recurrenceRule) {
@@ -83,7 +80,7 @@ export function getUpcomingCandidates(events: EventItem[], now = new Date()) {
 
     return events.filter(
         (ev) =>
-            !hasEventEnded(ev, getDateKey(now)) &&
+            !hasEventEnded(ev, getDateKey(now, timeZone)) &&
             !isEventArchived(ev)
     ).sort((a, b) => getEventStartKey(a).localeCompare(getEventStartKey(b)));
 }

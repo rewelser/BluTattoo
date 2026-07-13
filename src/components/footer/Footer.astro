@@ -2,9 +2,11 @@
 import SocialRow from "../../components/SocialRow.astro";
 import {siteInfoSocialsToItems} from "../../domain/contact/adapters.ts";
 import HrDivider from "../decor/HrDivider.astro";
+import {Temporal} from "temporal-polyfill";
 
 const {defaults, site} = Astro.props;
-const year = new Date().getFullYear();
+const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
+const year = Temporal.Now.plainDateISO(siteTimeZone).year;
 const siteName = site?.data?.siteName ?? defaults.siteName;
 const addressObj = site?.data.address ?? defaults.address;
 const addressString = `${addressObj.streetAddress}, ${addressObj.addressLocality}, ${addressObj.addressRegion} ${addressObj.postalCode}`;

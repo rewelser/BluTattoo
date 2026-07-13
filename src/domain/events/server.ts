@@ -151,14 +151,14 @@ export function getValidatedEventItemsCached(): Promise<EventItem[]> {
     return transformedEventItemsPromise;
 }
 
-export async function loadUpcomingGuestSpotCandidates(now = new Date()): Promise<GuestItem[]> {
-    const events = await loadUpcomingCandidates(now);
+export async function loadUpcomingGuestSpotCandidates(now = Temporal.Now.instant(), timeZone = "America/New_York"): Promise<GuestItem[]> {
+    const events = await loadUpcomingCandidates(now, timeZone);
     return events.filter(
         (ev) => isGuestSpot(ev)
     );
 }
 
-export async function loadUpcomingCandidates(now = new Date()): Promise<EventItem[]> {
+export async function loadUpcomingCandidates(now = Temporal.Now.instant(), timeZone = "America/New_York"): Promise<EventItem[]> {
     const events = await getValidatedEventItemsCached();
-    return getUpcomingCandidates(events, now);
+    return getUpcomingCandidates(events, now, timeZone);
 }

@@ -19,6 +19,7 @@ export const defaults = {
         postalCode: "00000",
         addressCountry: "US",
     },
+    siteTimeZone: "America/New_York",
     sitePhone: "(555) 555-5555",
     siteEmail: "info@company.com",
     hoursShortline: "12a to 8p | Tuesday - Sunday\nClosed Monday",

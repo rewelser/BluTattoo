@@ -140,6 +140,7 @@ const siteInfo = defineCollection({
             addressCountry: z.string().length(2).default("US"),
             placeId: z.string(),
         }),
+        timeZone: z.string().default("America/New_York"),
         phone: z.preprocess(emptyStrToUndef, z.string().optional()),
         email: z.preprocess(emptyStrToUndef, z.string().optional()),
         hours: z.array(z.object({label: z.string(), value: z.string()})).optional(),

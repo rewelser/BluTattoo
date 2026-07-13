@@ -16,6 +16,7 @@ import {getImageSrc} from "../domain/decor/selectors.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
 import {Image} from "astro:assets";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
+import {Temporal} from "temporal-polyfill";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
@@ -27,7 +28,8 @@ const residentPeople = (
     ])
 ).flat();
 
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(new Date());
+const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.instant(), siteTimeZone);
 const seen = new Set<string>();
 
 const people = [

@@ -1,4 +1,5 @@
 import type {EventItem, GuestItem} from "./types.ts";
+import {Temporal} from "temporal-polyfill";
 
 /**
  * todo - recurrences: if recursive, start at first instance rather than startDate.
@@ -17,29 +18,17 @@ export function getEventEndKey(ev: EventItem): string {
 }
 
 export function getDateKey(
-    date = new Date(),
+    instant = Temporal.Now.instant(),
     timeZone = "America/New_York",
 ): string {
-    const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23",
-    }).formatToParts(date);
-    const map = Object.fromEntries(
-        parts
-            .filter((p) => p.type !== "literal")
-            .map((p) => [p.type, p.value]),
-    );
-
-    return `${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}`;
+    return instant
+        .toZonedDateTimeISO(timeZone)
+        .toPlainDateTime()
+        .toString({ smallestUnit: "minute" });
 }
 
 // todo - recurrences: this logic should be recurrence-agnostic - expansion should occur higher up
-export function hasEventEnded(ev: EventItem, nowKey = getDateKey(),): boolean {
+export function hasEventEnded(ev: EventItem, nowKey = getDateKey()): boolean {
     return getEventEndKey(ev) < nowKey;
 }
 
