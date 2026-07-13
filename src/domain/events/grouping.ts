@@ -2,8 +2,8 @@ import type {EventItem, EventsByYearMonthDate} from "./types";
 import {getDateKey, getEventStartKey, hasEventEnded, isEventArchived} from "./selectors.ts";
 import {expandRecurrentEventOccurrencesFromRange} from "./recurrence/grouping.ts";
 import type {RecurrentEventItem} from "./recurrence/types.ts";
-import {upcomingEventRecurrenceExpansionRange} from "./recurrence/defs.ts";
 import {Temporal} from "temporal-polyfill";
+import {upcomingEventRange} from "./defs.ts";
 
 const getDatesBetweenInclusive = (
     startDate: string,
@@ -66,15 +66,22 @@ export const buildEventsByYearMonthDate = (evItems: EventItem[]) => {
  */
 export function getUpcomingCandidates(events: EventItem[], now = Temporal.Now.instant(), timeZone = "America/New_York") {
     // todo - recurrences
-    // for (const event of events) {
-    //     if (event.recurrenceRule) {
-    //         expandRecurrentEventOccurrencesFromRange(event as RecurrentEventItem, {
-    //             kind: "days",
-    //             rangeStart: now,
-    //             days: upcomingEventRecurrenceExpansionRange
-    //         })
-    //     }
-    // }
+
+    // return events
+    //     .filter((ev) => ev.recurrenceRule)
+    //     .flatMap(ev => {
+    //         if (ev.recurrenceRule) {
+    //             return expandRecurrentEventOccurrencesFromRange(
+    //                 ev as RecurrentEventItem, {
+    //                     kind: "days",
+    //                     rangeStart: now,
+    //                     days: 90,
+    //                 }
+    //             )
+    //         }
+    //
+    //         }
+    //     );
     // todo - recurrences - end
 
 
@@ -93,6 +100,7 @@ export function getPromoCandidates(events: EventItem[]) {
     );
 }
 
+// todo: fix that it thinks upcoming can now be undefined? (where this is called in UpcomingEvents.astro)
 export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
     return (
         upcoming.find((ev) => ev.featured && ev.image) ??

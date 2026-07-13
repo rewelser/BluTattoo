@@ -5,15 +5,21 @@ import type {EventItem} from "../domain/events/types.ts";
 import EventDateRange from "./EventDateRange.astro";
 import {getUpcomingCandidates, pickFeaturedHero} from "../domain/events/grouping.ts";
 import {Temporal} from "temporal-polyfill";
+import {defaults} from "../config/site.ts";
+import {getEntry} from "astro:content";
 
 export interface Props {
     events: EventItem[];
 }
 
+const site = await getEntry("siteInfo", "main");
 const {events = []} = Astro.props;
 
+const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
+
+
 // If confused why not simply using loadUpcomingCanidates like in PromoBarLoader, or vice versa, it's because index.astro already has events list
-const upcoming = getUpcomingCandidates(events, Temporal.Now.instant());
+const upcoming = getUpcomingCandidates(events, Temporal.Now.instant(), siteTimeZone);
 const featured = pickFeaturedHero(upcoming);
 ---
 

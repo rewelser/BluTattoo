@@ -21,6 +21,3 @@ export const bySetPosNames = {
 } as const satisfies Record<BySetPos, string>
 
 export const bySetPosTypes = [1, 2, 3, 4, -1] as const;
-
-// Expansion range for recurrent events in the "upcoming" context is a rolling "season", comprising 90 days.
-export const upcomingEventRecurrenceExpansionRange: number = 90;

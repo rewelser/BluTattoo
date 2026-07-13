@@ -1,5 +1,6 @@
 import type {EventItem} from "../types.ts";
 import {bySetPosTypes, weekdayTypes} from "./defs.ts";
+import {Temporal} from "temporal-polyfill";
 
 export type RecurrentEventItem = EventItem & { recurrenceRule: NonNullable<EventItem["recurrenceRule"]> }
 
@@ -47,3 +48,8 @@ export type ExpandRangeOptions =
     year: number;
     month: number;
 };
+
+export type DateRange = Readonly<{
+    start: Temporal.PlainDate;
+    endExclusive: Temporal.PlainDate;
+}>;
