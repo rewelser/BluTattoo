@@ -2,19 +2,20 @@
 import type {ImageMetadata} from "astro";
 import {loadActiveArtists} from "../domain/people/server.ts";
 import ArtistCard from "./ArtistCard.astro";
-import {fmtDateRange} from "../domain/events/format.ts";
+import {fmtDateRange, fmtDateUpcomingRecurrence} from "../domain/events/format.ts";
 import {getBookables} from "../domain/contact/utlis.ts";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
 import {getEntry} from "astro:content";
 import {Temporal} from "temporal-polyfill";
 import {defaults} from "../config/site.ts";
+import {getDateKey, hasEventStarted} from "../domain/events/selectors.ts";
 
 const site = await getEntry("siteInfo", "main");
 const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
 
 
 let artists = await loadActiveArtists();
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.instant(), siteTimeZone);
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.plainDateTimeISO(siteTimeZone));
 const primaryRole = "Tattoo Artist";
 const seen = new Set<string>();
 const guestArtists = guestSpotEvents
@@ -38,8 +39,12 @@ const cardSlotClass =
                 <div class="flex flex-wrap justify-around gap-6">
                     {guestArtists.map((guest) => {
                         const spot = guest.guestSpot;
+                        const hasStarted = hasEventStarted(guest, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone)));
                         const dateRange = fmtDateRange(guest);
+                        const postfaceString = hasStarted ? `Recurring` : `Starting ${fmtDateUpcomingRecurrence(guest.startDate)}`;
+                        const dateRangeOrPostfaceString = !guest.recurrenceRule ? dateRange : postfaceString;
                         const hasBookables = (getBookables(spot.contactSocialsBooking)?.length ?? 0) > 0;
+                        const prefaceString = hasStarted ? "Guest" : "Upcoming Guest";
                         return (
                                 <>
                                     <div class={`relative block ${cardSlotClass}`}>
@@ -53,7 +58,8 @@ const cardSlotClass =
                                                 hasBookables={hasBookables}
                                                 bookingToggleId={`person-guest-${guest.id.replaceAll("/", "-")}-toggle`}
                                                 isGuestSpot={true}
-                                                guestSpotDateRange={dateRange}
+                                                prefaceString={prefaceString}
+                                                guestSpotDateRangeOrPostfaceString={dateRangeOrPostfaceString}
                                         />
                                     </div>
                                 </>

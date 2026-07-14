@@ -20,7 +20,7 @@ const {
     items?: string[]
 };
 const primaryRole = roleLabel === "Artists" ? "Tattoo Artist" : "Piercer";
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.instant(), siteTimeZone);
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.plainDateTimeISO(siteTimeZone));
 const seen = new Set<string>();
 const guests = renderGuestLinks(
     guestSpotEvents
@@ -37,7 +37,7 @@ const guests = renderGuestLinks(
 
 {
     guests.map((guest) => {
-        const prefaceString = guest.event && hasEventStarted(guest.event, getDateKey(Temporal.Now.instant(), siteTimeZone)) ? "guest:" : "upcoming guest:";
+        const prefaceString = guest.event && hasEventStarted(guest.event, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone))) ? "guest:" : "upcoming guest:";
         return (
         <li class="guest-shine rounded-sm">
             <a

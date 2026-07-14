@@ -1,19 +1,31 @@
 ---
 // import type {EventItem} from "../../domain/events/types";
-import type {EventItem} from "../domain/events/types";
-import {fmtDate} from "../domain/events/format.ts";
-import {recurrenceText} from "../domain/events/recurrence/format.ts";
-import type {RecurrentEventItem} from "../domain/events/recurrence/types.ts";
+import type {EventItem, RecurrentEventItem} from "../domain/events/types";
+import {fmtDate, fmtDateUpcomingRecurrence, recurrenceText} from "../domain/events/format.ts";
+import {getDateKey, hasEventStarted} from "../domain/events/selectors.ts";
+import {Temporal} from "temporal-polyfill";
+import {defaults} from "../config/site.ts";
+import {getEntry} from "astro:content";
+
+const site = await getEntry("siteInfo", "main");
 
 interface Props {
-    ev: Pick<EventItem, "startDate" | "endDate" | "recurrenceRule">;
+    // ev: Pick<EventItem, "startDate" | "endDate" | "recurrenceRule">;
+    ev: EventItem
 }
+
+const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
 
 const {ev} = Astro.props;
 ---
 <>
     {ev.recurrenceRule ? (
             <>
+                {!hasEventStarted(ev, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone))) && (
+                        <span class="opacity-60 text-sm font-light px-1">
+                            Starting {fmtDateUpcomingRecurrence(ev.startDate)}:
+                         </span>
+                )}
                 {recurrenceText(ev as RecurrentEventItem)}
             </>
     ) : !ev.endDate || ev.startDate === ev.endDate ? (

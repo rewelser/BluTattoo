@@ -18,7 +18,8 @@ interface Props {
     hasBookables: boolean;
     bookingToggleId: string;
     isGuestSpot?: boolean;
-    guestSpotDateRange?: string;
+    prefaceString?: string;
+    guestSpotDateRangeOrPostfaceString?: string;
     class?: string;
 }
 
@@ -33,7 +34,8 @@ const {
     hasBookables,
     bookingToggleId,
     isGuestSpot,
-    guestSpotDateRange,
+    prefaceString,
+    guestSpotDateRangeOrPostfaceString,
     class: className = "",
 } = Astro.props;
 
@@ -58,7 +60,8 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
         {isGuestSpot &&
                 <GuestSpotCardInfoBanner
                         primaryRole={primaryRole}
-                        dateRange={guestSpotDateRange}
+                        prefaceString={prefaceString}
+                        dateRangeOrPostfaceString={guestSpotDateRangeOrPostfaceString}
                 />
         }
         <div class="relative">

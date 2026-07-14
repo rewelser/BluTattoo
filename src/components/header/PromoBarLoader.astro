@@ -10,7 +10,6 @@ import {defaults} from "../../config/site";
 const site = await getEntry("siteInfo", "main");
 const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
 
-
 const {
     fallbackHref = "/events",
     enabled = true,
@@ -23,7 +22,7 @@ const {
 if (!enabled) return;
 
 // If confused why not simply using getUpcomingCandidates like in UpcomingEvents, or vice versa, it's because index.astro already has events list, and we don't here
-const events = await loadUpcomingCandidates(Temporal.Now.instant(), siteTimeZone);
+const events = await loadUpcomingCandidates(Temporal.Now.plainDateTimeISO(siteTimeZone));
 const promoCandidates = getPromoCandidates(events);
 const promoEvent = promoCandidates.find((ev) => ev.featured) ?? promoCandidates[0] ?? null;
 

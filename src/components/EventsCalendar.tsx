@@ -1,11 +1,10 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
+import type {EventItem, EventsByYearMonthDate, RecurrentEventItem} from "../domain/events/types";
 import {
-    buildEventsByYearMonthDate,
+    buildEventsByYearMonthDate, buildMonthBoundedRecurrentEvents,
 } from "../domain/events/grouping.ts";
-import {buildMonthBoundedRecurrentEvents} from "../domain/events/recurrence/grouping.ts";
 /**
- * todo: once safari supports @supports at-rules, then we can simply use:
+ * todo: once safari supports @supports at-rules, then we can simply use (but will need reworking):
  * @EventsCalendar.css
  *
  * Then, once safari supports all the cool stuff, we can just use the anchor version.
@@ -14,7 +13,6 @@ import {buildMonthBoundedRecurrentEvents} from "../domain/events/recurrence/grou
 import "../styles/EventsCalendar-anchor-with-fallback.css";
 // import {fmtDate, fmtTime, fmtTimeWindow} from "../domain/events/format.ts";
 import {fmtDate, fmtTime} from "../domain/events/format.ts";
-import type {RecurrentEventItem} from "../domain/events/recurrence/types.ts";
 import {Temporal} from "temporal-polyfill";
 
 interface EventsCalendarProps {
@@ -23,31 +21,20 @@ interface EventsCalendarProps {
 
 // sherpa thuggin
 export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
-    // todo: is there a better place in here to declare this? Maybe not
-    // const eventsByYearMonthDate: EventsByYearMonthDate = buildEventsByYearMonthDate(events);
     const [traversedMonthStartDate, setTraversedMonthStartDate] = useState<Temporal.PlainDate>(() => {
         return Temporal.Now.plainDateISO().with({day: 1})
     })
-    // todo - recurrences: this is the main piece of logic needed in this whole component for recurrences to work, I think.
-    const recurrentEventsByMonth = useMemo(() => {
-        const year = traversedMonthStartDate.year;
-        const month = traversedMonthStartDate.month;
-        return buildMonthBoundedRecurrentEvents(events, year, month);
-    }, [traversedMonthStartDate]);
 
-    // addendum to todo: memoization allows us to only call buildEventsByYearMonthDate when the events prop changes, rather than on every rerender
+    // memoization allows us to only call buildEventsByYearMonthDate when the dependencies change, rather than on every rerender
     const eventsByYearMonthDate: EventsByYearMonthDate = useMemo(
         () => {
-            const eventsWithExpandedRecurrences = events.concat(recurrentEventsByMonth);
-            return buildEventsByYearMonthDate(eventsWithExpandedRecurrences);
+            return buildEventsByYearMonthDate(events, traversedMonthStartDate);
         },
-        [events, recurrentEventsByMonth]
+        [events, traversedMonthStartDate]
     );
-
 
     const [openDateKey, setOpenDateKey] = useState<string | null>(null);
     const calendarRef = useRef<HTMLDivElement>(null);
-
 
     const calendarData = useMemo(() => {
         const prevTrailingPlaceholders = traversedMonthStartDate.dayOfWeek % traversedMonthStartDate.daysInWeek;
@@ -94,13 +81,11 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
         year: "numeric"
     });
 
-    // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const prev = () => {
         setTraversedMonthStartDate((prev) => prev.subtract({months: 1}).with({day: 1}));
         setOpenDateKey(null);
     };
 
-    // todo - recurrences: consider calling our expandRecurrentEventsFromRange here, updating a smaller list separate from eventsByYearMonthDate (but whose return value is structured similarly)
     const next = () => {
         setTraversedMonthStartDate((prev) => prev.add({months: 1}).with({day: 1}));
         setOpenDateKey(null);
@@ -198,11 +183,6 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         const isToday = now.equals(temporalCursor);
 
                         const dailyEventsObj = eventsByYearMonthDate[rawYear]?.[rawMonth]?.[rawDate];
-                        /**
-                         * todo - recurrences: here, we will (I think) do the same thing as dailyEventsObj but for recurrences:
-                         *  something like 'dailyRecurrentEventsObj', using a recurrentEventsByMonthDate, which we will
-                         *  then fold into dailyEvents. I think it might truly be that simple.
-                         */
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
 
                         const hasEvents = dailyEvents.length > 0;

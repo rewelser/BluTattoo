@@ -6,17 +6,15 @@ import type {
     EventValidationIssue,
     EventValidationResult,
     GuestItem,
-    InvalidEventResult,
+    InvalidEventResult, RecurrentEventItem,
     ValidEventResult
 } from "./types.ts";
 import {
-    getEventEndKey,
+    getEventEndKey, getEventRecurrenceUntilKey,
     getEventStartKey,
     isGuestSpot
 } from "./selectors.ts";
 import {getUpcomingCandidates} from "./grouping.ts";
-import {getEventRecurrenceUntilKey} from "./recurrence/selectors.ts";
-import type {RecurrentEventItem} from "./recurrence/types.ts";
 
 // Wtf is this? vv
 // import {Temporal} from "temporal-spec";
@@ -24,6 +22,10 @@ import { Temporal } from "temporal-polyfill";
 
 // ----- Loading + sorting -----
 
+/**
+ * todo - recurrences: if recursive, start at first instance rather than startDate.
+ *  View the details in @chat - rrule temporary chat about ensuring the startDate *is* first instance for recurrences.
+ */
 function validateEvent(e: EventEntry): EventValidationResult {
     const issues: EventValidationIssue[] = [];
     const eventItem = {id: e.id, ...e.data} as EventItem;
@@ -42,7 +44,7 @@ function validateEvent(e: EventEntry): EventValidationResult {
     const hasExplicitUntil = !!e.data.recurrenceRule?.until;
     if (hasRecurrence && hasExplicitUntil) {
         const untilKey = getEventRecurrenceUntilKey(eventItem as RecurrentEventItem);
-        if (untilKey <= startKey) {
+        if (untilKey && untilKey <= startKey) {
             issues.push({
                 id: e.id,
                 reason: "Event recurrence until date/time must be after event start date/time.",
@@ -76,7 +78,7 @@ function validateEvent(e: EventEntry): EventValidationResult {
     if (!!eventItem.guestSpot && eventItem.shopClosed) {
         issues.push({
             id: e.id,
-            reason: "A closed-day event cannot indicate open-day activity, such as a guest spot event.",
+            reason: "A closed-day event cannot indicate open-day shop services, such as a guest spot event.",
         })
     }
 
@@ -151,14 +153,14 @@ export function getValidatedEventItemsCached(): Promise<EventItem[]> {
     return transformedEventItemsPromise;
 }
 
-export async function loadUpcomingGuestSpotCandidates(now = Temporal.Now.instant(), timeZone = "America/New_York"): Promise<GuestItem[]> {
-    const events = await loadUpcomingCandidates(now, timeZone);
+export async function loadUpcomingGuestSpotCandidates(now: Temporal.PlainDateTime): Promise<GuestItem[]> {
+    const events = await loadUpcomingCandidates(now);
     return events.filter(
         (ev) => isGuestSpot(ev)
     );
 }
 
-export async function loadUpcomingCandidates(now = Temporal.Now.instant(), timeZone = "America/New_York"): Promise<EventItem[]> {
+export async function loadUpcomingCandidates(now: Temporal.PlainDateTime): Promise<EventItem[]> {
     const events = await getValidatedEventItemsCached();
-    return getUpcomingCandidates(events, now, timeZone);
+    return getUpcomingCandidates(events, now);
 }

@@ -1,5 +1,6 @@
-import type {EventItem} from "./types.ts";
+import type {EventItem, RecurrentEventItem} from "./types.ts";
 import {Temporal} from "temporal-polyfill";
+import {bySetPosNames, bySetPosTypes, weekdayNames, weekdayTypes} from "./defs.ts";
 
 const DATE_WITH_YEAR: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -22,32 +23,118 @@ const TIME_FORMAT: Intl.DateTimeFormatOptions = {
     hour12: true,
 };
 
+const UPCOMING_RECURRENCE: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+}
+
 const parseDate = (value: string): Temporal.PlainDate =>
     Temporal.PlainDate.from(value);
 
 const parseTime = (value: string): Temporal.PlainTime =>
     Temporal.PlainTime.from(value);
 
-export function fmtDate(
-    dateStr: string,
-    showYear = true,
-): string {
+export function fmtDate(dateStr: string, showYear = true): string {
     return parseDate(dateStr).toLocaleString(
         "en-US",
         showYear ? DATE_WITH_YEAR : DATE_WITHOUT_YEAR,
     );
 }
 
+export function fmtDateUpcomingRecurrence(dateStr: string, showYear = true): string {
+    return parseDate(dateStr).toLocaleString(
+        "en-US",
+        UPCOMING_RECURRENCE
+    );
+}
+
+function ordinalNumerical(n: number) {
+    const suffix =
+        n % 10 === 1 && n % 100 !== 11
+            ? "st"
+            : n % 10 === 2 && n % 100 !== 12
+                ? "nd"
+                : n % 10 === 3 && n % 100 !== 13
+                    ? "rd"
+                    : "th";
+
+    return `${n}${suffix}`;
+}
+
+export function recurrenceText(rev: RecurrentEventItem) {
+    const rrule = rev.recurrenceRule;
+    const interval = rrule.interval;
+
+    if (rrule.type === "recurrenceRuleWeekly") {
+        let weekyString = `Every `;
+
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            weekyString += `${ordinality} `;
+        }
+
+        const byDay = weekdayTypes
+            .filter((day) => rrule.byDay.includes(day))
+            .map((day, index) => weekdayNames[day]);
+
+        weekyString += new Intl.ListFormat("en", {
+            style: "long",
+            type: "conjunction",
+        }).format(byDay);
+
+        return weekyString;
+    }
+
+    if (rrule.type === "recurrenceRuleMonthlyByDate") {
+        const byMonthDay = rrule.byMonthDay;
+        const byMonthDayOrdinal = ordinalNumerical(byMonthDay);
+
+        let monthlyByDateString = `The ${byMonthDayOrdinal} of`;
+
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            monthlyByDateString += ` every ${ordinality} month (if applicable)`;
+        } else {
+            monthlyByDateString += ` every month (if applicable)`;
+        }
+        return monthlyByDateString;
+    }
+
+    if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+        const dayName = weekdayNames[rrule.byDay];
+        const bySetPos = bySetPosTypes
+            .filter((setPos) => rrule.bySetPos.includes(setPos))
+            .map((setPos, index) => bySetPosNames[setPos]);
+
+        let monthlyByOrdinalWeekday = `The ` + new Intl.ListFormat("en", {
+            style: "long",
+            type: "conjunction",
+        }).format(bySetPos) + ` ${dayName} of`;
+
+        if (interval > 1) {
+            const ordinality = interval === 2 ? `other` : ordinalNumerical(interval);
+            monthlyByOrdinalWeekday += ` every ${ordinality} month`;
+        } else {
+            monthlyByOrdinalWeekday += ` every month`;
+        }
+        return monthlyByOrdinalWeekday;
+
+    }
+}
+
 /**
  * Some usages of this are now replaced with the EventDateRange component to incorporate <time> semantic tags,
  * but in certain places where this is meaningless/impossible (such as inside of SVGs like the
  * GuestSpotCardInfoBannerSvg), this function still has a use.
- *
- * Note: Recurring events control their own date range display logic inside of recurrence/format.ts
  */
 export function fmtDateRange(
-    ev: Pick<EventItem, "startDate" | "endDate">,
+    ev: EventItem,
 ): string {
+    if (ev.recurrenceRule) {
+        return recurrenceText(ev as RecurrentEventItem)!;
+    }
+
     const start = parseDate(ev.startDate);
 
     if (!ev.endDate) {

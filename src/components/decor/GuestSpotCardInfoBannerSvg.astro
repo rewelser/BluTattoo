@@ -1,7 +1,8 @@
 ---
 const {
     primaryRole,
-    dateRange,
+    prefaceString,
+    dateRangeOrPostfaceString,
 } = Astro.props;
 ---
 
@@ -187,10 +188,10 @@ const {
     </g>
     <text font-size="70" fill="#000">
         <textPath href="#event-text-path-1" startOffset="50%" text-anchor="middle">
-            Upcoming Guest {primaryRole}
+            {prefaceString} {primaryRole}
         </textPath>
         <textPath href="#event-text-path-2" startOffset="50%" text-anchor="middle">
-            {dateRange} • Book Now
+            {dateRangeOrPostfaceString} • Book Now
         </textPath>
     </text>
 </svg>

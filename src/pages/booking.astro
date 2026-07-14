@@ -8,7 +8,7 @@ import type {IconType} from "../domain/contact/types.ts";
 import SquareAppointmentsIsland from "../components/SquareAppointmentsIsland.tsx";
 import SlottableModal from "../components/SlottableModal.astro";
 import SocialRow from "../components/SocialRow.astro";
-import {fmtDateRange} from "../domain/events/format.ts";
+import {fmtDateRange, fmtDateUpcomingRecurrence} from "../domain/events/format.ts";
 import SparkleCorners from "../components/decor/SparkleCorners.astro";
 import {siteInfoSocialsToItems} from "../domain/contact/adapters.ts";
 import ShareModal from "../components/ShareModal.astro";
@@ -17,6 +17,7 @@ import {getBookables} from "../domain/contact/utlis.ts";
 import {Image} from "astro:assets";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
 import {Temporal} from "temporal-polyfill";
+import {getDateKey, hasEventStarted} from "../domain/events/selectors.ts";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
@@ -29,7 +30,7 @@ const residentPeople = (
 ).flat();
 
 const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
-const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.instant(), siteTimeZone);
+const guestSpotEvents = await loadUpcomingGuestSpotCandidates(Temporal.Now.plainDateTimeISO(siteTimeZone));
 const seen = new Set<string>();
 
 const people = [
@@ -202,7 +203,14 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                             {isGuest && (
                                                     <div class="absolute rounded-4xl bg-white border-2 border-gray-300 -translate-y-[50%] translate-x-16 py-1 px-2 break-words font-[Spectral]">
                                                         Guest {person.data.primaryRole.replaceAll("Tattoo ", "")}
-                                                        &#10209 {fmtDateRange(person.event)}</div>
+                                                        {!hasEventStarted(person.event, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone))) && (
+                                                                <>
+                                                                    ⟡
+                                                                    Starting {fmtDateUpcomingRecurrence(person.event.startDate)}
+                                                                </>
+                                                        )}
+                                                        ⟡ {fmtDateRange(person.event)}
+                                                    </div>
                                                     <SparkleCorners fillColor="gold"/>
                                             )}
                                             <section aria-labelledby={personHeadingId}>

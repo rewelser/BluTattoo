@@ -5,10 +5,11 @@ const {
     size = 24,
     style = '',
     primaryRole,
-    dateRange
+    prefaceString,
+    dateRangeOrPostfaceString
 } = Astro.props;
 ---
 
 <div class="guest-spot-card-info-banner-container absolute w-full top-0 z-10 -translate-y-[70px]">
-    <GuestSpotCardInfoBannerSvg primaryRole={primaryRole} dateRange={dateRange} />
+    <GuestSpotCardInfoBannerSvg primaryRole={primaryRole} prefaceString={prefaceString} dateRangeOrPostfaceString={dateRangeOrPostfaceString} />
 </div>

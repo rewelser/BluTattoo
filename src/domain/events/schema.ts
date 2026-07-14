@@ -1,6 +1,7 @@
 import {z} from "astro:content";
 
-import {weekdayTypes} from "./recurrence/defs.ts";
+
+import {weekdayTypes} from "./defs.ts";
 
 export const timeHM = z.string().regex(/^\d{2}:\d{2}$/, "Use HH:mm");
 
