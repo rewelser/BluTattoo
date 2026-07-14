@@ -62,6 +62,10 @@ function ordinalNumerical(n: number) {
     return `${n}${suffix}`;
 }
 
+/**
+ * New rrules need a new case in all 3 of the following methods:
+ * getRecurrenceFirstOccurrence, expandRecurrentEventOccurrencesFromRange, recurrenceText
+ */
 export function recurrenceText(rev: RecurrentEventItem) {
     const rrule = rev.recurrenceRule;
     const interval = rrule.interval;

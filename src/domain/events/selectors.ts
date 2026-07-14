@@ -1,5 +1,6 @@
 import type {BySetPos, DateRange, EventItem, GuestItem, RecurrenceRule, RecurrentEventItem} from "./types.ts";
 import {Temporal} from "temporal-polyfill";
+import {weekdayTypes} from "./defs.ts";
 
 export function getEventStartKey(ev: EventItem): string {
     return `${ev.startDate}T${ev.startTime ?? "00:00"}`;
@@ -150,5 +151,30 @@ export const isGuestSpot = (ev: EventItem): ev is GuestItem => {
 
 export function isEventArchived(ev: EventItem): boolean {
     return ev.archived === true;
+}
+
+/**
+ * New rrules need a new case in all 3 of the following methods:
+ * getRecurrenceFirstOccurrence, expandRecurrentEventOccurrencesFromRange, recurrenceText
+ */
+export function recurrenceFirstOccurrenceMatchesStartDate(rev: RecurrentEventItem) {
+    const rrule = rev.recurrenceRule;
+    const revStart: Temporal.PlainDate = Temporal.PlainDate.from(rev.startDate);
+
+    if (rrule.type === "recurrenceRuleWeekly") {
+        const sortedByDay = rrule.byDay
+            .sort((a, b) => weekdayTypes.indexOf(a) - weekdayTypes.indexOf(b));
+        return sortedByDay[0].includes(weekdayTypes[revStart.dayOfWeek - 1]);
+    }
+
+    if (rrule.type === "recurrenceRuleMonthlyByDate") {
+        return rrule.byMonthDay === revStart.day;
+    }
+
+    if (rrule.type === "recurrenceRuleMonthlyByOrdinalWeekday") {
+        const revStartDayInByDay = rrule.byDay.includes(weekdayTypes[revStart.dayOfWeek - 1]);
+        const revStartInBySetPos = rrule.bySetPos.includes(getBySetPos(revStart));
+        return revStartDayInByDay && revStartInBySetPos;
+    }
 }
 

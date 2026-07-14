@@ -2,7 +2,7 @@
 shopClosed: false
 title: until before start test
 date: 2026-07-15
-published: false
+published: true
 featured: false
 archived: false
 recurrenceRule:

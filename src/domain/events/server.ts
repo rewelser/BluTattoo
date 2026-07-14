@@ -12,68 +12,64 @@ import type {
 import {
     getEventEndKey, getEventRecurrenceUntilKey,
     getEventStartKey,
-    isGuestSpot
+    isGuestSpot, recurrenceFirstOccurrenceMatchesStartDate
 } from "./selectors.ts";
-import {getUpcomingCandidates} from "./grouping.ts";
+import {expandRecurrentEventOccurrencesFromRange, getUpcomingCandidates} from "./grouping.ts";
 
 // Wtf is this? vv
 // import {Temporal} from "temporal-spec";
-import { Temporal } from "temporal-polyfill";
+import {Temporal} from "temporal-polyfill";
 
 // ----- Loading + sorting -----
 
-/**
- * todo - recurrences: if recursive, start at first instance rather than startDate.
- *  View the details in @chat - rrule temporary chat about ensuring the startDate *is* first instance for recurrences.
- */
 function validateEvent(e: EventEntry): EventValidationResult {
+    console.log("e.id", e.id);
     const issues: EventValidationIssue[] = [];
     const eventItem = {id: e.id, ...e.data} as EventItem;
     const startKey = getEventStartKey(eventItem);
     const endKey = getEventEndKey(eventItem);
 
-    const hasExplicitEnd = Boolean(e.data.endDate || e.data.endTime);
+    const hasExplicitEnd = Boolean(eventItem.endDate || eventItem.endTime);
     if (hasExplicitEnd && endKey <= startKey) {
         issues.push({
-            id: e.id,
+            id: eventItem.id,
             reason: "Event end date/time must be after event start date/time.",
         })
     }
 
-    const hasRecurrence = !!e.data.recurrenceRule;
-    const hasExplicitUntil = !!e.data.recurrenceRule?.until;
+    const hasRecurrence = !!eventItem.recurrenceRule;
+    const hasExplicitUntil = !!eventItem.recurrenceRule?.until;
     if (hasRecurrence && hasExplicitUntil) {
         const untilKey = getEventRecurrenceUntilKey(eventItem as RecurrentEventItem);
         if (untilKey && untilKey <= startKey) {
             issues.push({
-                id: e.id,
+                id: eventItem.id,
                 reason: "Event recurrence until date/time must be after event start date/time.",
             })
         }
     }
 
-    // console.log("fish");
-    const week = Temporal.PlainDate.from(eventItem.startDate).weekOfYear;
-    const testdatestart =Temporal.PlainDate.from({year: 2026, month: 7, day: 1});
-    const testdateend = testdatestart.with({day: Number.MAX_VALUE});
-    // console.log("testdatestart", testdatestart.toString());
-    // console.log("testdateend", testdateend.toString());
-    // console.log("iscompared", Temporal.PlainDate.compare(testdatestart, testdateend));
+    if (hasRecurrence && !recurrenceFirstOccurrenceMatchesStartDate(eventItem as RecurrentEventItem)) {
+        issues.push({
+            id: eventItem.id,
+            reason: "Event recurrence start date must match with first occurrence.",
+        })
+    }
 
-
-    // console.log(Temporal.PlainDate.from(eventItem.startDate).toPlainYearMonth().toString() < Temporal.PlainDate.from("2026-07-04").toPlainYearMonth().toString());
-    // console.log("startKey", startKey);
-    // console.log("new Date(startKey).getDay()", new Date(startKey).getDay());
-    // console.log("weekdayTypes[new Date(startKey).getDay()]", weekdayTypes[new Date(startKey).getDay()]);
-    //
-    // console.log("new Date(startKey).getUTCDay()", new Date(startKey).getUTCDay());
-    // console.log("weekdayTypes[new Date(startKey).getUTCDay()]", weekdayTypes[new Date(startKey).getUTCDay()]);
-    //
-    // console.log("new Date(e.data.startDate).getDay()", new Date(e.data.startDate).getDay());
-    // console.log("weekdayTypes[new Date(e.data.startDate).getDay()]", weekdayTypes[new Date(e.data.startDate).getDay()]);
-    //
-    // console.log("new Date(e.data.startDate).getUTCDay()", new Date(e.data.startDate).getUTCDay());
-    // console.log("weekdayTypes[new Date(e.data.startDate).getUTCDay()]", weekdayTypes[new Date(e.data.startDate).getUTCDay()]);
+    if (hasRecurrence && hasExplicitUntil) {
+        const rangeStart = Temporal.PlainDate.from(eventItem.startDate);
+        const rangeEnd = Temporal.PlainDate.from(eventItem.recurrenceRule!.until!);
+        const occurrenceArray = expandRecurrentEventOccurrencesFromRange(eventItem as RecurrentEventItem, {
+            start: rangeStart,
+            endExclusive: rangeEnd
+        });
+        if (occurrenceArray.length === 0) {
+            issues.push({
+                id: eventItem.id,
+                reason: "Recurrent event slated range must not contain zero occurrences.",
+            })
+        }
+    }
 
     if (!!eventItem.guestSpot && eventItem.shopClosed) {
         issues.push({

@@ -122,8 +122,8 @@ export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {
 }
 
 /**
- * This is used by a buildRecurringEventsByYearMonthDate, and by a getUpcomingCandidates, returning a shape
- * they both can enjoy :-3
+ * New rrules need a new case in all 3 of the following methods:
+ * getRecurrenceFirstOccurrence, expandRecurrentEventOccurrencesFromRange, recurrenceText
  */
 export function expandRecurrentEventOccurrencesFromRange(rev: RecurrentEventItem, range: DateRange): EventItem[] {
     let events: EventItem[] = [];

@@ -1,7 +1,7 @@
 ---
 shopClosed: false
 title: guest spot recurring
-date: 2026-07-22
+date: 2026-07-20
 published: true
 featured: false
 archived: false
@@ -30,5 +30,5 @@ recurrenceRule:
 promoBar:
   enabled: true
   message: suckassss
-  color1: '#ff0000'
+  color2: '#bb3e3e'
 ---
