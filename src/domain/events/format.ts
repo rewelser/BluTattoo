@@ -42,7 +42,7 @@ export function fmtDate(dateStr: string, showYear = true): string {
     );
 }
 
-export function fmtDateUpcomingRecurrence(dateStr: string, showYear = true): string {
+export function fmtDateUpcomingRecurrence(dateStr: string): string {
     return parseDate(dateStr).toLocaleString(
         "en-US",
         UPCOMING_RECURRENCE
@@ -80,7 +80,7 @@ export function recurrenceText(rev: RecurrentEventItem) {
 
         const byDay = weekdayTypes
             .filter((day) => rrule.byDay.includes(day))
-            .map((day, index) => weekdayNames[day]);
+            .map((day) => weekdayNames[day]);
 
         weekyString += new Intl.ListFormat("en", {
             style: "long",
@@ -109,7 +109,7 @@ export function recurrenceText(rev: RecurrentEventItem) {
         const dayName = weekdayNames[rrule.byDay];
         const bySetPos = bySetPosTypes
             .filter((setPos) => rrule.bySetPos.includes(setPos))
-            .map((setPos, index) => bySetPosNames[setPos]);
+            .map((setPos) => bySetPosNames[setPos]);
 
         let monthlyByOrdinalWeekday = `The ` + new Intl.ListFormat("en", {
             style: "long",

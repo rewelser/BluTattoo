@@ -304,7 +304,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                         </div>
                         <div class="px-6 mx-auto mt-20 max-w-3xl text-center leading-relaxed apply-themed-prose">
                             <!--<h1 class="text-8xl font-light">-->
-                            <!--    Sure! Here are some eye-catching blurbs to put on your tattoo shop website that stress both ease of process and adherence to compliance standards:-->
+                            <!--    Just so people know, this is satire. A human wrote this: "Sure! Here are some eye-catching blurbs to put on your tattoo shop website that stress both ease of process and adherence to compliance standards:"-->
                             <!--</h1>-->
 
                             <p class="whitespace-pre-line">
@@ -358,6 +358,13 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                         </div>
                         <div class="px-6 py-16 md:py-24">
                             <div class="mx-auto max-w-3xl flex justify-center fade-bottom-40">
+                                <!-- todo:
+                                    We had this passing in the CMS-supplied ourStory?.frameWindowSvg, and it "worked",
+                                    but it isn't supposed to. So rather than use the CMS-supplied value, we're going to
+                                    switch to hard-coding an svg import of this same svg, but supplied from the
+                                    src/domain/decor/assets directory (in other words, hard-coded). It sucks, but it'll
+                                    make things cleaner.
+                                -->
                                 <FramedImage
                                         kind="video"
                                         class="w-[80vw] lg:w-[40vw]"

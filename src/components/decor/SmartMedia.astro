@@ -97,15 +97,10 @@ const desktopPoster = videoAttrs?.posterDesktop
         quality: 80,
     })
     : undefined;
-
-// console.log("astro props", Astro.props);
-// console.log("kind:", kind);
-// console.log("hasvideo", hasVideo);
-// console.log("----------------");
 ---
 <>
     {
-        kind === "image" && imageAttrs ? ((()=> {
+        kind === "image" && imageAttrs ? ((() => {
                 const resolvedImageAttrs = {
                     ...imageAttrs,
                     widths: imageAttrs.widths ?? [640, 768, 960, 1200, 1440, 1920],
@@ -132,12 +127,12 @@ const desktopPoster = videoAttrs?.posterDesktop
                     posterDesktop,
                     videoMIMEType = "video/webm",
                     mobileMedia = "(max-width: 767px)",
-                    autoplay = false,
+                    autoplay = true,
                     muted = true,
                     loop = true,
                     playsinline = true,
                     controls = false,
-                    preload = "metadata",
+                    preload = "none",
                     loading = "lazy",
                     ...nativeVideoAttrs
                 } = videoAttrs ?? {};
@@ -226,26 +221,30 @@ const desktopPoster = videoAttrs?.posterDesktop
                 if (hasLoaded) return;
                 hasLoaded = true;
 
-                const mediaReady = !media
-                    ? Promise.resolve()
-                    : kind === "video"
-                        ? (
-                            media.readyState >= 1
-                                ? Promise.resolve()
-                                : new Promise((resolve) => {
-                                    media.addEventListener("loadedmetadata", resolve, {once: true});
-                                    media.addEventListener("canplay", resolve, {once: true});
-                                    media.addEventListener("error", resolve, {once: true});
-
-                                    media.load?.();
-                                })
-                        )
-                        :
-                        media.complete ? Promise.resolve()
+                const mediaReady = kind === "video"
+                    ? (
+                        media.readyState >= 1
+                            ? Promise.resolve()
                             : new Promise((resolve) => {
-                                media.addEventListener("load", resolve, {once: true});
+                                media.addEventListener("loadedmetadata", resolve, {once: true});
+                                media.addEventListener("canplay", resolve, {once: true});
                                 media.addEventListener("error", resolve, {once: true});
-                            });
+
+                                /**
+                                 * This was used to keep the video playing upon return from recent apps,
+                                 * but autoplay + js playback controls do it better. This could reload already-loaded
+                                 * content, and so was removed. Leaving for posterity as it could come in handy
+                                 * somewhere else.
+                                 */
+                                // media.load?.();
+                            })
+                    )
+                    :
+                    media.complete ? Promise.resolve()
+                        : new Promise((resolve) => {
+                            media.addEventListener("load", resolve, {once: true});
+                            media.addEventListener("error", resolve, {once: true});
+                        });
 
                 await mediaReady;
 

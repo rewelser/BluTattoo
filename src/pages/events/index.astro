@@ -11,8 +11,33 @@ import {getValidatedEventItemsCached} from "../../domain/events/server.ts";
 import type {EventItem} from "../../domain/events/types.ts";
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
 import SimpleSlottableModal from "../../components/SimpleSlottableModal.astro";
+import {getImage} from "astro:assets";
 
 const events: EventItem[] = await getValidatedEventItemsCached();
+
+const eventsWithImageSrc = await Promise.all(events
+    .map(async (e) => {
+            if (e.image) {
+                const image = await getImage({
+                    src: e.image,
+                    width: 200,
+                    format: "webp",
+                    quality: 80,
+                });
+                const imageSrc = image.src;
+                return {
+                    ...e,
+                    imageSrc: imageSrc,
+                }
+            } else {
+                return {
+                    ...e,
+                    imageSrc: undefined
+                };
+            }
+        }
+    )
+)
 
 const title = "Events";
 const description = "View upcoming guest spots, events, and special appearances at BluTattoo.";
@@ -33,6 +58,6 @@ const description = "View upcoming guest spots, events, and special appearances 
         <!-- <UpcomingEventsFallback slot="fallback" /> -->
 
         <!--<EventsCalendar client:load events={events} />-->
-        <EventsCalendar client:only="react" events={events}/>
+        <EventsCalendar client:only="react" events={eventsWithImageSrc}/>
     </article>
 </Layout>

@@ -47,7 +47,6 @@ const desktopPoster = posterDesktop
     <div
             id="hero-video-container"
             class="relative top-0 w-full h-screen z-0 -mb-[10vh] md:m-auto overflow-hidden"
-            style={`--hero-parallax-strength:${strength};`}
     >
         <div
                 id="hero-parallax-layer"
@@ -108,6 +107,7 @@ const desktopPoster = posterDesktop
     <script define:vars={{
         mobilePosterSrc: mobilePoster?.src,
         desktopPosterSrc: desktopPoster?.src,
+        strength
     }}>
         (() => {
             const layer = document.querySelector("[data-hero-parallax-layer]");
@@ -130,14 +130,6 @@ const desktopPoster = posterDesktop
 
             setPoster();
             mobile.addEventListener("change", setPoster);
-
-            const strength = (() => {
-                const raw = getComputedStyle(container)
-                    .getPropertyValue("--hero-parallax-strength")
-                    .trim();
-                const n = Number(raw);
-                return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0.35;
-            })();
 
             const cancelFactor = 1 - strength;
             if (cancelFactor <= 0) return;

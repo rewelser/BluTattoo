@@ -5,7 +5,7 @@ import {getCollection, getEntry, render} from "astro:content";
 // import {fmtDateRange, fmtTimeWindow} from "../../domain/events/format.ts";
 import SocialRow from "../../components/SocialRow.astro";
 import HrDivider from "../../components/decor/HrDivider.astro";
-import {getValidatedEventBySlug, loadValidatedEvents} from "../../domain/events/server.ts";
+import {getValidatedEventBySlug, getValidatedEventItem, loadValidatedEvents} from "../../domain/events/server.ts";
 import EventDateRange from "../../components/EventDateRange.astro";
 import EventTimeWindow from "../../components/EventTimeWindow.astro";
 import {defaults} from "../../config/site.ts";
@@ -27,7 +27,8 @@ const entry = await getValidatedEventBySlug(slug);
 if (!entry) throw new Error(`Event not found: ${slug}`);
 
 const {Content} = await render(entry);
-const ev = entry.data;
+// const ev = entry.data;
+const ev = await getValidatedEventItem(entry);
 
 // console.log("ev.image", ev.image);
 // console.log("ev.href");
@@ -36,7 +37,7 @@ const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ?? ev.image ?? branding?.
 
 
 const lightboxImages = await Promise.all(
-    (entry.data.images ?? []).map(async (img, idx) => {
+    (ev.images ?? []).map(async (img, idx) => {
         const lightbox = await getImage({
             src: img,
             // widths: [720, 960, 1280, 1600],
@@ -61,7 +62,7 @@ const lightboxImages = await Promise.all(
             sizes: "100vw",
             width: Number(lightbox.attributes.width),
             height: Number(lightbox.attributes.height),
-            alt: `${entry.data.title} gallery image ${idx + 1}`,
+            alt: `${ev.title} gallery image ${idx + 1}`,
         };
     })
 );
@@ -128,7 +129,7 @@ const lightboxImages = await Promise.all(
 
 
         {
-            entry.data.images?.length && lightboxImages && (
+            ev.images?.length && lightboxImages && (
                         <section aria-labelledby="gallery-heading" class="my-5">
                             <h2 id="gallery-heading"
                                 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center">
@@ -141,12 +142,12 @@ const lightboxImages = await Promise.all(
 
 
                                 <p class="text-xs text-gray-500">
-                                    {entry.data.images.length} photos
+                                    {ev.images.length} photos
                                 </p>
                             </div>
 
                             <div class="gallery">
-                                {entry.data.images.map((img, idx) => (
+                                {ev.images.map((img, idx) => (
                                         <button
                                                 type="button"
                                                 class="gallery-item cursor-pointer"
@@ -157,7 +158,7 @@ const lightboxImages = await Promise.all(
                                                     src={img}
                                                     widths={[240, 360, 480, 512, 720]}
                                                     sizes="auto, 100vw"
-                                                    alt={`${entry.data.title} gallery image ${idx + 1}`}
+                                                    alt={`${ev.title} gallery image ${idx + 1}`}
                                                     loading="lazy"
                                                     decoding="async"
                                                     class="block w-full h-auto rounded-2xl shadow-md"

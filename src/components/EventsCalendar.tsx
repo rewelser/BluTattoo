@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import type {EventItem, EventsByYearMonthDate, RecurrentEventItem} from "../domain/events/types";
+import type {EventItem, EventsByYearMonthDate} from "../domain/events/types";
 import {
-    buildEventsByYearMonthDate, buildMonthBoundedRecurrentEvents,
+    buildEventsByYearMonthDate,
 } from "../domain/events/grouping.ts";
 /**
  * todo: once safari supports @supports at-rules, then we can simply use (but will need reworking):
@@ -186,7 +186,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                         const dailyEvents = Array.from(dailyEventsObj ?? {});
 
                         const hasEvents = dailyEvents.length > 0;
-                        const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].image;
+                        const needsSingleEventImageVariant = dailyEvents.length === 1 && dailyEvents[0].imageSrc;
                         const isOpen = openDateKey === dateKey;
                         const hasClosedShopEvent = hasEvents && dailyEvents.some((event) => (event.shopClosed));
                         return (
@@ -203,7 +203,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({events}) => {
                                 style={{
                                     gridColumnStart: gridColumnStart,
                                     ...(needsSingleEventImageVariant && {
-                                        backgroundImage: `url(${dailyEvents[0].image?.src})`
+                                        backgroundImage: `url(${dailyEvents[0].imageSrc})`
                                     })
                                 }}
                             >

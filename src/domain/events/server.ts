@@ -140,6 +140,14 @@ export async function getValidatedEventItems(): Promise<EventItem[]> {
         .map((e) => ({id: e.id, body: e.body, ...e.data}));
 }
 
+export async function getValidatedEventItem(event: EventEntry): Promise<EventItem> {
+    return {
+        id: event.id,
+        body: event.body,
+        ...event.data
+    }
+}
+
 let transformedEventItemsPromise: Promise<EventItem[]> | undefined;
 
 export function getValidatedEventItemsCached(): Promise<EventItem[]> {
