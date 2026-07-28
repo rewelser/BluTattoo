@@ -8,9 +8,14 @@ export type SideImages = {
     right: [SideImage, SideImage];
 };
 
+export type PeelStackImage = {
+    image: ImageMetaData;
+    alt: string;
+}
+
 type Props = {
     id?: string;
-    images: ImageMetadata[]; // top -> bottom
+    images: PeelStackImage[]; // top -> bottom
     sideImages: SideImages;
     heightVh?: number;
     class?: string;
@@ -92,10 +97,10 @@ const sideImageWidths = [320, 480];
                             style="transform: scale(1); transform-origin: 50% 50%;"
                     >
                         <Image
-                                src={bottomImage}
+                                src={bottomImage.image}
                                 widths={stackImageWidths}
                                 sizes="auto"
-                                alt=""
+                                alt={bottomImage.alt}
                                 class={`absolute inset-0 w-full h-full object-cover ${imgClass}`}
                                 style="z-index:0;"
                                 loading="lazy"
@@ -108,8 +113,8 @@ const sideImageWidths = [320, 480];
                                 const z = phases - i;
                                 return (
                                         <Image
-                                                src={image}
-                                                alt=""
+                                                src={image.image}
+                                                alt={image.alt}
                                                 class={`absolute inset-0 w-full h-full object-cover will-change-[clip-path] ${imgClass}`}
                                                 style={`clip-path: inset(0 0 0 0); z-index:${z};`}
                                                 data-peel-layer

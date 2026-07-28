@@ -3,8 +3,15 @@ import SocialRow from "../../components/SocialRow.astro";
 import {siteInfoSocialsToItems} from "../../domain/contact/adapters.ts";
 import HrDivider from "../decor/HrDivider.astro";
 import {Temporal} from "temporal-polyfill";
+const {
+    defaults,
+    site,
+    class: className,
+    ...rest
+} = Astro.props as {
+    class?: string;
+};
 
-const {defaults, site} = Astro.props;
 const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
 const year = Temporal.Now.plainDateISO(siteTimeZone).year;
 const siteName = site?.data?.siteName ?? defaults.siteName;
@@ -65,23 +72,33 @@ const footerLinkGroups = [
     }
 ];
 ---
+<footer
+    {...rest}
+    data-page-footer
+    class:list={[
+        "page-footer blur-gradient backdrop-blur-sm bg-black/20 px-3 sm:px-6 mb-(--fixed-booking-button-h)",
+        className,
+    ]}
+>
+    <div class="w-full h-[100px]">
 
-<footer data-page-footer class="bg-black px-3 sm:px-6 mb-(--fixed-booking-button-h)">
+    </div>
     <nav
             aria-label="Footer links and studio information"
             class="mx-auto grid max-w-7xl grid-cols-1 gap-8 py-8 text-center sm:grid-cols-3 lg:grid-cols-5 sm:text-left"
     >
         {footerLinkGroups.map((group) => (
                 <div>
-                    <h2 class="text-sm font-semibold uppercase tracking-wide text-orange-100">
+                    <h2 class="text-sm font-semibold uppercase tracking-wide color-one">
                         {group.title}
                     </h2>
 
-                    <ul class="mt-3 space-y-2 text-sm text-orange-100/70">
+                    <ul class="mt-3 space-y-2 text-sm color-70">
                         {group.items.map((item) => (
                                 <li>
                                     {"href" in item ? (
-                                            <a href={item.href} class="transition hover:text-orange-100 underline hover:no-underline">
+                                            <a href={item.href}
+                                               class="transition color-one-hover underline hover:no-underline break-all">
                                                 {item.label}
                                             </a>
                                     ) : (
@@ -96,8 +113,7 @@ const footerLinkGroups = [
     <div class="flex justify-center">
         <HrDivider
                 text="proudly woman-owned"
-                class="my-4 py-4 text-xs w-full max-w-7xl"
-                style={`color: oklch(0.954 0.038 75.164 / 30%)`}
+                class="my-4 py-4 text-xs w-full max-w-7xl color-30"
         />
     </div>
     <div
@@ -108,15 +124,48 @@ const footerLinkGroups = [
                         <SocialRow
                                 links={links}
                                 justificationClass="justify-center md:justify-start"
-                                anchorClass="text-orange-100/60 hover:text-orange-100 transition duration-200"
+                                anchorClass="color-60 color-one-hover transition duration-200"
                         />
             )
         }
 
-        <div class="text-sm text-orange-100/70 text-center text-nowrap">
-            <span class="font-semibold text-orange-100">{siteName}</span>
+        <div class="text-sm color-70 text-center text-nowrap">
+            <span class="font-semibold color-one">{siteName}</span>
             <span class="block sm:inline sm:ml-2">© {year}. All rights reserved.</span
             >
         </div>
     </div>
+    <style>
+        .blur-gradient {
+            mask-image: linear-gradient(
+                    to bottom,
+                    transparent 0,
+                    rgba(0, 0, 0, 0.5) 50px,
+                    black 100px
+            );
+        }
+
+        :global(.color-one) {
+            color: inherit;
+        }
+
+        :global(.color-one-hover:hover) {
+            color: inherit;
+        }
+
+        :global(.color-70) {
+            color: rgb(from currentColor r g b / 70%);
+            color: oklch(from currentColor l c h / 70%);
+        }
+
+        :global(.color-60) {
+            color: rgb(from currentColor r g b / 60%);
+            color: oklch(from currentColor l c h / 60%);
+        }
+
+        :global(.color-30) {
+            color: rgb(from currentColor r g b / 30%);
+            color: oklch(from currentColor l c h / 30%);
+        }
+    </style>
 </footer>

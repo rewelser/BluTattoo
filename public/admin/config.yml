@@ -515,6 +515,12 @@ collections:
                 required: true
                 hint: "Group photo, or something like that (don't use site logo -- that will appear overtop)."
 
+              - name: bookingHeroPhotoAltText
+                label: "Alt text for Hero image for booking page"
+                widget: string
+                required: false
+                hint: "'Group photo' or 'Company booking photo'"
+
           - name: ourLocation
             label: "Our Location"
             widget: object
@@ -597,7 +603,7 @@ collections:
 
       - { name: location, label: "Location", widget: string, required: false, hint: "Nice to display if event is taking place elsewhere than primary business location." }
       - { name: published, label: "Published", widget: boolean, default: true }
-      - { name: featured, label: "Featured", widget: boolean, required: false, default: false }
+      - { name: featured, label: "Featured", widget: boolean, required: false, default: false, hint: "In chronological order, featured events will override non-featured events in event page hero sections & announcement bars (i.e. places where only one event is selected to be shown), unless contrary display rules are specified for the event." }
       - { name: archived, label: "Archived", widget: boolean, required: false, default: false }
       - name: guestSpot
         label: "Guest Spot"
@@ -634,13 +640,13 @@ collections:
         label: "Announcement Bar"
         widget: object
         required: false
-        collapsed: true
         fields:
           - { name: enabled, label: "Enable Announcement Bar", widget: boolean, default: false }
           - { name: message, label: "Message", widget: string, required: true }
           - { name: href, label: "Link URL", widget: string, required: false, hint: "if no link is placed, the announcement bar will simply link to the page for this event." }
           - { name: color1, label: "Color 1", widget: color, required: false, hint: "If only first color is set, bar uses a solid background." }
           - { name: color2, label: "Color 2", widget: color, required: false, hint: "If both colors are set, bar uses a left→right gradient. (Color 2 set by itself will be ignored.)" }
+          - { name: textColor, label: "Text Color", widget: color, required: false, hint: "The text color for the announcement. If no color is selected, it will be automatically set to white or black based upon a contrast calculation." }
 
       - { name: body, label: "Details (long - event page)", widget: markdown, required: false }
 

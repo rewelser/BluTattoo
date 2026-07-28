@@ -62,7 +62,7 @@ const businessJsonLd = {
     "hasMap": mapHref
 }
 
-const title = "Home";
+const title = "Custom Tattoos & Piercing in Martinsville, VA";
 const description = "BluTattoo is a tattoo and piercing studio offering custom tattoos, guest artist events, piercing services, booking, aftercare, and artist information.";
 ---
 
@@ -121,6 +121,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                         <div class="m-2 rounded-xl overflow-hidden">
                             <ParallaxWindow
                                     image={ourLocation?.shopImage}
+                                    alt=`picture of ${shopName} exterior`
                                     windowHeight="65vh"
                                     strength={.95}
                                     useMinMediaHeight={false}
@@ -263,18 +264,18 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
         ourProcess && (() => {
             const ourProcessText = ourProcess.processText;
             const spsImages = [
-                ourProcess.scrollPeelStackImage1,
-                ourProcess.scrollPeelStackImage2,
-                ourProcess.scrollPeelStackImage3,
+                {image: ourProcess.scrollPeelStackImage1, alt: "Before: Tattoo design"},
+                {image: ourProcess.scrollPeelStackImage2, alt: "During: Design stencil on client"},
+                {image: ourProcess.scrollPeelStackImage3, alt: "After: Finished tattoo!"},
             ];
             const spsSideImages = {
                 left: [
-                    {image: ourProcess.scrollPeelStackSideImage1, alt: "Side A"},
-                    {image: ourProcess.scrollPeelStackSideImage2, alt: "Side B"},
+                    {image: ourProcess.scrollPeelStackSideImage1, alt: "Example Tattoo A"},
+                    {image: ourProcess.scrollPeelStackSideImage2, alt: "Example Tattoo B"},
                 ],
                 right: [
-                    {image: ourProcess.scrollPeelStackSideImage3, alt: "Side C"},
-                    {image: ourProcess.scrollPeelStackSideImage4, alt: "Side D"},
+                    {image: ourProcess.scrollPeelStackSideImage3, alt: "Example Tattoo C"},
+                    {image: ourProcess.scrollPeelStackSideImage4, alt: "Example Tattoo D"},
                 ],
             } satisfies SideImages;
 
@@ -311,7 +312,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                 {ourProcessText}
                             </p>
 
-                            <HrDivider color="seashell"/>
+                            <HrDivider class="my-[2rem]" style={`color: seashell`} />
                         </div>
                         <div class=" pt-16 md:pt-24">
                             <ScrollPeelStack
@@ -348,7 +349,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                     travel={50}
                                     zIndex={2}
                             >
-                                <img src={laceLayerDown.src} alt=""/>
+                                <img src={laceLayerDown.src} alt="" aria-hidden="true" />
                             </EdgeParallaxLayer>
                         </div>
                         <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
@@ -391,7 +392,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                 <p class="whitespace-pre-line mt-20">
                                     {ourStory?.storyText}
                                 </p>
-                                <HrDivider color="seashell"/>
+                                <HrDivider class="my-[2rem]" style={`color: seashell`} />
                             </div>
                         </div>
                     </section>

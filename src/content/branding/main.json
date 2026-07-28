@@ -13,7 +13,8 @@
       "posterMobile": "assets/images/hero_poster_mobile.jpg",
       "posterDesktop": "assets/images/hero_poster_desktop.jpg"
     },
-    "bookingHeroPhoto": "assets/images/DSC02546-2.jpg"
+    "bookingHeroPhoto": "assets/images/DSC02546-2.jpg",
+    "bookingHeroPhotoAltText": "BluTattoo group photo"
   },
   "ourLocation": {
     "shopImage": "assets/images/blutattoo_exterior.jpg"

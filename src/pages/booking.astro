@@ -18,6 +18,8 @@ import {Image} from "astro:assets";
 import {loadUpcomingGuestSpotCandidates} from "../domain/events/server.ts";
 import {Temporal} from "temporal-polyfill";
 import {getDateKey, hasEventStarted} from "../domain/events/selectors.ts";
+import FadeInImage from "../components/decor/FadeInImage.astro";
+import BookingFooter from "../components/footer/BookingFooter.astro";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
@@ -76,6 +78,7 @@ const logoDark = branding?.data.logoDark ?? defaults.siteLogo;
 const logoDarkBold = branding?.data.logoDarkBold ?? defaults.siteLogo;
 const artistPageShopLogo = branding?.data.logoDarkBold ?? logoDark;
 const bookingHeroPhoto = branding?.data.hero?.bookingHeroPhoto ?? defaults.bookingHeroPhoto;
+const bookingHeroPhotoAltText = branding.data.hero.bookingHeroPhotoAltText ?? defaults.bookingHeroPhotoAltText;
 const bookingShareOGPhoto = getImageSrc(branding?.data.bookingShareOGPhoto ?? defaults.ogPhoto);
 const bookingFlashLight = branding?.data.bookingFlashLight;
 const bookingFlashDark = branding?.data.bookingFlashDark;
@@ -124,13 +127,16 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                             id="header-img-translator"
                             class="relative md:rounded-4xl overflow-hidden"
                     >
-                        <Image
+                        <FadeInImage
+                                id="header-img"
                                 class="backdrop-opacity-10 object-cover"
                                 src={bookingHeroPhoto}
+                                widths={[640, 768, 960, 1200, 1440]}
+                                sizes="(min-width: 768px) 768px, 100vw"
                                 loading="eager"
                                 decoding="sync"
                                 fetchpriority="high"
-                                alt=""
+                                alt={bookingHeroPhotoAltText}
                         />
                     </div>
                 </div>
@@ -144,7 +150,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                 href="/"
                                 class="aspect-square rounded-full h-50 w-50 md:h-80 md:w-80 bg-[var(--brand-profile-bg-color)] overflow-hidden flex items-center justify-center p-5 border-2 border-(--brand-profile-border-color) shadow-[3px_3px_0px_1px_var(--brand-profile-shadow-color)]"
                         >
-                            <Image
+                            <FadeInImage
                                     src={logoDark}
                                     alt={`${siteName} Homepage`}
                                     widths={[300, 500]}
@@ -446,7 +452,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                                                                                                             <img
                                                                                                                                     class="object-cover object-top"
                                                                                                                                     src={ogImageSrc}
-                                                                                                                                    alt=""
+                                                                                                                                    alt=`${item.type} image for ${person.data.name}`
                                                                                                                             />
                                                                                                                         </Fragment>
                                                                                                                         <Fragment
@@ -554,7 +560,9 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                     }
                 </ul>
             </section>
+            <BookingFooter defaults={defaults} site={site} class="block md:hidden" style={{ color: "oklch(0.954 0.038 75.164)" }}></BookingFooter>
         </div>
+        <BookingFooter defaults={defaults} site={site} color="black" class="hidden md:block" style={{ color: "black" }}></BookingFooter>
     </main>
     <script is:inline>
         window.addEventListener("scroll", function () {
@@ -633,7 +641,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
             );
         }
 
-        #header-img-container img {
+        #header-img {
             aspect-ratio: 16 / 11;
             object-fit: cover;
             object-position: center top;
@@ -794,6 +802,11 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
             driftY 60s linear infinite;
             opacity: 0.9;
             transform: translateY(0);
+            transition: var(--fade-in-transition);
+
+            @starting-style {
+                opacity: 0;
+            }
         }
 
         #booking-content {

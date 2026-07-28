@@ -5,12 +5,19 @@ type Props = {
     className?: string;
 };
 
-const {text = "", color = "black", className = "my-[2rem]"} = Astro.props;
+const {text = "",
+    color = "black",
+    class: className,
+    ...rest
+} = Astro.props;
 
 const hasText = typeof text === "string" && text.trim().length > 0;
 ---
 
-<div class={`hr-divider-container ${className}`}>
+<div
+        class:list={["hr-divider-container", className]}
+        {...rest}
+>
     <span class="pt-[2px]">◈</span>
     {
         hasText ? (
@@ -30,14 +37,13 @@ const hasText = typeof text === "string" && text.trim().length > 0;
         position: relative;
         display: flex;
         align-items: center;
-        color: var(--color);
         gap: .5rem;
     }
 
     .hr-divider-container hr {
         flex: 1;
         border: none;
-        border-top: 3px double var(--color);
+        border-top: 3px double currentColor;
         overflow: visible;
     }
 

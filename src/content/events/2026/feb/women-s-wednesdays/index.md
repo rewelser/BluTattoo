@@ -10,6 +10,12 @@ recurrenceRule:
   interval: 1
   byDay:
     - WE
+image: International Women's Day.jpg
+promoBar:
+  enabled: true
+  message: Come on in for our Women's Wednesday!
+  color1: '#5fc658'
+  color2: '#c8ca53'
 ---
 
 ## Well, ...it's like Ladies' Night, but _better_

@@ -79,7 +79,7 @@ export const buildEventsByYearMonthDate = (evItems: EventItem[], traversedMonthS
  *  expanded via an expansion range -- meaning that 'upcoming' has to entail a discrete range specifically for recurring events.
  *  one month is a decent idea, or 30 days, or 2 months.
  */
-export function getUpcomingCandidates(events: EventItem[], now: Temporal.PlainDateTime) {
+export function getUpcomingCandidates(events: EventItem[], now: Temporal.PlainDateTime, expandRecurrencesFlag = false) {
     const today = now.toPlainDate();
     const upcomingDateRange: DateRange = {
         start: today,
@@ -88,15 +88,15 @@ export function getUpcomingCandidates(events: EventItem[], now: Temporal.PlainDa
 
     return events
         /**
-         * This flatmap will be unused, because expanding out the recurring events creates too much clutter in
-         * areas relying on upcoming candidate data.
+         * Expanding out the recurring events creates too much clutter in areas relying on upcoming candidate data,
+         * so gated by expandRecurrencesFlag.
          */
-        // .flatMap(ev => {
-        //     if (ev.recurrenceRule) {
-        //         return expandRecurrentEventOccurrencesFromRange(ev as RecurrentEventItem, upcomingDateRange)
-        //     }
-        //     return [ev];
-        // })
+        .flatMap(ev => {
+            if (expandRecurrencesFlag && ev.recurrenceRule) {
+                return expandRecurrentEventOccurrencesFromRange(ev as RecurrentEventItem, upcomingDateRange)
+            }
+            return [ev];
+        })
         .filter((ev) =>
             !hasEventEnded(ev, getDateKey(now)) &&
             !isEventArchived(ev) &&
@@ -105,12 +105,21 @@ export function getUpcomingCandidates(events: EventItem[], now: Temporal.PlainDa
 }
 
 export function getPromoCandidates(events: EventItem[]) {
-    return events.filter(
-        (ev) =>
+    return events
+        .filter((ev) =>
             ev.promoBar?.enabled &&
             !!ev.promoBar?.message
-    );
+        ).sort((a, b) => getEventStartKey(a).localeCompare(getEventStartKey(b)));
 }
+
+/**
+ * keeping this idea for later--might flesh out if we need to revisit how we do featured events etc.
+ */
+// export function pickFeaturedPromoCandidate(events: EventItem[]): EventItem {
+//     return events
+//         .filter((ev) => ev.featured)
+//         .toSorted((a, b) => getEventStartKey(a).localeCompare(getEventStartKey(b)))[0];
+// }
 
 // todo: fix that it thinks upcoming can now be undefined? (where this is called in UpcomingEvents.astro)
 export function pickFeaturedHero(upcoming: EventItem[]): EventItem | null {

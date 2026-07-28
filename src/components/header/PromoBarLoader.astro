@@ -1,7 +1,7 @@
 ---
 import PromoBar from "./PromoBar.astro";
 
-import {loadUpcomingCandidates} from "../../domain/events/server.ts";
+import {loadUpcomingCandidates, loadUpcomingCandidatesRecurrencesExpanded} from "../../domain/events/server.ts";
 import {getPromoCandidates} from "../../domain/events/grouping.ts";
 import {Temporal} from "temporal-polyfill";
 import {getEntry} from "astro:content";
@@ -22,7 +22,7 @@ const {
 if (!enabled) return;
 
 // If confused why not simply using getUpcomingCandidates like in UpcomingEvents, or vice versa, it's because index.astro already has events list, and we don't here
-const events = await loadUpcomingCandidates(Temporal.Now.plainDateTimeISO(siteTimeZone));
+const events = await loadUpcomingCandidatesRecurrencesExpanded(Temporal.Now.plainDateTimeISO(siteTimeZone));
 const promoCandidates = getPromoCandidates(events);
 const promoEvent = promoCandidates.find((ev) => ev.featured) ?? promoCandidates[0] ?? null;
 
@@ -31,7 +31,7 @@ if (currentPath.includes(promoEvent.id)) return;
 
 const storageKey = `bt_promo_dismissed_${promoEvent.id}`;
 const href = promoEvent.promoBar.href ?? `${fallbackHref}/${promoEvent.id}`;
-const {message, color1, color2} = promoEvent.promoBar;
+const {message, color1, color2, textColor} = promoEvent.promoBar;
 ---
 
 <PromoBar
@@ -40,4 +40,5 @@ const {message, color1, color2} = promoEvent.promoBar;
         href={href}
         color1={color1}
         color2={color2}
+        textColor={textColor}
 />

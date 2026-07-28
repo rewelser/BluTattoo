@@ -48,6 +48,7 @@ const events = defineCollection({
                 href: z.preprocess(emptyStrToUndef, z.string().optional()),
                 color1: z.preprocess(emptyStrToUndef, z.string().optional()),
                 color2: z.preprocess(emptyStrToUndef, z.string().optional()),
+                textColor: z.preprocess(emptyStrToUndef, z.string().optional()),
             })
             .optional(),
     }).transform(({date, ...rest}) => ({
@@ -198,6 +199,7 @@ const branding = defineCollection({
             hero: z.object({
                 video: videoSchema({image}).optional(),
                 bookingHeroPhoto: image(),
+                bookingHeroPhotoAltText: optionalText,
             }).optional(),
         }),
 });

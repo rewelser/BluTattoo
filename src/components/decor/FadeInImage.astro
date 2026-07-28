@@ -1,0 +1,29 @@
+---
+import {Image} from "astro:assets";
+import type {ComponentProps} from "astro/types";
+
+type Props = Omit<ComponentProps<typeof Image>, "onload">;
+
+const {
+    class: className,
+    ...imageProps
+} = Astro.props;
+
+const classes = [
+    "img-in",
+    className,
+].filter(Boolean).join(" ");
+---
+<>
+    <Image
+        {...imageProps}
+        class={classes}
+        onload="this.classList.add('image-in')"
+    />
+    <style>
+        .image-in {
+            opacity: 1;
+            animation: var(--fade-in-animation);
+        }
+    </style>
+</>

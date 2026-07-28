@@ -62,6 +62,14 @@
     --promo-bar-duration: 260ms;
     --menu-announcement-h: calc(max(var(--desktop-menu-h), var(--mobile-menu-h)) + var(--promo-bar-h) + 1px);
     --fixed-booking-button-h: 0px;
+    --fade-in-transition: opacity 300ms ease-in-out;
+    --fade-in-animation: fade-in 500ms ease;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
 }
 
 @view-transition {

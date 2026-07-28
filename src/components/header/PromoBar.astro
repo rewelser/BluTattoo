@@ -6,12 +6,15 @@ const {
     href = "/booking",
     color1,
     color2,
+    textColor
 } = Astro.props;
 
 const duration = 260;
 
+const defaultBgC1 = `#020024`;
+const defaultBgC2 = `#5613ff`;
 // const defaultBg = "linear-gradient(90deg, #020024 0%, #005eff 100%)";
-const defaultBg = "linear-gradient(90deg, #020024 0%, #5613ff 100%)";
+const defaultBg = `linear-gradient(90deg, ${defaultBgC1} 0%, ${defaultBgC2} 100%)`;
 
 const c1 = typeof color1 === "string" && color1.trim() ? color1.trim() : "";
 const c2 = typeof color2 === "string" && color2.trim() ? color2.trim() : "";
@@ -26,6 +29,15 @@ const background =
         : c1
             ? c1
             : defaultBg;
+
+const verbiageColor =
+    textColor
+        ? textColor
+        : (c1 && c2)
+            ? `contrast-color(color-mix(in oklab, ${c1}, ${c2}))`
+            : c1
+                ? `contrast-color(${c1})`
+                : `contrast-color(color-mix(in oklab, ${defaultBgC1}, ${defaultBgC2}))`;
 ---
 <>
     <aside
@@ -35,18 +47,18 @@ const background =
             aria-label="Announcement"
     >
         <div
-                class="h-full flex items-center justify-center gap-3 py-2 px-4 text-white text-md sm:text-base md:text-2xl"
+                class="h-full flex items-center justify-center gap-3 py-2 px-4 text-md sm:text-base md:text-2xl"
                 style={`background: ${background};`}
         >
             <a
-                    class="promo-outline flex items-center justify-center w-full h-full text-center"
+                    class="promo-bar-text-color promo-outline flex items-center justify-center w-full h-full text-center"
                     href={href}
             >
                 {message}
             </a>
             <button
                     type="button"
-                    class="ml-auto px-2 py-1 leading-none cursor-pointer"
+                    class="promo-bar-text-color ml-auto px-2 py-1 leading-none cursor-pointer"
                     aria-label="Dismiss announcement"
                     data-dismiss
             >
@@ -55,10 +67,14 @@ const background =
         </div>
     </aside>
 
-    <style>
+    <style define:vars={{verbiageColor}}>
         .promo-bar {
             transform: translateY(0);
             view-transition-name: promo-bar;
+        }
+
+        .promo-bar-text-color {
+            color: var(--verbiageColor);
         }
 
         html[data-load="direct"] .promo-bar:not([data-promo-state="dismiss"]) {
@@ -87,20 +103,17 @@ const background =
             const root = document.documentElement;
             const promoBar = document.getElementById(id);
 
-            const navFrom = globalThis.navigation?.activation?.from;
-
-            const internalNav =
-                !!navFrom?.url &&
-                new URL(navFrom.url).origin === location.origin;
+            const setRootNavOrigin = () => {
+                const navFrom = globalThis.navigation?.activation?.from;
+                const internalNav = !!navFrom?.url && new URL(navFrom.url).origin === location.origin;
+                root.dataset.load = internalNav ? "internal" : "direct";
+            }
 
             const setAnnouncementHeight = (value) => {
                 root.style.setProperty("--promo-bar-h", value);
             }
 
             const show = () => {
-                // root.dataset.load = "internal";
-                root.dataset.load = internalNav ? "internal" : "direct";
-
                 const measured = `${promoBar.offsetHeight}px`;
                 setAnnouncementHeight(measured);
             }
@@ -108,15 +121,9 @@ const background =
             const hide = () => {
                 promoBar.setAttribute("data-promo-state", "dismiss");
                 setAnnouncementHeight("0px");
-
-                // window.setTimeout(() => {
-                //     promoBar.hidden = true;
-                // }, duration);
             }
 
-            // console.log("internalNav", internalNav);
-
-            let dismissed = false;
+            let dismissed;
 
             try {
                 dismissed = localStorage.getItem(storageKey) === "1";
@@ -124,13 +131,18 @@ const background =
                 dismissed = false;
             }
 
+            setRootNavOrigin();
+
             if (!dismissed) {
                 show();
+            } else {
+                hide();
             }
 
             promoBar.querySelector("[data-dismiss]")?.addEventListener("click", () => {
                 try {
                     localStorage.setItem(storageKey, "1");
+                    // localStorage.
                 } catch {
                 }
                 hide();

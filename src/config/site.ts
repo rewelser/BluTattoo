@@ -11,6 +11,7 @@ export const defaults = {
     personProfilePicture,
     personRunwayPhoto,
     bookingHeroPhoto,
+    bookingHeroPhotoAltText: "Company Booking photo",
     ogPhoto: "/default_media/ogimages/generic-og-image.jpg",
     address: {
         streetAddress: "123 Main St",

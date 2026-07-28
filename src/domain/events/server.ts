@@ -168,3 +168,8 @@ export async function loadUpcomingCandidates(now: Temporal.PlainDateTime): Promi
     const events = await getValidatedEventItemsCached();
     return getUpcomingCandidates(events, now);
 }
+
+export async function loadUpcomingCandidatesRecurrencesExpanded(now: Temporal.PlainDateTime): Promise<EventItem[]> {
+    const events = await getValidatedEventItemsCached();
+    return getUpcomingCandidates(events, now, true);
+}
