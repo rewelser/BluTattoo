@@ -40,6 +40,7 @@ const ogImageUsed =
 const siteUrl = Astro.site ?? Astro.url.origin;
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const isNoIndex = import.meta.env.PUBLIC_NOINDEX === "true";
+console.log("import.meta.env", import.meta.env);
 ---
 
 <!doctype html>
