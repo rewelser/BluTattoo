@@ -1,0 +1,295 @@
+---
+import BottomBannerAside from "../components/scaffolding/BottomBannerAside.astro";
+import SimpleSlottableModal from "./scaffolding/SimpleSlottableModal.astro";
+const dataConsentBannerId = "data-consent-banner";
+const dataConsentBannerTitleId = `${dataConsentBannerId}-title`;
+const dataConsentBannerDescriptionId = `${dataConsentBannerId}-description`;
+const dataConsentManageCookiesModalId = `data-consent-manage-cookies-modal`;
+const dataConsentManageCookiesModalTitleId = `${dataConsentManageCookiesModalId}-title`;
+const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesModalId}-description`;
+const storageKey = "cookie_banner_dismissed";
+
+const {
+    class: className,
+    triggerClass,
+} = Astro.props as {
+    class?: string;
+    triggerClass?: string;
+};
+---
+
+
+<BottomBannerAside
+        id={dataConsentBannerId}
+        useCloseButton="false"
+        labelledby={dataConsentBannerTitleId}
+        describedby={dataConsentBannerDescriptionId}
+>
+    <button
+            slot="trigger"
+            type="button"
+            data-banner-open
+            class:list={["button cursor-pointer underline hover:no-underline", triggerClass]}
+    >
+        Cookie Banner
+    </button>
+
+    <div slot="banner-content">
+        <div class="flex gap-2 sm:gap-4">
+            <div>
+                <h2
+                        id={dataConsentBannerTitleId}
+                        class="text-xl font-semibold tracking-tight"
+                >
+                    Cookies & Data Consent
+                </h2>
+
+                <p
+                        id={dataConsentBannerDescriptionId}
+                        class="mt-1 text-sm"
+                >
+                    By continuing to use this website, you consent to our use of cookies. We use cookies to help the
+                    site function properly, understand how it is used, and improve your experience.
+                    <span class="m-1 whitespace-nowrap">
+                        <a href="/cookies" class="underline hover:no-underline">Cookie Policy</a>
+                            <span class="vertical-line"></span>
+                        <a href="/privacy-policy" class="underline hover:no-underline">Privacy Policy</a>
+                    </span>
+                </p>
+
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-evenly">
+                <button
+                        type="button"
+                        data-banner-fig
+                        aria-label="fig"
+                        class="theme-affirmative button-sharp button-sharp-sub p-3  self-center"
+                >
+                    accept
+                </button>
+                <SimpleSlottableModal
+                        id={dataConsentManageCookiesModalId}
+                        closeLabel="Close Data Consent Manage Cookies Modal"
+                        labelledby={dataConsentManageCookiesModalTitleId}
+                        describedby={dataConsentManageCookiesModalDescriptionId}
+                >
+                    <button
+                            slot="trigger"
+                            type="button"
+                            command="show-modal"
+                            commandfor={dataConsentManageCookiesModalId}
+                            class="button underline hover:no-underline cursor-pointer self-center text-nowrap"
+                    >
+                        Manage Cookies
+                    </button>
+                    <div slot="header">
+                        <h2
+                                id={dataConsentManageCookiesModalTitleId}
+                                class="text-xl font-semibold tracking-tight"
+                        >
+                            Decide how we use your data.
+                        </h2>
+
+                        <p
+                                id={dataConsentManageCookiesModalDescriptionId}
+                                class="mt-1 text-sm"
+                        >
+                            Manage your cookie preferences here. Filer text
+                        </p>
+                    </div>
+                    <form id="cookie-preferences-form" class="toggle-form">
+                        <fieldset class="toggle-list">
+                            <legend class="toggle-list-heading">
+                                Cookie preferences
+                            </legend>
+
+                            <label class="toggle">
+                                <input
+                                        type="checkbox"
+                                        name="necessary"
+                                        checked
+                                        disabled
+                                />
+                                <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                <span class="toggle-label">Necessary</span>
+                            </label>
+
+                            <label class="toggle">
+                                <input
+                                        type="checkbox"
+                                        name="performance"
+                                        checked
+                                />
+                                <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                <span class="toggle-label">Performance</span>
+                            </label>
+
+                            <label class="toggle">
+                                <input
+                                        type="checkbox"
+                                        name="marketing"
+                                        checked
+                                />
+                                <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                <span class="toggle-label">Marketing</span>
+                            </label>
+                        </fieldset>
+
+                        <button type="submit" class="theme-affirmative button-sharp button-sharp-sub p-3">
+                            Save preferences
+                        </button>
+                    </form>
+                </SimpleSlottableModal>
+            </div>
+        </div>
+    </div>
+    <style>
+        .toggle-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .toggle-form > button[type="submit"] {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding-inline: 1.5rem;
+            text-align: center;
+        }
+
+        @media (min-width: 40rem) {
+            .toggle-form > button[type="submit"] {
+                width: fit-content;
+                min-width: 10rem;
+                align-self: center;
+                margin-top: 0.5rem;
+                padding-inline: 1.5rem;
+            }
+        }
+
+        .toggle-list {
+            display: grid;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .toggle-list > .toggle {
+            display: flex;
+        }
+
+        .toggle-list-heading {
+            margin-bottom: 1rem;
+        }
+
+        .toggle-list > .toggle {
+            width: 100%;
+            padding-block: 1rem;
+            border-bottom: 2px dotted rgb(from var(--color-edge) r g b / 40%);
+        }
+
+        .toggle-list > .toggle:first-of-type {
+            border-top: 2px dotted rgb(from var(--color-edge) r g b / 40%);
+        }
+
+        .vertical-line {
+            margin-inline: 5px;
+            width: 0;
+            height: 100%;
+            border: none;
+            border-left: 2px dotted #333;
+        }
+    </style>
+    <script define:vars={{dataConsentBannerId, dataConsentManageCookiesModalId}}>
+        (() => {
+            const banner = document.getElementById(dataConsentBannerId);
+            const dialog = document.querySelector(`#${dataConsentManageCookiesModalId}`);
+            const openButton = banner.querySelector("[data-banner-open]");
+            const form = banner.querySelector("#cookie-preferences-form");
+
+            if (!(banner instanceof HTMLElement)) return;
+
+            const closeButton = banner.querySelector("[data-banner-close]");
+
+            function openBanner() {
+                banner.setAttribute("data-open", "");
+            }
+
+            function closeBanner() {
+                banner.removeAttribute("data-open");
+            }
+
+            function handleScroll() {
+                const triggerPosition = 800;
+                if (
+                    !banner.hasAttribute("data-open") &&
+                    window.scrollY >= triggerPosition
+                ) {
+                    openBanner();
+                    window.removeEventListener("scroll", handleScroll);
+                }
+            }
+
+            openButton?.addEventListener("click", openBanner);
+
+            closeButton?.addEventListener("click", closeBanner);
+
+            window.addEventListener("scroll", handleScroll, {
+                passive: true,
+            });
+
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const preferences = {
+                    necessary: true,
+                    performance: form.elements.performance.checked,
+                    marketing: form.elements.marketing.checked,
+                };
+
+                console.log(preferences);
+
+                const performanceInput = form.elements.namedItem("performance");
+                const marketingInput = form.elements.namedItem("marketing");
+
+                if (!(performanceInput instanceof HTMLInputElement) || !(marketingInput instanceof HTMLInputElement)) return;
+
+                const response = await fetch(
+                    "/api/cookie-preferences",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            performance: performanceInput.checked,
+                            marketing: marketingInput.checked,
+                        })
+                    }
+                )
+
+                if (!response.ok) {
+                    console.log(response);
+                    console.error("Could not save cookie preferences.");
+                    return;
+                }
+
+                const result = await response.json();
+
+                console.log(result);
+                closeBanner();
+                dialog.close();
+            });
+        })();
+    </script>
+</BottomBannerAside>

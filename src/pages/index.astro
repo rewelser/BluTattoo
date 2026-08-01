@@ -89,12 +89,12 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             </h1>
 
             <!-- subheadline -->
-            <p class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl js-fade-up">
+            <p class="theme-muted text-lg sm:text-xl md:text-2xl leading-relaxed max-w-2xl js-fade-up">
                 Personal art designed together.
             </p>
 
             <!-- supporting line -->
-            <p class="text-base sm:text-lg text-black/60 max-w-xl leading-relaxed js-fade-up">
+            <p class="theme-muted-more text-base sm:text-lg max-w-xl leading-relaxed js-fade-up">
                 At BluTattoo Studio, every piece is created with care and intention.
             </p>
 
@@ -102,7 +102,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             <div class="pt-6">
                 <a
                         href="/booking"
-                        class="button-sharp against-light px-8 py-3 js-fade-up"
+                        class="button-sharp px-8 py-3 js-fade-up"
                 >
                     BOOK NOW
                 </a>
@@ -128,13 +128,13 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             >
                                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                                 <h2 id="our-location-heading"
-                                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                                    class="theme-extruded backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
                                     Our Location
                                 </h2>
                             </ParallaxWindow>
                         </div>
                         <div class="relative max-w-4xl mx-auto text-center flex flex-col items-center gap-8 pt-32 js-fade-up">
-                            <p class="text-lg sm:text-xl md:text-2xl text-black/80 leading-relaxed max-w-2xl">
+                            <p class="theme-muted text-lg sm:text-xl md:text-2xl leading-relaxed max-w-2xl">
                                 Nestled in the heart of Uptown Martinsville, Virginia:
                             </p>
                             <!--<div class="grid grid-cols-1 md:grid-cols-3">-->
@@ -205,7 +205,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                     <p class="whitespace-pre-line">{hoursShortline}</p>
                                 </div>
                             </div>
-                            <p class="text-base sm:text-lg text-black/60 max-w-xl leading-relaxed">
+                            <p class="theme-muted-more text-base sm:text-lg max-w-xl leading-relaxed">
                                 <a class="underline hover:no-underline" href="/booking">Book now</a>, or come on in. Walk-ins
                                 welcome!
                             </p>
@@ -224,8 +224,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
     {
         ourArtists && (
-                    <section class="bg-neutral-700 py-16 md:py-24" aria-labelledby="artists-heading"
-                             data-section-theme="neutraldark">
+                    <section class="py-16 md:py-24" aria-labelledby="artists-heading"
+                             data-color-theme="overcast">
                         <div class="mx-8 rounded-xl overflow-hidden">
                             <ParallaxWindow
                                     vidSrcDesktop={ourArtists?.video?.videoDesktop}
@@ -241,7 +241,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             >
                                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                                 <h2 id="artists-heading"
-                                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                                    class="theme-extruded backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
                                     Our Artists
                                 </h2>
                             </ParallaxWindow>
@@ -280,9 +280,9 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
             } satisfies SideImages;
 
             return (
-                    <section class="scalloped-border-bottom bg-[#231f20] py-64 md:pt-80"
+                    <section class="overcast-dark-bg scalloped-border-bottom py-64 md:pt-80"
                              aria-labelledby="our-process-heading"
-                             data-section-theme="neutraldark">
+                             data-color-theme="overcast">
                         <div class="mx-8 rounded-xl overflow-hidden">
                             <ParallaxWindow
                                     vidSrcMobile={ourProcess.video?.videoMobile}
@@ -298,7 +298,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             >
                                 <!-- optional overlay color:white; text-shadow: 0 2px 16px rgba(0,0,0,.6);  text-shadow-[4px_4px_0_rgba(0,0,0,.9),0_0_20px_rgb(0,0,0)] -->
                                 <h2 id="our-process-heading"
-                                    class="backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-white text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
+                                    class="theme-extruded backdrop-blur-sm bg-white/20 rounded-md sm:rounded-lg md:rounded-xl p-2 sm:p-3 md:p-4 text-shadow-[1px_1px_0_rgba(0,0,0),0_0_20px_rgb(0,0,0)] sm:text-shadow-[3px_3px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] md:text-shadow-[4px_4px_0_rgba(0,0,0),0_0_10px_rgb(0,0,0)] text-5xl sm:text-7xl md:text-9xl font-[Fleur_de_Leah] js-fade-up">
                                     Our Process
                                 </h2>
                             </ParallaxWindow>
@@ -338,7 +338,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
 
     {
         ourStory && (
-                    <section id="our-story" data-section-theme="neutraldark">
+                    <section id="our-story" data-color-theme="overcast">
                         <div class="relative overflow-hidden min-h-[40vh] sm:min-h-[80vh]">
                             <EdgeParallaxLayer
                                     placement="top"
@@ -353,7 +353,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                             </EdgeParallaxLayer>
                         </div>
                         <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
-                            <h2 class="text-5xl sm:text-7xl md:text-9xl m-1 font-normal font-[Fleur_de_Leah]">
+                            <h2 class="theme-extruded text-5xl sm:text-7xl md:text-9xl m-1 font-normal font-[Fleur_de_Leah]">
                                 Our Story
                             </h2>
                         </div>

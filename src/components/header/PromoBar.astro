@@ -47,7 +47,7 @@ const verbiageColor =
             aria-label="Announcement"
     >
         <div
-                class="h-full flex items-center justify-center gap-3 py-2 px-4 text-md sm:text-base md:text-2xl"
+                class="h-full flex items-center justify-center gap-3 py-2 px-4 text-md text-xs sm:text-base md:text-2xl"
                 style={`background: ${background};`}
         >
             <a
@@ -98,7 +98,7 @@ const verbiageColor =
         }
     </style>
 
-    <script is:inline define:vars={{storageKey, id, duration}}>
+    <script define:vars={{storageKey, id, duration}}>
         (() => {
             const root = document.documentElement;
             const promoBar = document.getElementById(id);

@@ -1,0 +1,284 @@
+/*
+ * Reusable prose colors
+ */
+
+@property --prose-body {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #30343b;
+}
+
+@property --prose-headings {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #17191d;
+}
+
+@property --prose-lead {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #667085;
+}
+
+@property --prose-links {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #2457a7;
+}
+
+@property --prose-bold {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #17191d;
+}
+
+@property --prose-counters {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #667085;
+}
+
+@property --prose-bullets {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #667085;
+}
+
+@property --prose-hr {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d9dee7;
+}
+
+@property --prose-quotes {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #30343b;
+}
+
+@property --prose-quote-borders {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d9dee7;
+}
+
+@property --prose-captions {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #667085;
+}
+
+@property --prose-code {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #17191d;
+}
+
+@property --prose-pre-code {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f7f8fa;
+}
+
+@property --prose-pre-bg {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #17191d;
+}
+
+@property --prose-th-borders {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d9dee7;
+}
+
+@property --prose-td-borders {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d9dee7;
+}
+
+@property --prose-table-heading-bg {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f7f8fa;
+}
+
+
+.prose-pure {
+    color: var(--prose-body);
+    font-size: 1rem;
+    line-height: 1.75;
+    overflow-wrap: break-word;
+}
+
+.prose-pure :where(h1, h2, h3, h4) {
+    color: var(--prose-headings);
+    line-height: 1.2;
+    text-wrap: balance;
+}
+
+.prose-pure h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    letter-spacing: -0.035em;
+}
+
+.prose-pure h2 {
+    margin: 3.5rem 0 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--prose-hr);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+    letter-spacing: -0.02em;
+}
+
+.prose-pure h3 {
+    margin: 2.25rem 0 0.75rem;
+    font-size: 1.2rem;
+}
+
+.prose-pure h4 {
+    margin: 1.75rem 0 0.5rem;
+    font-size: 1.05rem;
+}
+
+.prose-pure .lead {
+    max-width: 42rem;
+    margin: 1rem auto 0;
+    color: var(--prose-lead);
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    line-height: 1.7;
+    text-wrap: pretty;
+}
+
+.prose-pure p {
+    margin: 1rem 0;
+}
+
+.prose-pure :where(ul, ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.prose-pure li {
+    padding-left: 0.25rem;
+}
+
+.prose-pure li + li {
+    margin-top: 0.45rem;
+}
+
+.prose-pure ul > li::marker {
+    color: var(--prose-bullets);
+}
+
+.prose-pure ol > li::marker {
+    color: var(--prose-counters);
+}
+
+.prose-pure strong {
+    color: var(--prose-bold);
+    font-weight: 700;
+}
+
+.prose-pure a {
+    color: var(--prose-links);
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+}
+
+.prose-pure a:hover {
+    text-decoration-thickness: 0.14em;
+}
+
+/*.prose-pure a:focus-visible {*/
+/*    border-radius: 0.15rem;*/
+/*    outline: 2px solid var(--prose-links);*/
+/*    outline-offset: 3px;*/
+/*}*/
+
+.prose-pure blockquote {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 0.25rem solid var(--prose-quote-borders);
+    color: var(--prose-quotes);
+    font-style: italic;
+}
+
+.prose-pure hr {
+    margin: 3rem 0;
+    border: 0;
+    border-top: 1px solid var(--prose-hr);
+}
+
+.prose-pure code {
+    color: var(--prose-code);
+}
+
+.prose-pure pre {
+    overflow-x: auto;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: var(--prose-pre-bg);
+    color: var(--prose-pre-code);
+}
+
+.prose-pure pre code {
+    color: inherit;
+}
+
+.prose-pure table {
+    display: block;
+    width: 100%;
+    margin: 1.75rem 0;
+    overflow-x: auto;
+    border: 1px solid var(--prose-td-borders);
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    overscroll-behavior-inline: contain;
+}
+
+.prose-pure :where(th, td) {
+    min-width: 10rem;
+    padding: 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.prose-pure th {
+    border: 1px solid var(--prose-th-borders);
+    color: var(--prose-headings);
+    background: var(--prose-table-heading-bg);
+    font-weight: 700;
+}
+
+.prose-pure td {
+    border: 1px solid var(--prose-td-borders);
+}
+
+.prose-pure :where(figcaption, caption) {
+    color: var(--prose-captions);
+}
+
+/* Themes */
+.prose-theme-seashell {
+    --prose-body: #e9ddd5;
+    --prose-headings: #fff5ee;
+    --prose-lead: #d8c7bc;
+    --prose-links: #fff5ee;
+    --prose-bold: #fff5ee;
+    --prose-counters: #cdb8ab;
+    --prose-bullets: #a78f82;
+    --prose-hr: #5e5149;
+    --prose-quotes: #f6e8df;
+    --prose-quote-borders: #7a685e;
+    --prose-captions: #c7b2a6;
+    --prose-code: #fff5ee;
+    --prose-pre-code: #f6e8df;
+    --prose-pre-bg: #2a2320;
+    --prose-th-borders: #7a685e;
+    --prose-td-borders: #5e5149;
+    --prose-table-heading-bg: #342b27;
+}

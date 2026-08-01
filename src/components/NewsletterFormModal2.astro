@@ -1,0 +1,93 @@
+---
+import SimpleSlottableModal from "../components/scaffolding/SimpleSlottableModal.astro";
+const newsletterModalId = "newsletter-modal";
+const newsletterModalTitleId = `${newsletterModalId}-title`;
+const newsletterModalDescriptionId = `${newsletterModalId}-description`;
+---
+
+
+<SimpleSlottableModal
+        id={newsletterModalId}
+        closeLabel="Close email signup"
+        labelledby={newsletterModalTitleId}
+        describedby={newsletterModalDescriptionId}
+>
+    <button
+            slot="trigger"
+            type="button"
+            command="show-modal"
+            commandfor={newsletterModalId}
+            class="button"
+    >
+        Sign up for some things
+    </button>
+
+    <div slot="header">
+        <h2
+                id={newsletterModalTitleId}
+                class="text-xl font-semibold tracking-tight"
+        >
+            Stay in the loop
+        </h2>
+
+        <p
+                id={newsletterModalDescriptionId}
+                class="mt-1 text-sm"
+        >
+            Enter your email to receive studio news and updates.
+        </p>
+    </div>
+
+    <form
+            action="/your-email-endpoint"
+            method="post"
+            class="mt-auto"
+    >
+        <label
+                for="signup-email"
+                class="block text-sm font-medium"
+        >
+            Email address
+        </label>
+
+        <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+            <input
+                    id="signup-email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="you@example.com"
+                    required
+                    class="input-sharp"
+            />
+
+            <button
+                    type="submit"
+                    class="button-sharp px-6 py-2"
+            >
+                Sign up
+            </button>
+        </div>
+    </form>
+</SimpleSlottableModal>
+
+<script define:vars={{newsletterModalId}}>
+    (() => {
+        const dialog = document.querySelector(`#${newsletterModalId}`);
+
+        function handleScroll() {
+            const triggerPosition = 800;
+
+            if (
+                dialog &&
+                !dialog.open &&
+                window.scrollY >= triggerPosition
+            ) {
+                dialog.showModal();
+                window.removeEventListener("scroll", handleScroll);
+            }
+        }
+
+        window.addEventListener("scroll", handleScroll, {passive: true});
+    })()
+</script>

@@ -4,9 +4,12 @@
 @import "./hamburger-spring.css";
 @import "./hamburger-squeeze.css";
 @import "./js-fade-up.css";
+@import "themes.css";
 
+/* todo: eventually replace with custom prose & uninstall tailwind typography prose */
 @plugin "@tailwindcss/typography";
 
+/* todo: eventually replace with custom prose & uninstall tailwind typography prose */
 @utility prose-seashell {
     --tw-prose-body: #e9ddd5;
     --tw-prose-headings: #fff5ee;
@@ -64,6 +67,17 @@
     --fixed-booking-button-h: 0px;
     --fade-in-transition: opacity 300ms ease-in-out;
     --fade-in-animation: fade-in 500ms ease;
+
+    --transition-focus: --focus-gap-spread 120ms ease,
+    --focus-gap-color 120ms ease,
+    outline-color 120ms ease,
+    outline-offset 120ms ease;
+
+    --transition-decorative: --element-shadow-x 300ms ease,
+    --element-shadow-y 300ms ease,
+    --element-shadow-color 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease;
 }
 
 @keyframes fade-in {
@@ -107,30 +121,95 @@
     }
 
     :focus-visible {
-        @apply ring-2 ring-indigo-500 ring-offset-2;
+        /*@apply ring-2 ring-indigo-500 ring-offset-2;*/
+        outline: 2px solid oklch(58.5% 0.233 277.117);
+        outline-offset: 2px;
     }
 
+    @property --focus-outline-color {
+        syntax: "<color>";
+        inherits: true;
+        initial-value: oklch(58.5% 0.233 277.117);
+    }
 
-    /****/
+    @property --focus-gap-spread {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+    }
+
+    @property --focus-gap-color {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: transparent;
+    }
+
+    @property --element-shadow-x {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+    }
+
+    @property --element-shadow-y {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+    }
+
     :where(
-        a,
-        button,
-        input,
-        select,
-        textarea,
-        summary,
-        [tabindex]:not([tabindex="-1"])
-    ) {
-        transition-property: box-shadow, background-color;
-        transition-duration: 300ms;
+    a,
+    button,
+    input,
+    .toggle input + .toggle-track,
+    select,
+    textarea,
+    summary,
+    [tabindex]:not([tabindex="-1"])
+) {
+        --focus-gap-spread: 0px;
+        --focus-gap-color: transparent;
+
+        --element-shadow-x: 0px;
+        --element-shadow-y: 0px;
+        --element-shadow-color: transparent;
+
+        box-shadow: 0 0 0 var(--focus-gap-spread) var(--focus-gap-color),
+        var(--element-shadow-x) var(--element-shadow-y) 0 var(--element-shadow-color);
+
+        outline: 2px solid transparent;
+        outline-offset: 0;
+
+        /*transition: !* Focus treatment: quick *! --focus-gap-spread 120ms ease,*/
+        /*--focus-gap-color 120ms ease,*/
+        /*outline-color 120ms ease,*/
+        /*outline-offset 120ms ease,*/
+        /*    !* Decorative shadow: slower *! --element-shadow-x 300ms ease,*/
+        /*--element-shadow-y 300ms ease,*/
+        /*background-color 300ms ease,*/
+        /*color 300ms ease;*/
+        transition: var(--transition-focus),
+        var(--transition-decorative);
+    }
+
+    :focus-visible,
+    .toggle :focus-visible + .toggle-track {
+        --focus-gap-spread: 2px;
+        --focus-gap-color: white;
+
+        outline-color: var(--focus-outline-color, #6366f1);
+        outline-offset: 2px;
     }
 
     input:focus-visible {
-        /*bg-blue-50*/
         background-color: oklch(97% 0.014 254.604);
     }
 
+    /*.toggle input:focus-visible + .toggle-track {*/
+    /*    outline: 3px solid currentColor;*/
+    /*    outline-offset: 3px;*/
+    /*}*/
     .button-sharp {
+        cursor: pointer;
         display: inline-block;
         font-size: 0.875rem;
         line-height: 1.25rem;
@@ -138,61 +217,27 @@
         text-transform: uppercase;
         text-align: center;
 
-        border: 1px solid var(--button-edge-color, currentColor);
+        border: 1px solid;
 
-        --tw-shadow: 3px 3px 0 var(--button-edge-color, currentColor);
-
-        box-shadow: var(--tw-inset-shadow),
-        var(--tw-inset-ring-shadow),
-        var(--tw-ring-offset-shadow),
-        var(--tw-ring-shadow),
-        var(--tw-shadow);
-
-        transition-property: color,
-        background-color,
-        border-color,
-        box-shadow,
-        transform,
-        opacity;
-        transition-duration: 300ms;
+        --element-shadow-x: 3px;
+        --element-shadow-y: 3px;
 
         &:hover {
-            --tw-shadow: 2px 2px 0 var(--button-edge-color, currentColor);
+            --element-shadow-x: 2px;
+            --element-shadow-y: 2px;
         }
     }
 
     .button-sharp-sub {
+        cursor: pointer;
         text-transform: capitalize;
 
-        --tw-shadow: 2px 2px 0 var(--button-edge-color, currentColor);
+        --element-shadow-x: 2px;
+        --element-shadow-y: 2px;
 
         &:hover {
-            --tw-shadow: 1px 1px 0 var(--button-edge-color, currentColor);
-        }
-    }
-
-    .button-sharp-sub.against-neutraldark {
-        --button-edge-color: seashell;
-    }
-
-    .button-sharp.against-light {
-        --button-edge-color: black;
-
-        &:hover {
-            background-color: #dbeafe;
-            color: black;
-        }
-    }
-
-    .button-sharp.against-dark {
-        --button-edge-color: #ffedd5;
-
-        color: #ffedd5;
-        background-color: rgb(0 0 0 / 85%);
-
-        &:hover {
-            background-color: #ffedd5;
-            color: black;
+            --element-shadow-x: 1px;
+            --element-shadow-y: 1px;
         }
     }
 
@@ -204,42 +249,81 @@
         font-size: 1rem;
         line-height: 1.5rem;
 
-        border: 1px solid var(--input-edge-color, currentColor);
+        border: 1px solid;
 
-        --tw-shadow: 3px 3px 0 var(--input-edge-color, currentColor);
-
-        box-shadow: var(--tw-inset-shadow),
-        var(--tw-inset-ring-shadow),
-        var(--tw-ring-offset-shadow),
-        var(--tw-ring-shadow),
-        var(--tw-shadow);
-
-        transition-property: color,
-        background-color,
-        border-color,
-        box-shadow,
-        transform,
-        opacity;
-        transition-duration: 300ms;
-
-        &::placeholder {
-            color: #6b7280;
-        }
+        --element-shadow-x: 3px;
+        --element-shadow-y: 3px;
 
         &:hover {
-            --tw-shadow: 2px 2px 0 var(--input-edge-color, currentColor);
+            --element-shadow-x: 1px;
+            --element-shadow-y: 1px;
         }
     }
 
-    .input-sharp.against-light {
-        --input-edge-color: black;
+    /** This is the structure used for the below:
+            <label class="toggle">
+            <input type="checkbox"/>
+            <span class="toggle-track" aria-hidden="true">
+                <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-label">Enable notifications</span>
+        </label>
 
-        color: black;
-        background-color: white;
+     */
+    .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
 
-        &:hover {
-            background-color: #dbeafe;
-            color: black;
+        & > input {
+            /* Visually hidden, but still keyboard- and screen-reader-accessible */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+
+            &:checked + .toggle-track {
+                & > .toggle-thumb {
+                    transform: translateX(calc(100cqw - 100%));
+                }
+            }
+
+            &:disabled {
+                & + .toggle-track,
+                & ~ .toggle-label {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            }
+        }
+
+        &:has(input:disabled) {
+            cursor: not-allowed;
+        }
+
+        & > .toggle-track {
+            container-type: inline-size;
+            position: relative;
+            flex: 0 0 auto;
+            width: 3rem;
+            padding: 0.1875rem;
+            border: 1px solid;
+            box-shadow: 1px 1px 0;
+
+            & > .toggle-thumb {
+                display: block;
+                width: 1rem;
+                aspect-ratio: 1;
+                border: 1px solid;
+                box-shadow: 1px 1px 0;
+
+                transition: var(--transition-focus),
+                var(--transition-decorative),
+                transform 150ms ease;
+            }
         }
     }
 
@@ -315,23 +399,13 @@
         @apply relative bg-white;
     }
 
-    #pagecontent-wrap[data-page-theme="neutraldark"] {
-        @apply bg-neutral-700;
-    }
-
-    #pagecontent-wrap[data-page-theme="neutraldark"] .page-article {
-        @apply text-[seashell];
-    }
-
-    section[data-section-theme="neutraldark"] {
-        @apply bg-neutral-700 text-[seashell];
-    }
-
+    /* todo: eventually replace with custom prose & uninstall tailwind typography prose */
     section[data-section-theme="default"] .apply-themed-prose {
         @apply prose prose-lg;
     }
 
-    section[data-section-theme="neutraldark"] .apply-themed-prose {
+    /* todo: eventually replace with custom prose & uninstall tailwind typography prose */
+    section[data-color-theme="overcast"] .apply-themed-prose {
         @apply prose prose-lg prose-invert prose-seashell;
     }
 

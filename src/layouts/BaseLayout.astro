@@ -1,7 +1,7 @@
 ---
-import { getEntry } from "astro:content";
+import {getEntry} from "astro:content";
 import "../styles/global.css";
-import { defaults } from "../config/site";
+import {defaults} from "../config/site";
 import ShareMeta from "../components/ShareMeta.astro";
 const branding = await getEntry("branding", "main");
 import spectral400Url from "@fontsource/spectral/files/spectral-latin-400-normal.woff2?url";
@@ -44,34 +44,45 @@ const isNoIndex = import.meta.env.PUBLIC_NOINDEX === "true";
 
 <!doctype html>
 <html lang={htmlLang} style="overscroll-behavior-x: none;">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
-        {isNoIndex && <meta name="robots" content="noindex, nofollow" />}
-        <title>{pageTitleUsed}</title>
-        <meta name="description" content={pageDescriptionUsed} />
-        <link rel="canonical" href={canonical} />
-        <!--<link rel="icon" href="/favicon.ico" type="image/x-icon">-->
-        <link rel="icon" href="/favicon.svg" type="image/x-icon">
-        <link rel="sitemap" href="/sitemap-index.xml" />
-        <ShareMeta
-                title={pageTitleUsed}
-                description={pageDescriptionUsed}
-                canonical={canonical}
-                ogImage={ogImageUsed}
-        />
-        {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
-        <link
-                rel="preload"
-                href={spectral400Url}
-                as="font"
-                type="font/woff2"
-                crossorigin
-        />
-        <slot name="head" />
-    </head>
-    <body class={`${bodyClass} margin-0`} style={bodyStyle}>
-        <slot />
-    </body>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
+    {isNoIndex && (
+            <meta name="robots" content="noindex, nofollow"/>
+    )}
+
+    {!isNoIndex && (
+        <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="16446141-92c1-48ec-ada9-767a5e9957ff"
+            ></script>
+    )}
+    <title>{pageTitleUsed}</title>
+    <meta name="description" content={pageDescriptionUsed}/>
+    <link rel="canonical" href={canonical}/>
+    <!--<link rel="icon" href="/favicon.ico" type="image/x-icon">-->
+    <link rel="icon" href="/favicon.svg" type="image/x-icon">
+    <link rel="sitemap" href="/sitemap-index.xml"/>
+    <ShareMeta
+            title={pageTitleUsed}
+            description={pageDescriptionUsed}
+            canonical={canonical}
+            ogImage={ogImageUsed}
+    />
+    {preloadImage &&
+            <link rel="preload" as="image" href={preloadImage}/>}
+    <link
+            rel="preload"
+            href={spectral400Url}
+            as="font"
+            type="font/woff2"
+            crossorigin
+    />
+    <slot name="head"/>
+</head>
+<body class={`${bodyClass} margin-0`} style={bodyStyle}>
+<slot/>
+</body>
 </html>

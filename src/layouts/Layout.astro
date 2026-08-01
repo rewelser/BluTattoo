@@ -9,7 +9,15 @@ import Footer from "../components/footer/Footer.astro";
 // Load site info for branding
 const site = await getEntry("siteInfo", "main");
 
-const {title, description, ogImage, isHome = false, preloadImage, pageTheme = "default", ...rest} = Astro.props;
+const {
+    title,
+    description,
+    ogImage,
+    isHome = false,
+    preloadImage,
+    pageTheme = "default",
+    ...rest
+} = Astro.props;
 import "@fontsource/fleur-de-leah";
 
 import fleurdeleahUrl from "@fontsource/fleur-de-leah/files/fleur-de-leah-latin-400-normal.woff2?url";
@@ -17,8 +25,10 @@ import fleurdeleahUrl from "@fontsource/fleur-de-leah/files/fleur-de-leah-latin-
 import "@fontsource/fleur-de-leah/400.css";
 ---
 
- <BaseLayout title={title} description={description} ogImage={ogImage} preloadImage={preloadImage} bodyClass={`min-h-screen text-neutral-800 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`} {...rest}>
-<!--<BaseLayout title={title} preloadImage={preloadImage} bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative`}>-->
+<BaseLayout title={title} description={description} ogImage={ogImage} preloadImage={preloadImage}
+            bodyClass={`min-h-screen text-neutral-800 font-[Spectral] bg-black relative ${!isHome ? "promo-bar-offset promo-bar-transitions" : ""}`}
+            {...rest}>
+    <!--<BaseLayout title={title} preloadImage={preloadImage} bodyClass={`min-h-screen text-emerald-950 font-[Spectral] bg-black relative`}>-->
     <Fragment slot="head">
         <!-- <ClientRouter /> {/* enable SPA-style navigation */} -->
 
@@ -33,7 +43,7 @@ import "@fontsource/fleur-de-leah/400.css";
                 type="font/woff2"
                 crossorigin
         />
-        <slot name="head" />
+        <slot name="head"/>
     </Fragment>
     <Header
             variant={isHome ? "home" : "default"}
@@ -47,7 +57,7 @@ import "@fontsource/fleur-de-leah/400.css";
                 <!-- todo: what is this doing? vvv -->
                 <!-- todo2: I dupepd it and got rid of z-40 to test that out. I think I added z-40 for an obsolete reason -->
                 <!-- <div id="pagecontent-wrap" class="relative z-40 bg-white"> -->
-                <div id="pagecontent-wrap" data-page-theme={pageTheme}>
+                <div id="pagecontent-wrap" data-color-theme={pageTheme}>
                     <slot/>
                     {/* page content goes here */}
                 </div>

@@ -1,0 +1,187 @@
+/* Shared behavior for every color theme */
+[data-color-theme] {
+    --color-placeholder: #6b7280;
+    --color-disuse: #ccc;
+    --color-muted: oklch(from var(--color-text) l c h / 0.8);
+    --color-muted-more: oklch(from var(--color-text) l c h / 0.6);
+
+    --button-hover-background: var(--color-use);
+    --button-hover-color: var(--color-edge);
+
+    --toggle-track-background: var(--color-disuse);
+    --toggle-track-checked-background: var(--color-use);
+    --toggle-thumb-background: var(--color-surface);
+    --toggle-label-color: var(--color-text);
+
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-edge);
+
+    & :where(h1, h2, h3, h4) {
+        color: var(--color-heading);
+    }
+
+    & :where(h2, h3, h4, h5).theme-extruded {
+        color: var(--color-heading-extruded);
+    }
+
+    & .theme-muted {
+        color: var(--color-muted);
+    }
+
+    & .theme-muted-more {
+        color: var(--color-muted-more);
+    }
+
+    &.panel {
+        border: 1px solid var(--color-edge);
+        box-shadow: 5px 5px 0 var(--color-edge);
+        padding: 1.25rem;
+
+        @media (width >= 40rem) {
+            padding: 1.5rem;
+        }
+    }
+
+    .button-sharp,
+    .button-sharp-sub,
+    &.button-sharp,
+    &.button-sharp-sub {
+        --element-shadow-color: var(--color-edge);
+
+        border-color: var(--color-edge);
+        color: var(--color-edge);
+
+        &.theme-affirmative {
+            background-color: var(--color-use-affirmative);
+        }
+
+        &.theme-affirmative:hover {
+            background-color: var(--color-use-affirmative-select);
+        }
+
+        &:hover {
+            background-color: var(--button-hover-background);
+            color: var(--button-hover-color);
+        }
+    }
+
+    .input-sharp {
+        --element-shadow-color: var(--color-edge);
+        border-color: var(--color-edge);
+        background-color: white;
+        color: var(--color-edge);
+
+        &:hover {
+            background-color: var(--color-use);
+            color: var(--color-edge);
+        }
+
+        &::placeholder {
+            color: var(--color-placeholder);
+        }
+    }
+
+    .toggle,
+    &.toggle {
+        & > input:checked + .toggle-track {
+            background-color: var(--toggle-track-checked-background);
+        }
+
+        & > .toggle-track {
+            border-color: var(--color-edge);
+            background-color: var(--toggle-track-background);
+
+            & > .toggle-thumb {
+                border-color: var(--color-edge);
+                background-color: var(--toggle-thumb-background);
+                box-shadow: 1px 1px 0 var(--color-edge);
+            }
+        }
+
+        & > .toggle-label {
+            color: var(--toggle-label-color);
+        }
+    }
+}
+
+
+/* Lantern */
+[data-color-theme="lantern"] {
+    --color-surface: black;
+    --color-text: #ffedd5;
+    --color-heading: #ffedd5;
+    --color-heading-extruded: white;
+    --color-accent: #ffedd5;
+    --color-edge: #ffedd5;
+    --color-use: #5a6c84;
+    --color-use-affirmative: oklch(97.9% 0.021 166.113);
+    --color-use-affirmative-select: oklch(95% 0.052 163.051);
+
+    /* Lantern swaps its surface and edge colors on button hover. */
+    --button-hover-background: var(--color-edge);
+    --button-hover-color: var(--color-surface);
+
+    &.lantern-opaque-70 {
+        --color-surface: rgb(0 0 0 / 70%);
+    }
+}
+
+
+/* Dune */
+[data-color-theme="dune"] {
+    --color-surface: seashell;
+    --color-text: oklch(37.1% 0 none);
+    --color-heading: oklch(26.9% 0 none);
+    --color-heading-extruded: white;
+    --color-accent: white;
+    --color-edge: black;
+    --color-use: #dbeafe;
+    --color-use-affirmative: oklch(97.9% 0.021 166.113);
+    --color-use-affirmative-select: oklch(95% 0.052 163.051);
+}
+
+
+/* Overcast */
+[data-color-theme="overcast"] {
+    --color-surface: oklch(37.1% 0 none);
+    --color-text: seashell;
+    --color-heading: seashell;
+    --color-heading-extruded: white;
+    --color-accent: white;
+    --color-edge: seashell;
+    --color-use: #5a6c84;
+    --color-use-affirmative: oklch(97.9% 0.021 166.113);
+    --color-use-affirmative-select: oklch(95% 0.052 163.051);
+
+    &.overcast-dark-bg {
+        --color-surface: #231f20;
+    }
+}
+
+/* Default */
+[data-color-theme="default"] {
+    --color-surface: white;
+    --color-text: black;
+    --color-heading: black;
+    --color-heading-extruded: white;
+    --color-accent: white;
+    --color-edge: black;
+    --color-use: #dbeafe;
+    --color-use-affirmative: oklch(97.9% 0.021 166.113);
+    --color-use-affirmative-select: oklch(95% 0.052 163.051);
+
+    --color-surface: #fafafa;
+    --color-text: #171717;
+    --color-heading: #0a0a0a;
+    --color-muted: #525252;
+
+    --color-surface: #fdfbf7;
+    --color-text: #1c1a17;
+    --color-heading: #0f0e0c;
+    --color-muted: #625d55;
+    
+    &.overcast-dark-bg {
+        --color-surface: #231f20;
+    }
+}

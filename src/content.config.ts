@@ -1,4 +1,4 @@
-import {defineCollection, z} from "astro:content";
+import {defineCollection, reference, z} from "astro:content";
 import {glob} from 'astro/loaders';
 import {
     emptyStrToUndef,
@@ -128,6 +128,22 @@ const faqs = defineCollection({
 
 /*** region *** Site Info Collection ****/
 
+// const policies = defineCollection({
+//     loader: glob({
+//         pattern: "**/*.{md,mdx}",
+//         base: "./src/content/siteInfo/assets/policies",
+//     }),
+// });
+
+const policies = defineCollection({
+    loader: glob({
+        base: "./src/content/siteInfo",
+        pattern: "assets/policies/**/*.{md,mdx}",
+        generateId: ({entry}) =>
+            entry.replaceAll("\\", "/"),
+    }),
+});
+
 const siteInfo = defineCollection({
     loader: glob({pattern: "**/*.{json,yaml,yml,toml}", base: "./src/content/siteInfo"}),
     schema: z.object({
@@ -147,6 +163,8 @@ const siteInfo = defineCollection({
         hours: z.array(z.object({label: z.string(), value: z.string()})).optional(),
         hoursShortline: z.string(),
         socials: siteInfoSocialsSchema,
+        // privacyPolicy: z.string().optional(),
+        privacyPolicy: z.preprocess(emptyStrToUndef, reference("policies").optional()),
     }),
 });
 
@@ -235,4 +253,4 @@ const piercing = defineCollection({
 
 /*** endregion ***/
 
-export const collections = {people, faqSections, faqs, siteInfo, aftercare, events, branding, piercing}; // & home?
+export const collections = {people, faqSections, faqs, policies, siteInfo, aftercare, events, branding, piercing}; // & home?

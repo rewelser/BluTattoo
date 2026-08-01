@@ -3,6 +3,7 @@ import SocialRow from "../../components/SocialRow.astro";
 import {siteInfoSocialsToItems} from "../../domain/contact/adapters.ts";
 import HrDivider from "../decor/HrDivider.astro";
 import {Temporal} from "temporal-polyfill";
+import DataConsentBanner from "../DataConsentBanner.astro";
 
 const {defaults, site} = Astro.props;
 const siteTimeZone = site?.data.timeZone ?? defaults.siteTimeZone;
@@ -81,7 +82,8 @@ const footerLinkGroups = [
                         {group.items.map((item) => (
                                 <li>
                                     {"href" in item ? (
-                                            <a href={item.href} class="transition hover:text-orange-100 underline hover:no-underline">
+                                            <a href={item.href}
+                                               class="transition hover:text-orange-100 underline hover:no-underline">
                                                 {item.label}
                                             </a>
                                     ) : (
@@ -89,9 +91,16 @@ const footerLinkGroups = [
                                     )}
                                 </li>
                         ))}
+                        {group.title === "Info" && (
+                                <li>
+                                    <DataConsentBanner triggerClass="hover:text-orange-100"></DataConsentBanner>
+                                </li>
+                        )}
+
                     </ul>
                 </div>
         ))}
+        <!--<DataConsentBanner></DataConsentBanner>-->
     </nav>
     <div class="flex justify-center">
         <HrDivider

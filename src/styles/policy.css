@@ -1,0 +1,350 @@
+/*
+ * Policy-specific colors
+ */
+
+@property --policy-text {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #30343b;
+}
+
+@property --policy-muted {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #667085;
+}
+
+@property --policy-heading {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #17191d;
+}
+
+@property --policy-link {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #2457a7;
+}
+
+@property --policy-border {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d9dee7;
+}
+
+@property --policy-surface {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f7f8fa;
+}
+
+@property --policy-notice {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #fff8e6;
+}
+
+@property --policy-notice-border {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d6ad3d;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.policy-page {
+    --policy-menu-offset: var(
+            --menu-announcement-h,
+            0rem
+    );
+
+    --policy-sidebar-top: calc(
+            1.5rem + var(--policy-menu-offset)
+    );
+
+    --policy-anchor-offset: calc(
+            5rem + var(--policy-menu-offset)
+    );
+
+    width: min(100% - 1.25rem, 75rem);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 6vw, 5rem);
+}
+
+/*
+ * Page heading
+ */
+
+.policy-header {
+    max-width: 48rem;
+    margin: 0 auto clamp(2rem, 5vw, 4rem);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.policy-page .page-heading {
+    margin: 0;
+    color: var(--policy-heading);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+}
+
+/*
+ * Page layout
+ *
+ * Default: stacked layout below lg.
+ */
+
+.policy-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: center;
+    align-items: start;
+    gap: 2rem;
+}
+
+/*
+ * Table of contents
+ *
+ * Default: normal document flow with one
+ * column of links.
+ */
+
+.policy-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 1rem;
+    border: 1px solid var(--policy-border);
+    /*border-radius: 0.5rem;*/
+    background: var(--policy-surface);
+}
+
+.policy-sidebar-title {
+    margin: 0 0 0.75rem;
+    color: var(--policy-heading);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.policy-sidebar ol {
+    margin: 0;
+    padding: 0;
+    columns: 1;
+    list-style: none;
+}
+
+.policy-sidebar li {
+    break-inside: avoid;
+}
+
+.policy-sidebar li + li {
+    margin-top: 0.2rem;
+}
+
+.policy-sidebar a {
+    display: block;
+    padding: 0.4rem 0.65rem;
+    border-left: 2px solid transparent;
+    color: var(--policy-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.policy-sidebar a:hover {
+    border-left-color: var(--policy-link);
+    color: var(--policy-link);
+}
+
+/*.policy-sidebar a:focus-visible {*/
+/*    border-radius: 0.25rem;*/
+/*    outline: 2px solid var(--policy-link);*/
+/*    outline-offset: 2px;*/
+/*}*/
+
+/*
+ * Policy document
+ *
+ * This selector is more specific than .prose-pure,
+ * so the policy theme overrides its generic defaults
+ * even if stylesheet ordering changes.
+ */
+
+.prose-pure.policy-document {
+    --prose-text: var(--policy-text);
+    --prose-muted: var(--policy-muted);
+    --prose-heading: var(--policy-heading);
+    --prose-link: var(--policy-link);
+    --prose-border: var(--policy-border);
+    --prose-surface: var(--policy-surface);
+
+    min-width: 0;
+}
+
+/*
+ * Hide the Markdown H1 because the Astro page
+ * provides its own visible page heading.
+ */
+
+.policy-document #top > h1:first-child {
+    display: none;
+}
+
+/*
+ * Custom elements from the policy Markdown
+ */
+
+.policy-document .notice {
+    margin: 1.75rem 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--policy-notice-border);
+    border-left-width: 4px;
+    /*border-radius: 0.5rem;*/
+    background: var(--policy-notice);
+}
+
+.policy-document .notice p:first-child {
+    margin-top: 0;
+}
+
+.policy-document .notice p:last-child {
+    margin-bottom: 0;
+}
+
+.policy-document .summary {
+    display: grid;
+    gap: 0.85rem;
+    margin: 1.5rem 0 2.5rem;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    border: 1px solid var(--policy-border);
+    /*border-radius: 0.75rem;*/
+    background: var(--policy-surface);
+}
+
+.policy-document .summary p {
+    margin: 0;
+}
+
+/*
+ * Anchor offset
+ */
+
+.policy-document [id] {
+    scroll-margin-top: var(--policy-anchor-offset);
+}
+
+/*
+ * sm and above
+ *
+ * Keep the page stacked, but display the table
+ * of contents in two columns.
+ */
+
+@media (width >= 40rem) {
+    .policy-page {
+        width: min(100% - 2rem, 75rem);
+    }
+
+    .policy-sidebar ol {
+        columns: 2;
+        column-gap: 1.5rem;
+    }
+}
+
+/*
+ * md and above
+ */
+
+@media (width >= 48rem) {
+    .policy-sidebar {
+        padding: 1.25rem;
+    }
+}
+
+/*
+ * lg and above
+ *
+ * Move the contents into a sticky sidebar.
+ */
+
+@media (width >= 64rem) {
+    .policy-layout {
+        grid-template-columns:
+            minmax(13rem, 17rem)
+            minmax(0, 48rem);
+        gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    .policy-sidebar {
+        position: sticky;
+        top: var(--policy-sidebar-top);
+
+        max-height: calc(
+                100dvh -
+                var(--policy-menu-offset) -
+                3rem
+        );
+
+        overflow-y: auto;
+        padding: 0 0.75rem 0 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        overscroll-behavior: contain;
+    }
+
+    .policy-sidebar ol {
+        columns: 1;
+    }
+}
+
+/*
+ * Reduced motion
+ */
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* Themes */
+
+.policy-theme-seashell {
+    --policy-text: #e9ddd5;
+    --policy-muted: #c7b2a6;
+    --policy-heading: #fff5ee;
+    --policy-link: #fff5ee;
+    --policy-border: #5e5149;
+    --policy-surface: #342b27;
+    --policy-notice: #3b302b;
+    --policy-notice-border: #7a685e;
+
+    --prose-body: var(--policy-text);
+    --prose-headings: var(--policy-heading);
+    --prose-lead: #d8c7bc;
+    --prose-links: var(--policy-link);
+    --prose-bold: var(--policy-heading);
+    --prose-counters: #cdb8ab;
+    --prose-bullets: #a78f82;
+    --prose-hr: var(--policy-border);
+    --prose-quotes: #f6e8df;
+    --prose-quote-borders: #7a685e;
+    --prose-captions: #c7b2a6;
+    --prose-code: #fff5ee;
+    --prose-pre-code: #f6e8df;
+    --prose-pre-bg: #2a2320;
+    --prose-th-borders: #7a685e;
+    --prose-td-borders: #5e5149;
+    --prose-table-heading-bg: #342b27;
+}

@@ -98,8 +98,8 @@ const lightboxImages = await Promise.all(
         preloadImage={entry.data.pagePhoto?.src}
 >
     <article class="space-y-6">
-        <header class="text-orange-100">
-            <div class="space-y-2 pt-10 bg-black outline-4 outline-black">
+        <header>
+            <div class="space-y-2 pt-10 outline-4 outline-black" data-color-theme="lantern">
                 <div class="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {
                         entry.data.pagePhoto && (
@@ -185,7 +185,7 @@ const lightboxImages = await Promise.all(
                                             <div class="my-4">
                                                 <a
                                                         href={artistBookingHref}
-                                                        class="button-sharp against-dark px-6 py-2"
+                                                        class="button-sharp px-6 py-2"
                                                         aria-label={`Book an appointment with ${entry.data.name}`}
                                                 >
                                                     Book with {entry.data.name}
@@ -286,19 +286,22 @@ const lightboxImages = await Promise.all(
 
         {hasBookables && (
                 <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 js-fade-up">
-                    <div class="border border-black bg-[seashell] p-5 sm:p-6 shadow-[5px_5px_0_black] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div
+                            class="panel flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                            data-color-theme="dune"
+                    >
                         <div>
                             <h2 class="text-xl font-semibold tracking-tight">
                                 Want to book with {entry.data.name}?
                             </h2>
-                            <p class="mt-1 text-sm text-gray-700">
+                            <p class="mt-1 text-sm">
                                 View booking details, contact channels, and appointment options.
                             </p>
                         </div>
 
                         <a
                                 href={artistBookingHref}
-                                class="button-sharp against-light px-6 py-2"
+                                class="button-sharp px-6 py-2"
                         >
                             Book now
                         </a>
@@ -310,8 +313,9 @@ const lightboxImages = await Promise.all(
                 >
                     <a
                             href={artistBookingHref}
-                            class="button-sharp against-dark block w-full py-3 backdrop-blur"
+                            class="button-sharp lantern-opaque-70 block w-full py-3 backdrop-blur"
                             aria-label={`Book an appointment with ${entry.data.name}`}
+                            data-color-theme="lantern"
                     >
                         Book with {entry.data.name}
                     </a>

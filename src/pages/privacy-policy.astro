@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import {getEntry, render} from "astro:content";
+import "../styles/prose.css";
+import "../styles/policy.css";
+
+const site = await getEntry("siteInfo", "main");
+
+if (!site) {
+    throw new Error('The "siteInfo/main" entry was not found.');
+}
+
+if (!site.data.privacyPolicy) {
+    throw new Error(
+        'No privacy policy is configured in the "siteInfo/main" entry.',
+    );
+}
+
+const privacyPolicyEntry = await getEntry(
+    site.data.privacyPolicy,
+);
+
+if (!privacyPolicyEntry) {
+    throw new Error(
+        `The privacy policy entry "${site.data.privacyPolicy.id}" was not found.`,
+    );
+}
+
+const {
+    Content: PolicyContent,
+    headings,
+} = await render(privacyPolicyEntry);
+
+const title = "Privacy Policy";
+const heading = title;
+const description =
+    "Learn how BluTattoo Studio collects, uses, protects, and manages personal information.";
+
+const tocHeadings = headings.filter(
+    ({depth, text}) =>
+        depth === 2 &&
+        text !== "Contents" &&
+        text !== "Key Points at a Glance",
+);
+---
+
+<Layout title={title}>
+    <article class="page-article page-article--grid prose-pure policy-page">
+        <header class="policy-header">
+            <h1 class="page-heading">{heading}</h1>
+            <p class="lead">
+                {description}
+            </p>
+        </header>
+
+        <div class="policy-layout">
+            <aside class="policy-sidebar">
+                <nav
+                        id="contents"
+                        aria-label="Privacy policy contents"
+                >
+                    <p class="policy-sidebar-title">
+                        On this page
+                    </p>
+
+                    <ol>
+                        {
+                            tocHeadings.map(
+                                ({slug, text}) => (
+                                        <li>
+                                            <a href={`#${slug}`}>
+                                                {
+                                                    text.replace(
+                                                        /^\d+\.\s*/,
+                                                        "",
+                                                    )
+                                                }
+                                            </a>
+                                        </li>
+                                ),
+                            )
+                        }
+                    </ol>
+                </nav>
+            </aside>
+            <section class="policy-document">
+                <PolicyContent/>
+            </section>
+        </div>
+    </article>
+</Layout>

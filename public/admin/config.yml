@@ -372,8 +372,8 @@ collections:
         widget: relation
         collection: faqSections
         value_field: "{{slug}}"
-        search_fields: ["name"]
-        display_fields: ["name"]
+        search_fields: [ "name" ]
+        display_fields: [ "name" ]
 
       - { name: sort, label: "Sort", widget: number, required: false, default: 0 }
 
@@ -400,7 +400,7 @@ collections:
       - name: runwayPhotoFrame
         label: "Frame for Runway Photo"
         widget: select
-        options: ["none", "roundframe1", "roundframe2", "roundframe3", "roundframe4", "squareframe1", "squareframe2", "squareframe3", "archedframe1"]
+        options: [ "none", "roundframe1", "roundframe2", "roundframe3", "roundframe4", "squareframe1", "squareframe2", "squareframe3", "archedframe1" ]
         default: "none"
       - name: primaryRole
         label: "Primary Role"
@@ -432,6 +432,8 @@ collections:
       - name: "main"
         label: "Main"
         file: "src/content/siteInfo/main.json"
+        media_folder: "assets"
+        public_folder: "assets"
         format: "json"
         fields:
           - { name: siteName, label: "Business Name", widget: string, default: "Example Business Name" }
@@ -440,12 +442,12 @@ collections:
             label: "Address"
             widget: "object"
             fields:
-            - { name: "streetAddress", label: "Street", widget: "string" }
-            - { name: "addressLocality", label: "City", widget: "string" }
-            - { name: "addressRegion", label: "State", widget: "string", hint: "2-letter USPS state code (e.g., VA; CA)", pattern: [ "^[A-Z]{2}$", "Use 2-letter state code (e.g., VA; CA)" ] }
-            - { name: "postalCode", label: "ZIP", widget: "string", hint: "5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)", pattern: [ "^\\d{5}(-\\d{4})?$", "Use 5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)"] }
-            - { name: "addressCountry", label: "Country Code", widget: "string", default: "US", hint: "ISO 3166-1 alpha-2 country code (eg., US)", pattern: [ "^[A-Z]{2}$", "Must be a 2-letter ISO 3166-1 alpha-2 country code (eg., US)"] }
-            - { name: placeId, label: "Google Maps business place ID", widget: string, hint: "The place ID for the business (google 'how do I get the place ID' if you don't know)" }
+              - { name: "streetAddress", label: "Street", widget: "string" }
+              - { name: "addressLocality", label: "City", widget: "string" }
+              - { name: "addressRegion", label: "State", widget: "string", hint: "2-letter USPS state code (e.g., VA; CA)", pattern: [ "^[A-Z]{2}$", "Use 2-letter state code (e.g., VA; CA)" ] }
+              - { name: "postalCode", label: "ZIP", widget: "string", hint: "5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)", pattern: [ "^\\d{5}(-\\d{4})?$", "Use 5-digit ZIP or ZIP+4 (e.g., 12345 or 12345-6789)" ] }
+              - { name: "addressCountry", label: "Country Code", widget: "string", default: "US", hint: "ISO 3166-1 alpha-2 country code (eg., US)", pattern: [ "^[A-Z]{2}$", "Must be a 2-letter ISO 3166-1 alpha-2 country code (eg., US)" ] }
+              - { name: placeId, label: "Google Maps business place ID", widget: string, hint: "The place ID for the business (google 'how do I get the place ID' if you don't know)" }
           - { name: timeZone, widget: hidden, default: America/New_York }
           - name: phone
             label: "Phone Number"
@@ -483,6 +485,12 @@ collections:
               - { name: threads, label: "Threads", widget: "string", required: false }
               - { name: tumblr, label: "Tumblr", widget: "string", required: false }
               - { name: pinterest, label: "Pinterest", widget: "string", required: false }
+          - name: privacyPolicy
+            label: "Privacy Policy"
+            widget: "file"
+            required: false
+            media_folder: "{{dirname}}/assets/policies"
+            public_folder: "assets/policies"
 
   - name: "branding"
     label: "Branding"
@@ -571,7 +579,7 @@ collections:
     name: "eventsActive"
     label: "Events (Active)"
     folder: "src/content/events"
-#    path: "{{year}}/{{month}}/{{day}}/{{slug}}/index"
+    #    path: "{{year}}/{{month}}/{{day}}/{{slug}}/index"
     path: "{{date | date('YYYY')}}/{{date | date('MMM')}}/{{slug}}/index"
     media_folder: ""
     public_folder: ""
@@ -582,13 +590,13 @@ collections:
     summary: "{{date}} — {{title}}"
     sortable_fields: [ "date", "title", "guestSpot", "commit_date" ]
     description: "Create events for guest spots, flash days, shop closed days, and other happenings."
-#    view_filters:
-#      - field: guestSpot.guestName
-#        label: "Guest Spot"
-#        pattern: ".+"
-#      - label: Featured Status
-#        field: featured
-#        pattern: true
+    #    view_filters:
+    #      - field: guestSpot.guestName
+    #        label: "Guest Spot"
+    #        pattern: ".+"
+    #      - label: Featured Status
+    #        field: featured
+    #        pattern: true
     fields:
       - { name: shopClosed, label: "Shop Closed", widget: boolean, required: false, default: false, hint: "Mark this if the shop is to be closed during this period. Data in all other optional fields will be ignored, except for announcement bar settings." }
       - { name: title, label: Title, widget: string }
@@ -662,26 +670,26 @@ collections:
         label: "Pricing"
         file: "src/content/piercing/pricing.yml"
         fields:
-        - { name: note, label: "Footer Note", widget: string }
+          - { name: note, label: "Footer Note", widget: string }
 
-        - name: groups
-          label: "Pricing Groups"
-          widget: list
-          fields:
-            - { name: heading, label: "Group Heading", widget: string }
+          - name: groups
+            label: "Pricing Groups"
+            widget: list
+            fields:
+              - { name: heading, label: "Group Heading", widget: string }
 
-            - name: items
-              label: "Items"
-              widget: list
-              fields:
-                - { name: name, label: "Service Name", widget: string }
-                - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
+              - name: items
+                label: "Items"
+                widget: list
+                fields:
+                  - { name: name, label: "Service Name", widget: string }
+                  - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
 
-        - name: extraItems
-          label: "Extra Items"
-          widget: list
-          required: false
-          fields:
-            - { name: name, label: "Service Name", widget: string }
-            - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
-            - { name: separator, label: "Add separator line above", widget: boolean, required: false }
+          - name: extraItems
+            label: "Extra Items"
+            widget: list
+            required: false
+            fields:
+              - { name: name, label: "Service Name", widget: string }
+              - { name: price, label: "Price", widget: number, value_type: int, before_input: $ }
+              - { name: separator, label: "Add separator line above", widget: boolean, required: false }

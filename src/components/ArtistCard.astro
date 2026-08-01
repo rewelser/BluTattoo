@@ -190,14 +190,14 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
         <div class="flex flex-col w-max items-stretch text-center">
             {!isGuestSpot && (
                     <a href={`${anchorHref}#gallery-heading`}
-                       class="button-sharp button-sharp-sub against-neutraldark m-2 py-1 px-2">
+                       class="button-sharp button-sharp-sub m-2 py-1 px-2">
                         View Gallery
                     </a>
             )}
             {
                 hasBookables && (
                             <a href={`/booking#${bookingToggleId}`}
-                               class="button-sharp button-sharp-sub against-neutraldark m-2 py-1 px-2">
+                               class="button-sharp button-sharp-sub m-2 py-1 px-2">
                                 Book now
                             </a>
                 )

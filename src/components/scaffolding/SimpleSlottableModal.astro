@@ -1,0 +1,112 @@
+---
+interface Props {
+    id: string;
+    closeLabel?: string;
+    labelledby?: string;
+    describedby?: string;
+    class?: string;
+}
+
+const {
+    id,
+    closeLabel = "Close dialog",
+    labelledby,
+    describedby,
+    class: className,
+} = Astro.props;
+---
+
+<slot name="trigger" />
+
+<dialog
+        id={id}
+        closedby="any"
+        aria-labelledby={labelledby}
+        aria-describedby={describedby}
+        class:list={["dialog-outer", className]}
+>
+    <div class="dialog-inner" data-color-theme="dune">
+        <div class="flex h-full flex-col p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <slot name="header" />
+                </div>
+
+                <button
+                        type="button"
+                        command="close"
+                        commandfor={id}
+                        aria-label={closeLabel}
+                        class="button-sharp button-sharp-sub h-8 w-8 shrink-0"
+                >
+                    ×
+                </button>
+            </div>
+
+            <slot />
+        </div>
+    </div>
+</dialog>
+
+<style>
+    .dialog-outer {
+        flex-direction: column;
+        place-items: center;
+        place-content: center;
+
+        margin: auto;
+        padding: 25px;
+
+        background-color: transparent;
+        background-image: linear-gradient(
+                45deg,
+                transparent 33.33%,
+                black 33.33%,
+                black 50%,
+                transparent 50%,
+                transparent 83.33%,
+                black 83.33%,
+                black 100%
+        );
+        background-size: 0.28rem 0.28rem;
+
+        translate: 0 30px;
+        opacity: 0;
+
+        transition-property: display, overlay, opacity, translate;
+        transition-duration: 0.3s;
+        transition-behavior: allow-discrete;
+    }
+
+    .dialog-outer[open] {
+        display: flex;
+        opacity: 1;
+        translate: 0 0;
+
+        @starting-style {
+            opacity: 0;
+            translate: 0 30px;
+        }
+    }
+
+    .dialog-outer::backdrop {
+        background-color: transparent;
+        transition: background-color 0.3s allow-discrete;
+    }
+
+    .dialog-outer[open]::backdrop {
+        background-color: rgb(0 0 0 / 30%);
+
+        @starting-style {
+            background-color: transparent;
+        }
+    }
+
+    .dialog-inner {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+
+        border: 1px solid;
+    }
+</style>

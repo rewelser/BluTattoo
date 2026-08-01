@@ -10,8 +10,9 @@ import UpcomingEventsFallback from "../../components/UpcomingEventsFallback.astr
 import {getValidatedEventItemsCached} from "../../domain/events/server.ts";
 import type {EventItem} from "../../domain/events/types.ts";
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
-import SimpleSlottableModal from "../../components/SimpleSlottableModal.astro";
+
 import {getImage} from "astro:assets";
+import NewsLetterFormModal2 from "../../components/NewsLetterFormModal2.astro";
 
 const events: EventItem[] = await getValidatedEventItemsCached();
 
@@ -50,6 +51,8 @@ const description = "View upcoming guest spots, events, and special appearances 
             <EventsPageHeading title={title}/>
 
         </header>
+
+        <NewsLetterFormModal2></NewsLetterFormModal2>
 
         <UpcomingEvents events={events} server:defer>
             <UpcomingEventsFallback slot="fallback"/>
