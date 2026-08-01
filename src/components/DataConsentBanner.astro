@@ -269,12 +269,9 @@ const {
                     {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json",
+                            Accept: "application/json",
                         },
-                        body: JSON.stringify({
-                            performance: performanceInput.checked,
-                            marketing: marketingInput.checked,
-                        })
+                        body: new FormData(form)
                     }
                 )
 
