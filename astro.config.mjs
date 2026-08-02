@@ -38,4 +38,21 @@ export default defineConfig({
     ],
 
     adapter: vercel(),
+
+    security: {
+        allowedDomains: [
+            {
+                hostname: "blutattoostudio.com",
+                protocol: "https",
+            },
+            {
+                hostname: "www.blutattoostudio.com",
+                protocol: "https",
+            },
+            {
+                hostname: "staging.blutattoostudio.com",
+                protocol: "https",
+            },
+        ],
+    },
 });
