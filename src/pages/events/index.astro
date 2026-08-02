@@ -12,7 +12,7 @@ import type {EventItem} from "../../domain/events/types.ts";
 import EventsPageHeading from "../../components/decor/EventsPageHeading.astro";
 
 import {getImage} from "astro:assets";
-import NewsLetterFormModal2 from "../../components/NewsletterFormModal2.astro";
+// import NewsLetterFormModal2 from "../../components/NewsletterFormModal2.astro";
 
 const events: EventItem[] = await getValidatedEventItemsCached();
 
@@ -52,7 +52,7 @@ const description = "View upcoming guest spots, events, and special appearances 
 
         </header>
 
-        <NewsLetterFormModal2></NewsLetterFormModal2>
+        <!--<NewsLetterFormModal2></NewsLetterFormModal2>-->
 
         <UpcomingEvents events={events} server:defer>
             <UpcomingEventsFallback slot="fallback"/>
