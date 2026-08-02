@@ -207,14 +207,14 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                 hasBookables && (
                                         <li class={`person-bookable-card-li ${isGuest ? "guest" : ""}`}>
                                             {isGuest && (
-                                                    <div class="absolute rounded-4xl bg-white border-2 border-gray-300 -translate-y-[50%] translate-x-16 py-1 px-2 break-words font-[Spectral]">
+                                                    <div class="guest-info-bubble absolute rounded-4xl bg-white border-2 border-gray-300 -translate-y-[70%] translate-x-16 py-1 px-2 break-words font-[Spectral]">
                                                         Guest {person.data.primaryRole.replaceAll("Tattoo ", "")}
-                                                        {!hasEventStarted(person.event, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone))) && (
-                                                                <>
-                                                                    ⟡
-                                                                    Starting {fmtDateUpcomingRecurrence(person.event.startDate)}
-                                                                </>
-                                                        )}
+                                                        <!--{!hasEventStarted(person.event, getDateKey(Temporal.Now.plainDateTimeISO(siteTimeZone))) && (-->
+                                                        <!--        <>-->
+                                                        <!--            ⟡-->
+                                                        <!--            Starting {fmtDateUpcomingRecurrence(person.event.startDate)}-->
+                                                        <!--        </>-->
+                                                        <!--)}-->
                                                         ⟡ {fmtDateRange(person.event)}
                                                     </div>
                                                     <SparkleCorners fillColor="gold"/>
@@ -736,6 +736,13 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
         .person-bookable-card-li.guest .profile-picture {
             border-color: lightgoldenrodyellow;
             box-shadow: 3px 3px 0 1px palegoldenrod;
+        }
+
+        .guest-info-bubble {
+            scrollbar-width: thin;
+            max-width: calc(100% - 4rem);
+            overflow: auto;
+            text-wrap-mode: nowrap;
         }
 
         .link-card-li {
