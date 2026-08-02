@@ -259,12 +259,6 @@ const {
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
-                const preferences = {
-                    necessary: true,
-                    performance: form.elements.performance.checked,
-                    marketing: form.elements.marketing.checked,
-                };
-
                 const performanceInput = form.elements.namedItem("performance");
                 const marketingInput = form.elements.namedItem("marketing");
 
@@ -281,15 +275,6 @@ const {
                     }
                 )
 
-                // if (!response.ok) {
-                //     console.log(response);
-                //     console.error("Could not save cookie preferences.");
-                //     return;
-                // }
-                //
-                // const result = await response.json();
-                //
-                // console.log(result);
                 closeBanner();
                 dialog.close();
             });
