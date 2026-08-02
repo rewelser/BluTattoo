@@ -13,7 +13,7 @@ const {isEventPage = false, href = "/events/", image, alt = "", className = ""} 
 ---
 
 <div
-        class={`relative overflow-hidden shadow-lg ${className}`}
+        class={`promo-hero-container relative overflow-hidden rounded-sm sm:rounded-none sm:p-8 ${className}`}
         data-promo-hero-root
 >
     <div data-skeleton-image class="skeleton-promo-hero-image"></div>
@@ -23,7 +23,7 @@ const {isEventPage = false, href = "/events/", image, alt = "", className = ""} 
                         data-promo-image
                         src={image.src}
                         alt={`${alt} – view event details`}
-                        class="w-full h-auto hidden opacity-0 transition-opacity duration-300"
+                        class="w-full h-auto hidden opacity-0 transition-opacity duration-300 rounded-sm sm:rounded-none"
                         loading="eager"
                         fetchpriority="high"
                         decoding="sync"
@@ -48,6 +48,16 @@ const {isEventPage = false, href = "/events/", image, alt = "", className = ""} 
     )}
 
 </div>
+
+<style>
+    .promo-hero-container {
+        box-shadow: 2px 2px 20px rgb(0 0 0 / 50%);
+
+        @media (width >= 40rem) {
+            box-shadow: 2px 2px 20px rgb(0 0 0 / 30%);
+        }
+    }
+</style>
 
 <script is:inline>
     (() => {

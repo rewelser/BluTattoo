@@ -19,7 +19,6 @@ export const POST: APIRoute = (async ({
         necessary: true,
         ...result,
     }
-    console.log(preferences);
 
     cookies.set(
         "cookie-preferences",

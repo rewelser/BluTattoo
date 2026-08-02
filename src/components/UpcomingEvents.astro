@@ -31,7 +31,6 @@ const featured = pickFeaturedHero(upcoming);
                             href={`/events/${featured.id}`}
                             image={featured.image}
                             alt={featured.alt ?? featured.title}
-                            className="p-8"
                     ></PromoHero>
         )
     }
@@ -52,7 +51,7 @@ const featured = pickFeaturedHero(upcoming);
                                             {ev.title}
                                             {
                                                 ev.recurrenceRule && (
-                                                <span class="opacity-60 text-sm font-light">
+                                                            <span class="opacity-60 text-sm font-light">
                                                     (recurring)
                                                 </span>
                                                 )

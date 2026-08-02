@@ -7,7 +7,13 @@ const dataConsentBannerDescriptionId = `${dataConsentBannerId}-description`;
 const dataConsentManageCookiesModalId = `data-consent-manage-cookies-modal`;
 const dataConsentManageCookiesModalTitleId = `${dataConsentManageCookiesModalId}-title`;
 const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesModalId}-description`;
-const storageKey = "cookie_banner_dismissed";
+
+/**
+ * The below will work with the server:defer directive on the component usage, and would have been what I used here,
+ * but I'm avoiding it for now since I'm not gating the whole component on the presence of the cookie, but only the
+ * scroll listener. However, this *will* work in other places where needed.
+ * const consentCookie = Astro.cookies.get("cookie-preferences");
+ */
 
 const {
     class: className,
@@ -210,13 +216,14 @@ const {
         }
     </style>
     <script define:vars={{dataConsentBannerId, dataConsentManageCookiesModalId}}>
-        (() => {
+        (async () => {
             const banner = document.getElementById(dataConsentBannerId);
-            const dialog = document.querySelector(`#${dataConsentManageCookiesModalId}`);
+            const dialog = document.getElementById(dataConsentManageCookiesModalId);
             const openButton = banner.querySelector("[data-banner-open]");
             const form = banner.querySelector("#cookie-preferences-form");
+            const cookiePrefs = await cookieStore.get("cookie-preferences");
 
-            if (!(banner instanceof HTMLElement)) return;
+            if (!(banner instanceof HTMLElement) || !(dialog instanceof HTMLElement)) return;
 
             const closeButton = banner.querySelector("[data-banner-close]");
 
@@ -229,7 +236,7 @@ const {
             }
 
             function handleScroll() {
-                const triggerPosition = 800;
+                const triggerPosition = 1;
                 if (
                     !banner.hasAttribute("data-open") &&
                     window.scrollY >= triggerPosition
@@ -243,10 +250,11 @@ const {
 
             closeButton?.addEventListener("click", closeBanner);
 
-            window.addEventListener("scroll", handleScroll, {
-                passive: true,
-            });
-
+            if (!cookiePrefs) {
+                window.addEventListener("scroll", handleScroll, {
+                    passive: true,
+                });
+            }
 
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
@@ -256,8 +264,6 @@ const {
                     performance: form.elements.performance.checked,
                     marketing: form.elements.marketing.checked,
                 };
-
-                console.log(preferences);
 
                 const performanceInput = form.elements.namedItem("performance");
                 const marketingInput = form.elements.namedItem("marketing");
@@ -275,15 +281,15 @@ const {
                     }
                 )
 
-                if (!response.ok) {
-                    console.log(response);
-                    console.error("Could not save cookie preferences.");
-                    return;
-                }
-
-                const result = await response.json();
-
-                console.log(result);
+                // if (!response.ok) {
+                //     console.log(response);
+                //     console.error("Could not save cookie preferences.");
+                //     return;
+                // }
+                //
+                // const result = await response.json();
+                //
+                // console.log(result);
                 closeBanner();
                 dialog.close();
             });

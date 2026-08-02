@@ -12,8 +12,6 @@ export async function validateRequest<S extends z.ZodType>(request: Request, sch
 
 function checkFormContentType(request: Request): Response | undefined {
     const contentType = request.headers.get("content-type")?.split(";", 1)[0].trim().toLowerCase() ?? "";
-    console.log("request: " + request.headers.get("content-type"));
-    console.log("contentType: ", contentType);
 
     if (!allowedFormContentTypes.has(contentType)) {
         return Response.json(
