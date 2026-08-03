@@ -1,12 +1,6 @@
 ---
 import BottomBannerAside from "../components/scaffolding/BottomBannerAside.astro";
 import SimpleSlottableModal from "./scaffolding/SimpleSlottableModal.astro";
-const dataConsentBannerId = "data-consent-banner";
-const dataConsentBannerTitleId = `${dataConsentBannerId}-title`;
-const dataConsentBannerDescriptionId = `${dataConsentBannerId}-description`;
-const dataConsentManageCookiesModalId = `data-consent-manage-cookies-modal`;
-const dataConsentManageCookiesModalTitleId = `${dataConsentManageCookiesModalId}-title`;
-const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesModalId}-description`;
 
 /**
  * The below will work with the server:defer directive on the component usage, and would have been what I used here,
@@ -16,293 +10,313 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
  */
 
 const {
+    containsBannerTriggerButton = true,
+    dataConsentId = "data-consent-manage-cookies",
     class: className,
     triggerClass,
 } = Astro.props as {
+    containsBannerTriggerButton: boolean;
+    dataConsentBannerId: string;
     class?: string;
     triggerClass?: string;
 };
+
+const dataConsentBannerId = `${dataConsentId}-banner`;
+const dataConsentBannerTitleId = `${dataConsentBannerId}-title`;
+const dataConsentBannerDescriptionId = `${dataConsentBannerId}-description`;
+const dataConsentManageCookiesModalId = `${dataConsentId}-modal`;
+const dataConsentManageCookiesModalTitleId = `${dataConsentManageCookiesModalId}-title`;
+const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesModalId}-description`;
 ---
 
-
-<BottomBannerAside
-        id={dataConsentBannerId}
-        useCloseButton="false"
-        labelledby={dataConsentBannerTitleId}
-        describedby={dataConsentBannerDescriptionId}
->
-    <button
-            slot="trigger"
-            type="button"
-            data-banner-open
-            class:list={["button cursor-pointer underline hover:no-underline", triggerClass]}
+<div data-data-consent-container>
+    <BottomBannerAside
+            id={dataConsentBannerId}
+            useCloseButton="false"
+            labelledby={dataConsentBannerTitleId}
+            describedby={dataConsentBannerDescriptionId}
     >
-        Cookie Banner
-    </button>
-
-    <div slot="banner-content">
-        <div class="flex gap-2 sm:gap-4">
-            <div>
-                <h2
-                        id={dataConsentBannerTitleId}
-                        class="text-xl font-semibold tracking-tight"
+        {containsBannerTriggerButton && (
+                <button
+                        slot="trigger"
+                        type="button"
+                        data-banner-open
+                        class:list={["button cursor-pointer underline hover:no-underline", triggerClass]}
                 >
-                    Cookies & Data Consent
-                </h2>
+                    Cookie Banner
+                </button>
+        )}
 
-                <p
-                        id={dataConsentBannerDescriptionId}
-                        class="mt-1 text-sm"
-                >
-                    By continuing to use this website, you consent to our use of cookies. We use cookies to help the
-                    site function properly, understand how it is used, and improve your experience.
-                    <span class="m-1 whitespace-nowrap">
+        <div slot="banner-content">
+            <div class="flex gap-2 sm:gap-4">
+                <div>
+                    <h2
+                            id={dataConsentBannerTitleId}
+                            class="text-xl font-semibold tracking-tight"
+                    >
+                        Cookies & Data Consent
+                    </h2>
+
+                    <p
+                            id={dataConsentBannerDescriptionId}
+                            class="mt-1 text-sm"
+                    >
+                        By continuing to use this website, you consent to our use of cookies. We use cookies to help the
+                        site function properly, understand how it is used, and improve your experience.
+                        <span class="m-1 whitespace-nowrap">
                         <!--<a href="/cookies" class="underline hover:no-underline">Cookie Policy</a>-->
-                        <!--    <span class="vertical-line"></span>-->
+                            <!--    <span class="vertical-line"></span>-->
                         <a href="/privacy-policy" class="underline hover:no-underline">Privacy Policy</a>
                     </span>
-                </p>
+                    </p>
 
-            </div>
-            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-evenly">
-                <button
-                        type="submit"
-                        form="cookie-preferences-form"
-                        name="consent-action"
-                        value="accept-all"
-                        class="theme-affirmative button-sharp button-sharp-sub p-3 self-center"
-                >
-                    accept
-                </button>
-                <SimpleSlottableModal
-                        id={dataConsentManageCookiesModalId}
-                        closeLabel="Close Data Consent Manage Cookies Modal"
-                        labelledby={dataConsentManageCookiesModalTitleId}
-                        describedby={dataConsentManageCookiesModalDescriptionId}
-                >
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-evenly">
                     <button
-                            slot="trigger"
-                            type="button"
-                            command="show-modal"
-                            commandfor={dataConsentManageCookiesModalId}
-                            class="button underline hover:no-underline cursor-pointer self-center text-nowrap"
+                            type="submit"
+                            form="cookie-preferences-form"
+                            name="consent-action"
+                            value="accept-all"
+                            class="theme-affirmative button-sharp button-sharp-sub p-3 self-center"
                     >
-                        Manage Cookies
+                        accept
                     </button>
-                    <div slot="header">
-                        <h2
-                                id={dataConsentManageCookiesModalTitleId}
-                                class="text-xl font-semibold tracking-tight"
-                        >
-                            Decide how we use your data.
-                        </h2>
-
-                        <p
-                                id={dataConsentManageCookiesModalDescriptionId}
-                                class="mt-1 text-sm"
-                        >
-                            Manage your cookie preferences here. Filer text
-                        </p>
-                    </div>
-                    <form id="cookie-preferences-form" class="toggle-form">
-                        <fieldset class="toggle-list">
-                            <legend class="toggle-list-heading">
-                                Cookie preferences
-                            </legend>
-
-                            <label class="toggle">
-                                <input
-                                        type="checkbox"
-                                        name="necessary"
-                                        checked
-                                        disabled
-                                />
-                                <span class="toggle-track" aria-hidden="true">
-                                    <span class="toggle-thumb"></span>
-                                </span>
-                                <span class="toggle-label">Necessary</span>
-                            </label>
-
-                            <label class="toggle">
-                                <input
-                                        type="checkbox"
-                                        name="performance"
-                                        checked
-                                />
-                                <span class="toggle-track" aria-hidden="true">
-                                    <span class="toggle-thumb"></span>
-                                </span>
-                                <span class="toggle-label">Performance</span>
-                            </label>
-
-                            <label class="toggle">
-                                <input
-                                        type="checkbox"
-                                        name="marketing"
-                                        checked
-                                />
-                                <span class="toggle-track" aria-hidden="true">
-                                    <span class="toggle-thumb"></span>
-                                </span>
-                                <span class="toggle-label">Marketing</span>
-                            </label>
-                        </fieldset>
-
+                    <SimpleSlottableModal
+                            id={dataConsentManageCookiesModalId}
+                            closeLabel="Close Data Consent Manage Cookies Modal"
+                            labelledby={dataConsentManageCookiesModalTitleId}
+                            describedby={dataConsentManageCookiesModalDescriptionId}
+                    >
                         <button
-                                type="submit"
-                                name="consent-action"
-                                value="save-preferences"
-                                class="theme-affirmative button-sharp button-sharp-sub p-3"
+                                slot="trigger"
+                                type="button"
+                                command="show-modal"
+                                commandfor={dataConsentManageCookiesModalId}
+                                class="button underline hover:no-underline cursor-pointer self-center text-nowrap"
                         >
-                            Save preferences
+                            Manage Cookies
                         </button>
-                    </form>
-                </SimpleSlottableModal>
+                        <div slot="header">
+                            <h2
+                                    id={dataConsentManageCookiesModalTitleId}
+                                    class="text-xl font-semibold tracking-tight"
+                            >
+                                Decide how we use your data.
+                            </h2>
+
+                            <p
+                                    id={dataConsentManageCookiesModalDescriptionId}
+                                    class="mt-1 text-sm"
+                            >
+                                Manage your cookie preferences here. Filer text
+                            </p>
+                        </div>
+                        <form id="cookie-preferences-form" class="toggle-form">
+                            <fieldset class="toggle-list">
+                                <legend class="toggle-list-heading">
+                                    Cookie preferences
+                                </legend>
+
+                                <label class="toggle">
+                                    <input
+                                            type="checkbox"
+                                            name="necessary"
+                                            checked
+                                            disabled
+                                    />
+                                    <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                    <span class="toggle-label">Necessary</span>
+                                </label>
+
+                                <label class="toggle">
+                                    <input
+                                            type="checkbox"
+                                            name="performance"
+                                            checked
+                                    />
+                                    <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                    <span class="toggle-label">Performance</span>
+                                </label>
+
+                                <label class="toggle">
+                                    <input
+                                            type="checkbox"
+                                            name="marketing"
+                                            checked
+                                    />
+                                    <span class="toggle-track" aria-hidden="true">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                                    <span class="toggle-label">Marketing</span>
+                                </label>
+                            </fieldset>
+
+                            <button
+                                    type="submit"
+                                    name="consent-action"
+                                    value="save-preferences"
+                                    class="theme-affirmative button-sharp button-sharp-sub p-3"
+                            >
+                                Save preferences
+                            </button>
+                        </form>
+                    </SimpleSlottableModal>
+                </div>
             </div>
         </div>
-    </div>
-    <style>
-        .toggle-form {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 1rem;
-            gap: 1rem;
-        }
+        <style>
+            .toggle-form {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 1rem;
+                gap: 1rem;
+            }
 
-        .toggle-form > button[type="submit"] {
-            width: 100%;
-            margin-top: 0.5rem;
-            padding-inline: 1.5rem;
-            text-align: center;
-        }
-
-        @media (min-width: 40rem) {
             .toggle-form > button[type="submit"] {
-                width: fit-content;
-                min-width: 10rem;
-                align-self: center;
+                width: 100%;
                 margin-top: 0.5rem;
                 padding-inline: 1.5rem;
-            }
-        }
-
-        .toggle-list {
-            display: grid;
-            gap: 0;
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
-
-        .toggle-list > .toggle {
-            display: flex;
-        }
-
-        .toggle-list-heading {
-            margin-bottom: 1rem;
-        }
-
-        .toggle-list > .toggle {
-            width: 100%;
-            padding-block: 1rem;
-            border-bottom: 2px dotted rgb(from var(--color-edge) r g b / 40%);
-        }
-
-        .toggle-list > .toggle:first-of-type {
-            border-top: 2px dotted rgb(from var(--color-edge) r g b / 40%);
-        }
-
-        .vertical-line {
-            margin-inline: 5px;
-            width: 0;
-            height: 100%;
-            border: none;
-            border-left: 2px dotted #333;
-        }
-    </style>
-    <script define:vars={{dataConsentBannerId, dataConsentManageCookiesModalId}}>
-        (async () => {
-            const banner = document.getElementById(dataConsentBannerId);
-            const dialog = document.getElementById(dataConsentManageCookiesModalId);
-            const openButton = banner.querySelector("[data-banner-open]");
-            const form = banner.querySelector("#cookie-preferences-form");
-            const cookiePrefs = await cookieStore.get("cookie-preferences");
-
-            if (!(banner instanceof HTMLElement) || !(dialog instanceof HTMLElement)) return;
-
-            const closeButton = banner.querySelector("[data-banner-close]");
-
-            function openBanner() {
-                banner.setAttribute("data-open", "");
+                text-align: center;
             }
 
-            function closeBanner() {
-                banner.removeAttribute("data-open");
-            }
-
-            function handleScroll() {
-                const triggerPosition = 1;
-                if (
-                    !banner.hasAttribute("data-open") &&
-                    window.scrollY >= triggerPosition
-                ) {
-                    openBanner();
-                    window.removeEventListener("scroll", handleScroll);
+            @media (min-width: 40rem) {
+                .toggle-form > button[type="submit"] {
+                    width: fit-content;
+                    min-width: 10rem;
+                    align-self: center;
+                    margin-top: 0.5rem;
+                    padding-inline: 1.5rem;
                 }
             }
 
-            openButton?.addEventListener("click", openBanner);
-
-            closeButton?.addEventListener("click", closeBanner);
-
-            if (!cookiePrefs) {
-                window.addEventListener("scroll", handleScroll, {
-                    passive: true,
-                });
+            .toggle-list {
+                display: grid;
+                gap: 0;
+                margin: 0;
+                padding: 0;
+                border: 0;
             }
 
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
+            .toggle-list > .toggle {
+                display: flex;
+            }
 
-                const submitter = event.submitter;
-                const acceptAll = submitter instanceof HTMLButtonElement && submitter.value === "accept-all";
+            .toggle-list-heading {
+                margin-bottom: 1rem;
+            }
 
-                const performanceInput = form.elements.namedItem("performance");
-                const marketingInput = form.elements.namedItem("marketing");
+            .toggle-list > .toggle {
+                width: 100%;
+                padding-block: 1rem;
+                border-bottom: 2px dotted rgb(from var(--color-edge) r g b / 40%);
+            }
 
-                if (!(performanceInput instanceof HTMLInputElement) || !(marketingInput instanceof HTMLInputElement)) return;
+            .toggle-list > .toggle:first-of-type {
+                border-top: 2px dotted rgb(from var(--color-edge) r g b / 40%);
+            }
 
-                const formData = new FormData();
+            .vertical-line {
+                margin-inline: 5px;
+                width: 0;
+                height: 100%;
+                border: none;
+                border-left: 2px dotted #333;
+            }
+        </style>
+        <script define:vars={{dataConsentBannerId, dataConsentManageCookiesModalId, containsBannerTriggerButton}}>
+            (async () => {
+                const root = document.currentScript.closest("[data-data-consent-container]");
+                const banner = document.getElementById(dataConsentBannerId);
+                const dialog = document.getElementById(dataConsentManageCookiesModalId);
+                const openButton = root.querySelector("[data-banner-open]");
+                const openButtons = Array.from(document.querySelectorAll(`[data-consent-banner-trigger="${dataConsentBannerId}"]`));
+                const form = root.querySelector("#cookie-preferences-form");
+                const cookiePrefs = await cookieStore.get("cookie-preferences");
 
-                formData.set("necessary", "on");
+                if (!(banner instanceof HTMLElement) || !(dialog instanceof HTMLElement)) return;
 
-                if (acceptAll || performanceInput.checked) {
-                    formData.set("performance", "on");
+                const closeButton = root.querySelector("[data-banner-close]");
+
+                function openBanner() {
+                    banner.setAttribute("data-open", "");
+                    openButtons?.forEach((button) => button.setAttribute("aria-expanded", true));
                 }
-                if (acceptAll || marketingInput.checked) {
-                    formData.set("marketing", "on");
+
+                function closeBanner() {
+                    banner.removeAttribute("data-open");
+                    openButtons?.forEach((button) => button.setAttribute("aria-expanded", false));
+
                 }
 
-                const response = await fetch(
-                    "/api/cookie-preferences",
-                    {
-                        method: "POST",
-                        headers: {
-                            Accept: "application/json",
-                        },
-                        body: formData
+                function handleScroll() {
+                    const triggerPosition = 1;
+                    if (
+                        !banner.hasAttribute("data-open") &&
+                        window.scrollY >= triggerPosition
+                    ) {
+                        openBanner();
+                        window.removeEventListener("scroll", handleScroll);
                     }
-                )
-
-                if (!response.ok) {
-                    console.error("Could not save cookie preferences.");
-                    return;
                 }
 
-                closeBanner();
-                dialog.close();
-            });
-        })();
-    </script>
-</BottomBannerAside>
+                openButton?.addEventListener("click", openBanner);
+                openButtons?.forEach((button) => button.addEventListener("click", openBanner))
+
+                closeButton?.addEventListener("click", closeBanner);
+
+                if (!cookiePrefs) {
+                    window.addEventListener("scroll", handleScroll, {
+                        passive: true,
+                    });
+                }
+
+                form.addEventListener("submit", async (event) => {
+                    event.preventDefault();
+
+                    const submitter = event.submitter;
+                    const acceptAll = submitter instanceof HTMLButtonElement && submitter.value === "accept-all";
+
+                    const performanceInput = form.elements.namedItem("performance");
+                    const marketingInput = form.elements.namedItem("marketing");
+
+                    if (!(performanceInput instanceof HTMLInputElement) || !(marketingInput instanceof HTMLInputElement)) return;
+
+                    const formData = new FormData();
+
+                    formData.set("necessary", "on");
+
+                    if (acceptAll || performanceInput.checked) {
+                        formData.set("performance", "on");
+                    }
+                    if (acceptAll || marketingInput.checked) {
+                        formData.set("marketing", "on");
+                    }
+
+                    const response = await fetch(
+                        "/api/cookie-preferences",
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                            },
+                            body: formData
+                        }
+                    )
+
+                    if (!response.ok) {
+                        console.error("Could not save cookie preferences.");
+                        return;
+                    }
+
+                    closeBanner();
+                    dialog.close();
+                });
+            })();
+        </script>
+    </BottomBannerAside>
+</div>

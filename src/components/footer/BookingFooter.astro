@@ -3,12 +3,18 @@ import SocialRow from "../../components/SocialRow.astro";
 import {siteInfoSocialsToItems} from "../../domain/contact/adapters.ts";
 import HrDivider from "../decor/HrDivider.astro";
 import {Temporal} from "temporal-polyfill";
+import DataConsentBanner from "../DataConsentBanner.astro";
+import DataConsentBannerTrigger from "../DataConsentBannerTrigger.astro";
 const {
+    dataConsentId= "data-consent-manage-cookies",
     defaults,
     site,
     class: className,
     ...rest
 } = Astro.props as {
+    dataConsentId: string,
+    defaults: typeof defaults,
+    site: typeof site,
     class?: string;
 };
 
@@ -80,7 +86,7 @@ const footerLinkGroups = [
         className,
     ]}
 >
-    <div class="w-full h-[100px]">
+    <div class="blur-gradient-spacer">
 
     </div>
     <nav
@@ -106,6 +112,11 @@ const footerLinkGroups = [
                                     )}
                                 </li>
                         ))}
+                        {group.title === "Info" && (
+                                <li>
+                                    <DataConsentBannerTrigger dataConsentId={dataConsentId} class="color-one-hover"/>
+                                </li>
+                        )}
                     </ul>
                 </div>
         ))}
@@ -143,6 +154,11 @@ const footerLinkGroups = [
                     rgba(0, 0, 0, 0.5) 50px,
                     black 100px
             );
+        }
+
+        .blur-gradient-spacer {
+            width: 100%;
+            height: 100px;
         }
 
         :global(.color-one) {

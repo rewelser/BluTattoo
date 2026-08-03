@@ -6,6 +6,7 @@ const {
     labelledby,
     describedby,
     class: className,
+    ...rest
 } = Astro.props as {
     id: string;
     useCloseButton: boolean;
@@ -23,6 +24,7 @@ const {
         aria-labelledby={labelledby}
         aria-describedby={describedby}
         class:list={["aside-outer", className]}
+        {...rest}
 >
     <div class="aside-inner" data-color-theme="dune">
         <div class="flex h-full flex-col p-3 sm:p-4">
