@@ -1,0 +1,24 @@
+---
+const {
+    dataConsentId,
+    class: className,
+} = Astro.props as {
+    dataConsentId: string;
+    class?: string;
+};
+
+const targetId = `${dataConsentId}-banner`;
+---
+
+<button
+        type="button"
+        data-consent-banner-trigger={targetId}
+        aria-controls={targetId}
+        aria-expanded="false"
+        class:list={[
+            "button cursor-pointer underline hover:no-underline",
+            className,
+        ]}
+>
+    Cookie Banner
+</button>

@@ -20,6 +20,7 @@ import {Temporal} from "temporal-polyfill";
 import {getDateKey, hasEventStarted} from "../domain/events/selectors.ts";
 import FadeInImage from "../components/decor/FadeInImage.astro";
 import BookingFooter from "../components/footer/BookingFooter.astro";
+import DataConsentBanner from "../components/DataConsentBanner.astro";
 
 const branding = await getEntry("branding", "main");
 const site = await getEntry("siteInfo", "main");
@@ -84,12 +85,13 @@ const bookingFlashLight = branding?.data.bookingFlashLight;
 const bookingFlashDark = branding?.data.bookingFlashDark;
 const defaultPersonProfilePicture = defaults.personProfilePicture;
 const siteSocials = site && siteInfoSocialsToItems(site.data.socials);
+const dataConsentId = "data-consent-manage-cookies";
 const title = "Booking";
 const description = "Book a tattoo or piercing appointment at BluTattoo, view available artists & piercers, and find the right next step for your tattoo idea.";
 ---
 <BaseLayout title={title} description={description} ogImage={bookingShareOGPhoto} preloadImage={bookingHeroPhoto.src}
             bodyClass="bg-black">
-    <main class="page">
+    <main class="page md:pt-10">
         <div
                 class="wallpaper wallpaper-gradient h-screen hidden md:block"
                 aria-hidden="true"
@@ -98,6 +100,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
         {
             bookingFlashDark && (
                         <div
+                                data-wallpaper-flash-parallax-layer
                                 class="wallpaper wallpaper-flash-animated hidden md:block"
                                 aria-hidden="true"
                                 style={`background-image: url(${bookingFlashDark.src})`}
@@ -107,7 +110,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
         }
 
         <div id="booking-content"
-             class="relative bg-gradient-to-b from-[#04005c] via-[#193cb8] to-[#3F1782] md:rounded-4xl overflow-hidden md:mx-auto md:my-10 md:max-w-3xl">
+             class="relative bg-gradient-to-b from-[#04005c] via-[#193cb8] to-[#3F1782] md:rounded-4xl overflow-clip md:mx-auto md:max-w-3xl">
             {
                 bookingFlashLight && (
                             <div
@@ -560,29 +563,38 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                     }
                 </ul>
             </section>
-            <BookingFooter defaults={defaults} site={site} class="block md:hidden" style={{ color: "oklch(0.954 0.038 75.164)" }}></BookingFooter>
+            <BookingFooter dataConsentId={dataConsentId} defaults={defaults} site={site} class="block md:hidden"
+                           style={{color: "oklch(0.954 0.038 75.164)"}}></BookingFooter>
         </div>
-        <BookingFooter defaults={defaults} site={site} color="black" class="hidden md:block" style={{ color: "black" }}></BookingFooter>
+        <BookingFooter dataConsentId={dataConsentId} defaults={defaults} site={site} color="black"
+                       class="hidden md:block" style={{color: "black"}}></BookingFooter>
     </main>
+    <DataConsentBanner containsBannerTriggerButton={false} dataConsentId={dataConsentId}
+                       triggerClass="color-one-hover"></DataConsentBanner>
     <script is:inline>
-        window.addEventListener("scroll", function () {
-            const scrollPosition = window.scrollY;
+        (() => {
             const bookingContent = document.getElementById("booking-content");
-            const scrollHeightHeaderImg = bookingContent.clientHeight;
-            const wallaperFlashAnimated = document.querySelector(".wallpaper-flash-animated");
+            const wallpaperFlashAnimated = document.querySelector("[data-wallpaper-flash-parallax-layer]");
             const headerImgTranslator = document.querySelector("#header-img-translator");
             const headerImg = document.querySelector("#header-img-translator img");
 
-            const bookingContentRectTop = bookingContent.getBoundingClientRect().top;
-            const scrollPositionHeaderImg = Math.abs(Math.min(0, bookingContentRectTop),);
-            const headerImgProgress = scrollPositionHeaderImg / scrollHeightHeaderImg;
+            const desktop = window.matchMedia("(min-width: 48rem)");
+            window.addEventListener("scroll", function () {
+                const scrollPosition = window.scrollY;
+                const scrollHeightHeaderImg = bookingContent.clientHeight;
+                const bookingContentRectTop = bookingContent.getBoundingClientRect().top;
+                const scrollPositionHeaderImg = Math.abs(Math.min(0, bookingContentRectTop),);
+                const headerImgProgress = scrollPositionHeaderImg / scrollHeightHeaderImg;
 
-            wallaperFlashAnimated.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+                if (desktop.matches) {
+                    wallpaperFlashAnimated.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+                }
 
-            headerImgTranslator.style.transform = `translateY(${scrollPositionHeaderImg * 0.2}px)`;
-            headerImg.style.transform = `scale(${1 + headerImgProgress * 0.6})`; // why did I originally go with .1?? .9 is so much better, desktop & mobile
-            headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
-        });
+                headerImgTranslator.style.transform = `translateY(${scrollPositionHeaderImg * 0.2}px)`;
+                headerImg.style.transform = `scale(${1 + headerImgProgress * 0.6})`; // why did I originally go with .1?? .9 is so much better, desktop & mobile
+                headerImg.style.opacity = `${1 - headerImgProgress * 3}`;
+            });
+        })()
     </script>
     <style>
         :root {
@@ -791,7 +803,8 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
         .page {
             position: relative;
             min-height: 100vh;
-            overflow: hidden;
+            //overflow: hidden;
+            overflow: clip;
         }
 
         .wallpaper {
