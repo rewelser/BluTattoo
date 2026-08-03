@@ -4,7 +4,7 @@ title: Guest Artist - Laura Michelle Bruce
 date: 2026-08-22
 endDate: 2026-08-23
 published: true
-featured: false
+featured: true
 archived: false
 guestSpot:
   guestName: Laura Michelle Bruce
@@ -36,6 +36,11 @@ images:
   - Messenger_creation_721043A5-7091-4F1B-B9B2-0C8D6C650458.png
   - Messenger_creation_9FFCB0AF-3F67-4835-9B03-D3F6E95784CD.png
   - Messenger_creation_A6A07701-9688-488B-B424-70BD7F1D0965.jpeg
+promoBar:
+  enabled: true
+  message: Guest artist Ivynightwind Tattoo (Laura Michelle Bruce) August 22-23rd!
+  color1: '#52ff7d'
+  color2: '#ff9585'
 ---
 
 📣 We're excited to announce GUEST ARTIST Ivynightwind Tattoo (Laura Michelle Bruce) will be with us August 22-23rd! Laura brings not ONE but TWO services to town 📣

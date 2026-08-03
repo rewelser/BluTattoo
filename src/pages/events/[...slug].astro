@@ -12,6 +12,7 @@ import {defaults} from "../../config/site.ts";
 import ShareModal from "../../components/ShareModal.astro";
 import {getImage, Image} from "astro:assets";
 import {ImageGallery} from "../../components/ImageGalleryNoThumbs.tsx";
+import {getBookables} from "../../domain/contact/utlis.ts";
 
 const branding = await getEntry("branding", "main");
 
@@ -34,6 +35,11 @@ const ev = await getValidatedEventItem(entry);
 // console.log("ev.href");
 const description = `Learn more about the following event: ${ev.title}`;
 const ogImage = ev.ogPhotoTexted ?? ev.ogPhotoTextless ?? ev.image ?? branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
+const guest = ev.guestSpot;
+const guestCsb = guest?.contactSocialsBooking;
+const hasBookables = (getBookables(guestCsb)?.length ?? 0) > 0;
+console.log("guest", guest);
+console.log("hasBookables", hasBookables);
 
 
 const lightboxImages = await Promise.all(
@@ -67,7 +73,11 @@ const lightboxImages = await Promise.all(
     })
 );
 ---
+<script>
+    import {bootFadeUp} from "../../scripts/fade-up";
 
+    bootFadeUp({observeMutations: true});
+</script>
 <Layout title={ev.title} description={description} ogImage={ogImage}>
     <article class="page-article page-article--stack space-y-6">
         <h1 class="page-heading">{ev.title}</h1>
@@ -94,10 +104,39 @@ const lightboxImages = await Promise.all(
             <div id="event-info" data-section="event-info" class="prose mt-4 max-w-none">
                 <Content/>
             </div>
-            {
+            <!--{-->
+            <!--    (() => {-->
+            <!--        const guest = ev.guestSpot;-->
+            <!--        const socials = guest?.contactSocialsBooking?.socials;-->
+            <!--        if (!socials) return null;-->
+
+            <!--        const guestNamePossessive = guest.guestName.endsWith("s") ? guest.guestName + "'" : guest.guestName + "'s";-->
+
+            <!--        return (-->
+            <!--                <>-->
+            <!--                    <HrDivider className="opacity-20"/>-->
+            <!--                    <div class="mt-4 text-center">-->
+            <!--                        <p class="text-sm font-medium">Check out-->
+            <!--                            <span-->
+            <!--                                    class="font-semibold">{guestNamePossessive}-->
+            <!--                            </span>-->
+            <!--                            work here:-->
+            <!--                        </p>-->
+            <!--                        <div class="flex justify-center">-->
+            <!--                            <SocialRow-->
+            <!--                                    links={socials}-->
+            <!--                                    class="my-3"-->
+            <!--                            />-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </>-->
+            <!--        )-->
+            <!--    })-->
+            <!--}-->
+            {guest &&
                 (() => {
-                    const guest = ev.guestSpot;
-                    const socials = guest?.contactSocialsBooking?.socials;
+                    <!--const guest = ev.guestSpot;-->
+                    const socials = guestCsb?.socials;
                     if (!socials) return null;
 
                     const guestNamePossessive = guest.guestName.endsWith("s") ? guest.guestName + "'" : guest.guestName + "'s";
@@ -124,6 +163,61 @@ const lightboxImages = await Promise.all(
                 })
             }
         </div>
+
+        {guest && hasBookables &&
+            (() => {
+                    const bookingToggleId = `person-guest-${ev?.id?.replaceAll("/", "-")}-toggle`;
+                    const guestBookingHref = `/booking#${bookingToggleId}`;
+                    return (
+                            <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 pb-10 js-fade-up">
+                                <div
+                                        class="panel flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                                        data-color-theme="dune"
+                                >
+                                    <div>
+                                        <h2 class="text-xl font-semibold tracking-tight">
+                                            Want to book with {guest.guestName}?
+                                        </h2>
+                                        <p class="mt-1 text-sm">
+                                            View booking details, contact channels, and appointment options.
+                                        </p>
+                                    </div>
+
+                                    <a
+                                            href={guestBookingHref}
+                                            class="button-sharp px-6 py-2"
+                                    >
+                                        Book now
+                                    </a>
+                                </div>
+                            </section>
+                            <aside
+                                    class="fixed-cta fixed inset-x-0 bottom-0 z-40 p-2 sm:hidden m-0"
+                                    aria-label={`Booking call to action for ${guest.guestName}`}
+                            >
+                                <a
+                                        href={guestBookingHref}
+                                        class="button-sharp lantern-opaque-70 block w-full py-3 backdrop-blur"
+                                        aria-label={`Book an appointment with ${guest.guestName}`}
+                                        data-color-theme="lantern"
+                                >
+                                    Book with {guest.guestName}
+                                </a>
+                                <script is:inline>
+                                    (() => {
+                                        const root = document.documentElement;
+                                        const parent = document.currentScript?.parentElement;
+                                        if (!root || !parent) return;
+
+                                        const measured = `${parent.offsetHeight}px`;
+                                        root.style.setProperty("--fixed-booking-button-h", measured);
+                                    })();
+                                </script>
+                            </aside>
+                    )
+                }
+            )
+        }
 
         <!--//////////////-->
 
