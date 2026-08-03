@@ -66,10 +66,11 @@ const {
             </div>
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-evenly">
                 <button
-                        type="button"
-                        data-banner-fig
-                        aria-label="fig"
-                        class="theme-affirmative button-sharp button-sharp-sub p-3  self-center"
+                        type="submit"
+                        form="cookie-preferences-form"
+                        name="consent-action"
+                        value="accept-all"
+                        class="theme-affirmative button-sharp button-sharp-sub p-3 self-center"
                 >
                     accept
                 </button>
@@ -147,7 +148,12 @@ const {
                             </label>
                         </fieldset>
 
-                        <button type="submit" class="theme-affirmative button-sharp button-sharp-sub p-3">
+                        <button
+                                type="submit"
+                                name="consent-action"
+                                value="save-preferences"
+                                class="theme-affirmative button-sharp button-sharp-sub p-3"
+                        >
                             Save preferences
                         </button>
                     </form>
@@ -259,10 +265,24 @@ const {
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
+                const submitter = event.submitter;
+                const acceptAll = submitter instanceof HTMLButtonElement && submitter.value === "accept-all";
+
                 const performanceInput = form.elements.namedItem("performance");
                 const marketingInput = form.elements.namedItem("marketing");
 
                 if (!(performanceInput instanceof HTMLInputElement) || !(marketingInput instanceof HTMLInputElement)) return;
+
+                const formData = new FormData();
+
+                formData.set("necessary", "on");
+
+                if (acceptAll || performanceInput.checked) {
+                    formData.set("performance", "on");
+                }
+                if (acceptAll || marketingInput.checked) {
+                    formData.set("marketing", "on");
+                }
 
                 const response = await fetch(
                     "/api/cookie-preferences",
@@ -271,9 +291,14 @@ const {
                         headers: {
                             Accept: "application/json",
                         },
-                        body: new FormData(form)
+                        body: formData
                     }
                 )
+
+                if (!response.ok) {
+                    console.error("Could not save cookie preferences.");
+                    return;
+                }
 
                 closeBanner();
                 dialog.close();
