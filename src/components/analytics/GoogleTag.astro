@@ -1,8 +1,14 @@
 ---
 const consentCookie = Astro.cookies.get("cookie-preferences");
+
+const {
+    isNoIndex,
+} = Astro.props as {
+    isNoIndex: boolean;
+}
 ---
 {
-    true && (
+    consentCookie && !isNoIndex && (
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-6QP4FFZ4HW"></script>
     <script is:inline>
         window.dataLayer = window.dataLayer || [];
@@ -14,6 +20,36 @@ const consentCookie = Astro.cookies.get("cookie-preferences");
         gtag('js', new Date());
 
         gtag('config', 'G-6QP4FFZ4HW');
+
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+        )
+    }
+
+
+<!--STAGING-->
+
+{
+    consentCookie && isNoIndex && (
+        <!-- Google tag (gtag.js) -->
+    <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-ZW2T5GXBTD"></script>
+    <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        console.log("staging gtag");
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-ZW2T5GXBTD');
     </script>
         )
     }
