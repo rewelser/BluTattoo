@@ -71,7 +71,10 @@ const questionsSrc = questions?.src;
                                     {faqSection.faqs.map((faq) => (
                                             <details class="group open:bg-black/5">
                                                 <summary
-                                                        class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-black/5 group-open:bg-black/5">
+                                                        class="flex cursor-pointer items-center justify-between gap-4 p-4 font-medium hover:bg-black/5 group-open:bg-black/5"
+                                                        data-analytics-event="faq_expand"
+                                                        data-analytics-location=`faq_${(faq.data.name).replaceAll(" ", "_")}`
+                                                >
                                                     <span class="font-semibold">{faq.data.name}</span>
                                                     <svg viewBox="0 0 24 24"
                                                          class="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"

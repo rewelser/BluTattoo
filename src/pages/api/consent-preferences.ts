@@ -1,6 +1,6 @@
 import type {APIRoute} from "astro";
-import {validateRequest} from "../../domain/cookies/utils.ts";
-import {cookiePreferencesSchema} from "../../domain/cookies/schema.ts";
+import {validateRequest} from "../../domain/analytics/utils.ts";
+import {consentPreferencesSchema} from "../../domain/analytics/schema.ts";
 
 export const prerender = false;
 
@@ -8,8 +8,7 @@ export const POST: APIRoute = (async ({
                                           request,
                                           cookies,
                                       }) => {
-    console.log("requestrrr: " + request.headers.get("content-type"));
-    const result = await validateRequest(request, cookiePreferencesSchema);
+    const result = await validateRequest(request, consentPreferencesSchema);
 
     if (result instanceof Response) {
         return result;
@@ -21,7 +20,7 @@ export const POST: APIRoute = (async ({
     }
 
     cookies.set(
-        "cookie-preferences",
+        "consent-preferences",
         JSON.stringify(preferences),
         {
             path: "/",

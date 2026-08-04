@@ -103,6 +103,8 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                 <a
                         href="/booking"
                         class="button-sharp px-8 py-3 js-fade-up"
+                        data-analytics-event="booking_cta_click"
+                        data-analytics-location="home_top_hero"
                 >
                     BOOK NOW
                 </a>
@@ -196,7 +198,12 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                         />
                                     </div>
 
-                                    <a class="underline hover:no-underline" href="/booking">
+                                    <a
+                                            class="underline hover:no-underline"
+                                            href="/booking"
+                                            data-analytics-event="booking_cta_click"
+                                            data-analytics-location="home_text_contact1"
+                                    >
                                         Schedule an appointment
                                     </a>
                                 </div>
@@ -206,7 +213,12 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                 </div>
                             </div>
                             <p class="theme-muted-more text-base sm:text-lg max-w-xl leading-relaxed">
-                                <a class="underline hover:no-underline" href="/booking">Book now</a>, or come on in. Walk-ins
+                                <a
+                                        class="underline hover:no-underline"
+                                        href="/booking"
+                                        data-analytics-event="booking_cta_click"
+                                        data-analytics-location="home_text_contact2"
+                                >Book now</a>, or come on in. Walk-ins
                                 welcome!
                             </p>
                         </div>
@@ -312,7 +324,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                 {ourProcessText}
                             </p>
 
-                            <HrDivider class="my-[2rem]" style={`color: seashell`} />
+                            <HrDivider class="my-[2rem]" style={`color: seashell`}/>
                         </div>
                         <div class=" pt-16 md:pt-24">
                             <ScrollPeelStack
@@ -349,7 +361,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                     travel={50}
                                     zIndex={2}
                             >
-                                <img src={laceLayerDown.src} alt="" aria-hidden="true" />
+                                <img src={laceLayerDown.src} alt="" aria-hidden="true"/>
                             </EdgeParallaxLayer>
                         </div>
                         <div class="mx-auto max-w-3xl text-center leading-relaxed apply-themed-prose">
@@ -392,7 +404,7 @@ const description = "BluTattoo is a tattoo and piercing studio offering custom t
                                 <p class="whitespace-pre-line mt-20">
                                     {ourStory?.storyText}
                                 </p>
-                                <HrDivider class="my-[2rem]" style={`color: seashell`} />
+                                <HrDivider class="my-[2rem]" style={`color: seashell`}/>
                             </div>
                         </div>
                     </section>

@@ -5,7 +5,7 @@ export const checkBoxSchema = z
     .optional()
     .transform((value) => value === "on");
 
-export const cookiePreferencesSchema = z.object({
+export const consentPreferencesSchema = z.object({
     performance: checkBoxSchema,
     marketing: checkBoxSchema,
 });

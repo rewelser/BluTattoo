@@ -384,6 +384,9 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                                                                                             href={getResolveHref(item)}
                                                                                                             target={item.href.startsWith("http") ? "_blank" : undefined}
                                                                                                             rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
+                                                                                                            data-analytics-event="contact_socials_booking_click"
+                                                                                                            data-analytics-method=`${(item.type).replaceAll(" ", "_")}`
+                                                                                                            data-analytics-location=`panel_${(person.data.name).replaceAll(" ", "_")}`
                                                                                                     >
                                                                                                         <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-4 py-[0.875rem]">
                                                                                                             <div class="h-full content-center">
@@ -429,6 +432,9 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                                                                                                                             expandedBorder={`${isPreferred ? "0px solid var(--preferred-accent-color)" : "0px solid var(--bookable-accent-color)"}`}
                                                                                                                             heroHeight="initial"
                                                                                                                             duration="420ms"
+                                                                                                                            data-analytics-event="contact_socials_booking_click"
+                                                                                                                            data-analytics-method=`${(item.type).replaceAll(" ", "_")}`
+                                                                                                                            data-analytics-location=`booking_${(person.data.name).replaceAll(" ", "_")}`
                                                                                                                     >
                                                                                                                         <Fragment
                                                                                                                                 slot="card">
@@ -570,7 +576,7 @@ const description = "Book a tattoo or piercing appointment at BluTattoo, view av
                        class="hidden md:block" style={{color: "black"}}></BookingFooter>
     </main>
     <DataConsentBanner containsBannerTriggerButton={false} dataConsentId={dataConsentId}
-                       triggerClass="color-one-hover"></DataConsentBanner>
+                       triggerClass="color-one-hover" server:defer></DataConsentBanner>
     <script is:inline>
         (() => {
             const bookingContent = document.getElementById("booking-content");

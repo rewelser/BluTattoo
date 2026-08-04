@@ -12,13 +12,10 @@ import "@fontsource/spectral/500.css";
 import "@fontsource/spectral/600.css";
 import "@fontsource/spectral/700.css";
 import "@fontsource/spectral/800.css";
-import GoogleTag from "../components/analytics/GoogleTag.astro";
+import AnalyticsTags from "../components/analytics/AnalyticsTags.astro";
 
 const site = await getEntry("siteInfo", "main");
 const siteName = site?.data?.siteName ?? defaults.siteName;
-
-const baseOgImage = branding?.data.sitewideOGPhoto ?? defaults.ogPhoto;
-
 const sitewideOgImage = branding?.data.sitewideOGPhoto;
 const fallbackOgImage = defaults.ogPhoto;
 
@@ -46,24 +43,21 @@ const isNoIndex = import.meta.env.PUBLIC_NOINDEX === "true";
 <!doctype html>
 <html lang={htmlLang} style="overscroll-behavior-x: none;">
 <head>
-    <GoogleTag isNoIndex={isNoIndex} server:defer/>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <AnalyticsTags isNoIndex={isNoIndex} server:defer></AnalyticsTags>
+
+    <title>{pageTitleUsed}</title>
     <!-- <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)"> -->
+    <meta name="description" content={pageDescriptionUsed}/>
+    <link rel="canonical" href={canonical}/>
+
     {isNoIndex && (
             <meta name="robots" content="noindex, nofollow"/>
     )}
 
-    {!isNoIndex && (
-        <script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="16446141-92c1-48ec-ada9-767a5e9957ff"
-            ></script>
-    )}
-    <title>{pageTitleUsed}</title>
-    <meta name="description" content={pageDescriptionUsed}/>
-    <link rel="canonical" href={canonical}/>
+
     <!--<link rel="icon" href="/favicon.ico" type="image/x-icon">-->
     <link rel="icon" href="/favicon.svg" type="image/x-icon">
     <link rel="sitemap" href="/sitemap-index.xml"/>
@@ -86,5 +80,6 @@ const isNoIndex = import.meta.env.PUBLIC_NOINDEX === "true";
 </head>
 <body class={`${bodyClass} margin-0`} style={bodyStyle}>
 <slot/>
+<script src="../domain/analytics/analytics-events.ts"></script>
 </body>
 </html>

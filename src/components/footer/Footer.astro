@@ -93,14 +93,13 @@ const footerLinkGroups = [
                         ))}
                         {group.title === "Info" && (
                                 <li>
-                                    <DataConsentBanner triggerClass="hover:text-orange-100"></DataConsentBanner>
+                                    <DataConsentBanner triggerClass="hover:text-orange-100" server:defer></DataConsentBanner>
                                 </li>
                         )}
 
                     </ul>
                 </div>
         ))}
-        <!--<DataConsentBanner></DataConsentBanner>-->
     </nav>
     <div class="flex justify-center">
         <HrDivider

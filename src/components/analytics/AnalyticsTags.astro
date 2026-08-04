@@ -1,0 +1,15 @@
+---
+import GoogleTag from "./GoogleTag.astro";
+import UmamiTag from "./UmamiTag.astro";
+import type {ConsentPreferences, GAConsent} from "../../domain/analytics/types.ts";
+const consentCookie = Astro.cookies.get("consent-preferences");
+const consentPrefs: ConsentPreferences = consentCookie?.json();
+
+const {
+    isNoIndex,
+} = Astro.props as {
+    isNoIndex: boolean;
+}
+---
+<GoogleTag consentPrefs={consentPrefs} isNoIndex={isNoIndex}></GoogleTag>
+<UmamiTag consentPrefs={consentPrefs} isNoIndex={isNoIndex}></UmamiTag>

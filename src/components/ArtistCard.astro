@@ -197,7 +197,10 @@ const bioOrDetailsAnchorTag = isGuestSpot ? "event-details" : "artist-bio";
             {
                 hasBookables && (
                             <a href={`/booking#${bookingToggleId}`}
-                               class="button-sharp button-sharp-sub m-2 py-1 px-2">
+                               class="button-sharp button-sharp-sub m-2 py-1 px-2"
+                               data-analytics-event="booking_cta_click"
+                               data-analytics-location=`artist_card_${personName.replaceAll(" ", "_")}`
+                            >
                                 Book now
                             </a>
                 )

@@ -38,21 +38,18 @@ contactSocialsBooking:
       preferred: false
       handle: hawkchosen
 images:
-  - assets/images/68333184776__8A7021D6-C350-4127-B620-648FB4EF6990.webp
   - assets/images/DSC03246.jpg
   - assets/images/DSC03248.jpg
   - assets/images/IMG_0721.webp
   - assets/images/IMG_1560.JPG
   - assets/images/IMG_4727.webp
   - assets/images/IMG_4908.webp
-  - assets/images/IMG_5247.webp
   - assets/images/IMG_5997.webp
   - assets/images/IMG_6062.webp
   - assets/images/IMG_7630.webp
   - assets/images/IMG_8457.webp
   - assets/images/IMG_9344.webp
   - assets/images/IMG_9347.webp
-  - assets/images/IMG_9772.webp
 ---
 
 Laurna Marika began her professional tattoo career in 2006 when she opened one of the first licensed studios in SC. In 2022, Laurna sold her studio and moved to Stoneville, North Carolina, joining BluTattoo Studio in late summer.

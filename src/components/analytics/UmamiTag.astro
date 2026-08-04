@@ -1,0 +1,23 @@
+---
+import type {ConsentPreferences} from "../../domain/analytics/types.ts";
+
+const {
+    consentPrefs,
+    isNoIndex,
+} = Astro.props as {
+    consentPrefs: ConsentPreferences;
+    isNoIndex: boolean;
+}
+
+// Would have stage vs prod umami ids similar to GA, but free tier only allows 1 website. Womp womp
+---
+{
+    !isNoIndex &&
+        (
+        <script
+                defer
+                src="https://cloud.umami.is/script.js"
+                data-website-id="16446141-92c1-48ec-ada9-767a5e9957ff"
+        />
+            )
+    }

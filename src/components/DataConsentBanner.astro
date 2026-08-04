@@ -2,12 +2,10 @@
 import BottomBannerAside from "../components/scaffolding/BottomBannerAside.astro";
 import SimpleSlottableModal from "./scaffolding/SimpleSlottableModal.astro";
 
-/**
- * The below will work with the server:defer directive on the component usage, and would have been what I used here,
- * but I'm avoiding it for now since I'm not gating the whole component on the presence of the cookie, but only the
- * scroll listener. However, this *will* work in other places where needed.
- * const consentCookie = Astro.cookies.get("cookie-preferences");
- */
+const consentCookie = Astro.cookies.get("consent-preferences");
+const consentPrefs = consentCookie?.json();
+const performancePref = consentCookie ? !!consentPrefs?.performance : true;
+const marketingPref = consentCookie ? !!consentPrefs?.marketing : true;
 
 const {
     containsBannerTriggerButton = true,
@@ -74,7 +72,7 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-evenly">
                     <button
                             type="submit"
-                            form="cookie-preferences-form"
+                            form="consent-preferences-form"
                             name="consent-action"
                             value="accept-all"
                             class="theme-affirmative button-sharp button-sharp-sub p-3 self-center"
@@ -111,7 +109,7 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                                 Manage your cookie preferences here. Filer text
                             </p>
                         </div>
-                        <form id="cookie-preferences-form" class="toggle-form">
+                        <form id="consent-preferences-form" class="toggle-form">
                             <fieldset class="toggle-list">
                                 <legend class="toggle-list-heading">
                                     Cookie preferences
@@ -134,7 +132,7 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                                     <input
                                             type="checkbox"
                                             name="performance"
-                                            checked
+                                            checked={performancePref}
                                     />
                                     <span class="toggle-track" aria-hidden="true">
                                     <span class="toggle-thumb"></span>
@@ -146,7 +144,7 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                                     <input
                                             type="checkbox"
                                             name="marketing"
-                                            checked
+                                            checked={marketingPref}
                                     />
                                     <span class="toggle-track" aria-hidden="true">
                                     <span class="toggle-thumb"></span>
@@ -235,8 +233,8 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                 const dialog = document.getElementById(dataConsentManageCookiesModalId);
                 const openButton = root.querySelector("[data-banner-open]");
                 const openButtons = Array.from(document.querySelectorAll(`[data-consent-banner-trigger="${dataConsentBannerId}"]`));
-                const form = root.querySelector("#cookie-preferences-form");
-                const cookiePrefs = await cookieStore.get("cookie-preferences");
+                const form = root.querySelector("#consent-preferences-form");
+                const consentPrefs = await cookieStore.get("consent-preferences");
 
                 if (!(banner instanceof HTMLElement) || !(dialog instanceof HTMLElement)) return;
 
@@ -245,35 +243,35 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                 function openBanner() {
                     banner.setAttribute("data-open", "");
                     openButtons?.forEach((button) => button.setAttribute("aria-expanded", true));
-                }
+                    }
 
                 function closeBanner() {
                     banner.removeAttribute("data-open");
                     openButtons?.forEach((button) => button.setAttribute("aria-expanded", false));
 
-                }
+                    }
 
                 function handleScroll() {
                     const triggerPosition = 1;
                     if (
                         !banner.hasAttribute("data-open") &&
-                        window.scrollY >= triggerPosition
-                    ) {
+                            window.scrollY >= triggerPosition
+                        ) {
                         openBanner();
                         window.removeEventListener("scroll", handleScroll);
+                        }
                     }
-                }
 
                 openButton?.addEventListener("click", openBanner);
                 openButtons?.forEach((button) => button.addEventListener("click", openBanner))
 
                 closeButton?.addEventListener("click", closeBanner);
 
-                if (!cookiePrefs) {
+                if (!consentPrefs) {
                     window.addEventListener("scroll", handleScroll, {
                         passive: true,
-                    });
-                }
+                        });
+                    }
 
                 form.addEventListener("submit", async (event) => {
                     event.preventDefault();
@@ -292,31 +290,44 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
 
                     if (acceptAll || performanceInput.checked) {
                         formData.set("performance", "on");
-                    }
+                        }
                     if (acceptAll || marketingInput.checked) {
                         formData.set("marketing", "on");
-                    }
+                        }
 
                     const response = await fetch(
-                        "/api/cookie-preferences",
+                        "/api/consent-preferences",
                         {
                             method: "POST",
                             headers: {
                                 Accept: "application/json",
-                            },
+                                },
                             body: formData
-                        }
-                    )
+                            }
+                        )
 
                     if (!response.ok) {
-                        console.error("Could not save cookie preferences.");
+                        console.error("Could not save cookie consent preferences.");
                         return;
-                    }
+                        }
+
+                    const consent = {
+                        analytics_storage: performanceInput.checked ? "granted" : "denied",
+                        ad_storage: marketingInput.checked ? "granted" : "denied",
+                        ad_user_data: marketingInput.checked ? "granted" : "denied",
+                        ad_personalization: marketingInput.checked ? "granted" : "denied",
+                        };
+
+                    gtag("consent", "update", consent);
+                    gtag("event", "consent_update", {
+                        analytics: performanceInput.checked,
+                        marketing: marketingInput.checked,
+                        });
 
                     closeBanner();
                     dialog.close();
-                });
-            })();
+                    });
+                })();
         </script>
     </BottomBannerAside>
 </div>

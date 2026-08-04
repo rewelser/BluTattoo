@@ -187,6 +187,8 @@ const lightboxImages = await Promise.all(
                                                         href={artistBookingHref}
                                                         class="button-sharp px-6 py-2"
                                                         aria-label={`Book an appointment with ${entry.data.name}`}
+                                                        data-analytics-event="booking_cta_click"
+                                                        data-analytics-location=`artist_page_${(entry.data.name).replaceAll(" ", "_")}_hero`
                                                 >
                                                     Book with {entry.data.name}
                                                 </a>
@@ -302,6 +304,8 @@ const lightboxImages = await Promise.all(
                         <a
                                 href={artistBookingHref}
                                 class="button-sharp px-6 py-2"
+                                data-analytics-event="booking_cta_click"
+                                data-analytics-location=`artist_page_${(entry.data.name).replaceAll(" ", "_")}_bottom`
                         >
                             Book now
                         </a>
@@ -316,6 +320,8 @@ const lightboxImages = await Promise.all(
                             class="button-sharp lantern-opaque-70 block w-full py-3 backdrop-blur"
                             aria-label={`Book an appointment with ${entry.data.name}`}
                             data-color-theme="lantern"
+                            data-analytics-event="booking_cta_click"
+                            data-analytics-location=`artist_page_${(entry.data.name).replaceAll(" ", "_")}_fixed`
                     >
                         Book with {entry.data.name}
                     </a>

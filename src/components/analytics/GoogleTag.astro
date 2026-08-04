@@ -1,57 +1,31 @@
 ---
-const consentCookie = Astro.cookies.get("cookie-preferences");
+import {GTAG_ID_STAGE, GTAG_ID_PROD} from "../../domain/analytics/defs.ts";
+import type {ConsentPreferences, GAConsent} from "../../domain/analytics/types.ts";
+import {alignDefaultGAConsentToPrefs} from "../../domain/analytics/utils.ts";
 
 const {
+    consentPrefs,
     isNoIndex,
 } = Astro.props as {
+    consentPrefs: ConsentPreferences;
     isNoIndex: boolean;
 }
+
+const consent = alignDefaultGAConsentToPrefs(consentPrefs);
+
+const gtagId = isNoIndex ? GTAG_ID_STAGE : GTAG_ID_PROD;
 ---
-{
-    consentCookie && !isNoIndex && (
-    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-6QP4FFZ4HW"></script>
-    <script is:inline>
-        window.dataLayer = window.dataLayer || [];
+<script async define:vars={{gtagId}} src=`https://www.googletagmanager.com/gtag/js?id=${gtagId}`></script>
+<script define:vars={{consent, gtagId}}>
+    window.dataLayer = window.dataLayer || [];
 
+    window.gtag =
+        window.gtag ||
         function gtag() {
-            dataLayer.push(arguments);
-        }
+            window.dataLayer.push(arguments);
+        };
 
-        console.log("prod gtag");
-
-        gtag('js', new Date());
-
-        gtag('config', 'G-6QP4FFZ4HW');
-
-        gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-        });
-    </script>
-        )
-    }
-
-
-<!--STAGING-->
-
-{
-    consentCookie && isNoIndex && (
-        <!-- Google tag (gtag.js) -->
-    <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-ZW2T5GXBTD"></script>
-    <script is:inline>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        console.log("staging gtag");
-
-        gtag('js', new Date());
-
-        gtag('config', 'G-ZW2T5GXBTD');
-    </script>
-        )
-    }
+    gtag('consent', 'default', consent);
+    gtag('js', new Date());
+    gtag('config', `${gtagId}`);
+</script>
