@@ -10,7 +10,7 @@ recurrenceRule:
   interval: 1
   byDay:
     - WE
-image: International Women's Day.jpg
+image: international-womens-day.jpg
 promoBar:
   enabled: true
   message: Come on in for our Women's Wednesday!
