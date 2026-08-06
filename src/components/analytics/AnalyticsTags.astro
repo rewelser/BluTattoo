@@ -2,7 +2,9 @@
 import GoogleTag from "./GoogleTag.astro";
 import UmamiTag from "./UmamiTag.astro";
 import type {ConsentPreferences, GAConsent} from "../../domain/analytics/types.ts";
-const consentCookie = Astro.cookies.get("consent-preferences");
+// const consentCookie = Astro.cookies.get("consent-preferences");
+const consentCookie = Astro.cookies.get("consent-preferences") ?? Astro.cookies.get("cookie-preferences");
+
 const consentPrefs: ConsentPreferences = consentCookie?.json();
 
 const {

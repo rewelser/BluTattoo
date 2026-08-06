@@ -2,7 +2,9 @@
 import BottomBannerAside from "../components/scaffolding/BottomBannerAside.astro";
 import SimpleSlottableModal from "./scaffolding/SimpleSlottableModal.astro";
 
-const consentCookie = Astro.cookies.get("consent-preferences");
+// const consentCookie = Astro.cookies.get("consent-preferences");
+const consentCookie = Astro.cookies.get("consent-preferences") ?? Astro.cookies.get("cookie-preferences");
+console.log("consentCookie", consentCookie);
 const consentPrefs = consentCookie?.json();
 const performancePref = consentCookie ? !!consentPrefs?.performance : true;
 const marketingPref = consentCookie ? !!consentPrefs?.marketing : true;
@@ -234,7 +236,7 @@ const dataConsentManageCookiesModalDescriptionId = `${dataConsentManageCookiesMo
                 const openButton = root.querySelector("[data-banner-open]");
                 const openButtons = Array.from(document.querySelectorAll(`[data-consent-banner-trigger="${dataConsentBannerId}"]`));
                 const form = root.querySelector("#consent-preferences-form");
-                const consentPrefs = await cookieStore.get("consent-preferences");
+                const consentPrefs = await cookieStore.get("consent-preferences") ?? await cookieStore.get("cookie-preferences");
 
                 if (!(banner instanceof HTMLElement) || !(dialog instanceof HTMLElement)) return;
 

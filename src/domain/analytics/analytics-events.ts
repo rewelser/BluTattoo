@@ -1,5 +1,17 @@
-// src/scripts/analytics-events.ts
-
+/**
+ * Data attributes used (so far):
+ * - data-analytics-event
+ * - data-analytics-location
+ * - data-analytics-method (optional - such as "instagram" if clicking on a social media link)
+ *
+ * Applicable events (so far):
+ * - booking_cta_click
+ * - contact_click
+ * - share
+ * - faq_expand
+ * - booking_submit (for the future; not used yet: in case we host our own booking form)
+ * - consent_update
+ */
 document.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
 
